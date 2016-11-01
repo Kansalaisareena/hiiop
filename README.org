@@ -37,5 +37,17 @@
    And open your browser in `resources/public/index.html`. You will not
    get live reloading, nor a REPL. 
 
+** Migrations
+   Manage migrations with the following commands (prepend =lein
+   migratus=):
+   | Command       | Description                       |
+   |---------------+-----------------------------------|
+   | migrate       | apply migrations                  |
+   | rollback      | run "down" for previous migration |
+   | create <name> | create new migration              |
+
+   [[https://github.com/yogthos/migratus][more about migratus]]
+
+  
 ** TODO License
 

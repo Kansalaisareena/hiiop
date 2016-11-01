@@ -12,9 +12,14 @@
                   :exclusions [org.clojure/tools.reader]]
                  [metosin/compojure-api "1.1.8"]
                  [rum "0.10.7"]]
+                 [rum "0.10.7"]
+                 [org.postgresql/postgresql "9.4.1211"]
+                 [org.slf4j/slf4j-log4j12 "1.7.9"]
+                 [migratus "0.8.32"]
 
   :plugins [[lein-figwheel "0.5.8"]
-            [lein-cljsbuild "1.1.4" :exclusions [[org.clojure/clojure]]]]
+            [lein-cljsbuild "1.1.4" :exclusions [[org.clojure/clojure]]]
+            [migratus-lein "0.4.3"]]
 
   :source-paths ["src"]
 
@@ -88,6 +93,7 @@
              ;; :server-logfile "tmp/logs/figwheel-logfile.log"
              }
 
+  :migratus {:store :database :db ~(get (System/getenv) "DATABASE_URL")}
 
   ;; setting up nREPL for Figwheel and ClojureScript dev
   ;; Please see:
