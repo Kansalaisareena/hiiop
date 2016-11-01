@@ -6,7 +6,8 @@
    [ring.util.http-response :refer :all]
    [schema.core :as s]
    [rum.core :as rum]
-   [op-100.app :refer [app-structure]]))
+   [op-100.app :refer [app-structure]]
+   [op-100.schema :as schema]))
 
 (def api-routes
   (api
