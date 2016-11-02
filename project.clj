@@ -11,11 +11,13 @@
                  [org.clojure/core.async "0.2.391"
                   :exclusions [org.clojure/tools.reader]]
                  [metosin/compojure-api "1.1.8"]
-                 [rum "0.10.7"]]
                  [rum "0.10.7"]
                  [org.postgresql/postgresql "9.4.1211"]
                  [org.slf4j/slf4j-log4j12 "1.7.9"]
                  [migratus "0.8.32"]
+                 [com.layerware/hugsql "0.4.7"]
+                 [mount "0.1.10"]
+                 [conman "0.6.2"]]
 
   :plugins [[lein-figwheel "0.5.8"]
             [lein-cljsbuild "1.1.4" :exclusions [[org.clojure/clojure]]]
@@ -113,7 +115,8 @@
               ;; :plugins [[cider/cider-nrepl "0.12.0"]]
               :repl-options {; for nREPL dev you really need to limit output
                              :init (set! *print-length* 50)
-                             :nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}
+                             :nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]
+                             :timeout 1200000}
               :plugins [[ikitommi/lein-ring "0.9.8-FIX"]]
               }}
   )
