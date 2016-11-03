@@ -2,8 +2,11 @@
 
 ** TODO Overview
 
+** Dependencies
+   - sassc
+   - leiningen
+     
 ** Setup
-
    To get an interactive development environment run:
 
    #+BEGIN_EXAMPLE
