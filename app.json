@@ -3,13 +3,13 @@
   "scripts": {
   },
   "env": {
+    "DATABASE_URL": {
+      "description": "Database URL"
+    }
   },
   "formation": {
   },
   "addons": [
-    "DATABASE_URL": {
-      "description": "Database URL"
-    }
   ],
   "buildpacks": [
     {
