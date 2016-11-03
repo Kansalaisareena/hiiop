@@ -1,0 +1,17 @@
+{
+  "name": "hiiop",
+  "scripts": {
+  },
+  "env": {
+  },
+  "formation": {
+  },
+  "addons": [
+
+  ],
+  "buildpacks": [
+    {
+      "url": "https://github.com/heroku/heroku-buildpack-clojure"
+    }
+  ]
+}
