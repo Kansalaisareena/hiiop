@@ -1,4 +1,4 @@
-(ns op-100.schema
+(ns hiiop.schema
   (:require
    [schema.core :as s
     :include-macros true]))
@@ -24,3 +24,4 @@
 ;;    (s/date )
 ;;    :pending-description s/Str
 ;;    (s/optional-key :organisation) Organisation})
+

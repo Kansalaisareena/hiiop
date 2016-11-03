@@ -1,113 +1,138 @@
-(defproject op-100 "0.1.0-SNAPSHOT"
-  :description "FIXME: write this!"
+(defproject hiiop "0.1.0-SNAPSHOT"
+
+  :description "FIXME: write description"
   :url "http://example.com/FIXME"
-  :license {:name "Eclipse Public License"
-            :url "http://www.eclipse.org/legal/epl-v10.html"}
+
+  :dependencies [[bouncer "1.0.0"]
+                 [cider/cider-nrepl "0.14.0-SNAPSHOT"]
+                 [cljs-http "0.1.42"]
+                 [compojure "1.5.1"]
+                 [conman "0.6.2"]
+                 [cprop "0.1.9"]
+                 [luminus-immutant "0.2.2"]
+                 [luminus-migrations "0.2.8"]
+                 [luminus-nrepl "0.1.4"]
+                 [metosin/compojure-api "1.1.9"]
+                 [metosin/ring-http-response "0.8.0"]
+                 [mount "0.1.10"]
+                 [org.clojure/clojure "1.8.0"]
+                 [org.clojure/clojurescript "1.9.293" :scope "provided"]
+                 [org.clojure/tools.cli "0.3.5"]
+                 [org.clojure/tools.logging "0.3.1"]
+                 [org.postgresql/postgresql "9.4.1211"]
+                 [org.webjars.bower/tether "1.3.7"]
+                 [org.webjars/bootstrap "4.0.0-alpha.5"]
+                 [org.webjars/font-awesome "4.6.3"]
+                 [org.webjars/webjars-locator-jboss-vfs "0.1.0"]
+                 [ring-middleware-format "0.7.0"]
+                 [ring-webjars "0.1.1"]
+                 [ring/ring-defaults "0.2.1"]
+                 [rum "0.10.7"]
+                 [selmer "1.10.0"]]
 
   :min-lein-version "2.7.1"
 
-  :dependencies [[org.clojure/clojure "1.8.0"]
-                 [org.clojure/clojurescript "1.9.293"]
-                 [org.clojure/core.async "0.2.391"
-                  :exclusions [org.clojure/tools.reader]]
-                 [metosin/compojure-api "1.1.8"]
-                 [rum "0.10.7"]]
+  :jvm-opts ["-server" "-Dconf=.lein-env"]
+  :source-paths ["src/clj" "src/cljc"]
+  :resource-paths ["resources" "target/cljsbuild"]
+  :target-path "target/%s/"
+  :main hiiop.core
+  :migratus {:store :database :db ~(get (System/getenv) "DATABASE_URL")}
 
-  :plugins [[lein-figwheel "0.5.8"]
-            [lein-cljsbuild "1.1.4" :exclusions [[org.clojure/clojure]]]]
+  :plugins [[lein-cprop "1.0.1"]
+            [migratus-lein "0.4.3"]
+            [lein-cljsbuild "1.1.4"]
+            [lein-immutant "2.1.0"]
+            [lein-sassc "0.10.4"]
+            [lein-auto "0.1.2"]]
+  :sassc
+  [{:src "resources/scss/screen.scss"
+    :output-to "resources/public/css/screen.css"
+    :style "nested"
+    :import-path "resources/scss"}]
 
-  :source-paths ["src"]
+  :auto
+  {"sassc" {:file-pattern #"\.(scss|sass)$" :paths ["resources/scss"]}}
 
-  :clean-targets ^{:protect false} ["resources/public/js/compiled" "target"]
-
-  :cljsbuild {:builds
-              [{:id "dev"
-                :source-paths ["src"]
-
-                ;; the presence of a :figwheel configuration here
-                ;; will cause figwheel to inject the figwheel client
-                ;; into your build
-                :figwheel {:on-jsload "op-100.core/on-js-reload"
-                           ;; :open-urls will pop open your application
-                           ;; in the default browser once Figwheel has
-                           ;; started and complied your application.
-                           ;; Comment this out once it no longer serves you.
-                           :open-urls ["http://localhost:3449/index"]}
-
-                :compiler {:main op-100.core
-                           :asset-path "js/compiled/out"
-                           :output-to "resources/public/js/compiled/op_100.js"
-                           :output-dir "resources/public/js/compiled/out"
-                           :source-map-timestamp true
-                           ;; To console.log CLJS data-structures make sure you enable devtools in Chrome
-                           ;; https://github.com/binaryage/cljs-devtools
-                           :preloads [devtools.preload]}}
-               ;; This next build is an compressed minified build for
-               ;; production. You can build this with:
-               ;; lein cljsbuild once min
-               {:id "min"
-                :source-paths ["src"]
-                :compiler {:output-to "resources/public/js/compiled/op_100.js"
-                           :main op-100.core
-                           :optimizations :advanced
-                           :pretty-print false}}]}
-
-  :figwheel {;; :http-server-root "public" ;; default and assumes "resources"
-             ;; :server-port 3449 ;; default
-             ;; :server-ip "127.0.0.1"
-
-             :css-dirs ["resources/public/css"] ;; watch and update CSS
-
-             ;; Start an nREPL server into the running figwheel process
-             ;; :nrepl-port 7888
-
-             ;; Server Ring Handler (optional)
-             ;; if you want to embed a ring handler into the figwheel http-kit
-             ;; server, this is for simple ring servers, if this
-
-             ;; doesn't work for you just run your own server :) (see lein-ring)
-
-             :ring-handler op-100.handler/app
-
-             ;; To be able to open files in your editor from the heads up display
-             ;; you will need to put a script on your path.
-             ;; that script will have to take a file path and a line number
-             ;; ie. in  ~/bin/myfile-opener
-             ;; #! /bin/sh
-             ;; emacsclient -n +$2 $1
-             ;;
-             ;; :open-file-command "myfile-opener"
-
-             ;; if you are using emacsclient you can just use
-             ;; :open-file-command "emacsclient"
-
-             ;; if you want to disable the REPL
-             ;; :repl false
-
-             ;; to configure a different figwheel logfile path
-             ;; :server-logfile "tmp/logs/figwheel-logfile.log"
-             }
+  :hooks [leiningen.sassc]
+  :clean-targets ^{:protect false}
+  [:target-path [:cljsbuild :builds :app :compiler :output-dir] [:cljsbuild :builds :app :compiler :output-to]]
+  :figwheel
+  {:http-server-root "public"
+   :nrepl-port 7002
+   :css-dirs ["resources/public/css"]
+   :nrepl-middleware
+   [cemerick.piggieback/wrap-cljs-repl cider.nrepl/cider-middleware]}
 
 
-  ;; setting up nREPL for Figwheel and ClojureScript dev
-  ;; Please see:
-  ;; https://github.com/bhauman/lein-figwheel/wiki/Using-the-Figwheel-REPL-within-NRepl
+  :profiles
+  {:uberjar {:omit-source true
+             :prep-tasks ["compile" ["cljsbuild" "once" "min"]]
+             :cljsbuild
+             {:builds
+              {:min
+               {:source-paths ["src/cljc" "src/cljs" "env/prod/cljs"]
+                :compiler
+                {:output-to "target/cljsbuild/public/js/app.js"
+                 :externs ["react/externs/react.js"]
+                 :optimizations :advanced
+                 :pretty-print false
+                 :closure-warnings
+                 {:externs-validation :off :non-standard-jsdoc :off}}}}}
 
 
-  :profiles {:dev
-             {:dependencies [[javax.servlet/javax.servlet-api "3.1.0"]
-                             [cheshire "5.5.0"]
-                             [ring/ring-mock "0.3.0"]
-                             [binaryage/devtools "0.8.2"]
-                             [figwheel-sidecar "0.5.8"]
-                             [com.cemerick/piggieback "0.2.1"]]
-              ;; need to add dev source path here to get user.clj loaded
-              :source-paths ["src" "dev"]
-              ;; for CIDER
-              ;; :plugins [[cider/cider-nrepl "0.12.0"]]
-              :repl-options {; for nREPL dev you really need to limit output
-                             :init (set! *print-length* 50)
-                             :nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}
-              :plugins [[ikitommi/lein-ring "0.9.8-FIX"]]
-              }}
-  )
+             :aot :all
+             :uberjar-name "hiiop.jar"
+             :source-paths ["env/prod/clj"]
+             :resource-paths ["env/prod/resources"]}
+
+   :dev           [:project/dev :profiles/dev]
+   :test          [:project/dev :project/test :profiles/test]
+
+   :project/dev  {:dependencies [[prone "1.1.2"]
+                                 [ring/ring-mock "0.3.0"]
+                                 [ring/ring-devel "1.5.0"]
+                                 [pjstadig/humane-test-output "0.8.1"]
+                                 [binaryage/devtools "0.8.2"]
+                                 [com.cemerick/piggieback "0.2.2-SNAPSHOT"]
+                                 [doo "0.1.7"]
+                                 [figwheel-sidecar "0.5.8"]]
+                  :plugins      [[com.jakemccrary/lein-test-refresh "0.14.0"]
+                                 [lein-doo "0.1.7"]
+                                 [lein-figwheel "0.5.8"]
+                                 [org.clojure/clojurescript "1.9.293"]]
+                  :cljsbuild
+                  {:builds
+                   {:app
+                    {:source-paths ["src/cljs" "src/cljc" "env/dev/cljs"]
+                     :compiler
+                     {:main "hiiop.app"
+                      :asset-path "/js/out"
+                      :output-to "target/cljsbuild/public/js/app.js"
+                      :output-dir "target/cljsbuild/public/js/out"
+                      :source-map true
+                      :optimizations :none
+                      :pretty-print true}}}}
+
+
+
+                  :doo {:build "test"}
+                  :source-paths ["env/dev/clj" "test/clj"]
+                  :resource-paths ["env/dev/resources"]
+                  :repl-options {:init-ns user}
+                  :injections [(require 'pjstadig.humane-test-output)
+                               (pjstadig.humane-test-output/activate!)]}
+   :project/test {:resource-paths ["env/test/resources"]
+                  :cljsbuild
+                  {:builds
+                   {:test
+                    {:source-paths ["src/cljc" "src/cljs" "test/cljs"]
+                     :compiler
+                     {:output-to "target/test.js"
+                      :main "hiiop.doo-runner"
+                      :optimizations :whitespace
+                      :pretty-print true}}}}
+
+                  }
+   :profiles/dev {}
+   :profiles/test {}})
