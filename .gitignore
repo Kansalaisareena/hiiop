@@ -12,3 +12,6 @@ pom.xml
 .repl
 .nrepl-port
 /profiles.clj
+/resources/public/css/screen.css
+/.lein-env
+/log/hiiop.log
