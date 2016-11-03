@@ -1,0 +1,22 @@
+{
+  "name": "hiiop",
+  "scripts": {
+  },
+  "env": {
+    "DATABASE_URL": {
+      "description": "Database URL"
+    }
+  },
+  "formation": {
+  },
+  "addons": [
+  ],
+  "buildpacks": [
+    {
+      "url": "https://github.com/djmattyg007/heroku-buildpack-sassc"
+    },
+    {
+      "url": "https://github.com/heroku/heroku-buildpack-clojure"
+    }
+  ]
+}
