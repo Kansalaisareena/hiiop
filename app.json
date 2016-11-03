@@ -7,7 +7,9 @@
   "formation": {
   },
   "addons": [
-
+    "DATABASE_URL": {
+      "description": "Database URL"
+    }
   ],
   "buildpacks": [
     {
