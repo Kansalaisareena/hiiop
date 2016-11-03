@@ -1,5 +1,7 @@
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
 CREATE TABLE users
-(id VARCHAR(36) PRIMARY KEY,
+(id uuid PRIMARY KEY DEFAULT uuid_generate_v1mc(),
  name VARCHAR(300) DEFAULT NULL,
  email VARCHAR(100) UNIQUE,
  moderator BOOLEAN DEFAULT false,

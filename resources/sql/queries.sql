@@ -42,3 +42,7 @@ WHERE id = :id
 DELETE FROM users
 WHERE id = :id
 
+-- :name add-event! :! :n
+-- :doc add an event
+INSERT INTO events
+(

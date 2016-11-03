@@ -1,7 +1,7 @@
 CREATE TABLE events
-(id integer PRIMARY KEY,
+(id serial PRIMARY KEY,
  name varchar(300),
- owner varchar(36) REFERENCES users(id) ON DELETE CASCADE,
+ owner uuid REFERENCES users(id) ON DELETE CASCADE,
  description TEXT NULL,
  unmoderated_description TEXT,
  max_participants INTEGER,
