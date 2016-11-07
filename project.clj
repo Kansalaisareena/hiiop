@@ -1,4 +1,4 @@
-(defproject hiiop "0.1.0-SNAPSHOT"
+(defproject hiiop "0.0.1-SNAPSHOT"
 
   :description "FIXME: write description"
   :url "http://example.com/FIXME"
@@ -44,7 +44,9 @@
             [lein-cljsbuild "1.1.4"]
             [lein-immutant "2.1.0"]
             [lein-sassc "0.10.4"]
-            [lein-auto "0.1.2"]]
+            [lein-auto "0.1.2"]
+            [lein-asset-minifier "0.3.0"]
+            [shmish111/lein-git-version "1.0.13"]]
   :sassc
   [{:src "resources/scss/screen.scss"
     :output-to "resources/public/css/screen.css"
@@ -64,10 +66,9 @@
    :nrepl-middleware
    [cemerick.piggieback/wrap-cljs-repl cider.nrepl/cider-middleware]}
 
-
   :profiles
   {:uberjar {:omit-source true
-             :prep-tasks ["compile" ["cljsbuild" "once" "min"]]
+             :prep-tasks ["git-version" "compile" ["cljsbuild" "once" "min"] "minify-assets"]
              :cljsbuild
              {:builds
               {:min
@@ -80,6 +81,22 @@
                  :closure-warnings
                  {:externs-validation :off :non-standard-jsdoc :off}}}}}
 
+             :minify-assets
+             {:assets
+              {~(str "resources/public/"
+                     (apply str (rest (clojure.string/trim
+                                       (:out (clojure.java.shell/sh
+                                              "git" "rev-parse" "--verify" "HEAD")))))
+                     "/css/screen.min.css")
+               "resources/public/css"
+               ~(str "resources/public/"
+                     (apply str (rest (clojure.string/trim
+                                       (:out (clojure.java.shell/sh
+                                              "git" "rev-parse" "--verify" "HEAD")))))
+                     "/js/app.js")
+               "target/cljsbuild/public/js/"
+               }
+              }
 
              :aot :all
              :uberjar-name "hiiop.jar"
@@ -105,6 +122,9 @@
                                  [lein-doo "0.1.7"]
                                  [lein-figwheel "0.5.8"]
                                  [org.clojure/clojurescript "1.9.293"]]
+
+                  :prep-tasks ["git-version"]
+
                   :cljsbuild
                   {:builds
                    {:app
@@ -136,6 +156,8 @@
                       :main "hiiop.doo-runner"
                       :optimizations :whitespace
                       :pretty-print true}}}}
+
+                  :prep-tasks ["git-version"]
 
                   }
    :profiles/dev {}
