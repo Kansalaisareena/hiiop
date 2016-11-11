@@ -3,6 +3,7 @@
             [ring.util.anti-forgery :refer [anti-forgery-field]]
             [ring.middleware.anti-forgery :refer [*anti-forgery-token*]]
             [rum.core :as rum]
+            [hiiop.config :refer [env asset-path]]
             [hiiop.html :refer [app-structure]]))
 
 
@@ -14,7 +15,8 @@
   (content-type
    (ok
     (rum/render-html
-     (app-structure {:content content
+     (app-structure {:asset-path (asset-path env)
+                     :content content
                      :csrf-token *anti-forgery-token*
                      :servlet-context *app-context* })))
     "text/html; charset=utf-8"))

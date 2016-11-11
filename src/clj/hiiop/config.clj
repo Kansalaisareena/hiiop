@@ -11,3 +11,8 @@
                         (source/from-env)
                         {:version version
                          :git-ref gitref}]))
+
+(defn asset-path [{:keys [dev asset-base-url git-ref] :or {dev true}}]
+  (if dev
+    ""
+    (str asset-base-url "/" git-ref)))

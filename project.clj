@@ -46,7 +46,9 @@
             [lein-sassc "0.10.4"]
             [lein-auto "0.1.2"]
             [lein-asset-minifier "0.3.0"]
-            [shmish111/lein-git-version "1.0.13"]]
+            [shmish111/lein-git-version "1.0.13"]
+            [lein-essthree "0.2.2"]]
+
   :sassc
   [{:src "resources/scss/screen.scss"
     :output-to "resources/public/css/screen.css"
@@ -68,7 +70,7 @@
 
   :profiles
   {:uberjar {:omit-source true
-             :prep-tasks ["git-version" "compile" ["cljsbuild" "once" "min"] "minify-assets"]
+             :prep-tasks ["git-version" "compile" ["cljsbuild" "once" "min"] "minify-assets" "essthree"]
              :cljsbuild
              {:builds
               {:min
@@ -97,6 +99,12 @@
                "target/cljsbuild/public/js/"
                }
               }
+
+             :essthree
+             {:deploy {:type       :directory
+                       :bucket     ~(get (System/getenv) "HIIOP_ASSET_BUCKET")
+                       :local-root "resources/public/"
+                       }}
 
              :aot :all
              :uberjar-name "hiiop.jar"

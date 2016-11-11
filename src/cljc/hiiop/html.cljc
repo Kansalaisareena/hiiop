@@ -14,15 +14,15 @@
 (rum/defc body-content [content scripts]
   [:body content scripts])
 
-(rum/defc head-content [title]
+(rum/defc head-content [{:keys [title asset-path]}]
   [:head
    [:title title]
    [:meta {:charset "UTF-8"}]
-   [:link {:href "/css/screen.css" :rel "stylesheet" :type "text/css"}]])
+   [:link {:href (str asset-path "/css/screen.css") :rel "stylesheet" :type "text/css"}]])
 
-(defn app-structure [{ :keys [content csrf-token servlet-context]}]
+(defn app-structure [{:keys [asset-path content csrf-token servlet-context]}]
   (page
-   (head-content "OP-100")
+   (head-content {:title "OP-100" :asset-path asset-path})
    (body-content
     [:div {:id "app"} content]
-    [:script {:src "/js/app.js" :type "text/javascript"}])))
+    [:script {:src (str asset-path "/js/app.js") :type "text/javascript"}])))
