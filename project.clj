@@ -74,6 +74,12 @@
            :include-files ["target/uberjar/hiiop.jar"]
            :process-types { "web" "java -jar target/uberjar/hiiop.jar" }}
 
+  :essthree
+  {:deploy {:type       :directory
+            :bucket     ~(get (System/getenv) "HIIOP_ASSET_BUCKET")
+            :local-root "resources/public/"
+            }}
+
   :profiles
   {:uberjar {:omit-source true
              :prep-tasks ["git-version" "compile" ["cljsbuild" "once" "min"] "minify-assets"]
@@ -105,12 +111,6 @@
                "target/cljsbuild/public/js/"
                }
               }
-
-             :essthree
-             {:deploy {:type       :directory
-                       :bucket     ~(get (System/getenv) "HIIOP_ASSET_BUCKET")
-                       :local-root "resources/public/"
-                       }}
 
              :aot :all
              :uberjar-name "hiiop.jar"
