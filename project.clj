@@ -47,7 +47,8 @@
             [lein-auto "0.1.2"]
             [lein-asset-minifier "0.3.0"]
             [shmish111/lein-git-version "1.0.13"]
-            [lein-essthree "0.2.2"]]
+            [lein-essthree "0.2.2"]
+            [lein-heroku "0.5.3"]]
 
   :sassc
   [{:src "resources/scss/screen.scss"
@@ -67,6 +68,11 @@
    :css-dirs ["resources/public/css"]
    :nrepl-middleware
    [cemerick.piggieback/wrap-cljs-repl cider.nrepl/cider-middleware]}
+
+  :heroku {:app-name ~(get (System/getenv) "HEROKU_APP")
+           :jdk-version "1.8"
+           :include-files ["target/uberjar/hiiop.jar"]
+           :process-types { "web" "java -jar target/uberjar/hiiop.jar" }}
 
   :profiles
   {:uberjar {:omit-source true
