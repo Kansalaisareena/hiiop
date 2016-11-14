@@ -15,17 +15,20 @@
     (migrations/migrate ["migrate"] (select-keys env [:database-url]))
     (f)))
 
+(defn contains-many? [m & ks]
+  (every? #(contains? m %) ks))
+
 (deftest test-users
   (jdbc/with-db-transaction [t-conn *db*]
     (jdbc/db-set-rollback-only! t-conn)
     (is (= 1 (db/create-virtual-user!
               t-conn
-              {:id    "dee3817e-87d8-44ca-9410-3649f75d09c8"
-               :email "sam.smith@example.com" })))
-    (is (= {:id         "dee3817e-87d8-44ca-9410-3649f75d09c8"
-            :email      "sam.smith@example.com"
-            :pass       nil
-            :moderator  false
-            :last_login nil
-            :is_active  false}
-           (db/get-user t-conn {:id "1"})))))
+              {:email "sam.smith@example.com"})))
+    (is (contains-many?
+         (first (db/get-user t-conn {:email "sam.smith@example.com"}))
+         :id
+         :name
+         :email
+         :moderator
+         :last_login
+         :is_active))))

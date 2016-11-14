@@ -25,8 +25,8 @@ UPDATE users
 SET name = :name, email = :email
 WHERE id = :id
 
--- :name get-user :? :uuid
--- :doc retrieve a user given the uuid.
+-- :name get-user :? :email
+-- :doc retrieve a user given the email.
 SELECT
   id,
   name,
@@ -35,7 +35,7 @@ SELECT
   last_login,
   is_active
 FROM users
-WHERE id = :id
+WHERE email = :email
 
 -- :name get-password-hash :? :1
 -- doc retrieve a password hash by email
