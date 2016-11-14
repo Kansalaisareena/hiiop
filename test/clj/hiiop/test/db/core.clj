@@ -18,7 +18,7 @@
 (deftest test-users
   (jdbc/with-db-transaction [t-conn *db*]
     (jdbc/db-set-rollback-only! t-conn)
-    (is (= 1 (db/create-user!
+    (is (= 1 (db/create-virtual-user!
               t-conn
               {:id    "dee3817e-87d8-44ca-9410-3649f75d09c8"
                :email "sam.smith@example.com" })))
