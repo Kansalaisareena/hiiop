@@ -76,7 +76,7 @@
 
   :profiles
   {:uberjar {:omit-source true
-             :prep-tasks ["git-version" "compile" ["cljsbuild" "once" "min"] "minify-assets" "essthree"]
+             :prep-tasks ["git-version" "compile" ["cljsbuild" "once" "min"] "minify-assets"]
              :cljsbuild
              {:builds
               {:min
