@@ -32,7 +32,7 @@ deployment:
       - heroku git:remote --app hiiop-dev
       - heroku config:set LEIN_INCLUDE_IN_SLUG="yes" --app hiiop-dev
       - heroku maintenance:on --app hiiop-dev
-      - HEROKU_APP="hiiop-dev" lein heroku deploy-uberjar
       - heroku run lein migratus migrate --app hiiop-dev
+      - HEROKU_APP="hiiop-dev" lein heroku deploy-uberjar
       - heroku maintenance:off --app hiiop-dev
 

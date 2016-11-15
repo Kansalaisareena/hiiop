@@ -37,6 +37,7 @@
   :resource-paths ["resources" "target/cljsbuild"]
   :target-path "target/%s/"
   :main hiiop.core
+  :uberjar-name "hiiop.jar"
 
   :migratus
   {:store :database :db ~(get (System/getenv) "DATABASE_URL")}
