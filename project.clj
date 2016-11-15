@@ -105,7 +105,7 @@
                      (apply str (rest (clojure.string/trim
                                        (:out (clojure.java.shell/sh
                                               "git" "rev-parse" "--verify" "HEAD")))))
-                     "/css/screen.min.css")
+                     "/css/screen.css")
                "resources/public/css"
                ~(str "resources/public/"
                      (apply str (rest (clojure.string/trim
