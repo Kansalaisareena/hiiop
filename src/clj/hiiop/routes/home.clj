@@ -8,6 +8,9 @@
 (defn home-page []
   (layout/render (list-events ["a" "a" "a"])))
 
+(defroutes authed-routes
+  (GET "/secret" [] (layout/render "asd")))
+
 (defroutes home-routes
-  (GET "/" []
-    (home-page)))
+  (GET "/" [] (home-page))
+  (GET "/asdf" [] inc-handler))

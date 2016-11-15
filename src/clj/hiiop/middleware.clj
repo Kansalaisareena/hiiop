@@ -8,7 +8,11 @@
             [hiiop.config :refer [env]]
             [ring.middleware.flash :refer [wrap-flash]]
             [immutant.web.middleware :refer [wrap-session]]
-            [ring.middleware.defaults :refer [site-defaults wrap-defaults]])
+            [ring.middleware.defaults :refer [site-defaults wrap-defaults]]
+            [buddy.auth.accessrules :refer [restrict]]
+            [buddy.auth.middleware :refer [wrap-authentication]]
+            [buddy.auth :refer [authenticated?]]
+            [buddy.auth.backends.session :refer [session-backend]])
   (:import [javax.servlet ServletContext]))
 
 (defn wrap-context [handler]
@@ -36,6 +40,17 @@
                      :title "Something very bad has happened!"
                      :message "We've dispatched a team of highly trained gnomes to take care of the problem."})))))
 
+
+(defn auth-error [request response]
+  {:status  403
+   :headers {"Content-Type" "text/plain"}
+   :body    (str "Access to " (:uri request) " is not authorized")})
+
+
+(defn wrap-restricted [handler]
+  (restrict handler {:handler authenticated?
+                     :on-error auth-error}))
+
 (defn wrap-csrf [handler]
   (wrap-anti-forgery
    handler
@@ -53,10 +68,13 @@
       ;; since they're not compatible with this middleware
       ((if (:websocket? request) handler wrapped) request))))
 
+(def auth-backend (session-backend))
+
 (defn wrap-base [handler]
   (-> ((:middleware defaults) handler)
       wrap-webjars
       wrap-flash
+      (wrap-authentication auth-backend)
       (wrap-session {:cookie-attrs {:http-only true}})
       (wrap-defaults
        (-> site-defaults

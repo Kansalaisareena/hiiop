@@ -2,7 +2,8 @@
   (:require [ring.util.http-response :refer :all]
             [compojure.api.sweet :refer :all]
             [schema.core :as s]
-            [hiiop.config :refer [env]]))
+            [hiiop.config :refer [env]]
+            [hiiop.api-handlers :as api-handlers]))
 
 (defapi service-routes
   {:swagger {:ui "/--help"
@@ -14,4 +15,14 @@
     :tags ["thingie"]
 
     (GET "/config" []
-      (ok (select-keys env [:dev :lang])))))
+      (ok (select-keys env [:dev :lang])))
+    (POST "/login" []
+      :query-params [email :- String, password :- String]
+      :summary "Tries to log the user in. Returns
+                 true/false on success/failure"
+      api-handlers/login-handler)
+    (GET "/login-status" [] api-handlers/login-status)
+    (GET "/show-session" [] api-handlers/show-session)
+    (GET "/logout" []
+      :summary "Logs the user out."
+      api-handlers/logout)))
