@@ -102,17 +102,17 @@
              :minify-assets
              {:assets
               {~(str "resources/public/"
-                     (apply str (rest (clojure.string/trim
-                                       (:out (clojure.java.shell/sh
-                                              "git" "rev-parse" "--verify" "HEAD")))))
+                     (apply str (clojure.string/trim
+                                 (:out (clojure.java.shell/sh
+                                        "git" "rev-parse" "--verify" "HEAD"))))
                      "/css/screen.css")
                "resources/public/css"
                ~(str "resources/public/"
-                     (apply str (rest (clojure.string/trim
-                                       (:out (clojure.java.shell/sh
-                                              "git" "rev-parse" "--verify" "HEAD")))))
+                     (apply str (clojure.string/trim
+                                 (:out (clojure.java.shell/sh
+                                        "git" "rev-parse" "--verify" "HEAD"))))
                      "/js/app.js")
-               "target/cljsbuild/public/js/"
+               "target/cljsbuild/public/js"
                }
               }
 
