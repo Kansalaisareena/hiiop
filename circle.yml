@@ -27,6 +27,7 @@ deployment:
   development:
     branch: assets-to-s3
     commands:
+      - pwd
       - lein uberjar
       - HIIOP_ASSET_BUCKET="hiiop-dev" lein essthree
       - heroku git:remote --app hiiop-dev
