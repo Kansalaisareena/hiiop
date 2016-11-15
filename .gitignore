@@ -15,3 +15,5 @@ pom.xml
 /resources/public/css/screen.css
 /.lein-env
 /log/hiiop.log
+/env/dev/clj/hiiop/version.clj
+/env/prod/clj/hiiop/version.clj

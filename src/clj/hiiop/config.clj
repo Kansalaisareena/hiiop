@@ -10,7 +10,7 @@
                         (source/from-system-props)
                         (source/from-env)
                         {:version version
-                         :git-ref (:heroku-slug-commit (source/from-env))}]))
+                         :git-ref gitref}]))
 
 (defn asset-path [{:keys [dev asset-base-url git-ref] :or {dev true}}]
   (if dev
