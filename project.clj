@@ -37,18 +37,21 @@
   :resource-paths ["resources" "target/cljsbuild"]
   :target-path "target/%s/"
   :main hiiop.core
-  :migratus {:store :database :db ~(get (System/getenv) "DATABASE_URL")}
 
-  :plugins [[lein-cprop "1.0.1"]
-            [migratus-lein "0.4.3"]
-            [lein-cljsbuild "1.1.4"]
-            [lein-immutant "2.1.0"]
-            [lein-sassc "0.10.4"]
-            [lein-auto "0.1.2"]
-            [lein-asset-minifier "0.3.0"]
-            [shmish111/lein-git-version "1.0.13"]
-            [lein-essthree "0.2.2"]
-            [lein-heroku "0.5.3"]]
+  :migratus
+  {:store :database :db ~(get (System/getenv) "DATABASE_URL")}
+
+  :plugins
+  [[lein-cprop "1.0.1"]
+   [migratus-lein "0.4.3"]
+   [lein-cljsbuild "1.1.4"]
+   [lein-immutant "2.1.0"]
+   [lein-sassc "0.10.4"]
+   [lein-auto "0.1.2"]
+   [lein-asset-minifier "0.3.0"]
+   [shmish111/lein-git-version "1.0.13"]
+   [lein-essthree "0.2.2"]
+   [lein-heroku "0.5.3"]]
 
   :sassc
   [{:src "resources/scss/screen.scss"
@@ -69,10 +72,10 @@
    :nrepl-middleware
    [cemerick.piggieback/wrap-cljs-repl cider.nrepl/cider-middleware]}
 
-  :heroku {:app-name ~(get (System/getenv) "HEROKU_APP")
-           :jdk-version "1.8"
+  :heroku {:app-name      ~(get (System/getenv) "HEROKU_APP")
+           :jdk-version   "1.8"
            :include-files ["target/uberjar/hiiop.jar"]
-           :process-types { "web" "java -jar target/uberjar/hiiop.jar" }}
+           :process-types { "web" "java -jar $JVM_OPTS target/uberjar/hiiop.jar" }}
 
   :essthree
   {:deploy {:type       :directory
