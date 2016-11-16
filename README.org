@@ -54,6 +54,20 @@
 
    [[https://github.com/yogthos/migratus][more about migratus]]
 
+** Deployments
+   - Done using Circle CI
+     + https://circleci.com/gh/futurice/hiiop
+     + See [[https://github.com/futurice/hiiop/blob/master/circle.yml][circle.yml]]
+   - App itself is hosted in Heroku
+     + =HEROKU_APP= environment variable used to define where to deploy
+     + =DATABASE_URL= is used to determine the database and user to use
+     + =ASSET_BASE_URL= is used to determine which URL to use before the assets
+   - Assets are hosted in S3
+     + =HIIOP_ASSET_BUCKET= environment variable is used to determine
+       which bucket to use
+     + =AWS_ACCESS_KEY_ID= and =AWS_SECRET_ACCESS_KEY= environment
+       variables can be used to define the user used to authenticate to AWS
+     + Git revision is used to version the assets
 
 ** TODO License
 
