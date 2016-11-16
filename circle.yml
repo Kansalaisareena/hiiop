@@ -25,7 +25,7 @@ database:
 
 deployment:
   development:
-    branch: assets-to-s3
+    branch: master
     commands:
       - lein uberjar
       - HIIOP_ASSET_BUCKET="hiiop-dev" lein essthree
