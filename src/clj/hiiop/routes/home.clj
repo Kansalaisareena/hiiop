@@ -12,5 +12,4 @@
   (GET "/secret" [] (layout/render "asd")))
 
 (defroutes home-routes
-  (GET "/" [] (home-page))
-  (GET "/asdf" [] inc-handler))
+  (GET "/" [] (home-page)))
