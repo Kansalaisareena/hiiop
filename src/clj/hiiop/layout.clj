@@ -11,15 +11,18 @@
 
 (defn render
   "renders the HTML template located relative to resources/templates"
-  [content & [params]]
-  (content-type
-   (ok
-    (rum/render-html
-     (app-structure {:asset-path (asset-path env)
-                     :content content
-                     :csrf-token *anti-forgery-token*
-                     :servlet-context *app-context* })))
-    "text/html; charset=utf-8"))
+  [{:keys [tr content title] :or [params]}]
+  (let [final-content (if content (rum/render-html content) "")]
+    (content-type
+     (ok
+      (rum/render-static-markup
+       (app-structure {:asset-path (asset-path env)
+                       :tr tr
+                       :title title
+                       :content final-content
+                       :csrf-token *anti-forgery-token*
+                       :servlet-context *app-context* })))
+     "text/html; charset=utf-8")))
 
 (defn error-page
   "error-details should be a map containing the following keys:

@@ -20,9 +20,9 @@
    [:meta {:charset "UTF-8"}]
    [:link {:href (str asset-path "/css/screen.css") :rel "stylesheet" :type "text/css"}]])
 
-(defn app-structure [{:keys [asset-path content csrf-token servlet-context]}]
+(defn app-structure [{:keys [asset-path tr title content csrf-token servlet-context]}]
   (page
-   (head-content {:title "OP-100" :asset-path asset-path})
+   (head-content {:title (tr [:title] [title]) :asset-path asset-path})
    (body-content
-    [:div {:id "app"} content]
+    [:div {:id "app" :dangerouslySetInnerHTML {:__html content}}]
     [:script {:src (str asset-path "/js/app.js") :type "text/javascript"}])))
