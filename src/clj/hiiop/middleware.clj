@@ -1,6 +1,6 @@
 (ns hiiop.middleware
   (:require [hiiop.env :refer [defaults]]
-            [clojure.tools.logging :as log]
+            [taoensso.timbre :as log]
             [hiiop.layout :refer [*app-context* error-page]]
             [ring.middleware.anti-forgery :refer [wrap-anti-forgery]]
             [ring.middleware.webjars :refer [wrap-webjars]]
@@ -12,7 +12,9 @@
             [buddy.auth.accessrules :refer [restrict]]
             [buddy.auth.middleware :refer [wrap-authentication]]
             [buddy.auth :refer [authenticated?]]
-            [buddy.auth.backends.session :refer [session-backend]])
+            [buddy.auth.backends.session :refer [session-backend]]
+            [taoensso.tempura :as tempura]
+            [hiiop.translate :refer [tr-opts]])
   (:import [javax.servlet ServletContext]))
 
 (defn wrap-context [handler]
@@ -81,4 +83,9 @@
            (assoc-in [:security :anti-forgery] false)
            (dissoc :session)))
       wrap-context
-      wrap-internal-error))
+      wrap-internal-error
+      (tempura/wrap-ring-request
+       {:tr-opts
+        (if (:dev env)
+          (conj (tr-opts) {:cache-dict? false})
+          (tr-opts))})))

@@ -69,9 +69,11 @@
   :figwheel
   {:http-server-root "public"
    :nrepl-port 7002
+   :server-port 3450
    :css-dirs ["resources/public/css"]
-   :nrepl-middleware
-   [cemerick.piggieback/wrap-cljs-repl cider.nrepl/cider-middleware]}
+   :nrepl-middleware [cider.nrepl/cider-middleware
+                      refactor-nrepl.middleware/wrap-refactor
+                      cemerick.piggieback/wrap-cljs-repl]}
 
   :heroku {:app-name      ~(get (System/getenv) "HEROKU_APP")
            :jdk-version   "1.8"
@@ -135,7 +137,9 @@
                                  [clj-time "0.12.2"]
                                  [buddy/buddy-auth "1.2.0"]
                                  [buddy/buddy-hashers "1.0.0"]
-                                 [com.taoensso/carmine "2.15.0"]]
+                                 [com.taoensso/carmine "2.15.0"]
+                                 [com.taoensso/tempura "1.0.0-RC4"]
+                                 [com.taoensso/timbre "4.7.4"]]
                   :plugins      [[com.jakemccrary/lein-test-refresh "0.14.0"]
                                  [lein-doo "0.1.7"]
                                  [lein-figwheel "0.5.8"]

@@ -1,0 +1,14 @@
+{
+ :missing ":sv text är inte här"
+
+ :title "HiiOP! – %1"
+
+ :pages
+ {
+  :frontpage
+  {:title "Frontsidan"}
+
+  :events
+  {:title "Eventer"}
+  }
+ }

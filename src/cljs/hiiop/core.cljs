@@ -3,7 +3,8 @@
   (:require [rum.core :as rum]
             [hiiop.html :as html]
             [hiiop.client-config :refer [env]]
-            [cljs.core.async :refer [<!]]))
+            [cljs.core.async :refer [<!]]
+            [hiiop.translate :refer [tr-with tr-opts]]))
 
 (enable-console-print!)
 
@@ -12,10 +13,12 @@
     (let [conf (<! @env)]
       (this conf))))
 
-(defn render! [conf]
-  (println "WAT" conf)
-  (rum/mount (html/list-events ["a" "b" "c" "d"])
-             (. js/document (getElementById "app"))))
+(defn render! [{:keys [accept-langs langs] :as conf}]
+  (let [tr (tr-with (tr-opts langs) accept-langs)]
+    (rum/mount
+     (html/list-events {:events ["a" "b" "c" "d"]
+                        :tr tr})
+     (. js/document (getElementById "app")))))
 
 (defn mount-components []
   (get-config-and-call render!))

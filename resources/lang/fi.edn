@@ -1,0 +1,13 @@
+{
+ :missing ":fi teksti puuttuu"
+ :title "HiiOP! – %1"
+
+ :pages
+ {
+  :frontpage
+  {:title "Etusivu"}
+
+  :events
+  {:title "Tapahtumat"}
+  }
+ }

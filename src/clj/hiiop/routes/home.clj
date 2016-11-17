@@ -5,11 +5,15 @@
             [clojure.java.io :as io]
             [hiiop.html :refer [list-events]]))
 
-(defn home-page []
-  (layout/render (list-events ["a" "a" "a"])))
-
 (defroutes authed-routes
-  (GET "/secret" [] (layout/render "asd")))
+  (GET "/secret" req []
+       (layout/render {:tr (:tempura/tr req)
+                       :content "asd"})))
 
 (defroutes home-routes
-  (GET "/" [] (home-page)))
+  (GET "/" req []
+       (let [tr (:tempura/tr req)]
+         (layout/render {:tr tr
+                         :content (list-events {:events ["a" "a" "a"]
+                                                :tr tr})
+                         :title (tr [:frontpage])}))))

@@ -17,8 +17,11 @@
     (context "/v1" []
       :tags ["V1"]
 
-      (GET "/config" []
-        (ok (select-keys env [:dev :lang :git-ref])))
+      (GET "/config" req []
+           (ok
+            (conj
+             (select-keys env [:dev :git-ref :langs])
+             {:accept-langs (:tempura/accept-langs req)})))
 
       (POST "/login" []
         :query-params [email :- String, password :- String]
