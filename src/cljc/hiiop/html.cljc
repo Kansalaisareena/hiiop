@@ -7,9 +7,11 @@
 (rum/defc display-event [event]
   [:li event])
 
-(rum/defc list-events [events]
-  [:ul
-   (map display-event events)])
+(rum/defc list-events [{:keys [tr events]}]
+  [:div
+   [:h1 (tr [:pages.events.title])]
+   [:ul
+     (map display-event events)]])
 
 (rum/defc body-content [content scripts]
   [:body content scripts])

@@ -1,6 +1,14 @@
 {
  :missing ":sv text är inte här"
+
  :title "HiiOP! – %1"
- :example ; You can nest ids if you like
- {:greet "God dag %1!"}
+
+ :pages
+ {
+  :frontpage
+  {:title "Frontsidan"}
+
+  :events
+  {:title "Eventer"}
+  }
  }

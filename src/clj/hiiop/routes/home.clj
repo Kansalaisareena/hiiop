@@ -14,5 +14,6 @@
   (GET "/" req []
        (let [tr (:tempura/tr req)]
          (layout/render {:tr tr
-                         :content (list-events ["a" "a" "a"])
+                         :content (list-events {:events ["a" "a" "a"]
+                                                :tr tr})
                          :title (tr [:frontpage])}))))

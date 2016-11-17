@@ -54,6 +54,17 @@
 
    [[https://github.com/yogthos/migratus][more about migratus]]
 
+** Notice
+
+*** Translations
+    When dealing with translations you have reload the files manually
+    in your clj repl to see the changes:
+
+    #+BEGIN_EXAMPLE
+    (use 'hiiop.translate :reload)
+    (restart)
+    #+END_EXAMPLE
+
 ** Deployments
    - Done using Circle CI
      + https://circleci.com/gh/futurice/hiiop

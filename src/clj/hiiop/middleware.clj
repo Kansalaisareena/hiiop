@@ -1,6 +1,6 @@
 (ns hiiop.middleware
   (:require [hiiop.env :refer [defaults]]
-            [clojure.tools.logging :as log]
+            [taoensso.timbre :as log]
             [hiiop.layout :refer [*app-context* error-page]]
             [ring.middleware.anti-forgery :refer [wrap-anti-forgery]]
             [ring.middleware.webjars :refer [wrap-webjars]]
@@ -87,5 +87,5 @@
       (tempura/wrap-ring-request
        {:tr-opts
         (if (:dev env)
-          (conj tr-opts {:cache-dict? false})
-          tr-opts)})))
+          (conj (tr-opts) {:cache-dict? false})
+          (tr-opts))})))
