@@ -10,14 +10,14 @@
 (declare ^:dynamic *app-context*)
 
 (defn render
-  "renders the HTML template located relative to resources/templates"
-  [{:keys [tr content title] :or [params]}]
+  "renders the HTML given"
+  [{:keys [context content title] :or [params]}]
   (let [final-content (if content (rum/render-html content) "")]
     (content-type
      (ok
       (rum/render-static-markup
        (app-structure {:asset-path (asset-path env)
-                       :tr tr
+                       :context context
                        :title title
                        :content final-content
                        :csrf-token *anti-forgery-token*

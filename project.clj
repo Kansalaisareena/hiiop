@@ -34,7 +34,8 @@
                  [buddy/buddy-hashers                    "1.0.0"]
                  [com.taoensso/carmine                   "2.15.0"]
                  [com.taoensso/tempura                   "1.0.0-RC4"]
-                 [com.taoensso/timbre                    "4.7.4"]]
+                 [com.taoensso/timbre                    "4.7.4"]
+                 [bidi                                   "2.0.14"]]
 
   :min-lein-version "2.7.1"
 
