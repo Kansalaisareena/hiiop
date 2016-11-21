@@ -1,11 +1,17 @@
 (ns hiiop.translate
   (:require [taoensso.tempura :as tempura :refer [tr]]
             [taoensso.encore  :as enc]
-            [taoensso.timbre  :as log]))
+            #?(:cljs
+               [taoensso.timbre :as log
+                :refer-macros [trace  debug  info  warn  error  fatal  report]]
+               :clj
+               [taoensso.timbre :as log
+                :refer [trace debug info warn error fatal report]])))
 
 (defn load-resource [filename]
   #?(:clj
      (try
+       (info "Loading translation" filename)
        (enc/read-edn (enc/slurp-file-resource filename))
        (catch Exception e
          (throw

@@ -1,10 +1,15 @@
 (ns hiiop.core
   (:require-macros [cljs.core.async.macros :refer [go]])
-  (:require [rum.core :as rum]
-            [hiiop.html :as html]
-            [hiiop.client-config :refer [env]]
-            [cljs.core.async :refer [<!]]
-            [hiiop.translate :refer [tr-with tr-opts]]))
+  (:require [cljs.core.async             :refer [<!]]
+            [rum.core                    :as rum]
+            [taoensso.timbre             :as log]
+            [bidi.bidi                   :refer [match-route]]
+            [hiiop.html                  :as html]
+            [hiiop.client-config         :refer [env]]
+            [hiiop.translate             :refer [tr-with tr-opts]]
+            [hiiop.context               :refer [set-context]]
+            [hiiop.routes.page-hierarchy :as page-routes]
+            [hiiop.client-pages          :as client-pages]))
 
 (enable-console-print!)
 
@@ -13,16 +18,16 @@
     (let [conf (<! @env)]
       (this conf))))
 
-(defn render! [{:keys [accept-langs langs] :as conf}]
-  (let [tr (tr-with (tr-opts langs) accept-langs)]
-    (rum/mount
-     (html/list-events {:events ["a" "b" "c" "d"]
-                        :tr tr})
-     (. js/document (getElementById "app")))))
+(defn route! [{:keys [accept-langs langs] :as conf}]
+  (let [tr (tr-with (tr-opts langs) accept-langs)
+        routes (page-routes/hierarchy client-pages/handlers)
+        handler (match-route routes (.-pathname js/location))]
+    (set-context {:tr tr :conf conf})
+    (if (:handler handler) ((:handler handler)))))
 
 (defn mount-components []
-  (get-config-and-call render!))
+  (get-config-and-call route!))
 
 (defn init! []
-  (println "INIT")
-  (get-config-and-call render!))
+  (log/info "INIT")
+  (get-config-and-call route!))
