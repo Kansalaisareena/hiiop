@@ -1,6 +1,6 @@
 (ns hiiop.env
   (:require [selmer.parser :as parser]
-            [clojure.tools.logging :as log]
+            [taoensso.timbre :as log]
             [hiiop.dev-middleware :refer [wrap-dev]]))
 
 (def defaults
