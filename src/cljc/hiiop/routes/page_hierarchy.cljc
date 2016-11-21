@@ -1,14 +1,15 @@
 (ns hiiop.routes.page-hierarchy
-  (:require [bidi.verbose :refer [branch param leaf]]))
+  (:require [bidi.verbose :refer [branch param leaf]]
+            [bidi.bidi :refer [path-for]]))
 
-(defn hierarchy [handlers]
+(def hierarchy
   (branch
    "/"
-   (leaf "" (:index handlers))
+   (leaf "" :index)
    (branch
     "tehtavat/"
-    (leaf "" (:events-index handlers))
-    (leaf "luo" (:create-event handlers))
+    (leaf "" :events-index)
+    (leaf "luo" :create-event)
     (branch
      "muokkaa/" (param :event-id)
-     (leaf "" (:edit-event handlers))))))
+     (leaf "" :edit-event)))))

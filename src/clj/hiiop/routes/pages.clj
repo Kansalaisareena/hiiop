@@ -10,7 +10,8 @@
 
 (defn create-context [req]
   {:tr (:tempura/tr req)
-   :config env})
+   :config env
+   :hierarchy page-hiearchy/hierarchy})
 
 (defn index [req]
   (let [context (create-context req)
@@ -27,17 +28,33 @@
                     :content (events/create {:context context})
                     :title (tr [:actions.events.create])})))
 
-(def handlers
+(defn browse-events [req]
+  (let [context (create-context req)
+        tr (:tr context)]
+    (layout/render {:context context
+                    :content (events/list-events {:events ["a" "a" "a"]
+                                                  :context context})
+                    :title (tr [:actions.events.create])})))
+
+
+(defn edit-event [req]
+  (let [context (create-context req)
+        tr (:tr context)]
+    (layout/render {:context context
+                    :content "Edit event"
+                    :title (tr [:actions.events.create])})))
+
+(swap! handlers conj
   {:index
    index
    :events-index
-   index
+   browse-events
    :create-event
    create-event
    :edit-event
-   index})
+   edit-event})
 
 (def ring-handler
-  (let [hierarchy (page-hierarchy/hierarchy handlers)]
+  (let [hierarchy page-hierarchy/hierarchy]
     (log/info hierarchy)
-    (make-handler hierarchy)))
+    (make-handler hierarchy #(%1 @handlers))))

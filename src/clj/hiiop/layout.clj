@@ -16,8 +16,7 @@
     (content-type
      (ok
       (rum/render-static-markup
-       (app-structure {:asset-path (asset-path env)
-                       :context context
+       (app-structure {:context (conj context {:asset-path (asset-path env)})
                        :title title
                        :content final-content
                        :csrf-token *anti-forgery-token*

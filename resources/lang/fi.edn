@@ -1,6 +1,7 @@
 {
  :missing ":fi teksti puuttuu"
- :title "HiiOP! – %1"
+ :name "HiiOP"
+ :title "HiiOP – %1"
 
  :header
  {:title "HiiOP"}
@@ -8,20 +9,20 @@
  :pages
  {
   :index
-  {:title "Etusivu"}
+  {:title :name}
 
   :events
-  {:title "Tehtävät"}
+  {:title "Löydä tehtävä"}
 
   :ideas
-  {:title "Ideoita ja inspiraatiota"}
+  {:title "Kokemuksia vapaaehtoistyöstä"}
   }
 
  :actions
  {
   :events
-  {:create  "Luo tehtävä"
-   :browse  "Selaa tehtäviä"}
+  {:create  "Ilmoita tehtävä"
+   :browse  "Löydä tehtävä"}
 
   :user
   {:login    "Kirjaudu"
