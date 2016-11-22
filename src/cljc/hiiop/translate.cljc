@@ -33,5 +33,13 @@
   ([param-langs] {:dict param-langs :default-locale :fi}))
 
 (defn tr-with
-  ([langs] (partial tr tr-opts langs))
-  ([opts langs] (partial tr opts langs)))
+  ([langs]
+   (when (first langs)
+     (do
+       (info langs)
+       (partial tr (tr-opts) langs))))
+  ([opts langs]
+   (when (and opts (first langs))
+     (do
+       (info opts langs)
+       (partial tr opts langs)))))

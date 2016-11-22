@@ -8,7 +8,7 @@
 (rum/defc list-events [{:keys [context events]}]
   (let [tr (:tr context)]
     [:div
-     [:h1 (tr [:pages.events.title])]
+     [:h2 (tr [:pages.events.title])]
      [:ul
       (map display events)]]))
 

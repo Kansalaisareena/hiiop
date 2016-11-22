@@ -2,6 +2,7 @@
   (:require [ring.util.http-response :refer :all]
             [compojure.api.sweet :refer :all]
             [schema.core :as s]
+            [taoensso.timbre :refer [info]]
             [hiiop.config :refer [env]]
             [hiiop.api-handlers :as api-handlers]))
 
@@ -18,10 +19,14 @@
       :tags ["V1"]
 
       (GET "/config" req []
-           (ok
-            (conj
-             (select-keys env [:dev :git-ref :langs])
-             {:accept-langs (:tempura/accept-langs req)})))
+           (let [lang-override (:lang-override req)]
+             (ok
+              (conj
+               (select-keys env [:dev :git-ref :langs])
+               {:accept-langs
+                (if lang-override
+                  [lang-override]
+                  (:tempura/accept-langs req))}))))
 
       (POST "/login" []
         :query-params [email :- String, password :- String]

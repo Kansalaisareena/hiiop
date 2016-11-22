@@ -1,7 +1,8 @@
 {
  :missing ":sv text är inte här"
 
- :title "HiiOP! – %1"
+ :title "HiiOP – %1"
+ :name "HiiOP"
 
  :pages
  {

@@ -54,23 +54,28 @@
    [migratus-lein "0.4.3"]
    [lein-cljsbuild "1.1.4"]
    [lein-immutant "2.1.0"]
-   [lein-sassc "0.10.4"]
+   [lein-scss "0.3.0"]
    [lein-auto "0.1.2"]
    [lein-asset-minifier "0.3.0"]
    [shmish111/lein-git-version "1.0.13"]
    [lein-essthree "0.2.2"]
    [lein-heroku "0.5.3"]]
 
-  :sassc
-  [{:src "resources/scss/screen.scss"
-    :output-to "resources/public/css/screen.css"
-    :style "nested"
-    :import-path "resources/scss"}]
+  :scss
+  {:builds
+   {:develop
+    {:source-dir "resources/scss/"
+     :dest-dir "resources/public/css/"
+     :executable "sassc"
+     :args ["-m" "-I" "resources/scss/" "-t" "nested"]}
 
-  :auto
-  {"sassc" {:file-pattern #"\.(scss|sass)$" :paths ["resources/scss"]}}
+    :production {:source-dir "resources/scss/"
+                 :dest-dir   "resources/public/css/"
+                 :executable "sassc"
+                 :args       ["-I" "resources/scss/" "-t" "compressed"]
+                 :jar        true}}}
 
-  :hooks [leiningen.sassc]
+  :hooks [leiningen.scss]
   :clean-targets ^{:protect false}
   [:target-path [:cljsbuild :builds :app :compiler :output-dir] [:cljsbuild :builds :app :compiler :output-to]]
   :figwheel

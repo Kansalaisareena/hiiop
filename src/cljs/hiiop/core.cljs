@@ -7,7 +7,7 @@
             [hiiop.html                  :as html]
             [hiiop.client-config         :refer [env]]
             [hiiop.translate             :refer [tr-with tr-opts]]
-            [hiiop.context               :refer [set-context]]
+            [hiiop.context               :refer [set-context!]]
             [hiiop.routes.page-hierarchy :as page-routes]
             [hiiop.client-pages          :as client-pages]))
 
@@ -20,10 +20,10 @@
 
 (defn route! [{:keys [accept-langs langs] :as conf}]
   (let [tr (tr-with (tr-opts langs) accept-langs)
-        routes (page-routes/hierarchy client-pages/handlers)
-        handler (match-route routes (.-pathname js/location))]
-    (set-context {:tr tr :conf conf})
-    (if (:handler handler) ((:handler handler)))))
+        routes page-routes/hierarchy
+        handler-route-key (match-route routes (.-pathname js/location))]
+    (set-context! {:tr tr :conf conf})
+    (when (:handler handler-route-key) (((:handler handler-route-key) client-pages/handlers)))))
 
 (defn mount-components []
   (get-config-and-call route!))

@@ -2,5 +2,5 @@
 
 (def context (atom {}))
 
-(defn set-context [new-context]
+(defn set-context! [new-context]
   (swap! context conj new-context))
