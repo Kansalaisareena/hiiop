@@ -1,29 +1,44 @@
 (ns hiiop.api-handlers
   (:require [ring.util.http-response :refer :all]
-            [hiiop.users :as users]
             [mount.core :as mount]
-            [buddy.auth :refer [authenticated?]]))
+            [buddy.auth :refer [authenticated?]]
+            [buddy.hashers :as hashers]
+            [hiiop.db.core :as db]
+            [compojure.api.sweet :as s]
+            [schema.coerce :as coerce]))
 
 (defn login-status
   [request]
-  (ok (str (:identity request))))
+  (ok (authenticated? request)))
 
 (defn show-session
   [request] 
-  (ok (str request " " (authenticated? request) )))
+  (ok (str request)))
 
 (defn logout
   [{session :session}]
   (assoc (ok) :session (dissoc session :identity)))
 
-(defn login-handler
-  [{session :session :as request}]
-  (let [email (get-in request [:query-params "email"])
-        password (get-in request [:query-params "password"])
-        password-ok (users/check-password email password)
-        user-id (users/get-user-id email)]
+(defn login
+  [{:keys [session body-params] :as request}]
+  (let [email (:email body-params)
+        password (:password body-params)
+        password-ok (db/check-password email password)
+        user-id (db/get-user-id {:email email})]
     (if password-ok
-      (assoc (ok (str user-id))
+      (assoc (ok)
              :session (assoc session :identity user-id))
-      (ok "bad password/username combo"))))
+      (unauthorized))))
+
+(defn register
+  [{{{:keys [password name email]} :user} :body-params :as body-params}]
+  (let [hash (hashers/derive password
+                             {:alg :bcrypt+blake2b-512})
+        response (db/add-full-user! {:email email
+                                     :name name
+                                     :pass hash})]
+      (:id response)))
+
+(defn get-user [{{id :id} :params}]
+  (ok (str (db/get-user {:id (coerce/string->uuid id)}))))
 

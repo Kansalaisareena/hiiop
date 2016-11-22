@@ -36,7 +36,7 @@ SELECT
   last_login,
   is_active
 FROM users
-WHERE email = :email
+WHERE id = :id
 
 -- :name get-password-hash :? :1
 -- doc retrieve a password hash by email
