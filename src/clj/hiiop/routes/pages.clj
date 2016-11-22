@@ -8,10 +8,13 @@
             [hiiop.config :refer [env]]
             [hiiop.routes.page-hierarchy :as page-hierarchy]))
 
+(defn tr-from-req [req]
+  (:tempura/tr req))
+
 (defn create-context [req]
-  {:tr (:tempura/tr req)
+  {:tr (tr-from-req req)
    :config env
-   :hierarchy page-hiearchy/hierarchy})
+   :hierarchy page-hierarchy/hierarchy})
 
 (defn index [req]
   (let [context (create-context req)
@@ -44,7 +47,7 @@
                     :content "Edit event"
                     :title (tr [:actions.events.create])})))
 
-(swap! handlers conj
+(def handlers
   {:index
    index
    :events-index
@@ -57,4 +60,8 @@
 (def ring-handler
   (let [hierarchy page-hierarchy/hierarchy]
     (log/info hierarchy)
-    (make-handler hierarchy #(%1 @handlers))))
+    (make-handler
+     hierarchy
+     (fn [handler]
+       (log/info "handler" handler)
+       (handler handlers)))))

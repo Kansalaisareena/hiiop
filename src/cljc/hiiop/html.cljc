@@ -22,8 +22,17 @@
       (tr [:actions.events.create])]]]
    [:ul
     {:class "languages"}
-    [:li "fi"]
-    [:li "sv"]]])
+    [:li
+     [:a
+      {:href "?lang=fi"}
+      "fi"]
+     ]
+     [:li
+      [:a
+       {:href "?lang=sv"}
+       "sv"
+       ]
+      ]]])
 
 (rum/defc header [{:keys [hierarchy tr asset-path] :as context}]
   [:header
