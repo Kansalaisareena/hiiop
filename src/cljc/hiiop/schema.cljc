@@ -25,6 +25,10 @@
   (st/assoc (st/dissoc User :is-moderator? :email-verified? :id :organisation)
             :password Password))
 
+(def UserCredentials
+  "Email and password"
+  {:email Email
+   :password Password})
 
 ;; (def Event
 ;;   "Event"

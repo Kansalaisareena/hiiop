@@ -33,7 +33,7 @@
                    :summary "Logs the user out."
                    api-handlers/logout)
              (POST "/login" []
-                   :body-params [email :- Email, password :- Password]
+                   :body-params [credentials :- UserCredentials]
                    :summary "Tries to log the user in. Returns
                  true/false on success/failure"
                    api-handlers/login)
@@ -44,7 +44,7 @@
                      (let [id (api-handlers/register request)]
                        (if id
                          (created (path-for ::user {:id (str id)}))
-                         (bad-request "User creation failed")))))
+                         (bad-request {:error "User registration failed"})))))
              (GET "/users/:id" []
                   :name ::user
                   :path-params [id :- s/Uuid]

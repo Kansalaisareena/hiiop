@@ -20,10 +20,9 @@
   (assoc (ok) :session (dissoc session :identity)))
 
 (defn login
-  [{:keys [session body-params] :as request}]
-  (let [email (:email body-params)
-        password (:password body-params)
-        password-ok (db/check-password email password)
+  [{session :session
+    {{:keys [email password]} :credentials} :body-params}]
+  (let [password-ok (db/check-password email password)
         user-id (db/get-user-id {:email email})]
     (if password-ok
       (assoc (ok)
@@ -32,13 +31,12 @@
 
 (defn register
   [{{{:keys [password name email]} :user} :body-params :as body-params}]
-  (let [hash (hashers/derive password
-                             {:alg :bcrypt+blake2b-512})
+  (let [hash (hashers/derive password {:alg :bcrypt+blake2b-512})
         response (db/add-full-user! {:email email
                                      :name name
                                      :pass hash})]
-      (:id response)))
+    (:id response)))
 
 (defn get-user [{{id :id} :params}]
-  (ok (str (db/get-user {:id (coerce/string->uuid id)}))))
+  (ok (str (db/get-user-by-id {:id (coerce/string->uuid id)}))))
 

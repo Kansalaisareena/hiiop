@@ -26,7 +26,7 @@ SET name = :name, email = :email
 WHERE id = :id
 
 
--- :name get-user :? :1 :uuid
+-- :name get-user-by-id :? :1 :uuid
 -- :doc retrieve a user given the uuid.
 SELECT
   id,
@@ -37,6 +37,18 @@ SELECT
   is_active
 FROM users
 WHERE id = :id
+
+-- :name get-user-by-email :? :1 :email
+-- :doc retrieve a user given the email.
+SELECT
+  id,
+  name,
+  email,
+  moderator,
+  last_login,
+  is_active
+FROM users
+WHERE email = :email
 
 -- :name get-password-hash :? :1
 -- doc retrieve a password hash by email
