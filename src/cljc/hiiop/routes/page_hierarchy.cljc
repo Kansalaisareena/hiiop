@@ -8,8 +8,8 @@
    (leaf "" :index)
    (branch
     "tehtavat/"
-    (leaf "" :events-index)
-    (leaf "luo" :create-event)
+    (leaf "" :browse-quests)
+    (leaf "luo" :create-quest)
     (branch
-     "muokkaa/" (param :event-id)
-     (leaf "" :edit-event)))))
+     "muokkaa/" (param :quest-id)
+     (leaf "" :edit-quest)))))
