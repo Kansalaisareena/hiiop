@@ -1,0 +1,14 @@
+// Define what ranges you want and what they're called:
+$VIEWPORTS_CONFIG:
+  up-to  480px it-is "tiny",
+  up-to  768px it-is "small",
+  up-to 1024px it-is "medium",
+  beyond-that  it-is "large";
+
+$font-family: Chevin, Helvetica, Arial, sans-serif;
+$OP-dark-gray: #323232;
+$OP-orange: #FF6A10;
+
+$basic-text-colour: $OP-dark-gray;
+$highlight-colour: $OP-orange;
+$link-colour: $OP-orange;

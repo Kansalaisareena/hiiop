@@ -1,5 +1,37 @@
+@import "_reset-src";
+@import "_font-faces";
+@import "_variables";
+// Import the library:
+@import "viewports";
+
 html, body {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    height: 100%;
-    padding-top: 40px;
+  font-family: $font-family;
+  height: 100%;
+  font-weight: 200;
+  font-size: 18px;
+  color: $basic-text-colour;
 }
+
+h1 {
+  font-size: 2rem;
+  font-weight: 300;
+  line-height: 2rem;
+}
+
+a {
+  color: $link-colour;
+  text-decoration: none;
+}
+
+.app, footer {
+  padding: 1rem;
+  margin: auto;
+  max-width: 1024px;
+}
+
+@include viewports(tiny medium) {
+  font-size: 75%;
+}
+
+@import "_header";
+@import "_footer";
