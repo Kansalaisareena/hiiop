@@ -4,7 +4,8 @@
    [clojure.java.jdbc :as jdbc]
    [conman.core :as conman]
    [hiiop.config :refer [env]]
-   [mount.core :refer [defstate]])
+   [mount.core :refer [defstate]]
+   [buddy.hashers :as hashers])
   (:import org.postgresql.util.PGobject
            java.sql.Array
            clojure.lang.IPersistentMap
@@ -16,10 +17,20 @@
             PreparedStatement]))
 
 (defstate ^:dynamic *db*
-           :start (conman/connect! {:jdbc-url (env :database-url)})
-           :stop (conman/disconnect! *db*))
+  :start (conman/connect! {:jdbc-url (env :database-url)})
+  :stop (conman/disconnect! *db*))
 
 (conman/bind-connection *db* "sql/queries.sql")
+
+(defn check-password [email password]
+  "Check wether <password> is a valid password for <email>, return
+  true/false."
+  (let [hash (:pass (get-password-hash {:email email}))]
+    (if-not (nil? hash)
+      (hashers/check password hash)
+      (hashers/check ; prevent timing attack by checking against "dummy_password"
+       "wrong_password"
+       "bcrypt+blake2b-512$76eb37a62f605eeb7b172c4ba39fa231$12$4ae537eb38a908819b08c495fb78e3afc7e12e336be0e1a2"))))
 
 (defn to-date [^java.sql.Date sql-date]
   (-> sql-date (.getTime) (java.util.Date.)))

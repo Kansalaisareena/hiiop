@@ -25,7 +25,20 @@ UPDATE users
 SET name = :name, email = :email
 WHERE id = :id
 
--- :name get-user :? :email
+
+-- :name get-user-by-id :? :1 :uuid
+-- :doc retrieve a user given the uuid.
+SELECT
+  id,
+  name,
+  email,
+  moderator,
+  last_login,
+  is_active
+FROM users
+WHERE id = :id
+
+-- :name get-user-by-email :? :1 :email
 -- :doc retrieve a user given the email.
 SELECT
   id,
@@ -70,25 +83,20 @@ INSERT INTO events
   :start_time,
   :end_time)
 
--- :name add! :! :n
--- :doc sln
-INSERT INTO test (time)
-VALUES (:time)
-
--- :name add-test-user! :! :n
--- :doc sln
-INSERT INTO users (email, pass)
-VALUES (:email, :pass)
-
-
--- :name sln-get :? :*
--- :doc get all times
-SELECT * FROM test
+-- :name add-full-user! :? :1
+-- :doc "add a new registered user"
+INSERT INTO users (id, email, name, pass)
+VALUES (DEFAULT, :email, :name, :pass )
+ON CONFLICT (email) DO
+  UPDATE
+    SET pass = :pass
+    WHERE users.name IS NULL
+RETURNING id
 
 -- :name delete-user! :? :*
 -- :doc delete user by email
 DELETE FROM users
-where email=:email
+where email = :email
 
 -- :name get-users :? :*
 -- :doc get all users
@@ -98,3 +106,5 @@ SELECT * from users
 -- :doc get user id by email
 SELECT id FROM users
 WHERE email = :email
+
+  

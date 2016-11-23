@@ -25,7 +25,7 @@
               t-conn
               {:email "sam.smith@example.com"})))
     (is (contains-many?
-         (first (db/get-user t-conn {:email "sam.smith@example.com"}))
+         (db/get-user-by-email t-conn {:email "sam.smith@example.com"})
          :id
          :name
          :email
