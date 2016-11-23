@@ -86,14 +86,16 @@
     (let [query-string (:query-string request)
           lang-qr (query-string-lang query-string)
           lang-cookie (cookie-lang (:cookies request))
-          lang (or lang-cookie lang-qr)
+          lang (or lang-qr lang-cookie)
+          both-set (and lang-qr lang-cookie)
+          change-lang (and both-set (not (= lang-qr lang-cookie)))
           tr (tr-with [lang])
           req (if tr
                 (assoc request
                        :tempura/tr    tr
                        :lang-override lang)
                 request)]
-      (if (and (not lang-cookie) (:lang-override req))
+      (if (and change-lang (:lang-override req))
         (-> (handler req)
             (assoc-in [:cookies "lang" :value]   (:lang-override req))
             (assoc-in [:cookies "lang" :path]    "/")
