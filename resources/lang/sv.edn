@@ -9,7 +9,7 @@
   :frontpage
   {:title "Frontsidan"}
 
-  :events
+  :quests
   {:title "Eventer"}
   }
  }
