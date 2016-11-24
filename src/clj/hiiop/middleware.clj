@@ -88,7 +88,9 @@
           lang-cookie (cookie-lang (:cookies request))
           lang (or lang-qr lang-cookie)
           both-set (and lang-qr lang-cookie)
-          change-lang (and both-set (not (= lang-qr lang-cookie)))
+          change-lang (or
+                       (and both-set (not (= lang-qr lang-cookie)))
+                       (and (not both-set) lang-qr))
           tr (tr-with [lang])
           req (if tr
                 (assoc request
