@@ -1,11 +1,15 @@
 (ns hiiop.db.core
   (:require
+   [camel-snake-kebab.extras :refer [transform-keys]]
+   [camel-snake-kebab.core :refer [->snake_case_keyword ->kebab-case-keyword]]
    [cheshire.core :refer [generate-string parse-string]]
    [clojure.java.jdbc :as jdbc]
    [conman.core :as conman]
-   [hiiop.config :refer [env]]
    [mount.core :refer [defstate]]
-   [buddy.hashers :as hashers])
+   [buddy.hashers :as hashers]
+   [taoensso.timbre :as log]
+   [clj-time.jdbc]
+   [hiiop.config :refer [env]])
   (:import org.postgresql.util.PGobject
            java.sql.Array
            clojure.lang.IPersistentMap
@@ -22,26 +26,32 @@
 
 (conman/bind-connection *db* "sql/queries.sql")
 
-(defn check-password [email password]
-  "Check wether <password> is a valid password for <email>, return
-  true/false."
-  (let [hash (:pass (get-password-hash {:email email}))]
-    (if-not (nil? hash)
-      (hashers/check password hash)
-      (hashers/check ; prevent timing attack by checking against "dummy_password"
-       "wrong_password"
-       "bcrypt+blake2b-512$76eb37a62f605eeb7b172c4ba39fa231$12$4ae537eb38a908819b08c495fb78e3afc7e12e336be0e1a2"))))
+(defn result-one-snake->kebab
+  [this result options]
+  (->> (hugsql.adapter/result-one this result options)
+       (transform-keys ->kebab-case-keyword)))
 
-(defn to-date [^java.sql.Date sql-date]
-  (-> sql-date (.getTime) (java.util.Date.)))
+(defn result-many-snake->kebab
+  [this result options]
+  (->> (hugsql.adapter/result-many this result options)
+       (map #(transform-keys ->kebab-case-keyword %))))
+
+(def ->snake_case_keywords
+  (partial transform-keys ->snake_case_keyword))
+
+(defmethod hugsql.core/hugsql-result-fn :1 [sym]
+  'hiiop.db.core/result-one-snake->kebab)
+
+(defmethod hugsql.core/hugsql-result-fn :one [sym]
+  'hiiop.db.core/result-one-snake->kebab)
+
+(defmethod hugsql.core/hugsql-result-fn :* [sym]
+  'hiiop.db.core/result-many-snake->kebab)
+
+(defmethod hugsql.core/hugsql-result-fn :many [sym]
+  'hiiop.db.core/result-many-snake->kebab)
 
 (extend-protocol jdbc/IResultSetReadColumn
-  Date
-  (result-set-read-column [v _ _] (to-date v))
-
-  Timestamp
-  (result-set-read-column [v _ _] (to-date v))
-
   Array
   (result-set-read-column [v _ _] (vec (.getArray v)))
 
@@ -50,9 +60,9 @@
     (let [type  (.getType pgobj)
           value (.getValue pgobj)]
       (case type
-        "json" (parse-string value true)
-        "jsonb" (parse-string value true)
-        "citext" (str value)
+        "json"       (parse-string value true)
+        "jsonb"      (parse-string value true)
+        "citext"     (str value)
         value))))
 
 (extend-type java.util.Date
@@ -61,9 +71,9 @@
     (.setTimestamp stmt idx (Timestamp. (.getTime v)))))
 
 (defn to-pg-json [value]
-      (doto (PGobject.)
-            (.setType "jsonb")
-            (.setValue (generate-string value))))
+  (doto (PGobject.)
+    (.setType "jsonb")
+    (.setValue (generate-string value))))
 
 (extend-type clojure.lang.IPersistentVector
   jdbc/ISQLParameter
@@ -80,3 +90,13 @@
   (sql-value [value] (to-pg-json value))
   IPersistentVector
   (sql-value [value] (to-pg-json value)))
+
+(defn check-password [email password]
+  "Check wether <password> is a valid password for <email>, return
+  true/false."
+  (let [hash (:pass (get-password-hash {:email email}))]
+    (if-not (nil? hash)
+      (hashers/check password hash)
+      (hashers/check ; prevent timing attack by checking against "dummy_password"
+       "wrong_password"
+       "bcrypt+blake2b-512$76eb37a62f605eeb7b172c4ba39fa231$12$4ae537eb38a908819b08c495fb78e3afc7e12e336be0e1a2"))))

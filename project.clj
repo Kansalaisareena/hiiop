@@ -9,6 +9,7 @@
                  [compojure                              "1.5.1"]
                  [conman                                 "0.6.2"]
                  [cprop                                  "0.1.9"]
+                 [camel-snake-kebab                      "0.4.0"]
                  [luminus-immutant                       "0.2.2"]
                  [luminus-migrations                     "0.2.8"]
                  [luminus-nrepl                          "0.1.4"]

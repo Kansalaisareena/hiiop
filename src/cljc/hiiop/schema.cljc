@@ -6,7 +6,7 @@
 
 (def Email #"[^@]+@[^.]+\..+")
 
-(def Password String)
+(def Password s/Str)
 
 (def Organisation
   "Organisation"
@@ -43,10 +43,6 @@
    :well-being
    :environment))
 
-(def Participant
-  {:id s/Uuid
-   :user User})
-
 (def Quest
   "Quest"
   {:name s/Str
@@ -59,4 +55,5 @@
    :is-private? s/Bool
    :organiser User
    (s/optional-key :organisation) Organisation
-   (s/optional-key :participants) [Participant]})
+   (s/optional-key :party) [User]})
+
