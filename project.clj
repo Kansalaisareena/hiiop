@@ -37,7 +37,8 @@
                  [com.taoensso/tempura                   "1.0.0-RC4"]
                  [com.taoensso/timbre                    "4.7.4"]
                  [bidi                                   "2.0.14"]
-                 [metosin/schema-tools                   "0.9.0"]]
+                 [metosin/schema-tools                   "0.9.0"]
+                 [cljsjs/moment                          "2.15.2-3"]]
 
   :min-lein-version "2.7.1"
 
