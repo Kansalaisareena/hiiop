@@ -184,24 +184,24 @@ WHERE
 
 -- :name create-password-token! :? :1
 -- :doc "Create new password token and return it"
-INSERT INTO password_tokens
-(user_id, token, expires)
-VALUES
-(:user_id, DEFAULT, :expires)
+INSERT INTO password_tokens (user_id, expires)
+SELECT u.id, :expires
+FROM users u
+WHERE u.email = :email
 ON CONFLICT (user_id) DO
   UPDATE
     SET expires = :expires,
         token = uuid_generate_v4()
 RETURNING token
 
--- :name check-token-validity :?
+-- :name check-token-validity :? :1
 -- :doc "Check if password token is valid"
 SELECT EXISTS
   (SELECT 1 FROM password_tokens
     WHERE token = :token AND
           expires > now())
 
--- :name activate-user! :!
+-- :name activate-user! :! :1
 -- :doc "Activate user with password token"
 UPDATE users
   SET pass = :pass,
