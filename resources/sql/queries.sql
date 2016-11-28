@@ -187,10 +187,10 @@ WHERE
 INSERT INTO password_tokens
 (user_id, token, expires)
 VALUES
-(:user_id, DEFAULT, now() + interval '1 hour')
+(:user_id, DEFAULT, :expires)
 ON CONFLICT (user_id) DO
   UPDATE
-    SET expires = now() + interval '1 hour',
+    SET expires = :expires,
         token = uuid_generate_v4()
 RETURNING token
 
