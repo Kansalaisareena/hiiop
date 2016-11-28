@@ -181,3 +181,35 @@ DELETE FROM
   quests
 WHERE
   id = :id
+
+-- :name create-password-token! :? :1
+-- :doc "Create new password token and return it"
+INSERT INTO password_tokens
+(user_id, token, expires)
+VALUES
+(:user_id, DEFAULT, now() + interval '1 hour')
+ON CONFLICT (user_id) DO
+  UPDATE
+    SET expires = now() + interval '1 hour',
+        token = uuid_generate_v4()
+RETURNING token
+
+-- :name check-token-validity :?
+-- :doc "Check if password token is valid"
+SELECT EXISTS
+  (SELECT 1 FROM password_tokens
+    WHERE token = :token AND
+          expires > now())
+
+-- :name activate-user! :!
+-- :doc "Activate user with password token"
+UPDATE users
+  SET pass = :pass,
+      email = :email,
+      is_active = true
+  WHERE EXISTS (
+    SELECT 1
+    FROM password_tokens
+      WHERE id = user_id AND
+            expires > now() AND
+            token = :token)
