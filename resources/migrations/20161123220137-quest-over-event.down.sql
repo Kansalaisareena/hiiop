@@ -1,3 +1,3 @@
-DROP TABLE quests;
-DROP TABLE pictures;
-DROP TABLE parties;
+DROP TABLE quests CASCADE;
+DROP TABLE pictures CASCADE;
+DROP TABLE parties CASCADE;

@@ -42,7 +42,7 @@
 
   :min-lein-version "2.7.1"
 
-  :jvm-opts ["-server" "-Dconf=.lein-env"]
+  :jvm-opts ["-server" "-Dconf=.lein-env" "-Duser.timezone=Europe/Helsinki"]
   :source-paths ["src/clj" "src/cljc"]
   :resource-paths ["resources" "target/cljsbuild"]
   :target-path "target/%s/"

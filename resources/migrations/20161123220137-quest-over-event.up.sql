@@ -5,8 +5,8 @@ CREATE TABLE IF NOT EXISTS pictures
 CREATE TABLE IF NOT EXISTS quests
 (id SERIAL PRIMARY KEY,
  name VARCHAR(300),
- start_time TIMESTAMP,
- end_time TIMESTAMP,
+ start_time TIMESTAMP WITH TIME ZONE,
+ end_time TIMESTAMP WITH TIME ZONE,
  address TEXT,
  town TEXT,
  categories json,
