@@ -72,4 +72,6 @@
      (body-content
       (header context)
       [:div {:id "app" :class "app" :dangerouslySetInnerHTML {:__html content}}]
-      [:script {:src (str asset-path "/js/app.js") :type "text/javascript"}]))))
+      [:div
+       [:script {:src (str asset-path "/js/app.js") :type "text/javascript"}]
+       [:script {:src "https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.10/moment-timezone-with-data-2010-2020.min.js" :type "text/javascript"}]]))))

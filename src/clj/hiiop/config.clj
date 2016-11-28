@@ -12,7 +12,8 @@
                         (source/from-env)
                         {:version version
                          :git-ref gitref
-                         :langs langs}]))
+                         :langs langs
+                         :time-zone "Europe/Helsinki"}]))
 
 (defn asset-path [{:keys [dev asset-base-url git-ref] :or {dev true}}]
   (if dev

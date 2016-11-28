@@ -1,11 +1,13 @@
 (ns hiiop.time
   (:require
    [taoensso.timbre :as log]
+   [mount.core :refer [defstate swap]]
    #?(:clj[clj-time.core :as time]
       :cljs[cljsjs.moment])
    #?(:cljs [cljsjs.moment.locale.fi])
    #?(:cljs [cljsjs.moment.locale.sv])
-   #?(:clj [clj-time.coerce :as timec])))
+   #?(:clj [clj-time.coerce :as timec])
+   #?(:clj [clj-time.format :as timef])))
 
 #?(:cljs
    (def server-client-diff-seconds (atom 0)))
@@ -14,48 +16,43 @@
    (defn set-server-client-diff-seconds [diff]
      (swap! server-client-diff-seconds (fn [] diff))))
 
-(def locale (atom "fi"))
 (def print-format "dd.MM.yyyy hh.mm")
+
+#?(:cljs (defstate locale :start :fi))
+#?(:cljs (defn switch-locale [locale]
+           (swap {#'hiiop.time/locale locale})
+           (.locale js/moment (name locale))))
+
+(def time-zone (atom "Europe/Helsinki"))
+(defn switch-time-zone [time-zone-param]
+  (swap! time-zone (fn [] time-zone-param))
+  #?(:clj (time/default-time-zone @time-zone)))
+
 
 #?(:clj
    (def print-formatter (clj-time.format/formatter print-format)))
 
-(defn set-locale [locale]
-  (swap! locale (fn [] locale))
-  #?(:cljs (.locale js/moment @locale)))
+(defn with-default-time-zone [time]
+  #?(:clj  (time/to-time-zone time (time/time-zone-for-id @time-zone))
+     :cljs (.tz time @time-zone)))
 
 (defn now []
-  #?(:clj (time/now)
-     :cljs (.add (js/moment) @server-client-diff-seconds "milliseconds")))
+  #?(:clj  (with-default-time-zone (time/now))
+     :cljs (with-default-time-zone (.add (.utc (js/moment)) @server-client-diff-seconds "milliseconds"))))
+
+(defn now-utc []
+  #?(:clj  (time/to-time-zone (time/now) (clj-time.core/time-zone-for-id "UTC"))
+     :cljs (.add (.utc (js/moment)) @server-client-diff-seconds "milliseconds")))
 
 (defn today-midnight []
   #?(:clj (time/today-at-midnight)
-     :cljs (.startOf (js/moment) "day")))
+     :cljs (.startOf (now) "day")))
 
 (defn diff-in-ms [a b]
   (if (and a b)
     #?(:clj (- (timec/to-long a) (timec/to-long b))
        :cljs (.diff a b))
     nil))
-
-(defn to-unit [string]
-  #?(:clj
-     (case string
-       "millisecond"  time/millis
-       "milliseconds" time/millis
-       "second"       time/seconds
-       "seconds"      time/seconds
-       "minute"       time/minutes
-       "minutes"      time/minutes
-       "hour"         time/hours
-       "hours"        time/hours
-       "day"          time/days
-       "days"         time/days
-       "month"        time/months
-       "months"       time/months
-       "year"         time/years
-       "years"        time/years)
-     :cljs string))
 
 (defn to-unit [string]
   #?(:clj
@@ -87,8 +84,6 @@
   (if amount
     #?(:clj (time/seconds amount)
        :cljs (.duration js/moment amount "second"))))
-
-(def second (seconds 1))
 
 (defn minutes [amount]
   (if amount
@@ -158,5 +153,13 @@
         :cljs (.from a b)))))
 
 (defn from-string [string]
-  #?(:clj (timec/from-string string)
-     :cljs (js/moment string)))
+  #?(:clj  (with-default-time-zone (timec/from-string string))
+     :cljs (with-default-time-zone (js/moment string))))
+
+(defn to-string [date]
+  #?(:clj (timef/unparse
+           (timef/with-zone
+             (timef/formatters :date-time-no-ms)
+             (time/time-zone-for-id @time-zone))
+           date)
+     :cljs (.format (.tz date @time-zone) "YYYY-MM-DDTHH:mm:ssZ")))

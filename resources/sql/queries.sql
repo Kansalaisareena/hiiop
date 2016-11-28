@@ -175,3 +175,9 @@ FROM
 WHERE
   id = :id
 
+-- :name delete-quest-by-id! :! :n
+-- :doc Delete quest by id
+DELETE FROM
+  quests
+WHERE
+  id = :id

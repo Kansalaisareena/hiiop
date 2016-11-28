@@ -16,7 +16,7 @@
             [hiiop.env :refer [defaults]]
             [hiiop.config :refer [env]]
             [hiiop.layout :refer [*app-context* error-page]]
-            [hiiop.translate :refer [tr-opts tr-with]])
+            [hiiop.translate :refer [supported-lang tr-opts tr-with]])
   (:import [javax.servlet ServletContext]))
 
 (defn wrap-context [handler]
@@ -91,15 +91,23 @@
           change-lang (or
                        (and both-set (not (= lang-qr lang-cookie)))
                        (and (not both-set) lang-qr))
-          tr (tr-with [lang])
+          tempura-accepted (if (:tempura/accept-langs request)
+                             (:tempura/accept-langs request)
+                             [])
+          accepted (if lang (into [lang] tempura-accepted) tempura-accepted)
+          current-locale (supported-lang accepted)
+          tr (tr-with accepted)
           req (if tr
                 (assoc request
-                       :tempura/tr    tr
-                       :lang-override lang)
-                request)]
-      (if (and change-lang (:lang-override req))
+                       :tempura/tr           tr
+                       :tempura/accept-langs accepted
+                       :current-locale       (keyword current-locale))
+                (assoc request
+                       :current-locale (keyword current-locale)))]
+      (log/info accepted lang current-locale)
+      (if change-lang
         (-> (handler req)
-            (assoc-in [:cookies "lang" :value]   (:lang-override req))
+            (assoc-in [:cookies "lang" :value]   (name (:current-locale req)))
             (assoc-in [:cookies "lang" :path]    "/")
             (assoc-in [:cookies "lang" :max-age] (* 3600 30)))
         (handler req))

@@ -4,6 +4,8 @@
             [rum.core                    :as rum]
             [taoensso.timbre             :as log]
             [bidi.bidi                   :refer [match-route]]
+            [mount.core                  :refer [swap]]
+            [hiiop.time                  :as time]
             [hiiop.html                  :as html]
             [hiiop.client-config         :refer [env]]
             [hiiop.translate             :refer [tr-with tr-opts]]
@@ -15,7 +17,17 @@
 
 (defn get-config-and-call [this]
   (go
-    (let [conf (<! @env)]
+    (let [conf (<! @env)
+          client-time (time/now-utc)
+          server-time (time/from-string (:now conf))
+          time-zone (:time-zone conf)
+          locale (:current-locale conf)
+          diff (time/diff-in-ms server-time client-time)]
+      (log/info conf)
+      (log/info locale diff client-time (.utc (time/from-string server-time)))
+      (time/switch-time-zone time-zone)
+      (time/switch-locale (keyword locale))
+      (time/set-server-client-diff-seconds diff)
       (this conf))))
 
 (defn route! [{:keys [accept-langs langs] :as conf}]

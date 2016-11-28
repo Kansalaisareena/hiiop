@@ -8,8 +8,10 @@
    [mount.core :refer [defstate]]
    [buddy.hashers :as hashers]
    [taoensso.timbre :as log]
+   [clj-time.coerce :as timec]
    [clj-time.jdbc]
-   [hiiop.config :refer [env]])
+   [hiiop.config :refer [env]]
+   [hiiop.time :as time])
   (:import org.postgresql.util.PGobject
            java.sql.Array
            clojure.lang.IPersistentMap
@@ -64,6 +66,13 @@
         "jsonb"      (parse-string value true)
         "citext"     (str value)
         value))))
+
+(extend-protocol jdbc/IResultSetReadColumn
+  java.sql.Timestamp
+  (result-set-read-column [v _2 _3]
+    (let [from-db (timec/from-sql-time v)]
+      (log/info "timestamp read" from-db)
+      (time/with-default-time-zone from-db))))
 
 (extend-type java.util.Date
   jdbc/ISQLParameter

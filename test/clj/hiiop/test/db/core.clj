@@ -8,7 +8,8 @@
             [taoensso.timbre :as log]
             [camel-snake-kebab.extras :refer [transform-keys]]
             [camel-snake-kebab.core :refer [->kebab-case-keyword]]
-            [hiiop.config :refer [env]]))
+            [hiiop.config :refer [env]]
+            [hiiop.test.test :refer [contains-many?]]))
 
 (use-fixtures
   :once
@@ -18,9 +19,6 @@
      #'hiiop.db.core/*db*)
     (migrations/migrate ["migrate"] (select-keys env [:database-url]))
     (f)))
-
-(defn contains-many? [m & ks]
-  (every? #(contains? m %) ks))
 
 (deftest test-users
   (jdbc/with-db-transaction [t-conn *db*]
@@ -50,8 +48,8 @@
 (deftest test-create-unmoderated-open-quest
   (jdbc/with-db-transaction [t-conn *db*]
     (jdbc/db-set-rollback-only! t-conn)
-    (let [today-at-twelve (t/today-at 12 00)
-          today-at-six (t/plus today-at-twelve (t/hours 6))
+    (let [today-at-twelve (hiiop.time/with-default-time-zone (t/today-at 12 00))
+          today-at-six (hiiop.time/with-default-time-zone (t/plus today-at-twelve (t/hours 6)))
           quest {:name "Nälkäkeräys"
                  :start-time today-at-twelve
                  :end-time today-at-six
