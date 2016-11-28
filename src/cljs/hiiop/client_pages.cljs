@@ -1,29 +1,35 @@
 (ns hiiop.client-pages
   (:require [rum.core :as rum]
-            [hiiop.components.events :as events]
+            [hiiop.components.quests :as quests]
             [hiiop.context :refer [context]]
             [taoensso.timbre :as log]))
 
-(defn list-events-page [params]
-  (log/info "list-events-page")
+(defn browse-quests-page [params]
+  (log/info "browse-quests-page")
   (rum/mount
-   (events/list-events {:events ["a" "b" "c" "d"]
+   (quests/list-quests {:quests ["a" "b" "c" "d"]
                         :context @context})
    (. js/document (getElementById "app"))))
 
-(defn create-event-page [params]
-  (log/info "create-event-page")
+(defn create-quest-page [params]
+  (log/info "create-quest-page")
   (rum/mount
-   (events/create {:context @context})
+   (quests/create {:context @context})
+   (. js/document (getElementById "app"))))
+
+(defn edit-quest-page [params]
+  (log/info "create-quest-page")
+  (rum/mount
+   (quests/create {:context @context})
    (. js/document (getElementById "app"))))
 
 (def handlers
   {:index
-   list-events-page
-   :events-index
-   list-events-page
-   :create-event
-   create-event-page
-   :edit-event
-   list-events-page
+   browse-quests-page
+   :browse-quests
+   browse-quests-page
+   :create-quest
+   create-quest-page
+   :edit-quest
+   edit-quest-page
    })

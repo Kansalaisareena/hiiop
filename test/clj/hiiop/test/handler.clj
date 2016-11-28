@@ -17,7 +17,7 @@
   (testing "language override cookie set"
     (let [response ((app) (request :get "/?lang=sv"))
           set-cookie (last (get-in response [:headers "Set-Cookie"]))
-          lang (last (re-find #"lang=(sv)" set-cookie))]
+          lang (if set-cookie (last (re-find #"lang=(sv)" set-cookie)))]
       (is (= "sv" lang))))
 
   (testing "language override cookie send"

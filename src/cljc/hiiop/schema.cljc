@@ -6,7 +6,7 @@
 
 (def Email #"[^@]+@[^.]+\..+")
 
-(def Password String)
+(def Password s/Str)
 
 (def Organisation
   "Organisation"
@@ -30,11 +30,30 @@
   {:email Email
    :password Password})
 
-;; (def Event
-;;   "Event"
-;;   {:name s/Str
-;;    (s/optional-key :description) s/Str
-;;    (s/date )
-;;    :pending-description s/Str
-;;    (s/optional-key :organisation) Organisation})
+(def Category
+  (s/enum
+   :kids-and-youngsters
+   :elderly
+   :disabilities
+   :peer-support
+   :inequality
+   :foreign-aid
+   :culture
+   :equality
+   :well-being
+   :environment))
+
+(def Quest
+  "Quest"
+  {:name s/Str
+   (s/optional-key :description) s/Str
+   :start-time s/Str
+   :end-time s/Str
+   :pending-description s/Str
+   :categories #{Category}
+   :image s/Str
+   :is-private? s/Bool
+   :organiser User
+   (s/optional-key :organisation) Organisation
+   (s/optional-key :party) [User]})
 

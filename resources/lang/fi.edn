@@ -11,8 +11,11 @@
   :index
   {:title :name}
 
-  :events
-  {:title "Löydä tehtävä"}
+  :quest
+  {:title "Löydä tehtävä"
+   :create
+   {:title "Ilmoita uusi tehtävä"}
+   }
 
   :ideas
   {:title "Kokemuksia vapaaehtoistyöstä"}
@@ -20,9 +23,10 @@
 
  :actions
  {
-  :events
+  :quest
   {:create  "Ilmoita tehtävä"
-   :browse  "Löydä tehtävä"}
+   :browse  "Löydä tehtävä"
+   :edit    "Muokkaa tehtävää"}
 
   :user
   {:login    "Kirjaudu"

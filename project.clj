@@ -9,6 +9,7 @@
                  [compojure                              "1.5.1"]
                  [conman                                 "0.6.2"]
                  [cprop                                  "0.1.9"]
+                 [camel-snake-kebab                      "0.4.0"]
                  [luminus-immutant                       "0.2.2"]
                  [luminus-migrations                     "0.2.8"]
                  [luminus-nrepl                          "0.1.4"]
@@ -36,7 +37,8 @@
                  [com.taoensso/tempura                   "1.0.0-RC4"]
                  [com.taoensso/timbre                    "4.7.4"]
                  [bidi                                   "2.0.14"]
-                 [metosin/schema-tools                   "0.9.0"]]
+                 [metosin/schema-tools                   "0.9.0"]
+                 [cljsjs/moment                          "2.15.2-3"]]
 
   :min-lein-version "2.7.1"
 
@@ -55,28 +57,23 @@
    [migratus-lein "0.4.3"]
    [lein-cljsbuild "1.1.4"]
    [lein-immutant "2.1.0"]
-   [lein-scss "0.3.0"]
+   [lein-sassc "0.10.4"]
    [lein-auto "0.1.2"]
    [lein-asset-minifier "0.3.0"]
    [shmish111/lein-git-version "1.0.13"]
    [lein-essthree "0.2.2"]
    [lein-heroku "0.5.3"]]
 
-  :scss
-  {:builds
-   {:develop
-    {:source-dir "resources/scss/"
-     :dest-dir "resources/public/css/"
-     :executable "sassc"
-     :args ["-m" "-I" "resources/scss/" "-t" "nested"]}
+  :sassc
+  [{:src "resources/scss/screen.scss"
+    :output-to "resources/public/css/screen.css"
+    :style "nested"
+    :import-path "resources/scss"}]
 
-    :production {:source-dir "resources/scss/"
-                 :dest-dir   "resources/public/css/"
-                 :executable "sassc"
-                 :args       ["-I" "resources/scss/" "-t" "compressed"]
-                 :jar        true}}}
+  :auto
+  {"sassc" {:file-pattern #"\.(scss|sass)$" :paths ["resources/scss"]}}
 
-  :hooks [leiningen.scss]
+  :hooks [leiningen.sassc]
   :clean-targets ^{:protect false}
   [:target-path [:cljsbuild :builds :app :compiler :output-dir] [:cljsbuild :builds :app :compiler :output-to]]
   :figwheel

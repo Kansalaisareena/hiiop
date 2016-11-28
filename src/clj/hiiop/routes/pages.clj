@@ -4,7 +4,7 @@
             [taoensso.timbre :as log]
             [bidi.ring :refer (make-handler)]
             [hiiop.layout :as layout]
-            [hiiop.components.events :as events]
+            [hiiop.components.quests :as quests]
             [hiiop.config :refer [env]]
             [hiiop.routes.page-hierarchy :as page-hierarchy]))
 
@@ -20,42 +20,42 @@
   (let [context (create-context req)
         tr (:tr context)]
     (layout/render {:context context
-                    :content (events/list-events {:events ["a" "a" "a"]
+                    :content (quests/list-quests {:quests ["a" "a" "a"]
                                                   :context context})
                     :title (tr [:pages.index.title])})))
 
-(defn create-event [req]
+(defn create-quest [req]
   (let [context (create-context req)
         tr (:tr context)]
     (layout/render {:context context
-                    :content (events/create {:context context})
-                    :title (tr [:actions.events.create])})))
+                    :content (quests/create {:context context})
+                    :title (tr [:actions.quest.create])})))
 
-(defn browse-events [req]
+(defn browse-quests [req]
   (let [context (create-context req)
         tr (:tr context)]
     (layout/render {:context context
-                    :content (events/list-events {:events ["a" "a" "a"]
+                    :content (quests/list-quests {:quests ["a" "a" "a"]
                                                   :context context})
-                    :title (tr [:actions.events.create])})))
+                    :title (tr [:actions.quest.create])})))
 
 
-(defn edit-event [req]
+(defn edit-quest [req]
   (let [context (create-context req)
         tr (:tr context)]
     (layout/render {:context context
                     :content "Edit event"
-                    :title (tr [:actions.events.create])})))
+                    :title (tr [:actions.quest.edit])})))
 
 (def handlers
   {:index
    index
-   :events-index
-   browse-events
-   :create-event
-   create-event
-   :edit-event
-   edit-event})
+   :browse-quests
+   browse-quests
+   :create-quest
+   create-quest
+   :edit-quest
+   edit-quest})
 
 (def ring-handler
   (let [hierarchy page-hierarchy/hierarchy]

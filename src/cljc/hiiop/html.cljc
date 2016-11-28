@@ -11,15 +11,20 @@
    [:ul
     {:class "navigation"}
     [:li
-     {:class "event find-event"}
+     {:class "stories"}
      [:a
-      {:href (path-for hierarchy :events-index)}
-      (tr [:actions.events.browse])]]
+      {:href "http://tarinat.hiiop.fi"}
+      (tr [:pages.ideas.title])]]
     [:li
-     {:class "event create-event"}
+     {:class "quest browse-quests"}
      [:a
-      {:href (path-for hierarchy :create-event)}
-      (tr [:actions.events.create])]]]
+      {:href (path-for hierarchy :browse-quests)}
+      (tr [:actions.quest.browse])]]
+    [:li
+     {:class "quest create-quest"}
+     [:a
+      {:href (path-for hierarchy :create-quest)}
+      (tr [:actions.quest.create])]]]
    [:ul
     {:class "languages"}
     [:li
@@ -27,12 +32,19 @@
       {:href "?lang=fi"}
       "fi"]
      ]
-     [:li
-      [:a
-       {:href "?lang=sv"}
-       "sv"
-       ]
-      ]]])
+    [:li
+     [:a
+      {:href "?lang=sv"}
+      "sv"
+      ]
+     ]]
+   [:ul
+    {:class "login"}
+    [:li
+     [:a
+      {:href "#kirjaudu"}
+      (tr [:actions.user.login])
+      ]]]])
 
 (rum/defc header [{:keys [hierarchy tr asset-path] :as context}]
   [:header
@@ -59,5 +71,5 @@
      (head-content {:title (tr [:title] [title]) :asset-path asset-path})
      (body-content
       (header context)
-      [:div {:id "app" :dangerouslySetInnerHTML {:__html content}}]
+      [:div {:id "app" :class "app" :dangerouslySetInnerHTML {:__html content}}]
       [:script {:src (str asset-path "/js/app.js") :type "text/javascript"}]))))
