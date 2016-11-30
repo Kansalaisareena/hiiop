@@ -34,13 +34,11 @@
    :is-moderator? s/Bool
    :email-verified? s/Bool})
 
-(def UserRegistration
-  (st/assoc
-   (st/dissoc User
-              :is-moderator?
-              :email-verified?
-              :id :organisation)
-   :password Password))
+(def UserActivation
+  "Email, password and password token"
+  {:email Email
+   :password Password
+   :token s/Uuid})
 
 (def UserCredentials
   "Email and password"
