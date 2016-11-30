@@ -25,9 +25,9 @@
 (deftest test-users
   (jdbc/with-db-transaction [t-conn *db*]
     (jdbc/db-set-rollback-only! t-conn)
-    (is (= 1 (db/create-virtual-user!
-              t-conn
-              {:email "sam.smith@example.com"})))
+    (is (not (nil? (db/create-virtual-user!
+                    t-conn
+                    {:email "sam.smith@example.com"}))))
     (is (contains-many?
          (db/get-user-by-email t-conn {:email "sam.smith@example.com"})
          :id
@@ -40,10 +40,10 @@
 (deftest test-user-activation
   (jdbc/with-db-transaction [t-conn *db*]
     (jdbc/db-set-rollback-only! t-conn)
-    (is (= 1 (db/create-virtual-user!
-              t-conn
-              {:email "sam.smith@example.com"}))
-        "create-virtual-user! should create one row")
+    (is (not (nil? (db/create-virtual-user!
+                    t-conn
+                    {:email "sam.smith@example.com"})))
+        "create-virtual-user! should return user id")
     (let [token (:token (db/create-password-token!
                          t-conn
                          {:email "sam.smith@example.com"
@@ -64,24 +64,24 @@
 (deftest test-user-activation-fails-with-wrong-token
   (jdbc/with-db-transaction [t-conn *db*]
     (jdbc/db-set-rollback-only! t-conn)
-    (is (= 1 (db/create-virtual-user!
-              t-conn
-              {:email "sam.smith@example.com"}))
-        "create-virtual-user! should create one row")
+    (is (not (nil? (db/create-virtual-user!
+                    t-conn
+                    {:email "sam@example.com"})))
+        "create-virtual-user! should return user id")
     (let [token (:token (db/create-password-token!
                          t-conn
-                         {:email "sam.smith@example.com"
+                         {:email "sam@example.com"
                           :expires (add (now) hour)}))]
       (is (not (nil? token))
           "create-password-token! should return the token")
       (is (= true (:exists (db/check-token-validity t-conn {:token token})))
           "created token should be valid")
       (is (= 0 (db/activate-user! t-conn
-                {:email "sam.smith@example.com"
+                {:email "sam@example.com"
                  :pass "password#"
                  :token (coerce/string->uuid "bc076be4-b571-11e6-9f11-338b4c8301d1")}))
           "activate-user! with random uuid should return 0 (0 rows changed)")
-      (let [user (db/get-user-by-email t-conn {:email "sam.smith@example.com"})]
+      (let [user (db/get-user-by-email t-conn {:email "sam@example.com"})]
         (is (= false (:is-active user))
             "User should be inactive")))))
 
