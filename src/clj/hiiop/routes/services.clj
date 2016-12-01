@@ -34,17 +34,18 @@
         api-handlers/logout)
 
       (POST "/login" []
-        :body-params [credentials :- UserCredentials]
+        :body [credentials UserCredentials]
         :summary "Tries to log the user in. Returns
                  true/false on success/failure"
         api-handlers/login)
 
 
       (context "/users" []
-               :tags ["users"]
+               :tags ["user"]
                (GET "/users/:id" []
                     :name ::user
                     :path-params [id :- s/Uuid]
+                    :return User
                     :summary "Return user object"
                     api-handlers/get-user)
 
@@ -57,8 +58,8 @@
                            (created (path-for ::user {:id (str id)}))
                            (bad-request {:error "User registration failed"})))))
 
-               (POST "/users/activate" []
-                     :body-params [email :- Email password :- Password token :- s/Uuid]
+               (POST "/activate" []
+                     :body [activation UserActivation]
                      :summary "Activates inactive user"
                      api-handlers/activate))
 
@@ -90,5 +91,4 @@
         ;;  :body [NewPartyMember]
         ;;  :summary "Join a quest"
         ;;  api-handlers/join-quest)
-        )))
-  )
+        ))))

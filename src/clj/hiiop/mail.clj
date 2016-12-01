@@ -1,6 +1,5 @@
 (ns hiiop.mail
   (:require [postal.core :refer [send-message]]
-            [clojure.math.numeric-tower :refer [expt]]
             [clojure.core.async :refer [go]]
             [hiiop.config :refer [env]]))
 

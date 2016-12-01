@@ -8,7 +8,7 @@
             [taoensso.timbre :as log]
             [hiiop.db.core :as db]
             [hiiop.time :as time]
-            [hiiop.mail :as m]))
+            [hiiop.mail :as mail]))
 
 (defn login-status
   [request]
@@ -39,11 +39,11 @@
       nil
       (let [token (:token (db/create-password-token!
                            {:email email :expires (time/add (time/now) time/hour)}))]
-        (m/send-token email (str token))
+        (mail/send-token email (str token))
         (str id)))))
 
 (defn activate
-  [{{:keys [email password token]} :body-params}]
+  [{:keys [email password token]}]
   (let [pwhash (hashers/derive password {:alg :bcrypt+blake2b-512})
         token-uuid (coerce/string->uuid token)]
     (db/activate-user! {:pass pwhash :email email :token token-uuid})

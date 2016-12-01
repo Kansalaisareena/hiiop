@@ -18,7 +18,6 @@
                  [mount                                  "0.1.10"]
                  [org.clojure/clojure                    "1.8.0"]
                  [org.clojure/clojurescript              "1.9.293" :scope "provided"]
-                 [org.clojure/math.numeric-tower         "0.0.4"]
                  [org.clojure/tools.cli                  "0.3.5"]
                  [org.clojure/tools.logging              "0.3.1"]
                  [org.postgresql/postgresql              "9.4.1211"]
@@ -171,7 +170,7 @@
                   :doo {:build "test"}
                   :source-paths ["env/dev/clj" "test/clj"]
                   :resource-paths ["env/dev/resources"]
-                  :repl-options {:init-ns user}
+                  :repl-options {:init-ns user :timeout 120000}
                   :injections [(require 'pjstadig.humane-test-output)
                                (pjstadig.humane-test-output/activate!)]}
    :project/test {:resource-paths ["env/test/resources"]
