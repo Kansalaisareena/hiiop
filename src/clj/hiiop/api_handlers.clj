@@ -23,8 +23,7 @@
   (assoc (ok) :session (dissoc session :identity)))
 
 (defn login
-  [{session :session
-    {{:keys [email password]} :credentials} :body-params}]
+  [{{:keys [email password]} :body-params session :session}]
   (let [password-ok (db/check-password email password)
         user-id (db/get-user-id {:email email})]
     (if password-ok
@@ -43,7 +42,7 @@
         (str id)))))
 
 (defn activate
-  [{:keys [email password token]}]
+  [{{:keys [email password token]} :body-params}]
   (let [pwhash (hashers/derive password {:alg :bcrypt+blake2b-512})
         token-uuid (coerce/string->uuid token)]
     (db/activate-user! {:pass pwhash :email email :token token-uuid})
