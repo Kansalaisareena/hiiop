@@ -13,11 +13,12 @@ WHERE name=:name
 -- :doc Get all organizations
 SELECT * FROM organization
 
--- :name create-virtual-user! :! :n
+-- :name create-virtual-user! :? :1
 -- :doc creates a new user record
 INSERT INTO users
 (email)
 VALUES (:email)
+RETURNING id
 
 -- :name update-user! :! :n
 -- :doc update an existing user record
@@ -61,16 +62,6 @@ WHERE email = :email
 -- :doc delete a user given the uuid
 DELETE FROM users
 WHERE id = :id
-
--- :name add-full-user! :? :1
--- :doc "add a new registered user"
-INSERT INTO users (id, email, name, pass)
-VALUES (DEFAULT, :email, :name, :pass)
-ON CONFLICT (email) DO
-  UPDATE
-    SET pass = :pass
-    WHERE users.name IS NULL
-RETURNING id
 
 -- :name delete-user! :? :*
 -- :doc delete user by email
@@ -181,3 +172,36 @@ DELETE FROM
   quests
 WHERE
   id = :id
+
+-- :name create-password-token! :? :1
+-- :doc "Create new password token and return it"
+INSERT INTO password_tokens (user_id, expires)
+SELECT u.id, :expires
+FROM users u
+WHERE u.email = :email
+ON CONFLICT (user_id) DO
+  UPDATE
+    SET expires = :expires,
+        token = uuid_generate_v4()
+RETURNING token
+
+-- :name check-token-validity :? :1
+-- :doc "Check if password token is valid"
+SELECT EXISTS
+  (SELECT 1 FROM password_tokens
+    WHERE token = :token AND
+          expires > now())
+
+-- :name activate-user! :! :1
+-- :doc "Activate user with password token"
+UPDATE users
+  SET pass = :pass,
+      email = :email,
+      is_active = true
+  WHERE is_active = false
+    AND EXISTS (
+      SELECT 1
+      FROM password_tokens
+        WHERE id = user_id AND
+              expires > now() AND
+              token = :token)

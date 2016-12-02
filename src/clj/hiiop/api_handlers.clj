@@ -7,7 +7,8 @@
             [schema.coerce :as coerce]
             [taoensso.timbre :as log]
             [hiiop.db.core :as db]
-            [hiiop.time :as time]))
+            [hiiop.time :as time]
+            [hiiop.mail :as mail]))
 
 (defn login-status
   [request]
@@ -22,8 +23,7 @@
   (assoc (ok) :session (dissoc session :identity)))
 
 (defn login
-  [{session :session
-    {{:keys [email password]} :credentials} :body-params}]
+  [{{:keys [email password]} :body-params session :session}]
   (let [password-ok (db/check-password email password)
         user-id (db/get-user-id {:email email})]
     (if password-ok
@@ -32,12 +32,21 @@
       (unauthorized))))
 
 (defn register
-  [{{{:keys [password name email]} :user} :body-params :as body-params}]
-  (let [hash (hashers/derive password {:alg :bcrypt+blake2b-512})
-        response (db/add-full-user! {:email email
-                                     :name name
-                                     :pass hash})]
-    (:id response)))
+  [{{email :email} :body-params}]
+  (let [id (:id (db/create-virtual-user! {:email email}))]
+    (if (nil? id)
+      nil
+      (let [token (:token (db/create-password-token!
+                           {:email email :expires (time/add (time/now) time/hour)}))]
+        (mail/send-token email (str token))
+        (str id)))))
+
+(defn activate
+  [{{:keys [email password token]} :body-params}]
+  (let [pwhash (hashers/derive password {:alg :bcrypt+blake2b-512})
+        token-uuid (coerce/string->uuid token)]
+    (db/activate-user! {:pass pwhash :email email :token token-uuid})
+    (ok)))
 
 (defn get-user [{{id :id} :params}]
   (ok (str (db/get-user-by-id {:id (coerce/string->uuid id)}))))
@@ -60,11 +69,9 @@
                                  :hashtags distinct-hashtags
                                  :picture picture-id
                                  :is-open is-open
-                                 :owner (:id user)
-)]
+                                 :owner (:id user))]
     (dissoc with-added-fields
-            :picture-id)
-    ))
+            :picture-id)))
 
 (defn time-to-string [keyword map]
   (time/to-string (keyword map)))

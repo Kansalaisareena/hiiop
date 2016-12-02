@@ -34,31 +34,34 @@
         api-handlers/logout)
 
       (POST "/login" []
-        :body-params [credentials :- UserCredentials]
+        :body [credentials UserCredentials]
         :summary "Tries to log the user in. Returns
                  true/false on success/failure"
         api-handlers/login)
 
-      (POST "/register" []
-        :body-params [user :- UserRegistration]
-        :summary "Create a new full user"
-        (fn [request]
-          (let [id (api-handlers/register request)]
-            (if id
-              (created (path-for ::user {:id (str id)}))
-              (bad-request {:error "User registration failed"})))))
 
-      (GET "/users/:id" []
-        :name ::user
-        :path-params [id :- s/Uuid]
-        :summary "Return user object"
-        api-handlers/get-user)
+      (context "/users" []
+               :tags ["user"]
+               (GET "/users/:id" []
+                    :name ::user
+                    :path-params [id :- s/Uuid]
+                    :return User
+                    :summary "Return user object"
+                    api-handlers/get-user)
 
-      (GET "/login-status" []
-        :return Boolean
-        api-handlers/login-status)
+               (POST "/register" []
+                     :body-params [email :- Email]
+                     :summary "Create a new user and email password token"
+                     (fn [request]
+                       (let [id (api-handlers/register request)]
+                         (if id
+                           (created (path-for ::user {:id (str id)}))
+                           (bad-request {:error "User registration failed"})))))
 
-      (GET "/show-session" [] api-handlers/show-session)
+               (POST "/activate" []
+                     :body [activation UserActivation]
+                     :summary "Activates inactive user"
+                     api-handlers/activate))
 
       (context "/quest" []
         :tags ["quest"]
@@ -88,4 +91,4 @@
         ;;  :body [NewPartyMember]
         ;;  :summary "Join a quest"
         ;;  api-handlers/join-quest)
-      ))))
+        ))))

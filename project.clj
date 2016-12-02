@@ -36,6 +36,7 @@
                  [com.taoensso/carmine                   "2.15.0"]
                  [com.taoensso/tempura                   "1.0.0-RC4"]
                  [com.taoensso/timbre                    "4.7.4"]
+                 [com.draines/postal                     "2.0.2"]
                  [bidi                                   "2.0.14"]
                  [metosin/schema-tools                   "0.9.0"]
                  [cljsjs/moment                          "2.15.2-3"]]
@@ -169,7 +170,7 @@
                   :doo {:build "test"}
                   :source-paths ["env/dev/clj" "test/clj"]
                   :resource-paths ["env/dev/resources"]
-                  :repl-options {:init-ns user}
+                  :repl-options {:init-ns user :timeout 120000}
                   :injections [(require 'pjstadig.humane-test-output)
                                (pjstadig.humane-test-output/activate!)]}
    :project/test {:resource-paths ["env/test/resources"]
