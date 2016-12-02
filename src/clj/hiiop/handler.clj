@@ -6,8 +6,7 @@
             [compojure.route :as route]
             [hiiop.env :refer [defaults]]
             [mount.core :as mount]
-            [hiiop.middleware :as middleware]
-            [immutant.web.middleware :refer [wrap-session]]))
+            [hiiop.middleware :as middleware]))
 
 (mount/defstate init-app
   :start ((or (:init defaults) identity))

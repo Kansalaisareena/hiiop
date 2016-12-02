@@ -8,4 +8,6 @@
   {:user ""
    :pass ""
    :host ""
-   :port "" }}}
+   :port "" }}
+ :redis
+ {:uri ""}}
