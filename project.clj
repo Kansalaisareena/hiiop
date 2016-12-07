@@ -39,7 +39,8 @@
                  [com.draines/postal                     "2.0.2"]
                  [bidi                                   "2.0.14"]
                  [metosin/schema-tools                   "0.9.0"]
-                 [cljsjs/moment                          "2.15.2-3"]]
+                 [cljsjs/moment                          "2.15.2-3"]
+                 [cljsjs/pikaday                         "1.4.0-1"]]
 
   :min-lein-version "2.7.1"
 

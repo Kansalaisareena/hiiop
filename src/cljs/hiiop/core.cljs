@@ -33,9 +33,14 @@
 (defn route! [{:keys [accept-langs langs] :as conf}]
   (let [tr (tr-with (tr-opts langs) accept-langs)
         routes page-routes/hierarchy
-        handler-route-key (match-route routes (.-pathname js/location))]
+        handler-route-key (match-route routes (.-pathname js/location))
+        handler-key (:handler handler-route-key)]
     (set-context! {:tr tr :conf conf})
-    (when (:handler handler-route-key) (((:handler handler-route-key) client-pages/handlers)))))
+    (log/info handler-route-key handler-key)
+    (when (and
+           handler-route-key
+           (handler-key client-pages/handlers))
+      ((handler-key client-pages/handlers) client-pages/handlers))))
 
 (defn mount-components []
   (get-config-and-call route!))

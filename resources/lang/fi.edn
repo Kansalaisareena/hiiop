@@ -13,12 +13,48 @@
 
   :quest
   {:title "Löydä tehtävä"
-   :create
-   {:title "Ilmoita uusi tehtävä"}
+   :edit
+   {:title "Ilmoita uusi tehtävä"
+    :subtitles
+    {:content "1/4 Tehtävän sisältö"
+     :time-place "2/4 Missä ja milloin tapahtuma järjestetään"
+     :related-to "3/4 Mihin tehtävä liittyy"
+     :participation "4/4 Osallistuminen"}
+
+    :name "Tehtävän nimi"
+    :description "Kerro tehtävästäsi"
+    :picture "Lisää kuva"
+    :hashtags "Aihetunnisteet eli hashtagit"
+    :start-time "Alkamisaika"
+    :end-time "Päättymisaika"
+    :address "Osoite"
+    :town "Paikkakunta"
+    :max-participants
+    {
+     :can-join "Tehtävään voi osallistua"
+     :amount-of-people "henkilöä"
+     }
+    :open "Tehtävä on avoin kaikille"
+    :closed "Vapaaehtoiseksi voi ilmoittautua ainoastaan järjestäjältä saadun yksityisen linkin kautta"
+    :organiser-will-participate "Osallistun lisäksi itse tehtävään"
+    }
    }
 
   :ideas
   {:title "Kokemuksia vapaaehtoistyöstä"}
+  }
+
+ :category
+ {:kids-and-youngsters "Lapset ja nuoret"
+  :elderly "Ikäihmiset"
+  :disabilities "Vammais- ja mielenterveystyö"
+  :peer-support "Vertaistuki ja neuvonta"
+  :inequality "Syrjäytyminen ja köyhyys"
+  :foreign-aid "Kehitys- ja katastrofiapu"
+  :culture "Kulttuuri ja taide"
+  :equality "Monikulttuurisuus ja tasavertaisuus"
+  :well-being "Liikunta ja hyvinvointi"
+  :environment "Ympäristö ja eläimet"
   }
 
  :actions
@@ -31,5 +67,38 @@
   :user
   {:login    "Kirjaudu"
    :register "Rekisteröidy"
-   :logout   "Kirjaudu ulos"}}
+   :logout   "Kirjaudu ulos"}
+  }
+
+ :error
+ {:non-empty-string "Tyhjä arvo ei käy"
+  :hashtag "Hashtag alkaa risuaidalla, eikä voi sisältää viivoja."
+  :date-needs-to-be-before "Ajan pitää olla ennen %1"
+  }
+
+ :pikaday
+ {:previous-month "Edellinen"
+  :next-month     "Seuraava"
+  :months         ["tammikuu"
+                   "helmikuu"
+                   "maaliskuu"
+                   "huhtikuu"
+                   "toukokuu"
+                   "kesäkuu"
+                   "heinäkuu"
+                   "elokuu"
+                   "syyskuu"
+                   "lokakuu"
+                   "marraskuu"
+                   "joulukuu"],
+  :weekdays       ["sunnuntai"
+                   "maanantai"
+                   "tiistai"
+                   "keskiviikko"
+                   "torstai"
+                   "perjantai"
+                   "lauantai"],
+  :weekdays-short ["su" "ma" "ti" "ke" "to" "pe" "la"]
+  :first-day      1
+  }
  }

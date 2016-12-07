@@ -41,22 +41,22 @@
           accept-langs-set (into #{} (map keyword accept-langs))
           langs-set (into #{} (keys langs))
           lang-intersection (intersection langs-set accept-langs-set)
-          lang-match (reduce #(if (and
-                                   (not %1)
-                                   (%2 lang-intersection))
-                                %2
-                                %1)
-                             keyword-accepted-langs)]
+          lang-match (reduce
+                      (fn [chosen current]
+                        (if (and (not chosen)
+                                 (current lang-intersection))
+                          current
+                          nil))
+                        keyword-accepted-langs)]
       (or lang-match default-locale))
     default-locale))
+
 (defn tr-with
   ([langs]
    (when (first langs)
      (do
-       (info langs)
        (partial tr (tr-opts) langs))))
   ([opts langs]
    (when (and opts (first langs))
      (do
-       (info opts langs)
        (partial tr opts langs)))))

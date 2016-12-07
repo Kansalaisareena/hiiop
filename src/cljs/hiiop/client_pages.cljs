@@ -1,8 +1,12 @@
 (ns hiiop.client-pages
-  (:require [rum.core :as rum]
+  (:require [clojure.data :as data]
+            [rum.core :as rum]
+            [taoensso.timbre :as log]
+            [schema.core :as schema]
             [hiiop.components.quests :as quests]
             [hiiop.context :refer [context]]
-            [taoensso.timbre :as log]))
+            [hiiop.mangling :refer [same-keys-with-nils]]
+            [hiiop.schema :refer [new-empty-quest NewQuest]]))
 
 (defn browse-quests-page [params]
   (log/info "browse-quests-page")
@@ -11,17 +15,31 @@
                         :context @context})
    (. js/document (getElementById "app"))))
 
+(defn validate-new-quest [old-quest new-quest]
+  (let [differences (data/diff old-quest new-quest)
+        validated (schema/check NewQuest new-quest)]
+    (log/info differences validated)))
+
 (defn create-quest-page [params]
-  (log/info "create-quest-page")
-  (rum/mount
-   (quests/create {:context @context})
-   (. js/document (getElementById "app"))))
+  (let [quest (atom (new-empty-quest))
+        errors (atom (same-keys-with-nils @quest))]
+    (add-watch quest :quest (fn [key atom old-quest new-quest]
+                              (validate-new-quest old-quest new-quest)))
+    (rum/mount
+     (quests/edit {:context @context
+                   :quest quest
+                   :errors errors
+                   :schema NewQuest})
+     (. js/document (getElementById "app")))))
 
 (defn edit-quest-page [params]
-  (log/info "create-quest-page")
-  (rum/mount
-   (quests/create {:context @context})
-   (. js/document (getElementById "app"))))
+  (let [quest (atom (new-empty-quest))
+        errors (atom (same-keys-with-nils @quest))]
+    (log/info "edit-quest-page" @quest (new-empty-quest))
+    (rum/mount
+     (quests/edit {:context @context
+                   :quest quest})
+     (. js/document (getElementById "app")))))
 
 (def handlers
   {:index
