@@ -2,6 +2,17 @@
 
 ** TODO Overview
 
+** Running tests
+   You can run all the tests from the command line with the =lein
+   test= but it's horribly slow. A faster way to run tests is to run
+   them from the repl in the following way:
+
+   #+BEGIN_EXAMPLE
+   (require '[clojure.test :refer [run-tests]])
+   (require 'hiiop.test.specific.test)
+   (run-tests 'hiiop.test.specific.test)
+   #+END_EXAMPLE
+   
 ** Dependencies
    - PostgreSQL
    - Redis
