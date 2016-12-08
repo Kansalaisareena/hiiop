@@ -6,6 +6,7 @@
             [ring.middleware.cookies :refer [wrap-cookies]]
             [ring.middleware.params :refer [wrap-params]]
             [ring.middleware.defaults :refer [site-defaults wrap-defaults]]
+            [ring.util.response :as response]
             [buddy.auth.accessrules :refer [restrict]]
             [buddy.auth.middleware :refer [wrap-authentication]]
             [buddy.auth :refer [authenticated?]]
@@ -46,12 +47,9 @@
 
 
 (defn auth-error [request response]
-  {:status  403
-   :headers {"Content-Type" "text/plain"}
-   :body    (str "Access to " (:uri request) " is not authorized")})
+  (response/redirect "/login"))
 
-
-(defn wrap-restricted [handler]
+(defn authenticated [handler]
   (restrict handler {:handler authenticated?
                      :on-error auth-error}))
 

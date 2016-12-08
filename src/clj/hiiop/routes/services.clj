@@ -27,7 +27,8 @@
                (select-keys env [:time-zone :dev :git-ref :langs])
                {:accept-langs (:tempura/accept-langs req)
                 :now (time/now-utc)
-                :current-locale (keyword current-locale)}))))
+                :current-locale (keyword current-locale)
+                :identity (:identity req)}))))
 
       (POST "/logout" []
         :summary "Logs the user out."

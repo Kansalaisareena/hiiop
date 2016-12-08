@@ -37,7 +37,7 @@
     (if (nil? id)
       nil
       (let [token (:token (db/create-password-token!
-                           {:email email :expires (time/add (time/now) time/hour)}))]
+                           {:email email :expires (time/add (time/now) time/an-hour)}))]
         (mail/send-token email (str token))
         (str id)))))
 

@@ -3,10 +3,17 @@
             [rum.core :as rum]
             [taoensso.timbre :as log]
             [schema.core :as schema]
+            [hiiop.components.login :as l]
             [hiiop.components.quests :as quests]
             [hiiop.context :refer [context]]
             [hiiop.mangling :refer [same-keys-with-nils]]
             [hiiop.schema :refer [new-empty-quest NewQuest]]))
+
+(defn login-page [params]
+  (log/info "login-page")
+  (rum/mount
+   (l/login {:context @context})
+   (. js/document (getElementById "app"))))
 
 (defn browse-quests-page [params]
   (log/info "browse-quests-page")
@@ -44,6 +51,8 @@
 (def handlers
   {:index
    browse-quests-page
+   :login
+   login-page
    :browse-quests
    browse-quests-page
    :create-quest

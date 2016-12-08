@@ -5,7 +5,7 @@
             [clojure.java.jdbc :as jdbc]
             [mount.core :as mount]
             [clj-time.core :as t]
-            [hiiop.time :refer [add now hour]]
+            [hiiop.time :refer [add now an-hour]]
             [taoensso.timbre :as log]
             [camel-snake-kebab.extras :refer [transform-keys]]
             [camel-snake-kebab.core :refer [->kebab-case-keyword]]
@@ -47,7 +47,7 @@
     (let [token (:token (db/create-password-token!
                          t-conn
                          {:email "sam.smith@example.com"
-                          :expires (add (now) hour)}))]
+                          :expires (add (now) an-hour)}))]
       (is (not (nil? token))
           "create-password-token! should return the token")
       (is (= true (:exists (db/check-token-validity t-conn {:token token})))
@@ -71,7 +71,7 @@
     (let [token (:token (db/create-password-token!
                          t-conn
                          {:email "sam@example.com"
-                          :expires (add (now) hour)}))]
+                          :expires (add (now) an-hour)}))]
       (is (not (nil? token))
           "create-password-token! should return the token")
       (is (= true (:exists (db/check-token-validity t-conn {:token token})))

@@ -16,7 +16,7 @@
 (rum/defc page [head body]
   [:html head body])
 
-(rum/defc top-navigation [{:keys [hierarchy tr]}]
+(rum/defc top-navigation [{:keys [hierarchy tr identity current-locale]}]
   [:nav
    [:ul
     {:class "navigation"}
@@ -39,12 +39,14 @@
     {:class "languages"}
     [:li
      [:a
-      {:href "?lang=fi"}
+      {:href "?lang=fi"
+       :class (when (= current-locale :fi) "selected")}
       "fi"]
      ]
     [:li
      [:a
-      {:href "?lang=sv"}
+      {:href "?lang=sv"
+       :class (when (= current-locale :sv) "selected")}
       "sv"
       ]
      ]]
@@ -52,9 +54,16 @@
     {:class "login"}
     [:li
      [:a
-      {:href "#kirjaudu"}
+      {:href (path-for hierarchy :login)}
       (tr [:actions.user.login])
-      ]]]])
+      ]]
+    [:li
+     [:a
+      {:href (path-for hierarchy :user)}
+      [:i {:class "opux-icon-person"}]
+      ]
+     ]
+    ]])
 
 (defn class-label-with-error [error class]
   (let [class-str (if class
