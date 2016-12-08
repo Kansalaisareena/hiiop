@@ -61,6 +61,7 @@
          :schema (get-in cursors-and-schema [:hashtags :schema])
          :error-key :error.hashtag
          :transform-value #(if (string? %) (str/split % #" ") %)
+         :to-value #(if (sequential? %) (str/join " " %) %)
          :context context})))
      (html/form-section
       (tr [:pages.quest.edit.subtitles.time-place])

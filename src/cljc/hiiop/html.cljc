@@ -57,11 +57,12 @@
       ]]]])
 
 (defn class-label-with-error [error class]
-  (if (and error (deref error))
-    (str class " error")
-    (if class
-      (str class)
-      "")))
+  (let [class-str (if class
+                    (str class)
+                    "")]
+    (if (and error (deref error))
+      (str class " error")
+      class-str)))
 
 (defn class-error-or-hide [error]
   (if (and error (deref error))
@@ -75,17 +76,20 @@
     (if coerced-value (swap! value (fn [old new] coerced-value)))
     (swap! error (fn [_ _] coerced-error))))
 
-(rum/defc label [text {:keys [for class error] :as or-content} & content]
+(rum/defc label < rum/reactive
+  [text {:keys [for class error] :as or-content} & content]
   (let [also-content (if (sequential? or-content) or-content [])
         more-content (if content (into [] content) [])
         content-vector (if (and content (sequential? or-content))
                          (into [] (concat [content] [also-content]))
                          content)
         default-content [:label
-                         {:class (class-label-with-error error class)
+                         {:class
+                          (if (or error (and error (rum/react error)))
+                            (class-label-with-error error class))
                           :for for}
                          text]]
-    (into [] (concat default-content content-vector))))
+    (into default-content content-vector)))
 
 (defn value-from-event [e & with-transform]
   (let [transform (or (first with-transform) identity)]
@@ -99,28 +103,30 @@
 
 
 (rum/defc input < rum/reactive
-  [{:keys [type value schema matcher error class transform-value context error-key]}]
+  [{:keys [type value schema matcher error class to-value transform-value context error-key]}]
   (let [tr (:tr context)
         usable-matcher (if (not matcher) {schema #(identity %)} matcher)
         usable-transform (if (not transform-value) #(identity %) transform-value)
+        usable-to-value (if (not to-value) identity to-value)
         coercer (stc/coercer schema usable-matcher error-key)
         save-val-or-error (partial save-value-or-error coercer value error)]
     [:div
      {:class "input-container"}
      [:input
-      {:type "text"
+      {:type type
        :class class
-       :default-value (rum/react value)
+       :default-value (usable-to-value (rum/react value))
        :on-change
        (fn [e]
          (-> (value-from-event e usable-transform)
              (save-val-or-error)))}]
-     [:span
-      {:class (class-error-or-hide error)}
-      (if (rum/react error) (tr [(rum/react error)]))]]))
+     (when (rum/react error)
+       [:span
+        {:class (class-error-or-hide error)}
+        (if (rum/react error) (tr [(rum/react error)]))])]))
 
 (rum/defc text < rum/reactive
-  [{:keys [label type value schema matcher error class context error-key]}]
+  [{:keys [label value schema matcher error class context error-key]}]
   (let [tr (:tr context)
         usable-matcher (if (not matcher) {schema #(identity %)} matcher)
         coercer (stc/coercer schema usable-matcher error-key)
