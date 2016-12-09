@@ -30,7 +30,8 @@
      :description "Kerro yhteisösi toiminnasta"}
     :start-time "Alkamisaika"
     :end-time "Päättymisaika"
-    :location "Paikka"
+    :location {:label "Paikka"
+               :placeholder "Anna sijainti"}
     :max-participants
     {:can-join "Tehtävään voi osallistua"
      :amount-of-people "henkilöä"
