@@ -134,6 +134,45 @@
 
 (def a-year (years 1))
 
+(defn year
+  ([from]
+   #?(:clj (time/year from)
+      :cljs (.year from)))
+  ([date to]
+   #?(:clj
+      (let [^MutableDateTime mdt (.toMutableDateTime ^DateTime date)]
+        (.toDateTime (doto mdt
+                       (.setYear to))))
+      :cljs
+      (-> (js/moment date)
+          (.year to)))))
+
+(defn month
+  ([from]
+   #?(:clj (time/month from)
+      :cljs (.month from)))
+  ([date to]
+   #?(:clj
+      (let [^MutableDateTime mdt (.toMutableDateTime ^DateTime date)]
+        (.toDateTime (doto mdt
+                       (.setMonthOfYear to))))
+      :cljs
+      (-> (js/moment date)
+          (.month to)))))
+
+(defn day
+  ([from]
+   #?(:clj (time/day from)
+      :cljs (.date from)))
+  ([date to]
+   #?(:clj
+      (let [^MutableDateTime mdt (.toMutableDateTime ^DateTime date)]
+        (.toDateTime (doto mdt
+                       (.setDayOfMonth to))))
+      :cljs
+      (-> (js/moment date)
+          (.date to)))))
+
 (defn add
   ([to amount]
    (if (and to amount)
@@ -175,6 +214,14 @@
   ([time hours minutes]
    (time-to time hours minutes 0)))
 
+(defn use-same-date [from to]
+  (let [from-day (day from)
+        from-month (month from)
+        from-year (year from)]
+    (-> (day to from-day)
+        (month from-month)
+        (year from-year))))
+
 (defn tomorrow []
   (add (now) a-day))
 
@@ -195,12 +242,12 @@
      #?(:clj (clj-time.format/unparse print-formatter a)
         :cljs (.from a b)))))
 
-(defn is-before? [a b]
+(defn before? [a b]
   (if (and a b)
     #?(:clj (time/before? a b)
        :cljs (.isBefore a b))))
 
-(defn is-after? [a b]
+(defn after? [a b]
   (if (and a b)
     #?(:clj (time/after? a b)
        :cljs (.isAfter a b))))

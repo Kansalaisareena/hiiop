@@ -124,7 +124,7 @@
                 (time/tomorrow-at-noon)
                 time/transit-format)
    :end-time (time/to-string
-              (time/add (time/tomorrow-at-noon) 2 "hours")
+              (time/time-to (time/tomorrow) 23 45)
               time/transit-format)
    :location {}
    :max-participants 10

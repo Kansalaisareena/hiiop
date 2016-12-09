@@ -28,6 +28,12 @@
                   {:name ""
                    :description ""}))))
 
+(defn add-to-errors [errors values]
+  (swap! errors
+         #(identity
+           (conj (deref errors)
+                 values))))
+
 (defn enable-organisation [enable]
   (swap! enable
          #(identity true)))
@@ -76,73 +82,111 @@
        (html/button
         (tr [:pages.quest.edit.button.add-organisation])
         {:class "organisation"
-         :on-click (fn [e]
-                     (enable-organisation organisation-enabled)
-                     (add-organisation-to quest))})
-       [:div
-        (html/label
-         (tr [:pages.quest.edit.organisation.name])
-         {:class "organisation-name-label"}
-         (html/input
-          {:type "text"
-           :value (rum/cursor-in quest [:organisation :name])
-           :error (atom nil)
-           :schema hs/NonEmptyString
-           :context context}
-          ))
-        (html/label
-         (tr [:pages.quest.edit.organisation.description])
-         {:class "organisation-description-label"}
-         (html/text
-          {:value (rum/cursor-in quest [:organisation :description])
-           :error (atom nil)
-           :schema hs/NonEmptyString
-           :context context}
-          ))])
-       )))
+         :on-click
+         (fn [e]
+           (enable-organisation organisation-enabled)
+           (add-organisation-to quest)
+           (add-to-errors
+            errors
+            {:organisation
+             {:name nil
+              :description nil}}))})
+       (let [organisation-name-error (rum/cursor-in errors [:organisation :name])
+             organisation-description-error (rum/cursor-in errors [:organisation :description])]
+         [:div
+          (html/label
+           (tr [:pages.quest.edit.organisation.name])
+           {:class "organisation-name-label"}
+           (html/input
+            {:type "text"
+             :value (rum/cursor-in quest [:organisation :name])
+             :error organisation-name-error
+             :schema hs/NonEmptyString
+             :context context}
+            ))
+          (html/label
+           (tr [:pages.quest.edit.organisation.description])
+           {:class "organisation-description-label"}
+           (html/text
+            {:value (rum/cursor-in quest [:organisation :description])
+             :error organisation-description-error
+             :schema hs/NonEmptyString
+             :context context}
+            ))]))
+     )))
 
-(rum/defc edit-time-place < rum/reactive
-  [{:keys [quest is-valid cursors-and-schema context tr]}]
-  (html/form-section
-   (tr [:pages.quest.edit.subtitles.time-place])
-   (html/label
-    (tr [:pages.quest.edit.start-time])
-    {:class "start-time-label"
-     :error (atom nil)}
-    (html/datetime-picker
-     {:date (get-in cursors-and-schema [:start-time :value])
-      :error (get-in cursors-and-schema [:start-time :error])
-      :schema (get-in cursors-and-schema [:start-time :schema])
-      :max-date (get-in cursors-and-schema [:end-time :value])
-      :class "start-time"
-      :value-format time/transit-format
-      :date-print-format time/date-print-format
-      :time-print-format time/time-print-format
-      :context context}))
-   (html/label
-    (tr [:pages.quest.edit.end-time])
-    {:class "end-time-label"
-     :error (atom nil)}
-    (html/datetime-picker
-     {:date (get-in cursors-and-schema [:end-time :value])
-      :error (get-in cursors-and-schema [:end-time :error])
-      :schema (get-in cursors-and-schema [:end-time :schema])
-      :min-date (get-in cursors-and-schema [:start-time :value])
-      :class "end-time"
-      :value-format time/transit-format
-      :date-print-format time/date-print-format
-      :time-print-format time/time-print-format
-      :context context}))
-   (html/label
-    (tr [:pages.quest.edit.location])
-    {:class "location-label"
-     :error (get-in cursors-and-schema [:location :error])}
-    (html/location-selector
-     {:location (get-in cursors-and-schema [:location :value])
-      :error (get-in cursors-and-schema [:location :error])
-      :schema (get-in cursors-and-schema [:location :schema])
-      :context context}))
-   ))
+(defn reveal-end-time [end-time-revealed]
+  (swap! end-time-revealed #(identity true)))
+
+(rum/defcs edit-time-place < rum/reactive
+                             (rum/local false ::end-time-revealed)
+  [state {:keys [quest is-valid cursors-and-schema context tr]}]
+  (let [end-time-revealed (::end-time-revealed state)
+        end-time (get-in cursors-and-schema [:end-time :value])
+        start-time (get-in cursors-and-schema [:start-time :value])]
+    (add-watch
+     start-time
+     ::use-same-date-when-not-revealed
+     (fn [_ _ _ new-start]
+       (let [start-time-o (time/from-string new-start)
+             end-time-o (time/from-string @end-time)]
+         (when (and (not @end-time-revealed)
+                    (time/after?
+                     start-time-o
+                     end-time-o))
+           (swap! end-time #(time/to-string
+                             (time/use-same-date
+                              start-time-o
+                              end-time-o))))
+         )))
+    (html/form-section
+     (tr [:pages.quest.edit.subtitles.time-place])
+     (html/label
+      (tr [:pages.quest.edit.start-time])
+      {:class "start-time-label"
+       :error (atom nil)}
+      (html/datetime-picker
+       {:date start-time
+        :error (get-in cursors-and-schema [:start-time :error])
+        :schema (get-in cursors-and-schema [:start-time :schema])
+        :max-date (when (rum/react end-time-revealed)
+                    end-time)
+        :class "start-time"
+        :value-format time/transit-format
+        :date-print-format time/date-print-format
+        :time-print-format time/time-print-format
+        :context context}))
+     (if (not (rum/react end-time-revealed))
+       (html/button
+        (tr [:pages.quest.edit.button.reveal-end-time])
+        {:class "end-time-reveal"
+         :on-click (fn [e]
+                     (reveal-end-time end-time-revealed))})
+       (html/label
+        (tr [:pages.quest.edit.end-time])
+        {:class "end-time-label"
+         :error (get-in cursors-and-schema [:end-time :error])}
+        (html/datetime-picker
+         {:date end-time
+          :error (get-in cursors-and-schema [:end-time :error])
+          :schema (get-in cursors-and-schema [:end-time :schema])
+          :min-date (get-in cursors-and-schema [:start-time :value])
+          :class "end-time"
+          :value-format time/transit-format
+          :date-print-format time/date-print-format
+          :time-print-format time/time-print-format
+          :context context})))
+     (html/label
+      (tr [:pages.quest.edit.location.label])
+      {:class "location-label"
+       :error (get-in cursors-and-schema [:location :error])}
+      (html/location-selector
+       {:location (get-in cursors-and-schema [:location :value])
+        :error (get-in cursors-and-schema [:location :error])
+        :schema (get-in cursors-and-schema [:location :schema])
+        :placeholder (tr [:pages.quest.edit.location.placeholder])
+        :context context}))
+     )))
 
 (rum/defc edit-participation-settings < rum/reactive
   [{:keys [quest is-valid cursors-and-schema context tr]}]
@@ -167,8 +211,8 @@
      :value (get-in cursors-and-schema [:is-open :value])
      :error (get-in cursors-and-schema [:is-open :error])
      :context context}
-      {:pages.quest.edit.open true
-       :pages.quest.edit.closed false})
+    {:pages.quest.edit.open true
+     :pages.quest.edit.closed false})
    (html/checkbox-binary
     {:class "organiser-participates"
      :id (name :pages.quest.edit.organiser-participates)
@@ -209,6 +253,7 @@
        :is-valid is-valid
        :context context
        :quest quest
+       :errors errors
        :tr tr
        })
      (edit-time-place
@@ -216,6 +261,7 @@
        :is-valid is-valid
        :context context
        :quest quest
+       :errors errors
        :tr tr
        })
      (html/form-section

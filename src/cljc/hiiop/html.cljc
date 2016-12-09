@@ -247,10 +247,10 @@
                             (time/from-string @max-date)))
         is-after-min? (fn [new-date]
                          (or (not min-date)
-                             (time/is-before? (min-date-object) new-date)))
+                             (time/before? (min-date-object) new-date)))
         is-before-max? (fn [new-date]
                        (or (not max-date)
-                           (time/is-after? (max-date-object) new-date)))
+                           (time/after? (max-date-object) new-date)))
         date-object (time/from-string @date value-format)
         date-atom (atom date-object)
         time-atom (atom (time/datetime->time date-object))
@@ -313,10 +313,11 @@
        [:span {:class "error"} (rum/react error)])]))
 
 (rum/defc location-selector < address/autocomplete-mixin
-  [{:keys [place class]}]
+  [{:keys [place class placeholder]}]
   [:input
    {:type "text"
-    :class (str "autocomplete" class)}])
+    :class (str "autocomplete" class)
+    :placeholder placeholder}])
 
 (defn multi-choice [tr choice-text-fn selected choice]
   (let [id (str "multi-choice-" (name choice))
