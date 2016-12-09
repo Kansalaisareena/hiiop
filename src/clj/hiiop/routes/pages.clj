@@ -42,13 +42,22 @@
         tr (:tr context)
         quest (atom (new-empty-quest))
         errors (atom (same-keys-with-nils @quest))]
-    (layout/render {:context context
+    (layout/render {:title (tr [:actions.quest.create])
+                    :context context
                     :content
                     (quests/edit {:context context
                                   :quest quest
                                   :schema NewQuest
                                   :errors errors})
-                    :title (tr [:actions.quest.create])})))
+                    :scripts
+                    [(str
+                      "https://maps.googleapis.com/maps/api/js?"
+                      "key=AIzaSyDfXn9JTGue0fbkI3gqIqe7_WUn0M-dt-8"
+                      "&libraries=places"
+                      "&language=" (name (:current-locale context))
+                      "&region=FI"
+                      )]
+                    })))
 
 (defn browse-quests [req]
   (let [context (create-context req)

@@ -25,18 +25,24 @@
     :description "Kerro tehtävästäsi"
     :picture "Lisää kuva"
     :hashtags "Aihetunnisteet eli hashtagit"
+    :organisation
+    {:name "Yhteisön tai organisaation nimi"
+     :description "Kerro yhteisösi toiminnasta"}
     :start-time "Alkamisaika"
     :end-time "Päättymisaika"
-    :address "Osoite"
-    :town "Paikkakunta"
+    :location "Paikka"
     :max-participants
-    {
-     :can-join "Tehtävään voi osallistua"
+    {:can-join "Tehtävään voi osallistua"
      :amount-of-people "henkilöä"
      }
     :open "Tehtävä on avoin kaikille"
     :closed "Vapaaehtoiseksi voi ilmoittautua ainoastaan järjestäjältä saadun yksityisen linkin kautta"
     :organiser-will-participate "Osallistun lisäksi itse tehtävään"
+    :button
+    {:add-organisation "Haluatko lisätä tehtävään tietoa yhteisöstäsi tai organisaatiosta"
+     :show-end-time "Lisää päättymisaika"
+     :submit "Esikatsele ja julkaise"
+     :remove "Poista tehtävä"}
     }
    }
 

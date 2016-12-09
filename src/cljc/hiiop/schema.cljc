@@ -1,6 +1,7 @@
 (ns hiiop.schema
   (:require [clojure.string :as str]
             [schema.core :as s :include-macros true]
+            [schema.coerce :as sc :include-macros true]
             #?(:cljs [schema.utils :refer [ValidationError]])
             #?(:cljs [schema.core :refer [Constrained]])
             [schema-tools.core :as st]
@@ -71,6 +72,23 @@
 
 (def Hashtag #"^#[^\\-]+$")
 
+(def Coordinates
+  "Latitude and longitude"
+  {:latitude s/Num
+   :longitude s/Num})
+
+(def Location
+  "Location"
+  {(s/optional-key :google-place-id) NonEmptyString
+   (s/optional-key :street-number) s/Num
+   (s/optional-key :street) NonEmptyString
+   :town NonEmptyString
+   :postal-code NonEmptyString
+   :country NonEmptyString
+   (s/optional-key :coordinates) Coordinates
+   (s/optional-key :google-maps-url) NonEmptyString
+   })
+
 (def Quest
   "Quest"
   {:id NaturalNumber
@@ -78,8 +96,7 @@
    (s/optional-key :description) s/Str
    :start-time DateTime
    :end-time DateTime
-   :address s/Str
-   :town s/Str
+   :location Location
    :max-participants NPlus
    :unmoderated-description NonEmptyString
    :categories [Category]
@@ -103,20 +120,17 @@
   {:name ""
    :unmoderated-description ""
    :hashtags []
-   :organisation {:name ""}
    :start-time (time/to-string
                 (time/tomorrow-at-noon)
                 time/transit-format)
    :end-time (time/to-string
               (time/add (time/tomorrow-at-noon) 2 "hours")
               time/transit-format)
-   :address ""
-   :town ""
+   :location {}
    :max-participants 10
-   :categories [:elderly :equality]
-   :picture-id nil
+   :categories []
    :is-open true
-   :organiser-will-participate true})
+   :organiser-participates true})
 
 (def NewPartyMember
   "New party member"
@@ -142,8 +156,17 @@
               schema-error (message-from-constrained (:schema data))
               type-error (:type data)
               found-error (or schema-error type-error :unknown-error)]
-          (log/error e)
           {:--error found-error}))))
 
 (defn category-choice [choice]
   (keyword (str "category." (name choice))))
+
+(defn select-schema-either [schema value]
+  (try
+    {:--value (st/select-schema value schema sc/json-coercion-matcher)}
+    (catch #?(:clj Exception :cljs js/Error) e
+        (let [data (ex-data e)
+              schema-error (message-from-constrained (:schema data))
+              type-error (:type data)
+              found-error (or schema-error type-error :unknown-error)]
+          {:--error found-error}))))

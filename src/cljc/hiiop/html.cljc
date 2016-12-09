@@ -8,6 +8,7 @@
             [bidi.bidi :refer [path-for]]
             [hiiop.components.core :as c]
             [hiiop.components.pikaday :refer [pikaday pikaday-mixin]]
+            [hiiop.components.address-autocomplete :as address]
             [hiiop.time :as time]
             [hiiop.schema :as hs]
             [hiiop.mangling :as mangling])
@@ -85,19 +86,30 @@
     (if coerced-value (swap! value (fn [old new] coerced-value)))
     (swap! error (fn [_ _] coerced-error))))
 
-(rum/defc label < rum/reactive
-  [text {:keys [for class error] :as or-content} & content]
-  (let [also-content (if (sequential? or-content) or-content [])
-        more-content (if content (into [] content) [])
-        content-vector (if (and content (sequential? or-content))
-                         (into [] (concat [content] [also-content]))
-                         content)
+(rum/defcs label < rum/reactive
+                   (rum/local nil ::error)
+  [state text {:keys [for class error] :as or-content} & content]
+  (let [local-error (::error state)
+        also-content (if (sequential? or-content)
+                       (into [] or-content)
+                       [])
+        more-content (if content
+                       (into [] content)
+                       [])
+        content-vector (into [] (concat more-content also-content))
         default-content [:label
                          {:class
                           (if (or error (and error (rum/react error)))
                             (class-label-with-error error class))
                           :for for}
                          text]]
+    (when error
+      (add-watch
+       error
+       ::label-error
+       (fn [key _ _ new]
+         (swap! local-error
+                (fn [_ _ _ _] new)))))
     (into default-content content-vector)))
 
 (defn value-from-event [e & with-transform]
@@ -110,6 +122,16 @@
   (-> #?(:cljs (.. e -target -checked)
          :clj (get-in e [:target :checked]))))
 
+(rum/defc button < rum/reactive
+  [text {:keys [class active on-click]}]
+  (let [click (or on-click identity)]
+    [:button
+     {:class class
+      :disabled (when active (not (rum/react active)))
+      :on-click
+      (fn [e]
+        (click e))}
+     text]))
 
 (rum/defc input < rum/reactive
   [{:keys [type value schema matcher error class to-value transform-value context error-key]}]
@@ -290,6 +312,12 @@
      (if (rum/react error)
        [:span {:class "error"} (rum/react error)])]))
 
+(rum/defc location-selector < address/autocomplete-mixin
+  [{:keys [place class]}]
+  [:input
+   {:type "text"
+    :class (str "autocomplete" class)}])
+
 (defn multi-choice [tr choice-text-fn selected choice]
   (let [id (str "multi-choice-" (name choice))
         is-selected (> (.indexOf @selected choice) -1)
@@ -407,14 +435,22 @@
    [:meta {:charset "UTF-8"}]
    [:link {:href (str asset-path "/css/screen.css") :rel "stylesheet" :type "text/css"}]])
 
-(defn app-structure [{:keys [context title content csrf-token servlet-context]}]
+(defn script-tag [url]
+  [:script
+   {:src url :type "text/javascript"}])
+
+(defn app-structure
+  [{:keys [context title content csrf-token servlet-context scripts]}]
   (let [tr (:tr context)
-        asset-path (:asset-path context)]
+        asset-path (:asset-path context)
+        default-scripts
+        [[:script {:src (str asset-path "/js/app.js") :type "text/javascript"}]
+         [:script {:src "https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.10/moment-timezone-with-data-2010-2020.min.js" :type "text/javascript"}]]
+        script-tags (into default-scripts (map script-tag scripts))]
     (page
      (head-content {:title (tr [:title] [title]) :asset-path asset-path})
      (body-content
       (header context)
       [:div {:id "app" :class "app" :dangerouslySetInnerHTML {:__html content}}]
-      [:div
-       [:script {:src (str asset-path "/js/app.js") :type "text/javascript"}]
-       [:script {:src "https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.10/moment-timezone-with-data-2010-2020.min.js" :type "text/javascript"}]]))))
+      (into [:div {:class "script-tags"}] script-tags)
+))))
