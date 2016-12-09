@@ -14,6 +14,8 @@
             [taoensso.timbre :as log :refer [info]]
             [taoensso.tempura :as tempura]
             [taoensso.carmine.ring :refer [carmine-store]]
+            [bidi.bidi :as bidi]
+            [hiiop.routes.page-hierarchy :as hierarchy]
             [hiiop.env :refer [defaults]]
             [hiiop.config :refer [env]]
             [hiiop.layout :refer [*app-context* error-page]]
@@ -47,7 +49,11 @@
 
 
 (defn auth-error [request response]
-  (response/redirect "/login"))
+  (let [going-to (:handler (bidi/match-route hierarchy/hierarchy (:path-info request)))]
+    (response/redirect
+     (str
+      (bidi/path-for hierarchy/hierarchy :login)
+      (when going-to (str "?sitten=" (name going-to)))))))
 
 (defn authenticated [handler]
   (restrict handler {:handler authenticated?
@@ -102,7 +108,6 @@
                        :current-locale       (keyword current-locale))
                 (assoc request
                        :current-locale (keyword current-locale)))]
-      (log/info change-lang accepted lang current-locale)
       (if change-lang
         (-> (handler req)
             (assoc-in [:cookies "lang" :value]   (name (:current-locale req)))
