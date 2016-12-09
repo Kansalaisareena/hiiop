@@ -37,17 +37,18 @@
 
 (defn supported-lang [accept-langs]
   (if (not (empty? accept-langs))
-    (let [keyword-accepted-langs (map keyword accept-langs)
-          accept-langs-set (into #{} (map keyword accept-langs))
+    (let [keyword-accepted-langs (into [] (map keyword accept-langs))
+          accept-langs-set (into #{} keyword-accepted-langs)
           langs-set (into #{} (keys langs))
           lang-intersection (intersection langs-set accept-langs-set)
           lang-match (reduce
                       (fn [chosen current]
-                        (if (and (not chosen)
-                                 (current lang-intersection))
-                          current
-                          nil))
-                        keyword-accepted-langs)]
+                        (cond
+                          (and chosen (chosen lang-intersection)) chosen
+                          (and current (current lang-intersection)) current
+                          :else nil)
+                        )
+                      keyword-accepted-langs)]
       (or lang-match default-locale))
     default-locale))
 

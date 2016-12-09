@@ -102,7 +102,7 @@
                        :current-locale       (keyword current-locale))
                 (assoc request
                        :current-locale (keyword current-locale)))]
-      (log/info accepted lang current-locale)
+      (log/info change-lang accepted lang current-locale)
       (if change-lang
         (-> (handler req)
             (assoc-in [:cookies "lang" :value]   (name (:current-locale req)))
