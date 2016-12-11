@@ -8,6 +8,16 @@
 (defn today-at-six []
   (hiiop.time/time-to (time/now) 18 00))
 
+(defn add-organisation [to with-keys]
+  (let [organisation {(if with-keys (:name with-keys) :organisation)
+                      "Nälän helpottajat"
+                      (if with-keys (:description with-keys) :organisation-description)
+                      "Helpottavat nälkää"}]
+
+    (if (and with-keys (:in with-keys))
+      (assoc to (:in with-keys) organisation)
+      (conj to organisation))))
+
 (defn add-coordinates [in to]
   (let [coordinates {:latitude "60.1928885"
                      :longitude "24.938693000000058"}]
@@ -34,24 +44,24 @@
     (conj quest (location coordinates-to))))
 
 (defn test-quest
-  ([{:keys [use-date-string location-to coordinates-to]}]
+  ([{:keys [use-date-string location-to coordinates-to organisation-to]}]
    (let [start-time (today-at-noon)
          end-time (today-at-six)]
-     (println use-date-string location-to)
-     (add-location
-      {:name "Nälkäkeräys"
-       :start-time (if use-date-string (time/to-string start-time) start-time)
-       :end-time (if use-date-string (time/to-string end-time) end-time)
-       :categories ["foreign-aid"]
-       :unmoderated-description "LOL"
-       :max-participants 10
-       :hashtags ["#a" "#b" "#c" "#d"]
-       :picture nil
-       :owner nil
-       :is-open true}
-      {:location-to location-to
-       :coordinates-to coordinates-to })))
-  ([] (test-quest {})))
+     (-> {:name "Nälkäkeräys"
+          :start-time (if use-date-string (time/to-string start-time) start-time)
+          :end-time (if use-date-string (time/to-string end-time) end-time)
+          :categories ["foreign-aid"]
+          :unmoderated-description "LOL"
+          :max-participants 10
+          :hashtags ["#a" "#b" "#c" "#d"]
+          :picture nil
+          :owner nil
+          :is-open true}
+         (add-location
+          {:location-to location-to
+           :coordinates-to coordinates-to })
+         (add-organisation organisation-to))))
+   ([] (test-quest {})))
 
 (def test-user
   {:name "Test user"

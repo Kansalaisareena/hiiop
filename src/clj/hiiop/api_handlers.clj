@@ -63,36 +63,29 @@
            location
            categories
            picture-id
+           organisation
            organiser-participates] :as quest-from-api}]
-  (let [distinct-hashtags (when hashtags (vec (distinct hashtags)))
-        distinct-categories (vec (distinct categories))
-        start-time (time/from-string start-time)
-        end-time (time/from-string end-time)
-        coordinates (:coordinates location)
-        location-with-coordinates-flat (conj
-                                        (dissoc location :coordinates)
-                                        coordinates)
-        with-location (conj
-                       (dissoc quest-from-api :location)
-                       location-with-coordinates-flat)
-        with-modified-fields (assoc with-location
-                                    :start-time start-time
-                                    :end-time end-time
-                                    :categories distinct-categories
-                                    :hashtags distinct-hashtags
-                                    :picture picture-id)
-        also-without-picture-id (dissoc with-modified-fields
-                                        :picture-id)
-        also-without-picture-id (dissoc with-modified-fields
-                                        :picture-id)
-        quest-to-db (db/->snake_case_keywords also-without-picture-id)]
-    quest-to-db
-    ))
+  (log/info organisation)
+  (-> quest-from-api
+      (assoc :hashtags (when hashtags (vec (distinct hashtags))))
+      (assoc :categories (vec (distinct categories)))
+      (assoc :start-time  (time/from-string start-time))
+      (assoc :end-time (time/from-string end-time))
+      (assoc :picture picture-id)
+      (assoc :organisation (:name organisation))
+      (assoc :organisation-description (:description organisation))
+      (conj (:coordinates location))
+      (conj location)
+      (dissoc :location :coordinates :picture-id)
+      (db/->snake_case_keywords))
+    )
 
 (def DBQuest
   {:id hs/NaturalNumber
    :name hs/NonEmptyString
    :description (s/maybe hs/NonEmptyString)
+   :organisation (s/maybe hs/NonEmptyString)
+   :organisation_description (s/maybe hs/NonEmptyString)
    :start_time (s/constrained s/Any time/time? :error.not-valid-date)
    :end_time (s/constrained s/Any time/time? :error.not-valid-date)
    :street_number (s/maybe hs/NaturalNumber)
@@ -148,41 +141,44 @@
         quest-no-location-data (apply dissoc db-quest location-keys)]
     (conj quest-no-location-data {:location location-structure})))
 
-(defn time-to-string [keyword map]
+(defn time->string [keyword map]
   (time/to-string (keyword map)))
 
-(defn times-to-strings [map]
+(defn times->strings [map]
   (assoc map
-         :start-time (time-to-string :start-time map)
-         :end-time   (time-to-string :end-time map)))
+         :start-time (time->string :start-time map)
+         :end-time   (time->string :end-time map)))
 
 (defn string-categories->keyword-categories [db-quest]
   (assoc db-quest :categories
          (into [] (map keyword (:categories db-quest)))))
 
-(defn db-quest->api-quest [db-quest]
+(defn db-quest->api-quest [{:keys [organisation
+                                   organisation-description] :as db-quest}]
   (-> db-quest
       (location-flat->location-structure)
-      (times-to-strings)
-      (string-categories->keyword-categories)))
+      (times->strings)
+      (string-categories->keyword-categories)
+      (assoc :organisation
+             {:name organisation :description organisation-description})
+      (dissoc :organisation :organisation-description)))
 
 (def db-quest->api-quest-coercer
   (stc/coercer hs/Quest
                {hs/Quest db-quest->api-quest}))
 
 (defn add-quest [{:keys [quest user]}]
-  (log/info user)
-  (let [quest-with-owner (assoc quest :owner (:id user))
-        quest-no-organiser-participates (dissoc quest-with-owner :organiser-participates)
-        quest-to-db (api-quest->db-quest-coercer quest-no-organiser-participates)
-        quest-id (:id (db/add-unmoderated-quest! quest-to-db))
-        quest-from-db (db/get-quest-by-id {:id quest-id})
-        quest-to-api (try
-                       (pp/pprint quest-from-db)
-                       (db-quest->api-quest-coercer quest-from-db)
-                       (catch Exception e
-                         (log/error e)))]
-    quest-to-api))
+  (try
+    (-> quest
+        (assoc :owner (:id user))
+        (dissoc :organiser-participates)
+        (api-quest->db-quest-coercer)
+        (db/add-unmoderated-quest!)
+        (#(db/get-quest-by-id {:id (:id %)}))
+        (db-quest->api-quest-coercer))
+    (catch Exception e
+      (log/error e)
+      )))
 
 (defn get-quest [{{id :id} :params}]
   (ok (db/get-quest-by-id {:id id})))

@@ -26,7 +26,6 @@ UPDATE users
 SET name = :name, email = :email
 WHERE id = :id
 
-
 -- :name get-user-by-id :? :1 :uuid
 -- :doc retrieve a user given the uuid.
 SELECT
@@ -98,6 +97,8 @@ INSERT INTO quests
  hashtags,
  picture,
  owner,
+ organisation,
+ organisation_description,
  is_open)
 VALUES
 (:name,
@@ -118,6 +119,8 @@ VALUES
  :hashtags,
  :picture,
  :owner,
+ :organisation,
+ :organisation_description,
  :is_open)
 RETURNING id
 
@@ -144,6 +147,8 @@ SELECT
   q.hashtags as hashtags,
   (SELECT url FROM pictures WHERE id = q.picture) as picture_url,
   q.owner as owner,
+  q.organisation as organisation,
+  q.organisation_description as organisation_description,
   q.is_open as is_open
 FROM
   quests q

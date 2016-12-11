@@ -84,7 +84,10 @@
           test-data (test-quest
                      {:use-date-string true
                       :location-to :location
-                      :coordinates-to :coordinates})
+                      :coordinates-to :coordinates
+                      :organisation-to {:in :organisation
+                                        :name :name
+                                        :description :description}})
           quest-to-add (assoc
                         (dissoc test-data
                                 :picture
