@@ -291,3 +291,7 @@
 (defn time->string [{:keys [hours minutes]}]
   #?(:clj  (format "%02d.%02d" hours minutes)
      :cljs (gstring/format "%02d.%02d" hours minutes)))
+
+(defn time? [time]
+  #?(:clj  (instance? org.joda.time.DateTime time)
+     :cljs (.isMoment js/moment time)))

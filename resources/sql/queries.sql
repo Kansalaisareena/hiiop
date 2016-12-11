@@ -63,7 +63,7 @@ WHERE email = :email
 DELETE FROM users
 WHERE id = :id
 
--- :name delete-user! :? :*
+-- :name delete-user-by-email! :? :*
 -- :doc delete user by email
 DELETE FROM users
 where email = :email
@@ -77,42 +77,21 @@ SELECT * from users
 SELECT id FROM users
 WHERE email = :email
 
--- :name add-unmoderated-open-quest! :? :1
--- :doc add an unmoderated open quest
+-- :name add-unmoderated-quest! :? :1
+-- :doc add a quest
 INSERT INTO quests
 (name,
  start_time,
  end_time,
- address,
+ street_number,
+ street,
  town,
- categories,
- unmoderated_description,
- max_participants,
- hashtags,
- picture,
- owner)
-VALUES
-(:name,
- :start_time,
- :end_time,
- :address,
- :town,
- :categories,
- :unmoderated_description,
- :max_participants,
- :hashtags,
- :picture,
- :owner)
-RETURNING id
-
--- :name add-unmoderated-secret-quest! :? :1
--- :doc add an unmoderated secret quest
-INSERT INTO quests
-(name,
- start_time,
- end_time,
- address,
- town,
+ postal_code,
+ country,
+ latitude,
+ longitude,
+ google_maps_url,
+ google_place_id,
  categories,
  unmoderated_description,
  max_participants,
@@ -124,15 +103,22 @@ VALUES
 (:name,
  :start_time,
  :end_time,
- :address,
+ :street_number,
+ :street,
  :town,
+ :postal_code,
+ :country,
+ :latitude,
+ :longitude,
+ :google_maps_url,
+ :google_place_id,
  :categories,
  :unmoderated_description,
  :max_participants,
  :hashtags,
  :picture,
- :owner
- FALSE)
+ :owner,
+ :is_open)
 RETURNING id
 
 -- :name get-quest-by-id :? :1
@@ -142,8 +128,15 @@ SELECT
   q.name as name,
   q.start_time as start_time,
   q.end_time as end_time,
-  q.address as address,
+  q.street_number as street_number,
+  q.street as street,
+  q.postal_code as postal_code,
   q.town as town,
+  q.country as country,
+  q.latitude as latitude,
+  q.longitude as longitude,
+  q.google_maps_url as google_maps_url,
+  q.google_place_id as google_place_id,
   q.categories as categories,
   q.description as description,
   q.unmoderated_description as unmoderated_description,

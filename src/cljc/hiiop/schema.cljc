@@ -44,7 +44,7 @@
    :id s/Uuid
    (s/optional-key :organisation) Organisation
    :is-moderator? s/Bool
-   :email-verified? s/Bool})
+   :is-active s/Bool})
 
 (def UserActivation
   "Email, password and password token"
@@ -74,8 +74,8 @@
 
 (def Coordinates
   "Latitude and longitude"
-  {:latitude s/Num
-   :longitude s/Num})
+  {:latitude s/Str
+   :longitude s/Str})
 
 (def Location
   "Location"
@@ -93,28 +93,28 @@
   "Quest"
   {:id NaturalNumber
    :name NonEmptyString
-   (s/optional-key :description) s/Str
+   (s/optional-key :description) (s/maybe s/Str)
    :start-time DateTime
    :end-time DateTime
    :location Location
    :max-participants NPlus
    :unmoderated-description NonEmptyString
    :categories [Category]
+   :picture-url (s/maybe s/Str)
    (s/optional-key :hashtags) [Hashtag]
-   (s/optional-key :picture-id) s/Uuid
    :is-open s/Bool
-   :organiser User
-   (s/optional-key :organisation) Organisation
-   (s/optional-key :party) [User]})
+   :owner s/Uuid
+   (s/optional-key :organisation) (s/maybe Organisation)})
 
 (def NewQuest
   (st/assoc
    (st/dissoc Quest
               :id
               :description
-              :organiser
-              :party)
-   :organiser-participates s/Bool))
+              :owner
+              :picture-url)
+   :organiser-participates s/Bool
+   (s/optional-key :picture-id) s/Uuid))
 
 (defn new-empty-quest []
   {:name ""

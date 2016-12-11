@@ -2,7 +2,7 @@
   (:require [ring.util.http-response :refer :all]
             [compojure.api.sweet :refer :all]
             [schema.core :as s]
-            [taoensso.timbre :refer [info]]
+            [taoensso.timbre :as log]
             [hiiop.time :as time]
             [hiiop.config :refer [env]]
             [hiiop.api-handlers :as api-handlers]
@@ -64,17 +64,18 @@
                      :summary "Activates inactive user"
                      api-handlers/activate))
 
-      (context "/quest" []
+      (context "/quests" []
         :tags ["quest"]
 
         (POST "/add" []
+          :name ::add-quest
           :body [new-quest NewQuest]
           :summary "Create a new quest"
           :return Quest
           (fn [request]
             (let [quest (api-handlers/add-quest
                          {:quest new-quest
-                          :user {:id nil}})]
+                          :user (:identity request)})]
               (if quest
                 (created (path-for ::quest {:id (:id quest)}) quest)
                 (bad-request {:error "Failed to add quest!"})))))

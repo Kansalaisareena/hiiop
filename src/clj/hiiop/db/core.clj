@@ -22,9 +22,15 @@
             Timestamp
             PreparedStatement]))
 
+(defn conman-connect []
+  (conman/connect! {:jdbc-url (env :database-url)}))
+
+(defn conman-disconnect [connection]
+  (conman/disconnect! connection))
+
 (defstate ^:dynamic *db*
-  :start (conman/connect! {:jdbc-url (env :database-url)})
-  :stop (conman/disconnect! *db*))
+  :start (conman-connect)
+  :stop (conman-disconnect *db*))
 
 (conman/bind-connection *db* "sql/queries.sql")
 
@@ -71,7 +77,6 @@
   java.sql.Timestamp
   (result-set-read-column [v _2 _3]
     (let [from-db (timec/from-sql-time v)]
-      (log/info "timestamp read" from-db)
       (time/with-default-time-zone from-db))))
 
 (extend-type java.util.Date

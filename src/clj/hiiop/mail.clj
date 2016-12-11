@@ -1,5 +1,6 @@
 (ns hiiop.mail
-  (:require [postal.core :refer [send-message]]
+  (:require [mount.core :refer [defstate]]
+            [postal.core :refer [send-message]]
             [clojure.core.async :refer [go]]
             [hiiop.config :refer [env]]))
 
@@ -14,3 +15,5 @@
                 :to email
                 :body token
                 :subject "Hiiop password token"})))
+
+(defstate send-token-email :start send-token)
