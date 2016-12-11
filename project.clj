@@ -138,18 +138,20 @@
    :dev           [:project/dev :profiles/dev]
    :test          [:project/dev :project/test :profiles/test]
 
-   :project/dev  {:dependencies [[prone "1.1.2"]
-                                 [ring/ring-mock "0.3.0"]
-                                 [ring/ring-devel "1.5.0"]
-                                 [pjstadig/humane-test-output "0.8.1"]
-                                 [binaryage/devtools "0.8.2"]
-                                 [com.cemerick/piggieback "0.2.2-SNAPSHOT"]
-                                 [doo "0.1.7"]
-                                 [figwheel-sidecar "0.5.8"]]
-                  :plugins      [[com.jakemccrary/lein-test-refresh "0.14.0"]
-                                 [lein-doo "0.1.7"]
-                                 [lein-figwheel "0.5.8"]
-                                 [org.clojure/clojurescript "1.9.293"]]
+   :project/dev  {:dependencies
+                  [[prone                        "1.1.2"]
+                   [ring/ring-mock               "0.3.0"]
+                   [ring/ring-devel              "1.5.0"]
+                   [pjstadig/humane-test-output  "0.8.1"]
+                   [binaryage/devtools           "0.8.2"]
+                   [com.cemerick/piggieback      "0.2.2-SNAPSHOT"]
+                   [doo                          "0.1.7"]
+                   [figwheel-sidecar             "0.5.8"]]
+                  :plugins
+                  [[com.jakemccrary/lein-test-refresh  "0.18.0"]
+                   [lein-doo                           "0.1.7"]
+                   [lein-figwheel                      "0.5.8"]
+                   [org.clojure/clojurescript          "1.9.293"]]
 
                   :prep-tasks ["git-version"]
 

@@ -5,15 +5,18 @@
             [hiiop.version :refer [version gitref]]
             [hiiop.translate :refer [langs]]))
 
-(defstate env :start (load-config
-                       :merge
-                       [(args)
-                        (source/from-system-props)
-                        (source/from-env)
-                        {:version version
-                         :git-ref gitref
-                         :langs langs
-                         :time-zone "Europe/Helsinki"}]))
+(defn load-env []
+  (load-config
+   :merge
+   [(args)
+    (source/from-system-props)
+    (source/from-env)
+    {:version version
+     :git-ref gitref
+     :langs langs
+     :time-zone "Europe/Helsinki"}]))
+
+(defstate env :start (load-env))
 
 (defn asset-path [{:keys [dev asset-base-url git-ref] :or {dev true}}]
   (if dev
