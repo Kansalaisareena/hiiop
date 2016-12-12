@@ -14,9 +14,17 @@ $OP-gray-light: #F0F0F0;
 $OP-dark-gray: #323232;
 $OP-orange: #FF6A10;
 $OP-gray: #6E6E6E;
+$OP-white: #fff;
+$OP-red: #EE1D47;
 
 $basic-text-colour: $OP-gray;
 $highlight-colour: $OP-orange;
 $link-colour: $OP-orange;
 
 $header-height: 100px;
+
+// Generic mixins
+
+@mixin opux-color-transition() {
+  transition: background 0.3s, color 0.3s ease, border-color 0.3s ease;
+}

@@ -39,49 +39,53 @@
          #(identity true)))
 
 (rum/defcs edit-content < rum/reactive
-                          (rum/local false ::organisation-enabled)
+  (rum/local false ::organisation-enabled)
   [state {:keys [context quest schema errors is-valid cursors-and-schema tr]}]
   (let [organisation-enabled (::organisation-enabled state)]
     (html/form-section
      (tr [:pages.quest.edit.subtitles.content])
-     (html/label
-      (tr [:pages.quest.edit.name])
-      {:class "name-label"
-       :error (get-in cursors-and-schema [:name :error])}
+     [:div {:class "opux-fieldset__item"}
+      (html/label
+       (tr [:pages.quest.edit.name])
+       {:class "opux-input__label"
+        :error (get-in cursors-and-schema [:name :error])})
       (html/input
-       {:class "name"
+       {:class "opux-input opux-input--text"
         :type "text"
         :value (get-in cursors-and-schema [:name :value])
         :error (get-in cursors-and-schema [:name :error])
         :schema (get-in cursors-and-schema [:name :schema])
-        :context context}))
-     (html/label
-      (tr [:pages.quest.edit.description])
-      {:class "unmoderated-description-label"
-       :error (get-in cursors-and-schema [:unmoderated-description :error])}
+        :context context})]
+     [:div {:class "opux-fieldset__item"}
+      (html/label
+       (tr [:pages.quest.edit.description])
+       {:class "opux-input__label opux-input__label--unmoderated-description"
+        :error (get-in cursors-and-schema [:unmoderated-description :error])})
       (html/text
-       {:class "unmoderated-description"
+       {:class "opux-input opux-input--textarea opux-input--textarea--unmoderated-description"
         :value (get-in cursors-and-schema [:unmoderated-description :value])
         :error (get-in cursors-and-schema [:unmoderated-description :error])
         :schema (get-in cursors-and-schema [:unmoderated-description :schema])
-        :context context}))
-     (html/label
-      (tr [:pages.quest.edit.hashtags])
-      {:class "hashtags-label"
-       :error (get-in cursors-and-schema [:hashtags :error])}
+        :context context})]
+     [:div {:class "opux-fieldset__item"}
+      (html/label
+       (tr [:pages.quest.edit.hashtags])
+       {:class "opux-input__label opux-input__label--hashtags-label"
+        :error (get-in cursors-and-schema [:hashtags :error])})
       (html/input
-       {:type "text"
+       {:class "opux-input opux-input--text opux-input--text--hashtags"
+        :type "text"
         :value (get-in cursors-and-schema [:hashtags :value])
         :error (get-in cursors-and-schema [:hashtags :error])
         :schema (get-in cursors-and-schema [:hashtags :schema])
         :error-key :error.hashtag
         :transform-value #(if (string? %) (str/split % #" ") %)
         :to-value #(if (sequential? %) (str/join " " %) %)
-        :context context}))
+        :context context})]
      (if (not (rum/react organisation-enabled))
        (html/button
         (tr [:pages.quest.edit.button.add-organisation])
-        {:class "organisation"
+        {:class "opux-button opux-button--organisation"
          :on-click
          (fn [e]
            (enable-organisation organisation-enabled)
@@ -93,33 +97,35 @@
               :description nil}}))})
        (let [organisation-name-error (rum/cursor-in errors [:organisation :name])
              organisation-description-error (rum/cursor-in errors [:organisation :description])]
-         [:div
+         [:div {:class "opux-fieldset__item"}
           (html/label
            (tr [:pages.quest.edit.organisation.name])
-           {:class "organisation-name-label"}
-           (html/input
-            {:type "text"
-             :value (rum/cursor-in quest [:organisation :name])
-             :error organisation-name-error
-             :schema hs/NonEmptyString
-             :context context}
-            ))
+           {:class "opux-input__label opux-input__label--organisation-name"})
+          (html/input
+           {:class "opux-input opux-input--text"
+            :type "text"
+            :value (rum/cursor-in quest [:organisation :name])
+            :error organisation-name-error
+            :schema hs/NonEmptyString
+            :context context}
+           )]
+         [:div {:class "opux-fieldset__item"}
           (html/label
            (tr [:pages.quest.edit.organisation.description])
-           {:class "organisation-description-label"}
-           (html/text
-            {:value (rum/cursor-in quest [:organisation :description])
-             :error organisation-description-error
-             :schema hs/NonEmptyString
-             :context context}
-            ))]))
-     )))
+           {:class "opux-input__label opux-input__label--organisation-description"})
+          (html/text
+           {:class "opux-input opux-input--textarea testingshit"
+            :value (rum/cursor-in quest [:organisation :description])
+            :error organisation-description-error
+            :schema hs/NonEmptyString
+            :context context}
+           )])))))
 
 (defn reveal-end-time [end-time-revealed]
   (swap! end-time-revealed #(identity true)))
 
 (rum/defcs edit-time-place < rum/reactive
-                             (rum/local false ::end-time-revealed)
+  (rum/local false ::end-time-revealed)
   [state {:keys [quest is-valid cursors-and-schema context tr]}]
   (let [end-time-revealed (::end-time-revealed state)
         end-time (get-in cursors-and-schema [:end-time :value])
@@ -246,7 +252,8 @@
            (:--value value-or-error) (set-valid! true)
            (:--error value-or-error) (set-valid! false)))))
     [:form
-     {:on-submit (fn [e] (.preventDefault e))}
+     {:class "opux-form"
+      :on-submit (fn [e] (.preventDefault e))}
      [:h1 (tr [:actions.quest.create])]
      (edit-content
       {:cursors-and-schema cursors-and-schema
@@ -282,9 +289,9 @@
      (html/form-section
       (html/button
        (tr [:pages.quest.edit.button.submit])
-       {:class "submit"
+       {:class "opux-button opux-form__button"
         :active is-valid})
       (html/button
        (tr [:pages.quest.edit.button.remove])
-       {:class "cancel"}))
+       {:class "opux-button opux-form__button"}))
      ]))

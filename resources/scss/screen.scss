@@ -15,10 +15,30 @@ html, body {
   color: $basic-text-colour;
 }
 
+input,
+textarea {
+  font-family: $font-family;
+}
+
+h1, h2, h3 {
+  text-align: center;
+  line-height: 1.3;
+  padding: 1rem 0;
+}
+
 h1 {
+  font-size: 2.3rem;
+  font-weight: 200;
+}
+
+h2 {
   font-size: 2rem;
-  font-weight: 300;
-  line-height: 2rem;
+  font-weight: 200;
+}
+
+h3 {
+  font-size: 1.5rem;
+  font-weight: 200;
 }
 
 a {
@@ -38,7 +58,6 @@ a {
 
 
 @import "_multi-selector";
-@import "_forms";
 
 @include block('opux-page-section') {
   box-sizing: border-box;
@@ -56,6 +75,7 @@ a {
 
 @include block('opux-logo') {
   display: flex;
+  padding: 0px;
   a {
     text-decoration: none;
     color: $basic-text-colour;
@@ -125,7 +145,7 @@ a {
       flex-direction: column;
       height: $header-height;
       justify-content: center;
-      padding-right: 1rem;
+      padding-left: 1rem;
     }
   }
 
@@ -167,5 +187,96 @@ a {
         }
       }
     }
+  }
+}
+
+@include block('opux-form') {
+  width: 100%;
+}
+
+@include block('opux-form-section') {
+  display: flex;
+  flex-direction: column;
+  margin-left: -1rem;
+  margin-right: -1rem;
+  border-bottom: 1px solid $OP-gray;
+  margin-bottom: 2rem;
+  padding-bottom: 2rem;
+
+  @include element('fieldset') {
+    width: 100%;
+    margin: 0 auto;
+    max-width: $screen-medium;
+  }
+}
+
+@include block('opux-fieldset') {
+  width: 100%;
+
+  @include element('item') {
+    margin-bottom: 25px;
+  }
+
+  .error {
+    color: $OP-red;
+  }
+}
+
+@include block('opux-input') {
+  @include opux-color-transition;
+  background: none;
+  border: 1px solid $OP-gray;
+  box-shadow: none;
+  color: $basic-text-colour;
+  font-size: 1rem;
+  font-weight: 200;
+  outline: none;
+  padding: 0.5rem;
+  width: 100%;
+  &:focus,
+  &:active {
+    border: 1px solid $OP-orange;
+    outline: none;
+  }
+
+  @include modifier('text') {
+    min-height: 2rem;
+    box-sizing: border-box;
+  }
+  @include modifier('textarea') {
+    height: 10rem;
+    resize: none;
+  }
+
+  @include element('label') {
+    @include opux-color-transition;
+    width: 100%;
+    padding: .5rem 0;
+    display: block;
+    @include modifier('error') {
+      color: $OP-red;
+    }
+  }
+}
+
+@include block('opux-button') {
+  @include opux-color-transition;
+  display: inline-block;
+  height: 50px;
+  border-radius: 24px;
+  box-sizing: border-box;
+  border: 1px solid $OP-gray;
+  color: $OP-gray;
+  padding: 0 20px;
+  text-align: center;
+  min-width: 240px;
+  line-height: 48px;
+  background: none;
+  cursor: pointer;
+
+  &:hover {
+    color: $OP-white;
+    background: $OP-orange;
+    border-color: $OP-orange;
   }
 }

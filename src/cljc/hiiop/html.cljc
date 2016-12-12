@@ -85,7 +85,7 @@
                     (str class)
                     "")]
     (if (and error (deref error))
-      (str class " error")
+      (str class " opux-input__label--error")
       class-str)))
 
 (defn class-error-or-hide [error]
@@ -101,7 +101,7 @@
     (swap! error (fn [_ _] coerced-error))))
 
 (rum/defcs label < rum/reactive
-                   (rum/local nil ::error)
+  (rum/local nil ::error)
   [state text {:keys [for class error] :as or-content} & content]
   (let [local-error (::error state)
         also-content (if (sequential? or-content)
@@ -114,7 +114,8 @@
         default-content [:label
                          {:class
                           (if (or error (and error (rum/react error)))
-                            (class-label-with-error error class))
+                            (class-label-with-error error class)
+                            class)
                           :for for}
                          text]]
     (when error
@@ -156,7 +157,7 @@
         coercer (stc/coercer schema usable-matcher error-key)
         save-val-or-error (partial save-value-or-error coercer value error)]
     [:div
-     {:class "input-container"}
+     {:class "opux-input-container"}
      [:input
       {:type type
        :class class
@@ -260,11 +261,11 @@
                           (when max-date
                             (time/from-string @max-date)))
         is-after-min? (fn [new-date]
-                         (or (not min-date)
-                             (time/before? (min-date-object) new-date)))
+                        (or (not min-date)
+                            (time/before? (min-date-object) new-date)))
         is-before-max? (fn [new-date]
-                       (or (not max-date)
-                           (time/after? (max-date-object) new-date)))
+                         (or (not max-date)
+                             (time/after? (max-date-object) new-date)))
         date-object (time/from-string @date value-format)
         date-atom (atom date-object)
         time-atom (atom (time/datetime->time date-object))
@@ -348,8 +349,8 @@
               :on-change
               (fn [e]
                 (let [choice (keyword
-                            #?(:clj (get-in e [:target :name])
-                               :cljs (.. e -target -name)))
+                              #?(:clj (get-in e [:target :name])
+                                 :cljs (.. e -target -name)))
                       checked #?(:clj (get-in e [:target :checked])
                                  :cljs (.. e -target -checked))
                       selected-set (into #{} @selected)
@@ -420,10 +421,12 @@
 (rum/defc form-section [title & content]
   (let [content-vector (into [] content)
         default-content [:fieldset
+                         {:class "opux-fieldset opux-form-section__fieldset"}
                          [:h3
-                          {:class "form-section"}
+                          {:class "opux-form-section__title"}
                           title]]]
-    (into [] (concat default-content content-vector))))
+    [:div {:class "opux-form-section"}
+     (into [] (concat default-content content-vector))]))
 
 (rum/defc section [{:keys [title content] :as params}]
   [:section
@@ -467,6 +470,6 @@
      (head-content {:title (tr [:title] [title]) :asset-path asset-path})
      (body-content
       (header context)
-      [:div {:id "app" :class "app" :dangerouslySetInnerHTML {:__html content}}]
+      [:div {:id "app" :class "opux-page-section" :dangerouslySetInnerHTML {:__html content}}]
       (into [:div {:class "script-tags"}] script-tags)
-))))
+      ))))
