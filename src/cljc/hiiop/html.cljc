@@ -342,7 +342,7 @@
 (defn multi-choice [tr choice-text-fn selected choice]
   (let [id (str "multi-choice-" (name choice))
         is-selected (> (.indexOf @selected choice) -1)
-        class (str "choice " (name choice))]
+        class (str "opux-input opux-input--checkbox--multi-select hidden choice " (name choice))]
     (into []
           (concat
            [[:input
@@ -365,9 +365,10 @@
                    (fn [_ _ _ _]
                      (into [] (operation selected-set choice))))))}]]
            [(label
-             (tr [(choice-text-fn choice)])
-             {:class class
-              :for id})]))))
+             [:i {:class (str "opux-icon--multi-select opux-icon-circled opux-icon--multi-select--" (name choice))}]
+             {:class "opux-input__label--multi-select"
+              :for id}
+             (tr [(choice-text-fn choice)]))]))))
 
 (rum/defc multi-selector-for-schema [{:keys [schema context value]}]
   (let [tr (:tr context)
@@ -377,7 +378,7 @@
                  :else (st/schema-value schema))
         all (cond
               (or (set? single) (sequential? single))
-              (into [:div {:class "multi-selector"}] (mapcat identity (map make-multi-choice single))))]
+              (into [:div {:class "opux-fieldset opux-fieldset--multi-select"}] (mapcat identity (map make-multi-choice single))))]
     all))
 
 (rum/defc max-participants [{:keys [schema value error context] :as params}]

@@ -45,7 +45,6 @@ $opux-icon-font-file-basename: 'opuxicons';
     text-align: center;
     text-decoration: inherit;
     text-transform: none;
-
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -61,13 +60,6 @@ $opux-icon-font-file-basename: 'opuxicons';
 
 //Generate icon classes for $selector
 @mixin opux-icon-generate($selector, $names: $opux-icon-name-collection, $codes: $opux-icon-code-collection) {
-    // For non-libsass compiler
-    // @each $name, $code in $opux-icon-map {
-    //     #{$selector}-#{$name}:before {
-    //         content: $code;
-    //     }
-    // }
-    //
     @for $i from 1 to length($names) {
         $name: nth($names, $i);
         #{$selector}-#{$name}:before {
@@ -78,9 +70,6 @@ $opux-icon-font-file-basename: 'opuxicons';
 
 //Add specific icon to to your selector
 @mixin opux-icon-named($name) {
-    // For non-libsass compiler
-    // content: map-get($opux-icon-map, $name);
-
     @for $i from 1 to length($opux-icon-name-collection) {
         @if nth($opux-icon-name-collection, $i) == $name {
             content: nth($opux-icon-code-collection, $i);

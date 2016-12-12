@@ -218,10 +218,23 @@ a {
     color: $OP-red;
   }
 
+  // opux-fieldset--multi-select
+  @include modifier('multi-select') {
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+    align-items: flex-start;
+    font-size: .8rem;
+    font-weight: 400;
+    flex-wrap: wrap;
+    input.hidden {
+      display: none;
+    }
+  }
+
   // opux-fieldset__item
   @include element('item') {
     margin-bottom: 25px;
-
     // opux-fieldset__item--inline-container
     @include modifier('inline-container') {
       display: flex;
@@ -273,10 +286,17 @@ a {
     font-size: 1rem;
     font-family: $font-family;
     font-weight: 200;
-
     // opux-input--select--time
     @include modifier('time') {
       max-width: 220px;
+    }
+  }
+
+  @include modifier('checkbox') {
+    @include modifier('multi-select') {
+      &:checked + label {
+        color: $OP-orange !important;
+      }
     }
   }
 
@@ -304,15 +324,55 @@ a {
       }
     }
   }
+
   // opux-input__label
   @include element('label') {
     @include opux-color-transition;
     display: block;
     padding: .5rem 0;
     width: 100%;
+
     // opux-input__label--error
     @include modifier('error') {
       color: $OP-red;
+    }
+
+    // opux-input__label--multi-select
+    @include modifier('multi-select') {
+      @include opux-color-transition;
+      box-sizing: border-box;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      flex: 0 0 20%;
+      justify-content: center;
+      padding: 1.5rem 0;
+      text-align: center;
+    }
+  }
+}
+
+// Generate multi-select icons
+
+$opux-icon-multi-select-name-collection: (elderly,equality,culture,foreign-aid,disabilities,kids-and-youngsters,well-being,environment,peer-support,inequality,end);
+$opux-icon-cross-name-collection: (eyeglasses,law,sound,globe,handicap,toilet,boy,water,personnel,smiley-disappointed,"");
+
+@mixin opux-multi-select-icon-generate($selector, $names: $opux-icon-multi-select-name-collection, $codes: $opux-icon-cross-name-collection) {
+  @for $i from 1 to length($names) {
+    $name: nth($names, $i);
+    #{$selector}--#{$name}:before {
+      @include opux-icon-named(nth($codes, $i))
+    }
+  }
+}
+@include opux-multi-select-icon-generate('.opux-icon--multi-select');
+
+@include block('opux-icon') {
+  @include modifier('multi-select') {
+    padding-bottom: .5rem;
+    &:before {
+      font-weight: 200;
+      font-size: 3rem;
     }
   }
 }
@@ -337,3 +397,4 @@ a {
     color: $OP-white;
   }
 }
+
