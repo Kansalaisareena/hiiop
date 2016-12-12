@@ -19,49 +19,63 @@
 
 (rum/defc top-navigation [{:keys [hierarchy tr identity current-locale]}]
   [:nav
+   {:class "opux-nav opux-nav--header"}
    [:ul
-    {:class "navigation"}
+    {:class "opux-menu opux-menu--main"}
     [:li
-     {:class "stories"}
+     {:class "opux-menu__item opux-menu__item--main"}
      [:a
-      {:href "http://tarinat.hiiop100.fi"}
+      {:class "opux-menu__item-link opux-menu__item-link--main"
+       :href "http://tarinat.hiiop100.fi"}
       (tr [:pages.ideas.title])]]
     [:li
-     {:class "quest browse-quests"}
+     {:class "opux-menu__item opux-menu__item--main-quest opux-menu__item--main--browse-quest"}
      [:a
-      {:href (path-for hierarchy :browse-quests)}
+      {:class "opux-menu__item-link opux-menu__item-link--main"
+       :href (path-for hierarchy :browse-quests)}
       (tr [:actions.quest.browse])]]
     [:li
-     {:class "quest create-quest"}
+     {:class "opux-menu__item opux-menu__item--main--quest opux-menu__item--main--create-quest"}
      [:a
-      {:href (path-for hierarchy :create-quest)}
+      {:class "opux-menu__item-link opux-menu__item-link--main"
+       :href (path-for hierarchy :create-quest)}
       (tr [:actions.quest.create])]]]
    [:ul
-    {:class "languages"}
+    {:class "opux-menu opux-menu--languages"}
     [:li
+     {:class "opux-menu__item opux-menu__item--languages"}
      [:a
       {:href "?lang=fi"
-       :class (when (= current-locale :fi) "selected")}
+       :class (str
+               "opux-menu__item-link opux-menu__item-link--languages "
+               (when (= current-locale :fi) "opux-menu__item-link opux-menu__item-link--languages is-active"))}
       "fi"]
      ]
     [:li
+     {:class "opux-menu__item opux-menu__item--languages"}
      [:a
       {:href "?lang=sv"
-       :class (when (= current-locale :sv) "selected")}
+       :class (str
+               "opux-menu__item-link opux-menu__item-link--languages "
+               (when (= current-locale :sv) "opux-menu__item-link opux-menu__item-link--languages is-active"))}
       "sv"
       ]
      ]]
    [:ul
-    {:class "login"}
+    {:class "opux-menu opux-menu--login"}
     [:li
+     {:class "opux-menu__item opux-menu__item--login"}
      [:a
-      {:href (path-for hierarchy :login)}
+      {:class "opux-menu__item-link opux-menu__item-link--login"
+       :href (path-for hierarchy :login)}
       (tr [:actions.user.login])
       ]]
     [:li
+     {:class "opux-menu__item opux-menu__item--login"}
      [:a
-      {:href (path-for hierarchy :user)}
-      [:i {:class "opux-icon-person"}]
+      {:class "opux-menu__item-link opux-menu__item-link--login"
+       :href (path-for hierarchy :user)}
+      [:i {:class "opux-icon-circled opux-icon-person"}]
       ]
      ]
     ]])
@@ -420,8 +434,9 @@
 
 (rum/defc header [{:keys [hierarchy tr asset-path] :as context}]
   [:header
+   {:class "opux-page-section opux-page-section--header"}
    [:h1
-    {:class "name"}
+    {:class "opux-logo opux-logo--header"}
     [:a
      {:href (path-for hierarchy :index)}
      (tr [:name])]]
