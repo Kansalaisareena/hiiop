@@ -336,7 +336,7 @@
   [{:keys [place class placeholder]}]
   [:input
    {:type "text"
-    :class (str "autocomplete" class)
+    :class (str "autocomplete " class)
     :placeholder placeholder}])
 
 (defn multi-choice [tr choice-text-fn selected choice]

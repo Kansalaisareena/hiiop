@@ -46,12 +46,6 @@ a {
   text-decoration: none;
 }
 
-.app, footer {
-  padding: 1rem;
-  margin: auto;
-  max-width: 1024px;
-}
-
 @include viewports(tiny medium) {
   font-size: 75%;
 }
@@ -67,9 +61,11 @@ a {
   max-width: $screen-large;
   padding: 0 1rem;
   width: 100%;
+
+  // opux-page-section--header
   @include modifier('header') {
-    font-size: 20px;
     border-bottom: 2px solid $OP-gray-light;
+    font-size: 20px;
   }
 }
 
@@ -120,6 +116,7 @@ a {
   // opux-menu__item
   @include element('item') {
     display: flex;
+
     // opux-menu__item--languages
     @include modifier('languages') {
       flex: 1;
@@ -139,6 +136,7 @@ a {
         }
       }
     }
+
     // opux-menu__item--login
     @include modifier('login') {
       display: flex;
@@ -164,6 +162,7 @@ a {
       flex-direction: column;
       text-align: center;
     }
+
     // opux-menu__item-link--languages
     @include modifier('languages') {
       text-transform: uppercase;
@@ -190,31 +189,40 @@ a {
   }
 }
 
+// opux-form
 @include block('opux-form') {
   width: 100%;
 }
 
+// opux-form-section
 @include block('opux-form-section') {
+  border-bottom: 1px solid $OP-gray;
   display: flex;
   flex-direction: column;
+  margin-bottom: 2rem;
   margin-left: -1rem;
   margin-right: -1rem;
-  border-bottom: 1px solid $OP-gray;
-  margin-bottom: 2rem;
   padding-bottom: 2rem;
 
+  // opux-form__fieldset
   @include element('fieldset') {
-    width: 100%;
     margin: 0 auto;
-    max-width: $screen-medium;
+    max-width: 620px;
+    width: 100%;
   }
 }
 
 @include block('opux-fieldset') {
   width: 100%;
+  .error {
+    color: $OP-red;
+  }
 
+  // opux-fieldset__item
   @include element('item') {
     margin-bottom: 25px;
+
+    // opux-fieldset__item--inline-container
     @include modifier('inline-container') {
       display: flex;
       flex-direction: row;
@@ -222,10 +230,7 @@ a {
     }
   }
 
-  .error {
-    color: $OP-red;
-  }
-
+  // opux-fieldset__inline-item
   @include element('inline-item') {
     flex: 0 0 50%;
     display: flex;
@@ -244,56 +249,68 @@ a {
   outline: none;
   padding: 0.5rem;
   width: 100%;
+
   &:focus,
   &:active {
     border: 1px solid $OP-orange;
     outline: none;
   }
 
+  // opux-input--text
   @include modifier('text') {
     min-height: 2rem;
     box-sizing: border-box;
   }
 
+  // opux-input--textarea
   @include modifier('textarea') {
     height: 10rem;
     resize: none;
   }
 
+  // opux-input--select
   @include modifier('select') {
     font-size: 1rem;
     font-family: $font-family;
     font-weight: 200;
 
+    // opux-input--select--time
     @include modifier('time') {
       max-width: 220px;
     }
   }
 
-  @include modifier('date-picker')
-
+  // opux-input__container
   @include element('container') {
-    position: relative;
-    padding-right: 4rem;
     box-sizing: border-box;
-
+    padding-right: 4rem;
+    position: relative;
+    // opux-input__container--date-picker
     @include modifier('date-picker') {
       &:before {
-        position: absolute;
-        display: block;
+        border: 1px solid $OP-gray;
+        box-sizing: border-box;
         content: "\e048";
+        display: block;
+        font-size: 1.5rem;
+        height: 40px;
+        line-height: 42px;
+        padding: 0px;
+        position: absolute;
         right: 20px;
-        top: 0px;
-        font-size: 2.5rem;
+        text-align: center;
+        top: 1px;
+        width: 40px;
       }
     }
   }
-
+  // opux-input__label
   @include element('label') {
     @include opux-color-transition;
-    width: 100%;
-    padding: .5rem 0;
     display: block;
+    padding: .5rem 0;
+    width: 100%;
+    // opux-input__label--error
     @include modifier('error') {
       color: $OP-red;
     }
@@ -302,22 +319,21 @@ a {
 
 @include block('opux-button') {
   @include opux-color-transition;
+  background: none;
+  border-radius: 24px;
+  border: 1px solid $OP-gray;
+  box-sizing: border-box;
+  color: $OP-gray;
+  cursor: pointer;
   display: inline-block;
   height: 50px;
-  border-radius: 24px;
-  box-sizing: border-box;
-  border: 1px solid $OP-gray;
-  color: $OP-gray;
+  line-height: 48px;
+  min-width: 240px;
   padding: 0 20px;
   text-align: center;
-  min-width: 240px;
-  line-height: 48px;
-  background: none;
-  cursor: pointer;
-
   &:hover {
-    color: $OP-white;
     background: $OP-orange;
     border-color: $OP-orange;
+    color: $OP-white;
   }
 }

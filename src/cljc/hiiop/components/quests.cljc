@@ -186,16 +186,18 @@
           :date-print-format time/date-print-format
           :time-print-format time/time-print-format
           :context context})])
-     (html/label
-      (tr [:pages.quest.edit.location.label])
-      {:class "location-label"
-       :error (get-in cursors-and-schema [:location :error])}
+     [:div {:class "opux-fieldset__item"}
+      (html/label
+       (tr [:pages.quest.edit.location.label])
+       {:class "opux-input__label location-label"
+        :error (get-in cursors-and-schema [:location :error])})
       (html/location-selector
-       {:location (get-in cursors-and-schema [:location :value])
+       {:class "opux-input opux-input--location-selector"
+        :location (get-in cursors-and-schema [:location :value])
         :error (get-in cursors-and-schema [:location :error])
         :schema (get-in cursors-and-schema [:location :schema])
         :placeholder (tr [:pages.quest.edit.location.placeholder])
-        :context context}))
+        :context context})]
      )))
 
 (rum/defc edit-participation-settings < rum/reactive
