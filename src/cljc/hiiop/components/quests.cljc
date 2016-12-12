@@ -147,41 +147,44 @@
          )))
     (html/form-section
      (tr [:pages.quest.edit.subtitles.time-place])
-     (html/label
-      (tr [:pages.quest.edit.start-time])
-      {:class "start-time-label"
-       :error (atom nil)}
+     [:div {:class "opux-fieldset__item"}
+      (html/label
+       (tr [:pages.quest.edit.start-time])
+       {:class "opux-input__label start-time-label"
+        :error (atom nil)})
       (html/datetime-picker
        {:date start-time
         :error (get-in cursors-and-schema [:start-time :error])
         :schema (get-in cursors-and-schema [:start-time :schema])
         :max-date (when (rum/react end-time-revealed)
                     end-time)
-        :class "start-time"
+        :class "opux-fieldset__item opux-fieldset__item--inline-container start-time"
         :value-format time/transit-format
         :date-print-format time/date-print-format
         :time-print-format time/time-print-format
-        :context context}))
-     (if (not (rum/react end-time-revealed))
-       (html/button
-        (tr [:pages.quest.edit.button.reveal-end-time])
-        {:class "end-time-reveal"
-         :on-click (fn [e]
-                     (reveal-end-time end-time-revealed))})
-       (html/label
-        (tr [:pages.quest.edit.end-time])
-        {:class "end-time-label"
-         :error (get-in cursors-and-schema [:end-time :error])}
-        (html/datetime-picker
-         {:date end-time
-          :error (get-in cursors-and-schema [:end-time :error])
-          :schema (get-in cursors-and-schema [:end-time :schema])
-          :min-date (get-in cursors-and-schema [:start-time :value])
-          :class "end-time"
-          :value-format time/transit-format
-          :date-print-format time/date-print-format
-          :time-print-format time/time-print-format
-          :context context})))
+        :context context})]
+
+     [:div {:class "opux-fieldset__item"}
+      (if (not (rum/react end-time-revealed))
+        (html/button
+         (tr [:pages.quest.edit.button.reveal-end-time])
+         {:class "opux-button end-time-reveal"
+          :on-click (fn [e]
+                      (reveal-end-time end-time-revealed))})
+        (html/label
+         (tr [:pages.quest.edit.end-time])
+         {:class "opux-input__label end-time-label"
+          :error (get-in cursors-and-schema [:end-time :error])})
+         (html/datetime-picker
+          {:date end-time
+           :error (get-in cursors-and-schema [:end-time :error])
+           :schema (get-in cursors-and-schema [:end-time :schema])
+           :min-date (get-in cursors-and-schema [:start-time :value])
+           :class "opux-fieldset__item opux-fieldset__item--inline-container end-time"
+           :value-format time/transit-format
+           :date-print-format time/date-print-format
+           :time-print-format time/time-print-format
+           :context context}))]
      (html/label
       (tr [:pages.quest.edit.location.label])
       {:class "location-label"

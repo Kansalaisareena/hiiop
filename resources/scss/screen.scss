@@ -215,10 +215,21 @@ a {
 
   @include element('item') {
     margin-bottom: 25px;
+    @include modifier('inline-container') {
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+    }
   }
 
   .error {
     color: $OP-red;
+  }
+
+  @include element('inline-item') {
+    flex: 0 0 50%;
+    display: flex;
+    flex-direction: column;
   }
 }
 
@@ -243,9 +254,39 @@ a {
     min-height: 2rem;
     box-sizing: border-box;
   }
+
   @include modifier('textarea') {
     height: 10rem;
     resize: none;
+  }
+
+  @include modifier('select') {
+    font-size: 1rem;
+    font-family: $font-family;
+    font-weight: 200;
+
+    @include modifier('time') {
+      max-width: 220px;
+    }
+  }
+
+  @include modifier('date-picker')
+
+  @include element('container') {
+    position: relative;
+    padding-right: 4rem;
+    box-sizing: border-box;
+
+    @include modifier('date-picker') {
+      &:before {
+        position: absolute;
+        display: block;
+        content: "\e048";
+        right: 20px;
+        top: 0px;
+        font-size: 2.5rem;
+      }
+    }
   }
 
   @include element('label') {

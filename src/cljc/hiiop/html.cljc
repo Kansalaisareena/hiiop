@@ -191,7 +191,7 @@
       (if (rum/react error) (tr [(rum/react error)]))]]))
 
 (rum/defc select < rum/reactive
-  [{:keys [value options transform error]}]
+  [{:keys [value options class transform error]}]
   (let [html-options (map
                       #(identity
                         [:option
@@ -203,7 +203,8 @@
      []
      (concat
       [:select
-       {:default-value (rum/react value)
+       {:class class
+        :default-value (rum/react value)
         :on-change
         (fn [e]
           (let [event-value (value-from-event e usable-transform)]
@@ -212,10 +213,13 @@
 
 (rum/defcs datepicker < pikaday-mixin
   [state {:keys [date min-date max-date format schema error class transform-value context error-key]}]
-  [:input
-   {:type "text"
-    :class class
-    :default-value (time/to-string @date format)}])
+  [:div {:class
+         (str "opux-input__container opux-input__container--date-picker opux-icon "
+              class)}
+   [:input
+    {:type "text"
+     :class "opux-input opux-input--date-picker"
+     :default-value (time/to-string @date format)}]])
 
 (rum/defc timepicker < rum/reactive
   [{:keys [time class time-print-format context]}]
@@ -241,6 +245,7 @@
         (fn [_ _ _ _] new-time))))
     (select
      {:options options
+      :class class
       :value select-value-atom
       :transform time/string->time})))
 
@@ -320,10 +325,10 @@
        :format date-print-format
        :position "top right"
        :context context
-       :class "date"})
+       :class "opux-fieldset__inline-item date"})
      (timepicker
       {:time time-atom
-       :class "time"})
+       :class "opux-fieldset__inline-item opux-input opux-input--select opux-input--select--time time"})
      (if (rum/react error)
        [:span {:class "error"} (rum/react error)])]))
 
