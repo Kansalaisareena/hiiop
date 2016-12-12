@@ -1,0 +1,105 @@
+@include block('opux-nav') {
+  display: flex;
+  flex-direction: row;
+
+  // opux-nav--header
+  @include modifier('header') {
+    flex: 9;
+  }
+}
+
+@include block('opux-menu') {
+  padding: 0px;
+  margin: 0px;
+  list-style: none;
+  display: flex;
+  flex-direction: row;
+
+  // opux-menu--main
+  @include modifier('main') {
+    flex: 12;
+  }
+  // opux-menu--languages
+  @include modifier('languages') {
+    flex: 2;
+  }
+  // opux-menu--login
+  @include modifier('login') {
+    flex: 2;
+  }
+
+  // opux-menu__item
+  @include element('item') {
+    display: flex;
+
+    // opux-menu__item--languages
+    @include modifier('languages') {
+      flex: 1;
+      text-align: center;
+      &:first-child {
+        position: relative;
+        &:after {
+          border-right: 1px solid $OP-gray;
+          content: "";
+          display: inline-block;
+          height: 30px;
+          margin-top: -15px;
+          position: absolute;
+          right: 0px;
+          top: 50%;
+          width: 1px;
+        }
+      }
+    }
+
+    // opux-menu__item--login
+    @include modifier('login') {
+      display: flex;
+      flex-direction: column;
+      height: $header-height;
+      justify-content: center;
+      padding-left: 1rem;
+    }
+  }
+
+  // opux-menu__item-link
+  @include element('item-link') {
+    text-decoration: none;
+    color: $basic-text-colour;
+
+    // opux-menu__item-link--main
+    @include modifier('main') {
+      padding: 0 0.75rem;
+      display: flex;
+      height: $header-height;
+      width: 100%;
+      justify-content: center;
+      flex-direction: column;
+      text-align: center;
+    }
+
+    // opux-menu__item-link--languages
+    @include modifier('languages') {
+      text-transform: uppercase;
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      height: $header-height;
+      justify-content: center;
+
+      // opux-menu__item-link--languages--is-active
+      @include state('active') {
+        color: $OP-orange;
+      }
+    }
+    // opux-menu__item-link--login
+    @include modifier('login') {
+      .opux-icon-circled.opux-icon-person {
+        display: inline-block;
+        &:before {
+          font-size: 50px;
+        }
+      }
+    }
+  }
+}

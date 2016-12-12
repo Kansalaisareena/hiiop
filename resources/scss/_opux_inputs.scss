@@ -1,0 +1,103 @@
+@include block('opux-input') {
+  @include opux-color-transition;
+  background: none;
+  border: 1px solid $OP-gray;
+  box-shadow: none;
+  color: $basic-text-colour;
+  font-size: 1rem;
+  font-weight: 200;
+  outline: none;
+  padding: 0.5rem;
+  width: 100%;
+
+  &:focus,
+  &:active {
+    border: 1px solid $OP-orange;
+    outline: none;
+  }
+
+  // opux-input--text
+  @include modifier('text') {
+    box-sizing: border-box;
+    min-height: 2rem;
+  }
+
+  // opux-input--textarea
+  @include modifier('textarea') {
+    height: 10rem;
+    resize: none;
+  }
+
+  // opux-input--select
+  @include modifier('select') {
+    font-size: 1rem;
+    font-family: $font-family;
+    font-weight: 200;
+
+    // opux-input--select--time
+    @include modifier('time') {
+      max-width: 220px;
+    }
+  }
+
+  // opux-input--checkbox
+  @include modifier('checkbox') {
+    @include modifier('multi-select') {
+      &:checked + label {
+        color: $OP-orange !important;
+      }
+    }
+  }
+
+  // opux-input__container
+  @include element('container') {
+    box-sizing: border-box;
+    padding-right: 4rem;
+    position: relative;
+
+    // opux-input__container--date-picker
+    @include modifier('date-picker') {
+      &:before {
+        border: 1px solid $OP-gray;
+        box-sizing: border-box;
+        content: "\e048";
+        display: block;
+        font-size: 1.5rem;
+        height: 40px;
+        line-height: 42px;
+        padding: 0px;
+        position: absolute;
+        right: 20px;
+        text-align: center;
+        top: 1px;
+        width: 40px;
+      }
+    }
+  }
+
+  // opux-input__label
+  @include element('label') {
+    @include opux-color-transition;
+    display: block;
+    padding: .5rem 0;
+    width: 100%;
+
+    // opux-input__label--error
+    @include modifier('error') {
+      color: $OP-red;
+    }
+
+    // opux-input__label--multi-select
+    @include modifier('multi-select') {
+      @include opux-color-transition;
+      box-sizing: border-box;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      flex: 0 0 20%;
+      justify-content: center;
+      padding: 1.5rem 0;
+      text-align: center;
+    }
+  }
+}

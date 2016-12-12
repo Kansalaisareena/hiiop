@@ -1,0 +1,62 @@
+// opux-form
+@include block('opux-form') {
+  width: 100%;
+}
+
+// opux-form-section
+@include block('opux-form-section') {
+  border-bottom: 1px solid $OP-gray;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 2rem;
+  margin-left: -1rem;
+  margin-right: -1rem;
+  padding-bottom: 2rem;
+
+  // opux-form__fieldset
+  @include element('fieldset') {
+    margin: 0 auto;
+    max-width: 620px;
+    width: 100%;
+  }
+}
+
+@include block('opux-fieldset') {
+  width: 100%;
+  .error {
+    color: $OP-red;
+  }
+
+  // opux-fieldset--multi-select
+  @include modifier('multi-select') {
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+    align-items: flex-start;
+    font-size: .8rem;
+    font-weight: 400;
+    flex-wrap: wrap;
+    input.hidden {
+      display: none;
+    }
+  }
+
+  // opux-fieldset__item
+  @include element('item') {
+    margin-bottom: 25px;
+
+    // opux-fieldset__item--inline-container
+    @include modifier('inline-container') {
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+    }
+  }
+
+  // opux-fieldset__inline-item
+  @include element('inline-item') {
+    flex: 0 0 50%;
+    display: flex;
+    flex-direction: column;
+  }
+}

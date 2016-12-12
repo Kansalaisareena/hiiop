@@ -1,11 +1,12 @@
-@import "_reset-src";
-@import "_font-faces";
-@import "_variables";
 // Import the library:
-@import "viewports";
-@import "pikaday";
-@import "bemify";
-@import "_ligature";
+@import "vendors/reset-src";
+@import "vendors/font-faces";
+@import "vendors/viewports";
+@import "vendors/pikaday";
+@import "vendors/bemify";
+@import "vendors/ligature";
+
+@import "variables";
 
 html, body {
   font-family: $font-family;
@@ -50,9 +51,6 @@ a {
   font-size: 75%;
 }
 
-
-@import "_multi-selector";
-
 @include block('opux-page-section') {
   box-sizing: border-box;
   display: flex;
@@ -76,6 +74,8 @@ a {
     text-decoration: none;
     color: $basic-text-colour;
   }
+
+  // opux-logo--header
   @include modifier('header') {
     flex: 1.5;
     height: $header-height;
@@ -84,317 +84,8 @@ a {
   }
 }
 
-@include block('opux-nav') {
-  display: flex;
-  flex-direction: row;
-
-  @include modifier('header') {
-    flex: 9;
-  }
-}
-
-@include block('opux-menu') {
-  padding: 0px;
-  margin: 0px;
-  list-style: none;
-  display: flex;
-  flex-direction: row;
-
-  // opux-menu--main
-  @include modifier('main') {
-    flex: 12;
-  }
-  // opux-menu--languages
-  @include modifier('languages') {
-    flex: 2;
-  }
-  // opux-menu--login
-  @include modifier('login') {
-    flex: 2;
-  }
-
-  // opux-menu__item
-  @include element('item') {
-    display: flex;
-
-    // opux-menu__item--languages
-    @include modifier('languages') {
-      flex: 1;
-      text-align: center;
-      &:first-child {
-        position: relative;
-        &:after {
-          border-right: 1px solid $OP-gray;
-          content: "";
-          display: inline-block;
-          height: 30px;
-          margin-top: -15px;
-          position: absolute;
-          right: 0px;
-          top: 50%;
-          width: 1px;
-        }
-      }
-    }
-
-    // opux-menu__item--login
-    @include modifier('login') {
-      display: flex;
-      flex-direction: column;
-      height: $header-height;
-      justify-content: center;
-      padding-left: 1rem;
-    }
-  }
-
-  // opux-menu__item-link
-  @include element('item-link') {
-    text-decoration: none;
-    color: $basic-text-colour;
-
-    // opux-menu__item-link--main
-    @include modifier('main') {
-      padding: 0 0.75rem;
-      display: flex;
-      height: $header-height;
-      width: 100%;
-      justify-content: center;
-      flex-direction: column;
-      text-align: center;
-    }
-
-    // opux-menu__item-link--languages
-    @include modifier('languages') {
-      text-transform: uppercase;
-      display: flex;
-      flex: 1;
-      flex-direction: column;
-      height: $header-height;
-      justify-content: center;
-
-      // opux-menu__item-link--languages--is-active
-      @include state('active') {
-        color: $OP-orange;
-      }
-    }
-    // opux-menu__item-link--login
-    @include modifier('login') {
-      .opux-icon-circled.opux-icon-person {
-        display: inline-block;
-        &:before {
-          font-size: 50px;
-        }
-      }
-    }
-  }
-}
-
-// opux-form
-@include block('opux-form') {
-  width: 100%;
-}
-
-// opux-form-section
-@include block('opux-form-section') {
-  border-bottom: 1px solid $OP-gray;
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 2rem;
-  margin-left: -1rem;
-  margin-right: -1rem;
-  padding-bottom: 2rem;
-
-  // opux-form__fieldset
-  @include element('fieldset') {
-    margin: 0 auto;
-    max-width: 620px;
-    width: 100%;
-  }
-}
-
-@include block('opux-fieldset') {
-  width: 100%;
-  .error {
-    color: $OP-red;
-  }
-
-  // opux-fieldset--multi-select
-  @include modifier('multi-select') {
-    display: flex;
-    width: 100%;
-    flex-direction: row;
-    align-items: flex-start;
-    font-size: .8rem;
-    font-weight: 400;
-    flex-wrap: wrap;
-    input.hidden {
-      display: none;
-    }
-  }
-
-  // opux-fieldset__item
-  @include element('item') {
-    margin-bottom: 25px;
-    // opux-fieldset__item--inline-container
-    @include modifier('inline-container') {
-      display: flex;
-      flex-direction: row;
-      align-items: flex-start;
-    }
-  }
-
-  // opux-fieldset__inline-item
-  @include element('inline-item') {
-    flex: 0 0 50%;
-    display: flex;
-    flex-direction: column;
-  }
-}
-
-@include block('opux-input') {
-  @include opux-color-transition;
-  background: none;
-  border: 1px solid $OP-gray;
-  box-shadow: none;
-  color: $basic-text-colour;
-  font-size: 1rem;
-  font-weight: 200;
-  outline: none;
-  padding: 0.5rem;
-  width: 100%;
-
-  &:focus,
-  &:active {
-    border: 1px solid $OP-orange;
-    outline: none;
-  }
-
-  // opux-input--text
-  @include modifier('text') {
-    min-height: 2rem;
-    box-sizing: border-box;
-  }
-
-  // opux-input--textarea
-  @include modifier('textarea') {
-    height: 10rem;
-    resize: none;
-  }
-
-  // opux-input--select
-  @include modifier('select') {
-    font-size: 1rem;
-    font-family: $font-family;
-    font-weight: 200;
-    // opux-input--select--time
-    @include modifier('time') {
-      max-width: 220px;
-    }
-  }
-
-  @include modifier('checkbox') {
-    @include modifier('multi-select') {
-      &:checked + label {
-        color: $OP-orange !important;
-      }
-    }
-  }
-
-  // opux-input__container
-  @include element('container') {
-    box-sizing: border-box;
-    padding-right: 4rem;
-    position: relative;
-    // opux-input__container--date-picker
-    @include modifier('date-picker') {
-      &:before {
-        border: 1px solid $OP-gray;
-        box-sizing: border-box;
-        content: "\e048";
-        display: block;
-        font-size: 1.5rem;
-        height: 40px;
-        line-height: 42px;
-        padding: 0px;
-        position: absolute;
-        right: 20px;
-        text-align: center;
-        top: 1px;
-        width: 40px;
-      }
-    }
-  }
-
-  // opux-input__label
-  @include element('label') {
-    @include opux-color-transition;
-    display: block;
-    padding: .5rem 0;
-    width: 100%;
-
-    // opux-input__label--error
-    @include modifier('error') {
-      color: $OP-red;
-    }
-
-    // opux-input__label--multi-select
-    @include modifier('multi-select') {
-      @include opux-color-transition;
-      box-sizing: border-box;
-      cursor: pointer;
-      display: flex;
-      flex-direction: column;
-      flex: 0 0 20%;
-      justify-content: center;
-      padding: 1.5rem 0;
-      text-align: center;
-    }
-  }
-}
-
-// Generate multi-select icons
-
-$opux-icon-multi-select-name-collection: (elderly,equality,culture,foreign-aid,disabilities,kids-and-youngsters,well-being,environment,peer-support,inequality,end);
-$opux-icon-cross-name-collection: (eyeglasses,law,sound,globe,handicap,toilet,boy,water,personnel,smiley-disappointed,"");
-
-@mixin opux-multi-select-icon-generate($selector, $names: $opux-icon-multi-select-name-collection, $codes: $opux-icon-cross-name-collection) {
-  @for $i from 1 to length($names) {
-    $name: nth($names, $i);
-    #{$selector}--#{$name}:before {
-      @include opux-icon-named(nth($codes, $i))
-    }
-  }
-}
-@include opux-multi-select-icon-generate('.opux-icon--multi-select');
-
-@include block('opux-icon') {
-  @include modifier('multi-select') {
-    padding-bottom: .5rem;
-    &:before {
-      font-weight: 200;
-      font-size: 3rem;
-    }
-  }
-}
-
-@include block('opux-button') {
-  @include opux-color-transition;
-  background: none;
-  border-radius: 24px;
-  border: 1px solid $OP-gray;
-  box-sizing: border-box;
-  color: $OP-gray;
-  cursor: pointer;
-  display: inline-block;
-  height: 50px;
-  line-height: 48px;
-  min-width: 240px;
-  padding: 0 20px;
-  text-align: center;
-  &:hover {
-    background: $OP-orange;
-    border-color: $OP-orange;
-    color: $OP-white;
-  }
-}
-
+@import 'opux_icons';
+@import 'opux_buttons';
+@import 'opux_navs';
+@import 'opux_inputs';
+@import 'opux_forms';
