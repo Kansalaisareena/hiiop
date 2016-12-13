@@ -5,9 +5,9 @@
 
 // opux-form-section
 @include block('opux-form-section') {
+  @include flex-direction(column);
+  @include flexbox;
   border-bottom: 1px solid $OP-gray;
-  display: flex;
-  flex-direction: column;
   margin-bottom: 2rem;
   margin-left: -1rem;
   margin-right: -1rem;
@@ -29,9 +29,9 @@
 
   // opux-fieldset--multi-select
   @include modifier('multi-select') {
-    align-items: flex-start;
-    display: flex;
-    flex-direction: row;
+    @include align-items(flex-start);
+    @include flex-direction(row);
+    @include flexbox;
     flex-wrap: wrap;
     font-size: .8rem;
     font-weight: 400;
@@ -47,16 +47,16 @@
 
     // opux-fieldset__item--inline-container
     @include modifier('inline-container') {
-      align-items: flex-start;
-      display: flex;
-      flex-direction: row;
+      @include align-items(flex-start);
+      @include flex-direction(row);
+      @include flexbox;
     }
   }
 
   // opux-fieldset__inline-item
   @include element('inline-item') {
-    display: flex;
-    flex-direction: column;
-    flex: 0 0 50%;
+    @include flex(0, 0, 50%);
+    @include flex-direction(column);
+    @include flexbox;
   }
 }

@@ -1,0 +1,14 @@
+@include viewports(tiny medium) {
+
+  @include block('opux-nav') {
+    @include modifier('header') {
+      flex: 10;
+    }
+  }
+
+  @include block('opux-menu') {
+    // opux-menu--main
+    @include modifier('main') {
+    }
+  }
+}

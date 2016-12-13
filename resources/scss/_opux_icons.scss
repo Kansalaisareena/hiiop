@@ -29,7 +29,7 @@ $opux-icon-cross-name-collection: (eyeglasses, law, sound, globe, handicap, chil
 }
 
 @include block('opux-logo') {
-  display: flex;
+  @include flexbox;
   padding: 0px;
   a {
     text-decoration: none;
@@ -38,9 +38,9 @@ $opux-icon-cross-name-collection: (eyeglasses, law, sound, globe, handicap, chil
 
   // opux-logo--header
   @include modifier('header') {
-    flex: 1.5;
+    @include flex(1.5);
+    @include flex-direction(column);
+    @include justify-content(center);
     height: $header-height;
-    justify-content: center;
-    flex-direction: column;
   }
 }
