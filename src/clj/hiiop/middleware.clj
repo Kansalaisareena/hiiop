@@ -5,7 +5,6 @@
             [ring.middleware.flash :refer [wrap-flash]]
             [ring.middleware.cookies :refer [wrap-cookies]]
             [ring.middleware.params :refer [wrap-params]]
-            [immutant.web.middleware :refer [wrap-session]]
             [ring.middleware.defaults :refer [site-defaults wrap-defaults]]
             [buddy.auth.accessrules :refer [restrict]]
             [buddy.auth.middleware :refer [wrap-authentication]]
@@ -13,6 +12,7 @@
             [buddy.auth.backends.session :refer [session-backend]]
             [taoensso.timbre :as log :refer [info]]
             [taoensso.tempura :as tempura]
+            [taoensso.carmine.ring :refer [carmine-store]]
             [hiiop.env :refer [defaults]]
             [hiiop.config :refer [env]]
             [hiiop.layout :refer [*app-context* error-page]]
@@ -110,8 +110,7 @@
             (assoc-in [:cookies "lang" :value]   (name (:current-locale req)))
             (assoc-in [:cookies "lang" :path]    "/")
             (assoc-in [:cookies "lang" :max-age] (* 3600 30)))
-        (handler req))
-      )))
+        (handler req)))))
 
 (defn wrap-base [handler]
   (-> ((:middleware defaults) handler)
@@ -125,6 +124,7 @@
           (tr-opts))})
       (wrap-defaults
        (-> site-defaults
-           (assoc-in [:security :anti-forgery] false)))
+           (assoc-in [:security :anti-forgery] false)
+           (assoc-in [:session :store] (carmine-store (env :redis)))))
       wrap-context
       wrap-internal-error))

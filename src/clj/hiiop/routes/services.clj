@@ -91,4 +91,5 @@
         ;;  :body [NewPartyMember]
         ;;  :summary "Join a quest"
         ;;  api-handlers/join-quest)
-        ))))
+        )
+      )))
