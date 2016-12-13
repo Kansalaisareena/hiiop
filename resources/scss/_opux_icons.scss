@@ -1,7 +1,7 @@
 // Generate multi-select icons
 $opux-icon-multi-select-name-collection: (elderly, equality, culture, foreign-aid, disabilities, kids-and-youngsters, well-being, environment, peer-support, inequality, end);
 
-$opux-icon-cross-name-collection: (eyeglasses, law, sound, globe, handicap, toilet, boy, water, personnel, smiley-disappointed, "");
+$opux-icon-cross-name-collection: (eyeglasses, law, sound, globe, handicap, children, football, water, personnel, smiley-disappointed, end);
 
 @mixin opux-multi-select-icon-generate(
   $selector, $names: $opux-icon-multi-select-name-collection,
