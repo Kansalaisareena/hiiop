@@ -234,11 +234,11 @@
    )
   (html/form-section
    (tr [:pages.quest.edit.subtitles.participation])
-   (html/max-participants
-    {:schema (get-in cursors-and-schema [:max-participants :schema])
-     :value (get-in cursors-and-schema [:max-participants :value])
-     :error (get-in cursors-and-schema [:max-participants :error])
-     :context context})
+    (html/max-participants
+     {:schema (get-in cursors-and-schema [:max-participants :schema])
+      :value (get-in cursors-and-schema [:max-participants :value])
+      :error (get-in cursors-and-schema [:max-participants :error])
+      :context context})
    (html/radio-binary
     {:class "is-open"
      :schema (get-in cursors-and-schema [:is-open :schema])
@@ -336,3 +336,4 @@
        (tr [:pages.quest.edit.button.remove])
        {:class "opux-button opux-form__button"}))
      ]))
+c

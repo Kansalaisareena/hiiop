@@ -1,7 +1,12 @@
 // Generate multi-select icons
-$opux-icon-multi-select-name-collection: (elderly,equality,culture,foreign-aid,disabilities,kids-and-youngsters,well-being,environment,peer-support,inequality,end);
-$opux-icon-cross-name-collection: (eyeglasses,law,sound,globe,handicap,toilet,boy,water,personnel,smiley-disappointed,"");
-@mixin opux-multi-select-icon-generate($selector, $names: $opux-icon-multi-select-name-collection, $codes: $opux-icon-cross-name-collection) {
+$opux-icon-multi-select-name-collection: (elderly, equality, culture, foreign-aid, disabilities, kids-and-youngsters, well-being, environment, peer-support, inequality, end);
+
+$opux-icon-cross-name-collection: (eyeglasses, law, sound, globe, handicap, toilet, boy, water, personnel, smiley-disappointed, "");
+
+@mixin opux-multi-select-icon-generate(
+  $selector, $names: $opux-icon-multi-select-name-collection,
+  $codes: $opux-icon-cross-name-collection
+) {
   @for $i from 1 to length($names) {
     $name: nth($names, $i);
     #{$selector}--#{$name}:before {
@@ -9,6 +14,7 @@ $opux-icon-cross-name-collection: (eyeglasses,law,sound,globe,handicap,toilet,bo
     }
   }
 }
+
 @include opux-multi-select-icon-generate('.opux-icon--multi-select');
 
 @include block('opux-icon') {

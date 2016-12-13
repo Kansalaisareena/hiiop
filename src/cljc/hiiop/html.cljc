@@ -376,19 +376,22 @@
 
 (rum/defc max-participants [{:keys [schema value error context] :as params}]
   (let [tr (:tr context)]
-    (label
-     (tr [:pages.quest.edit.max-participants.can-join])
-     {:class (class-label-with-error error "max-participants")}
+    [:div {:class "opux-fieldset__item"}
+     (label
+      (tr [:pages.quest.edit.max-participants.can-join])
+      {:class (class-label-with-error error "max-participants")})
      (input
       (conj params
-            {:transform-value #(if (string? %) (mangling/parse-int %))}))
-     (tr [:pages.quest.edit.max-participants.amount-of-people]))))
+            {:class "opux-input opux-input--text opux-input--inline"
+             :transform-value #(if (string? %) (mangling/parse-int %))}))
+     [:span {:class "opux-input__suffix"}
+      (tr [:pages.quest.edit.max-participants.amount-of-people])]]))
 
 (defn single-choice [tr current-choice class [key value]]
   (let [group-name (str class "-radio-binary-choice")
         id (str group-name "-" (name key))]
     [:div
-     {:class "radio-single-choice"}
+     {:class "opux-input__container opex-input__container--radio radio-single-choice"}
      [:input
       {:type "radio"
        :id id
@@ -398,7 +401,8 @@
        (fn [] (reset! current-choice value))}]
      (label
       (tr [key])
-      {:for id})]))
+      {:class "opux-input_label opux-input__label--radio"
+       :for id})]))
 
 
 (rum/defc radio-binary [{:keys [schema value error class context]} choices]

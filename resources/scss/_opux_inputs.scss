@@ -16,6 +16,14 @@
     outline: none;
   }
 
+  // opux-input--inline
+  @include modifier('inline') {
+    display: inline-block;
+    width: 90px;
+    text-align: center;
+    margin: 0 5px;
+  }
+
   // opux-input--text
   @include modifier('text') {
     box-sizing: border-box;

@@ -9,11 +9,11 @@
 }
 
 @include block('opux-menu') {
-  padding: 0px;
-  margin: 0px;
-  list-style: none;
   display: flex;
   flex-direction: row;
+  list-style: none;
+  margin: 0px;
+  padding: 0px;
 
   // opux-menu--main
   @include modifier('main') {
@@ -64,28 +64,28 @@
 
   // opux-menu__item-link
   @include element('item-link') {
-    text-decoration: none;
     color: $basic-text-colour;
+    text-decoration: none;
 
     // opux-menu__item-link--main
     @include modifier('main') {
-      padding: 0 0.75rem;
       display: flex;
-      height: $header-height;
-      width: 100%;
-      justify-content: center;
       flex-direction: column;
+      height: $header-height;
+      justify-content: center;
+      padding: 0 0.75rem;
       text-align: center;
+      width: 100%;
     }
 
     // opux-menu__item-link--languages
     @include modifier('languages') {
-      text-transform: uppercase;
       display: flex;
-      flex: 1;
       flex-direction: column;
+      flex: 1;
       height: $header-height;
       justify-content: center;
+      text-transform: uppercase;
 
       // opux-menu__item-link--languages--is-active
       @include state('active') {
