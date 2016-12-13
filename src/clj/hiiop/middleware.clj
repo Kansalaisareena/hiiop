@@ -59,6 +59,11 @@
   (restrict handler {:handler authenticated?
                      :on-error auth-error}))
 
+(defn api-authenticated [handler]
+  (restrict handler {:handler authenticated?
+                     :on-error (fn [request resp]
+                                 (response/status resp 401))}))
+
 (defn wrap-csrf [handler]
   (wrap-anti-forgery
    handler

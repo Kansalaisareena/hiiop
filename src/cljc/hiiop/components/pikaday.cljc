@@ -7,7 +7,7 @@
             [camel-snake-kebab.extras :refer [transform-keys]]))
 
 (defn- opts-transform [opts]
-  "Given a clojure map of options, return a js object for a pikaday constructor argument."
+  "Given a clojure map of options, return a js object."
   #?(:cljs
      (clj->js (transform-keys ->camelCaseString opts))
      :clj opts))

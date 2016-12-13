@@ -1,5 +1,7 @@
 (ns hiiop.mangling
-  (:require [taoensso.timbre :as log]))
+  (:require [taoensso.timbre :as log]
+            [camel-snake-kebab.core :refer [->camelCaseString]]
+            [camel-snake-kebab.extras :refer [transform-keys]]))
 
 (defn to-value-and-error [map-value key]
   {key {:value (key map-value) :error nil}})
@@ -15,3 +17,5 @@
 (defn parse-int [number-string]
   (#?(:clj biginteger
       :cljs #(js/parseInt % 10)) number-string))
+
+(def ->keys-camelCase (partial transform-keys ->camelCaseString))

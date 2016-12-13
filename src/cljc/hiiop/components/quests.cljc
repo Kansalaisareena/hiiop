@@ -1,8 +1,10 @@
 (ns hiiop.components.quests
+  #?(:cljs (:require-macros [cljs.core.async.macros :refer [go]]))
   (:require [clojure.string :as str]
             [rum.core :as rum]
             [taoensso.timbre :as log]
             [schema.core :as s]
+            [schema.coerce :as sc]
             #?(:cljs [cljs.core.async :refer [<!]])
             #?(:cljs [hiiop.client-api :as api])
             [hiiop.time :as time]
@@ -35,12 +37,17 @@
                  values))))
 
 (defn enable-organisation [enable]
-  (swap! enable
-         #(identity true)))
+  (reset! enable true))
 
 (rum/defcs edit-content < rum/reactive
-  (rum/local false ::organisation-enabled)
-  [state {:keys [context quest schema errors is-valid cursors-and-schema tr]}]
+                          (rum/local false ::organisation-enabled)
+  [state {:keys [context
+                 quest
+                 schema
+                 errors
+                 is-valid
+                 cursors-and-schema
+                 tr]}]
   (let [organisation-enabled (::organisation-enabled state)]
     (html/form-section
      (tr [:pages.quest.edit.subtitles.content])
@@ -69,6 +76,18 @@
         :context context})]
      [:div {:class "opux-fieldset__item"}
       (html/label
+       (tr [:pages.quest.edit.picture])
+       {:class "opux-input__label opux-input__label--picture-label"
+        :error (get-in cursors-and-schema [:picture-id :error])})
+      (html/file-input
+       {:value (get-in cursors-and-schema [:picture-id :value])
+        :error (get-in cursors-and-schema [:picture-id :error])
+        :context context
+        :transform sc/string->uuid
+        :tr (partial tr [:page.quest.edit.picture.upload-failed])})
+      ]
+     [:div {:class "opux-fieldset__item"}
+      (html/label
        (tr [:pages.quest.edit.hashtags])
        {:class "opux-input__label opux-input__label--hashtags-label"
         :error (get-in cursors-and-schema [:hashtags :error])})
@@ -81,7 +100,8 @@
         :error-key :error.hashtag
         :transform-value #(if (string? %) (str/split % #" ") %)
         :to-value #(if (sequential? %) (str/join " " %) %)
-        :context context})]
+        :context context})
+      ]
      (if (not (rum/react organisation-enabled))
        (html/button
         (tr [:pages.quest.edit.button.add-organisation])
@@ -140,10 +160,12 @@
                     (time/after?
                      start-time-o
                      end-time-o))
-           (swap! end-time #(time/to-string
-                             (time/use-same-date
-                              start-time-o
-                              end-time-o))))
+           (reset!
+            end-time
+            (time/to-string
+             (time/use-same-date
+              start-time-o
+              end-time-o))))
          )))
     (html/form-section
      (tr [:pages.quest.edit.subtitles.time-place])
@@ -245,8 +267,7 @@
                                                                   :errors errors})
         is-valid (atom false)
         checker (partial hs/select-schema-either schema)
-        set-valid! (fn [validity]
-                     (swap! is-valid #(identity validity)))
+        set-valid! (fn [validity] (reset! is-valid validity))
         show-end-time (atom false)]
     (add-watch
      quest
@@ -259,7 +280,20 @@
            (:--error value-or-error) (set-valid! false)))))
     [:form
      {:class "opux-form"
-      :on-submit (fn [e] (.preventDefault e))}
+      :on-submit
+      (fn [e]
+        (.preventDefault e)
+        (when (deref is-valid)
+          #?(:cljs
+             (go
+               (let [api-call (if (:id @quest)
+                                api/edit-quest
+                                api/add-quest)
+                     api-quest (assoc @quest :picture-id (str (:picture-id @quest)))
+                     from-api (<! (api-call api-quest))]
+                 (log/info from-api)
+                 )))))
+      }
      [:h1 (tr [:actions.quest.create])]
      (edit-content
       {:cursors-and-schema cursors-and-schema
@@ -296,6 +330,7 @@
       (html/button
        (tr [:pages.quest.edit.button.submit])
        {:class "opux-button opux-form__button"
+        :type "submit"
         :active is-valid})
       (html/button
        (tr [:pages.quest.edit.button.remove])

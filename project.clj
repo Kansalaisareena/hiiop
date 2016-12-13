@@ -4,7 +4,7 @@
   :url "http://example.com/FIXME"
 
   :dependencies [[bouncer                                "1.0.0"]
-                 [cider/cider-nrepl                      "0.14.0-SNAPSHOT"]
+                 [cider/cider-nrepl                      "0.14.0"]
                  [cljs-http                              "0.1.42"]
                  [compojure                              "1.5.1"]
                  [conman                                 "0.6.2"]
@@ -39,8 +39,22 @@
                  [com.draines/postal                     "2.0.2"]
                  [bidi                                   "2.0.14"]
                  [metosin/schema-tools                   "0.9.0"]
+                 [com.novemberain/pantomime              "2.8.0"]
+                 [amazonica                              "0.3.78"
+                  :exclusions [com.amazonaws/aws-java-sdk
+                               com.amazonaws/amazon-kinesis-client
+                               com.fasterxml.jackson.core/jackson-annotations
+                               joda-time
+                               org.apache.httpcomponents/httpclient
+                               com.fasterxml.jackson.core/jackson-databind
+                               ]]
+                 [com.amazonaws/aws-java-sdk-core        "1.11.63"
+                  :exclusions [commons-logging]]
+                 [com.amazonaws/aws-java-sdk-s3          "1.11.63"
+                  :exclusions [commons-logging]]
                  [cljsjs/moment                          "2.15.2-3"]
-                 [cljsjs/pikaday                         "1.4.0-1"]]
+                 [cljsjs/pikaday                         "1.4.0-1"]
+                 [cljsjs/dropzone                        "4.3.0-0"]]
 
   :min-lein-version "2.7.1"
 
@@ -63,8 +77,17 @@
    [lein-auto "0.1.2"]
    [lein-asset-minifier "0.3.0"]
    [shmish111/lein-git-version "1.0.13"]
-   [lein-essthree "0.2.2"]
-   [lein-heroku "0.5.3"]]
+   [lein-essthree "0.2.2"
+    :exclusions
+    [amazonica
+     org.apache.commons/commons-compress
+     com.fasterxml.jackson.core/jackson-core]]
+   [lein-heroku "0.5.3"
+    :exclusions
+    [commons-codec
+     org.apache.commons/commons-compress
+     com.fasterxml.jackson.core/jackson-core]]]
+
 
   :sassc
   [{:src "resources/scss/screen.scss"

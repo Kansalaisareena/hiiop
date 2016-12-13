@@ -13,7 +13,8 @@
             [hiiop.db.core :as db]
             [hiiop.time :as time]
             [hiiop.mail :as mail]
-            [hiiop.schema :as hs]))
+            [hiiop.schema :as hs]
+            [hiiop.file-upload :refer [upload-picture]]))
 
 (defn login-status
   [request]
@@ -65,7 +66,6 @@
            picture-id
            organisation
            organiser-participates] :as quest-from-api}]
-  (log/info organisation)
   (-> quest-from-api
       (assoc :hashtags (when hashtags (vec (distinct hashtags))))
       (assoc :categories (vec (distinct categories)))
@@ -76,6 +76,7 @@
       (assoc :organisation-description (:description organisation))
       (conj (:coordinates location))
       (conj location)
+      (assoc :street-number (:street-number location))
       (dissoc :location :coordinates :picture-id)
       (db/->snake_case_keywords))
     )
@@ -88,7 +89,7 @@
    :organisation_description (s/maybe hs/NonEmptyString)
    :start_time (s/constrained s/Any time/time? :error.not-valid-date)
    :end_time (s/constrained s/Any time/time? :error.not-valid-date)
-   :street_number (s/maybe hs/NaturalNumber)
+   :street_number (s/maybe s/Int)
    :street (s/maybe hs/NonEmptyString)
    :town hs/NonEmptyString
    :postal_code hs/NonEmptyString
@@ -185,3 +186,22 @@
 
 (defn join-quest [params]
   (created ""))
+
+(defn get-picture [id])
+
+(defn add-picture [file]
+  (try
+    (let [picture-id (:id (db/add-picture! {:url ""}))]
+      (log/info picture-id)
+      (-> picture-id
+          (upload-picture file)
+          (#(db/update-picture-url! {:id picture-id
+                                     :url %1}))
+          ((fn [db-reply]
+             (log/info db-reply)
+             {:id picture-id
+              :url (:url db-reply)}))
+          ))
+    (catch Exception e
+      (log/error e)
+      )))

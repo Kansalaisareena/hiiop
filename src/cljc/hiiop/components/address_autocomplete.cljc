@@ -33,8 +33,8 @@
 
 (defn coordinates [location]
   (when location
-    {:latitude (.lat location)
-     :longitude (.lng location)}))
+    {:latitude (str (.lat location))
+     :longitude (str (.lng location))}))
 
 (defn get-location-details [place-result]
   (conj
@@ -56,7 +56,7 @@
            instance #?(:cljs
                            (Autocomplete.
                             (rum/dom-node state)
-                            (clj->js {:types ["geocode"]}))
+                            (clj->js {:types ["address"]}))
                            :clj nil)
            place-changed
            (fn []

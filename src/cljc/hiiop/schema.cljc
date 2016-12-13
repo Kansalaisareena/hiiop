@@ -79,14 +79,14 @@
 
 (def Location
   "Location"
-  {(s/optional-key :google-place-id) NonEmptyString
-   (s/optional-key :street-number) s/Num
-   (s/optional-key :street) NonEmptyString
+  {(s/optional-key :google-place-id) (s/maybe NonEmptyString)
+   (s/optional-key :street-number) (s/maybe s/Int)
+   (s/optional-key :street) (s/maybe NonEmptyString)
    :town NonEmptyString
    :postal-code NonEmptyString
    :country NonEmptyString
-   (s/optional-key :coordinates) Coordinates
-   (s/optional-key :google-maps-url) NonEmptyString
+   (s/optional-key :coordinates) (s/maybe Coordinates)
+   (s/optional-key :google-maps-url) (s/maybe NonEmptyString)
    })
 
 (def Quest
@@ -116,6 +116,14 @@
    :organiser-participates s/Bool
    (s/optional-key :picture-id) s/Uuid))
 
+;(def UrlLike #"http[s]{0,1}:\/\/.*")
+
+(def Picture
+  "Uploaded picture"
+  {:id s/Uuid
+   (s/optional-key :alias) (s/maybe s/Str)
+   :url s/Str})
+
 (defn new-empty-quest []
   {:name ""
    :unmoderated-description ""
@@ -126,6 +134,7 @@
    :end-time (time/to-string
               (time/time-to (time/tomorrow) 23 45)
               time/transit-format)
+   :picture-id nil
    :location {}
    :max-participants 10
    :categories []

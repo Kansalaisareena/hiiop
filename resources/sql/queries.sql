@@ -203,3 +203,16 @@ UPDATE users
         WHERE id = user_id AND
               expires > now() AND
               token = :token)
+
+-- :name add-picture! :? :1
+-- :doc "Add picture"
+INSERT INTO pictures (url)
+VALUES (:url)
+RETURNING id
+
+-- :name update-picture-url! :? :1
+-- :doc "Update picture url"
+UPDATE pictures
+SET url = :url
+WHERE id = :id
+RETURNING url

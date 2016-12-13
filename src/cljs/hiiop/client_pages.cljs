@@ -7,7 +7,7 @@
             [hiiop.components.quests :as quests]
             [hiiop.context :refer [context]]
             [hiiop.mangling :refer [same-keys-with-nils]]
-            [hiiop.schema :refer [new-empty-quest NewQuest]]))
+            [hiiop.schema :refer [new-empty-quest NewQuest Quest]]))
 
 (defn login-page [params]
   (log/info "login-page")
@@ -22,16 +22,9 @@
                         :context @context})
    (. js/document (getElementById "app"))))
 
-(defn validate-new-quest [old-quest new-quest]
-  (let [differences (data/diff old-quest new-quest)
-        validated (schema/check NewQuest new-quest)]
-    (log/info differences validated)))
-
 (defn create-quest-page [params]
   (let [quest (atom (new-empty-quest))
         errors (atom (same-keys-with-nils @quest))]
-    (add-watch quest :quest (fn [key atom old-quest new-quest]
-                              (validate-new-quest old-quest new-quest)))
     (rum/mount
      (quests/edit {:context @context
                    :quest quest
@@ -45,7 +38,9 @@
     (log/info "edit-quest-page" @quest (new-empty-quest))
     (rum/mount
      (quests/edit {:context @context
-                   :quest quest})
+                   :quest quest
+                   :errors errors
+                   :schema Quest})
      (. js/document (getElementById "app")))))
 
 (def handlers

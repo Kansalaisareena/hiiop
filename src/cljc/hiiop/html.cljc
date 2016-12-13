@@ -6,6 +6,7 @@
             [schema-tools.core :as st]
             [schema-tools.coerce :as stc]
             [bidi.bidi :refer [path-for]]
+            [hiiop.components.dropzone :refer [dropzone-mixin]]
             [hiiop.components.core :as c]
             [hiiop.components.pikaday :refer [pikaday pikaday-mixin]]
             [hiiop.components.address-autocomplete :as address]
@@ -97,8 +98,8 @@
   (let [value-or-error (hs/either coercer new-value)
         coerced-value (:--value value-or-error)
         coerced-error (:--error value-or-error)]
-    (if coerced-value (swap! value (fn [old new] coerced-value)))
-    (swap! error (fn [_ _] coerced-error))))
+    (if coerced-value (reset! value coerced-value)
+        (reset! error coerced-error))))
 
 (rum/defcs label < rum/reactive
   (rum/local nil ::error)
@@ -123,8 +124,7 @@
        error
        ::label-error
        (fn [key _ _ new]
-         (swap! local-error
-                (fn [_ _ _ _] new)))))
+         (reset! local-error new))))
     (into default-content content-vector)))
 
 (defn value-from-event [e & with-transform]
@@ -138,10 +138,11 @@
          :clj (get-in e [:target :checked]))))
 
 (rum/defc button < rum/reactive
-  [text {:keys [class active on-click]}]
+  [text {:keys [class active type on-click]}]
   (let [click (or on-click identity)]
     [:button
      {:class class
+      :type (or type "button")
       :disabled (when active (not (rum/react active)))
       :on-click
       (fn [e]
@@ -208,7 +209,7 @@
         :on-change
         (fn [e]
           (let [event-value (value-from-event e usable-transform)]
-            (swap! value (fn [old new] event-value))))}]
+            (reset! value event-value)))}]
       html-options))))
 
 (rum/defcs datepicker < pikaday-mixin
@@ -240,9 +241,7 @@
      select-value-atom
      :timepicker-select
      (fn [key _ _ new-time]
-       (swap!
-        time
-        (fn [_ _ _ _] new-time))))
+       (reset! time new-time)))
     (select
      {:options options
       :class class
@@ -250,10 +249,7 @@
       :transform time/string->time})))
 
 (defn set-error! [error to]
-  (swap!
-   error
-   (fn [_ _ _ _]
-     to)))
+  (reset! error to))
 
 (rum/defc datetime-picker < rum/reactive
   [{:keys [date min-date max-date error schema class date-print-format time-print-format value-format context]}]
@@ -276,10 +272,8 @@
         time-atom (atom (time/datetime->time date-object))
         print-date-time-format (str date-print-format " " time-print-format)
         set-date! (fn [new-datetime]
-                    (swap!
-                     date
-                     (fn [_ _ _]
-                       (time/to-string new-datetime value-format))))
+                    (reset! date
+                            (time/to-string new-datetime value-format)))
         is-invalid? (fn [new-datetime]
                       (cond
                         (not (is-after-min? new-datetime))
@@ -360,10 +354,9 @@
                                  :cljs (.. e -target -checked))
                       selected-set (into #{} @selected)
                       operation (if checked conj disj)]
-                  (swap!
+                  (reset!
                    selected
-                   (fn [_ _ _ _]
-                     (into [] (operation selected-set choice))))))}]]
+                   (into [] (operation selected-set choice)))))}]]
            [(label
              [:i {:class (str "opux-icon--multi-select opux-icon-circled opux-icon--multi-select--" (name choice))}]
              {:class "opux-input__label--multi-select"
@@ -402,7 +395,7 @@
        :name group-name
        :default-checked (= @current-choice value)
        :on-change
-       (fn [] (swap! current-choice (fn [_ _ _ _] value)))}]
+       (fn [] (reset! current-choice value))}]
      (label
       (tr [key])
       {:for id})]))
@@ -422,7 +415,11 @@
     :id id
     :on-change
     (fn [e]
-      (swap! value (fn [_ _ _ _] (checked-from-event e))))}])
+      (reset! value (checked-from-event e)))}])
+
+(rum/defcs file-input < dropzone-mixin
+  [state {:keys [value error]}]
+  [:div {:class "dropzone picture-upload"}])
 
 (rum/defc form-section [title & content]
   (let [content-vector (into [] content)

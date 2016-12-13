@@ -1,8 +1,11 @@
 (ns hiiop.routes.services
   (:require [ring.util.http-response :refer :all]
             [compojure.api.sweet :refer :all]
+            [ring.swagger.upload :refer [wrap-multipart-params TempFileUpload]]
+            [buddy.auth.middleware :refer [wrap-authentication]]
             [schema.core :as s]
             [taoensso.timbre :as log]
+            [hiiop.middleware :refer [api-authenticated]]
             [hiiop.time :as time]
             [hiiop.config :refer [env]]
             [hiiop.api-handlers :as api-handlers]
@@ -42,36 +45,71 @@
 
 
       (context "/users" []
-               :tags ["user"]
-               (GET "/users/:id" []
-                    :name ::user
-                    :path-params [id :- s/Uuid]
-                    :return User
-                    :summary "Return user object"
-                    api-handlers/get-user)
+        :tags ["user"]
+        (GET "/users/:id" []
+          :name ::user
+          :path-params [id :- s/Uuid]
+          :return User
+          :summary "Return user object"
+          api-handlers/get-user)
 
-               (POST "/register" []
-                     :body-params [email :- Email]
-                     :summary "Create a new user and email password token"
-                     (fn [request]
-                       (let [id (api-handlers/register request)]
-                         (if id
-                           (created (path-for ::user {:id (str id)}))
-                           (bad-request {:error "User registration failed"})))))
+        (POST "/register" []
+          :body-params [email :- Email]
+          :summary "Create a new user and email password token"
+          (fn [request]
+            (let [id (api-handlers/register request)]
+              (if id
+                (created (path-for ::user {:id (str id)}))
+                (bad-request {:errors
+                              {:email"User registration failed"}})))))
 
-               (POST "/activate" []
-                     :body [activation UserActivation]
+        (POST "/activate" []
+          :body [activation UserActivation]
                      :summary "Activates inactive user"
                      api-handlers/activate))
+
+      (context "/pictures" []
+        :tags ["picture"]
+
+        (POST "/add" []
+          :name             ::add-picture
+          :multipart-params [file :- TempFileUpload]
+          :middleware       [wrap-multipart-params api-authenticated]
+          :summary          "Handles picture upload"
+          :return           Picture
+          (fn [request]
+            (-> (api-handlers/add-picture file)
+                (#(if %1
+                    (created
+                     (path-for ::picture {:id (str (:id %1))})
+                     %1)
+                    (bad-request
+                     {:errors
+                      {:picture "Picture addition failed"}}))))
+            )
+          )
+
+        (GET "/:id" []
+          :name        ::picture
+          :path-params [id :- s/Str]
+          :summary     "Get picture"
+          :return      Picture
+          (fn [request]
+            (-> (api-handlers/get-picture id)
+                (#(if %1
+                    (ok %1)
+                    (not-found)))))
+        ))
 
       (context "/quests" []
         :tags ["quest"]
 
         (POST "/add" []
-          :name ::add-quest
-          :body [new-quest NewQuest]
-          :summary "Create a new quest"
-          :return Quest
+          :name       ::add-quest
+          :body       [new-quest NewQuest]
+          :middleware [api-authenticated]
+          :summary    "Create a new quest"
+          :return     Quest
           (fn [request]
             (let [quest (api-handlers/add-quest
                          {:quest new-quest
@@ -81,10 +119,10 @@
                 (bad-request {:error "Failed to add quest!"})))))
 
         (GET "/:id" []
-          :name ::quest
+          :name        ::quest
           :path-params [id :- s/Int]
-          :summary "Get quest"
-          :return Quest
+          :summary     "Get quest"
+          :return      Quest
           api-handlers/get-quest)
 
         ;; (POST "/:id/join" []
