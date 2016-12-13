@@ -108,4 +108,16 @@
   :weekdays-short ["su" "ma" "ti" "ke" "to" "pe" "la"]
   :first-day      1
   }
+
+ :dropzone
+ {:dict-default-message            "Raahaa kuva tänne"
+  :dict-fallback-message           "Selaimesi ei ole tuettu"
+  :dict-invalid-file-type          "Kuvatyyppi ei ole tuettu"
+  :dict-file-too-big               "Kuva on liian iso"
+  :dict-response-error             "Kuvan lisäys ei onnistunut"
+  :dict-cancel-upload              "Peruuta kuvan lisäys"
+  :dict-cancel-upload-confirmation "Haluatko varmasti peruuttaa lisäyksen?"
+  :dict-remove-file                "Poista kuva"
+  :dict-max-files-exceeded         "Et voi lisätä enempää kuvia"
+  }
  }

@@ -33,6 +33,12 @@
      (let [args (first (:rum/args state))
            transform (or (:transform args) identity)
            tr (:tr args)
+           current-locale (keyword (get-in args [:context :conf :current-locale]))
+           translations (get-in args [:context
+                                      :conf
+                                      :langs
+                                      current-locale
+                                      :dropzone])
            set-value-or-error! (partial
                                 on-state-change-set!
                                 tr
@@ -44,13 +50,16 @@
         ::instance
         (-> (dropzone
              (rum/dom-node state)
-             {:url "/api/v1/pictures/add"
-              :headers {"Cache-Control" ""
-                        "X-Requested-With" ""}
-              :max-files 1
-              :clickable true
-              :add-remove-links true
-              })
+             (conj
+              {:url "/api/v1/pictures/add"
+               :headers {"Cache-Control" ""
+                         "X-Requested-With" ""}
+               :max-files 1
+               :clickable true
+               :add-remove-links true
+               :accepted-files "image/*"
+               }
+              translations))
             #?(:cljs
                (.on "sending"
                     (fn [_ xhr]
