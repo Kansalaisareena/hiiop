@@ -1,5 +1,7 @@
 (ns hiiop.components.quests
-  #?(:cljs (:require-macros [cljs.core.async.macros :refer [go]]))
+  #?(:cljs
+     (:require-macros [cljs.core.async.macros :refer [go]])
+     )
   (:require [clojure.string :as str]
             [rum.core :as rum]
             [taoensso.timbre :as log]
@@ -336,4 +338,3 @@
        (tr [:pages.quest.edit.button.remove])
        {:class "opux-button opux-form__button"}))
      ]))
-c
