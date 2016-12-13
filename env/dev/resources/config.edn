@@ -1,4 +1,4 @@
-;; Examples of the keys that are needed for deployment and development for everything
+;; Use this only for internal stuff and profiles.clj for secrets
 ;; Put them in profiles.clj under your project root
 ;; {:profiles/dev
 ;;  {:env
