@@ -71,6 +71,14 @@ Create profiles.clj under your git root to place the secrets.
           :port "" }}
         :redis
         {:uri ""}
+        :hiiop-pictures-bucket
+        "hiiop-dev-pictures"
+        :hiiop-pictures-bucket-base-url
+        "http://hiiop-dev-pictures.s3-website-eu-west-1.amazonaws.com"
+        :aws-access-key-id
+        ""
+        :aws-secret-access-key
+        ""
         }}
       :profiles/test
       {:env
@@ -108,7 +116,9 @@ Create profiles.clj under your git root to place the secrets.
      + =HEROKU_APP= environment variable used to define where to deploy
      + =DATABASE_URL= is used to determine the database and user to use
      + =ASSET_BASE_URL= is used to determine which URL to use before the assets
-   - Assets are hosted in S3
+     + =HIIOP_PICTURES_BUCKET= is used as S3 file upload target
+     + =HIIOP_PICTURES_BUCKET_BASE_URL= is used to refer to the uploaded pictures
+   - ASSETS are hosted in S3
      + =HIIOP_ASSET_BUCKET= environment variable is used to determine
        which bucket to use
      + =AWS_ACCESS_KEY_ID= and =AWS_SECRET_ACCESS_KEY= environment
