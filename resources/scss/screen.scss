@@ -10,46 +10,9 @@
 // Import custom sass.
 @import 'opux_variables';
 @import 'opux_globals';
-
-@include viewports(tiny medium) {
-  font-size: 75%;
-}
-
-@include block('opux-page-section') {
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: row;
-  margin: 0 auto;
-  max-width: $screen-large;
-  padding: 0 1rem;
-  width: 100%;
-
-  // opux-page-section--header
-  @include modifier('header') {
-    border-bottom: 2px solid $OP-gray-light;
-    font-size: 20px;
-  }
-}
-
-@include block('opux-logo') {
-  display: flex;
-  padding: 0px;
-  a {
-    text-decoration: none;
-    color: $basic-text-colour;
-  }
-
-  // opux-logo--header
-  @include modifier('header') {
-    flex: 1.5;
-    height: $header-height;
-    justify-content: center;
-    flex-direction: column;
-  }
-}
-
+@import 'opux_layouts';
 @import 'opux_icons';
 @import 'opux_buttons';
-@import 'opux_navs';
 @import 'opux_inputs';
 @import 'opux_forms';
+@import 'opux_navs';
