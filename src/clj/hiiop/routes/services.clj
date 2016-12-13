@@ -79,13 +79,12 @@
           :return           Picture
           (fn [request]
             (-> (api-handlers/add-picture file)
-                (#(if %1
+                (#(if (not (:errors %1))
                     (created
                      (path-for ::picture {:id (str (:id %1))})
                      %1)
                     (bad-request
-                     {:errors
-                      {:picture "Picture addition failed"}}))))
+                     %1))))
             )
           )
 

@@ -189,19 +189,27 @@
 
 (defn get-picture [id])
 
+(defn picture-supported? [file]
+  (-> (:content-type file)
+      (#(re-find #"^image/(jpg|jpeg|png|gif)$" %1))))
+
 (defn add-picture [file]
-  (try
-    (let [picture-id (:id (db/add-picture! {:url ""}))]
-      (log/info picture-id)
-      (-> picture-id
-          (upload-picture file)
-          (#(db/update-picture-url! {:id picture-id
-                                     :url %1}))
-          ((fn [db-reply]
-             (log/info db-reply)
-             {:id picture-id
-              :url (:url db-reply)}))
-          ))
-    (catch Exception e
-      (log/error e)
-      )))
+  (if (picture-supported? file)
+    (try
+      (let [picture-id (:id (db/add-picture! {:url ""}))]
+        (log/info picture-id)
+        (-> picture-id
+            (upload-picture file)
+            (#(db/update-picture-url! {:id picture-id
+                                       :url %1}))
+            ((fn [db-reply]
+               (log/info db-reply)
+               {:id picture-id
+                :url (:url db-reply)}))
+            ))
+      (catch Exception e
+        (log/error e)
+        {:errors {:picture :errors.picture.add-failed}}
+        ))
+    {:errors {:picture :errors.picture.type-not-supported
+              :type (:content-type file)}}))

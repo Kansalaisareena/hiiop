@@ -120,4 +120,10 @@
   :dict-remove-file                "Poista kuva"
   :dict-max-files-exceeded         "Et voi lisätä enempää kuvia"
   }
+
+ :errors
+ {:picture
+  {:type-not-supported "Kuvatyyppi %1 ei ole tuettu"
+   }
+  }
  }
