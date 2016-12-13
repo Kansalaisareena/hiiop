@@ -15,8 +15,10 @@
 
   // opux-form__fieldset
   @include element('fieldset') {
+    box-sizing: border-box;
     margin: 0 auto;
-    max-width: 620px;
+    max-width: 640px;
+    padding: 0 1rem;
     width: 100%;
   }
 }

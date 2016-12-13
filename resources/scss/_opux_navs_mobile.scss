@@ -1,0 +1,149 @@
+@include block('opux-mobile-hamburger') {
+  cursor: pointer;
+  display: none;
+  position: fixed;
+  right: 1rem;
+  top: 1rem;
+  z-index: 9999;
+
+  .opux-mobile-hamburger-dash {
+    border-bottom: 2px solid $OP-gray;
+    box-sizing: border-box;
+    display: block;
+    height: 2px;
+    left: 50%;
+    margin-left: -16px;
+    margin-top: -1px;
+    opacity: 1;
+    position: absolute;
+    top: 50%;
+    transition: opacity .3s ease;
+    width: 32px;
+    will-change: opacity;
+  }
+
+  // opux-mobile-hamburger__button
+  @include element('button') {
+    border-radius: 50%;
+    border: 2px solid $OP-gray;
+    box-sizing: content-box;
+    display: block;
+    height: 55px;
+    position: relative;
+    width: 55px;
+    &:before,
+    &:after {
+      border-bottom: 2px solid $OP-gray;
+      box-sizing: border-box;
+      content: "";
+      height: 2px;
+      left: 50%;
+      margin-left: -16px;
+      position: absolute;
+      transition: transform .3s ease;
+      width: 32px;
+      will-change: translateY, rotate;
+      z-index: 9;
+    }
+    &:before {
+      margin-top: -10px;
+      top: 50%;
+    }
+    &:after {
+      bottom: 50%;
+      margin-bottom: -10px;
+    }
+
+    &.is-active,
+    &:hover {
+      &:before {
+        transform: translateY(9px) rotate(45deg);
+      }
+      &:after {
+        transform: translateY(-9px) rotate(-45deg);
+      }
+      .opux-mobile-hamburger-dash {
+        opacity: 0;
+      }
+    }
+  }
+}
+
+@include viewports(tiny small) {
+
+  @include block('opux-mobile-hamburger') {
+    display: block;
+  }
+
+  @include block('opux-nav') {
+    display: block;
+
+    // opux-nav--header
+    @include modifier('header') {
+      background: $OP-white;
+      box-sizing: border-box;
+      display: block;
+      font-size: 1.2rem;
+      font-weight: 300;
+      height: 100%;
+      padding-top: 120px;
+      position: fixed;
+      right: 0px;
+      text-align: right;
+      top: 0px;
+      width: 90%;
+    }
+  }
+
+  @include block('opux-menu') {
+    display: block;
+    height: auto;
+
+    // opux-menu__item
+    @include element('item') {
+      display: block;
+      height: auto;
+
+      // opux-menu__item--main
+      @include modifier('main') {
+        clear: both;
+        display: block;
+        width: 100%;
+      }
+
+      // opux-menu__item--login
+      @include modifier('login') {
+        display: inline-block;
+        width: auto;
+      }
+
+      // opux-menu__item--languages
+      @include modifier('languages') {
+        display: inline-block;
+        width: auto;
+      }
+    }
+
+    // opux-menu--main
+    @include modifier('main') {
+      text-align: right;
+    }
+
+    // opux-menu__item-link
+    @include element('item-link') {
+      box-sizing: border-box;
+      display: block;
+      height: auto;
+      padding: 1rem;
+      text-align: right;
+      width: 100%;
+
+      @include modifier('login') {
+        .opux-icon-circled.opux-icon-person:before {
+          font-size: 2rem;
+          margin-left: -1.5rem;
+        }
+      }
+    }
+  }
+}

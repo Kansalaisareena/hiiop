@@ -1,0 +1,8 @@
+@include viewports(tiny small) {
+
+  @include block('opux-logo') {
+    left: 1rem;
+    top: 0px;
+    position: fixed;
+  }
+}

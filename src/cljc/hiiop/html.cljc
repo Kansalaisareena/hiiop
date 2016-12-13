@@ -445,6 +445,9 @@
 (rum/defc header [{:keys [hierarchy tr asset-path] :as context}]
   [:header
    {:class "opux-page-section opux-page-section--header"}
+   [:div {:class "opux-mobile-hamburger"}
+    [:div {:class "opux-mobile-hamburger__button"}
+     [:div {:class "opux-mobile-hamburger-dash"}]]]
    [:h1
     {:class "opux-logo opux-logo--header"}
     [:a

@@ -36,7 +36,3 @@ a {
   color: $link-colour;
   text-decoration: none;
 }
-
-@include viewports(tiny medium) {
-  font-size: 75%;
-}
