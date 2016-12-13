@@ -43,6 +43,30 @@
    And open your browser in `resources/public/index.html`. You will not
    get live reloading, nor a REPL. 
 
+** Secrets
+
+Create profiles.clj under your git root to place the secrets.
+   #+BEGIN_EXAMPLE
+   {:profiles/dev
+     {:env
+       {:database-url "postgresql://localhost/hiiop_dev?user=youruser"
+        :timezone "Europe/Helsinki"
+        :aws
+        {:sender-address ""
+         :mail-server-opts
+         {:user ""
+          :pass ""
+          :host ""
+          :port "" }}
+        :redis
+        {:uri ""}
+        }}
+      :profiles/test
+      {:env
+       {:database-url "postgresql://localhost/hiiop_test?user=youruser"
+        :timezone "Europe/Helsinki"}}}
+   #+END_EXAMPLE
+
 ** Migrations
    Manage migrations with the following commands (prepend =lein
    migratus=):
