@@ -45,11 +45,12 @@
 
 (defn register [{:keys [email locale] :as args}]
   (let [id (:id (db/create-virtual-user! {:email email}))]
-    (when id)
-      (let [token (:token (db/create-password-token!
-                           {:email email :expires (time/add (time/now) time/an-hour)}))]
+    (when id
+      (let [token (:token
+                   (db/create-password-token!
+                    {:email email :expires (time/add (time/now) time/an-hour)}))]
         (mail/send-token-email email (str token) locale)
-        id)))
+        id))))
 
 (defn activate
   [{{:keys [email password token]} :body-params}]
@@ -83,7 +84,7 @@
       (assoc :street-number (:street-number location))
       (dissoc :location :coordinates :picture-id)
       (db/->snake_case_keywords))
-    )
+  )
 
 (def DBQuest
   {:id hs/NaturalNumber
