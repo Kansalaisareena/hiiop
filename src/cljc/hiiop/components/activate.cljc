@@ -46,4 +46,5 @@
        [:input
         {:class "opux-button"
          :type "submit"
-         :value (tr [:actions.user.save-password])}]]]]))
+         :value (tr [:actions.user.save-password])}]
+       ]]]))
