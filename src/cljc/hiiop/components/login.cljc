@@ -18,7 +18,8 @@
         user (rum/cursor credentials :email)
         password (rum/cursor credentials :password)]
     [:form
-     {:on-submit
+     {:class "opux-form"
+      :on-submit
       (fn [e]
         (.preventDefault e)
         #?(:cljs
@@ -30,25 +31,48 @@
                (when status
                  (set! (.-pathname js/location) to))))
            ))}
-     [:h2 (tr [:pages.login.title])]
-     (html/label
-      (tr [:pages.login.user])
-      {:class "user-label"}
-      (html/input
-       {:schema s/Str
-        :value user
-        :type "text"
-        :class "email"
-        :error (atom nil)}))
-     (html/label
-      (tr [:pages.login.password])
-      {:class "password-label"}
-      (html/input
-       {:schema s/Str
-        :value password
-        :type "password"
-        :class "password"
-        :error (atom nil)}))
-     [:input
-      {:type "submit"
-       :value (tr [:actions.user.login])}]]))
+     [:div {:class "opux-form-section"}
+      [:h2 (tr [:pages.login.title])]
+      [:div {:class "opux-fieldset opux-form-section__fieldset"}
+       [:div {:class "opux-fieldset__item"}
+        (html/label
+         (tr [:pages.login.email])
+         {:class "opux-input__label user-label"})
+        (html/input
+         {:schema s/Str
+          :value user
+          :type "text"
+          :class "opux-input opux-input--text email"
+          :error (atom nil)})]
+       [:div {:class "opux-fieldset opux-fieldset__item"}
+        (html/label
+         (tr [:pages.login.password])
+         {:class "opux-input__label password-label"})
+        (html/input
+         {:schema s/Str
+          :value password
+          :type "password"
+          :class "opux-input opux-input--text password"
+          :error (atom nil)})]
+       [:div {:class "opux-fieldset__inline-container opux-fieldset opux-fieldset__item opux-fieldset--login-links"}
+        [:a {:class "opux-forget-password-link"
+             :href "#"}
+         (tr [:pages.login.forget-password])]
+        [:a {:class "opux-register-link"
+             :href "#"}
+         (tr [:pages.login.register])]]
+
+       [:input
+        {:type "checkbox"
+         :class "opux-input--checkbox"
+         :default-checked false
+         :id (name :pages.login.forget-password)}]
+       (html/label
+        (tr [:pages.login.forget-password])
+        {:class "opux-input__label opux-input__label--checkbox"
+         :for (name :pages.login.forget-password)})
+
+       [:input
+        {:class "opux-button"
+         :type "submit"
+         :value (tr [:actions.user.login])}]]]]))

@@ -69,3 +69,18 @@
     }
   }
 }
+
+.opux-register-link,
+.opux-forget-password-link {
+  display: inline-block;
+  width: 50%;
+}
+
+.opux-register-link {
+  text-align: right;
+}
+
+
+.opux-forget-password-link {
+  text-align: left;
+}

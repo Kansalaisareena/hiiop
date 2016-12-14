@@ -11,6 +11,14 @@
   :index
   {:title :name}
 
+  :login
+  {:title "Kirjaudu"
+   :email "Sähköpostiosoite"
+   :password "Salasana"
+   :forget-password "Olen unohtanut salasanani"
+   :register "Luo tunnus"
+   :remember-me "Muista minut"}
+
   :quest
   {:title "Löydä tehtävä"
    :edit
