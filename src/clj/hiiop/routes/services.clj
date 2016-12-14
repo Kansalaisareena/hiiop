@@ -46,10 +46,14 @@
                  true/false on success/failure"
         api-handlers/login)
 
-
+      (POST "/contentful-hook" []
+            :body [cfobject CfObject]
+            :summary "Handles contentful webhook."
+            api-handlers/contentful-hook)
+      
       (context "/users" []
         :tags ["user"]
-        (GET "/users/:id" []
+        (GET "/:id" []
           :name ::user
           :path-params [id :- s/Uuid]
           :return User
@@ -57,13 +61,13 @@
           api-handlers/get-user)
 
         (POST "/register" []
-              :body-params [email :- Email name :- s/Str]
+              :body-params [email :- Email]
               :summary "Create a new user and email password token"
-              (fn [request]
-                (-> (api-handlers/register request)
-                    (#(if (not (:errors %1))
-                        (created %1)
-                        (bad-request %1))))))
+              (fn [{locale :current-locale}]
+                (if-let [id (api-handlers/register {:email email :locale locale})]
+                  (created (path-for ::user {:id (str id)}))
+                  (bad-request {:errors
+                                {:email"User registration failed"}}))))
 
         (POST "/validate-token" []
               :summary "Verify if a token is valid and returns its expiry date and user email"
@@ -112,6 +116,7 @@
                     ))
 
       (context "/quests" []
+<<<<<<< e4f5eac6c52a902f9f453b23ae82eedff4ce4dd9
                :tags ["quest"]
 
                (POST "/add" []
@@ -142,3 +147,35 @@
                ;;  :summary "Join a quest"
                ;;  api-handlers/join-quest)
                ))))
+=======
+        :tags ["quest"]
+
+        (POST "/add" []
+          :name       ::add-quest
+          :body       [new-quest NewQuest]
+          :middleware [api-authenticated]
+          :summary    "Create a new quest"
+          :return     Quest
+          (fn [request]
+            (let [quest (api-handlers/add-quest
+                         {:quest new-quest
+                          :user (:identity request)})]
+              (if quest
+                (created (path-for ::quest {:id (:id quest)}) quest)
+                (bad-request {:error "Failed to add quest!"})))))
+
+        (GET "/:id" []
+          :name        ::quest
+          :path-params [id :- s/Int]
+          :summary     "Get quest"
+          :return      Quest
+          api-handlers/get-quest)
+
+        ;; (POST "/:id/join" []
+        ;;  :name ::quest-join
+        ;;  :path-params [id :- s/Int]
+        ;;  :body [NewPartyMember]
+        ;;  :summary "Join a quest"
+        ;;  api-handlers/join-quest)
+        ))))
+>>>>>>> Get data from contentful and use it for registration email

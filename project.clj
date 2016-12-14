@@ -8,7 +8,9 @@
                  [cljs-http                              "0.1.42"]
                  [compojure                              "1.5.1"]
                  [conman                                 "0.6.2"]
+                 [cheshire                               "5.6.3"]
                  [cprop                                  "0.1.9"]
+                 [funcool/cuerdas                        "2.0.1"]
                  [camel-snake-kebab                      "0.4.0"]
                  [luminus-immutant                       "0.2.2"]
                  [luminus-migrations                     "0.2.8"]
@@ -54,10 +56,10 @@
                   :exclusions [commons-logging]]
                  [cljsjs/moment                          "2.15.2-3"]
                  [cljsjs/pikaday                         "1.4.0-1"]
-                 [cljsjs/dropzone                        "4.3.0-0"]]
+                 [cljsjs/dropzone                        "4.3.0-0"]
+                 [clj-http                               "2.3.0"]]
 
   :min-lein-version "2.7.1"
-
   :jvm-opts ["-server" "-Dconf=.lein-env" "-Duser.timezone=Europe/Helsinki"]
   :source-paths ["src/clj" "src/cljc"]
   :resource-paths ["resources" "target/cljsbuild"]
@@ -196,7 +198,7 @@
                   :doo {:build "test"}
                   :source-paths ["env/dev/clj" "test/clj"]
                   :resource-paths ["env/dev/resources"]
-                  :repl-options {:init-ns user :timeout 120000}
+                  :repl-options {:init-ns user :timeout 1200000}
                   :injections [(require 'pjstadig.humane-test-output)
                                (pjstadig.humane-test-output/activate!)]}
    :project/test {:resource-paths ["env/test/resources"]

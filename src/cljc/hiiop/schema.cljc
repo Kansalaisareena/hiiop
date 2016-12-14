@@ -187,3 +187,9 @@
               type-error (:type data)
               found-error (or schema-error type-error :unknown-error)]
           {:--error found-error}))))
+(def CfObject
+  "Contentful object"
+  {:sys s/Any
+   :fields s/Any})
+
+(def Locale)

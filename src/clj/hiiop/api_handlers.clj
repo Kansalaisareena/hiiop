@@ -1,5 +1,6 @@
 (ns hiiop.api-handlers
   (:require [clojure.pprint :as pp]
+            [hiiop.config :refer [env]]
             [ring.util.http-response :refer :all]
             [mount.core :as mount]
             [buddy.auth :refer [authenticated?]]
@@ -14,7 +15,12 @@
             [hiiop.time :as time]
             [hiiop.mail :as mail]
             [hiiop.schema :as hs]
-            [hiiop.file-upload :refer [upload-picture]]))
+            [hiiop.file-upload :refer [upload-picture]]
+            [hiiop.contentful :as cf]
+            [buddy.core.codecs :as codecs]
+            [buddy.core.codecs.base64 :as b64]
+            [buddy.auth.http :as http]
+            [cuerdas.core :as str]))
 
 (defn login-status
   [request]
@@ -46,7 +52,7 @@
                              {:email email
                               :expires (time/add (time/now) time/an-hour)}))]
           (db/update-user! {:id id :name name :email email})
-          (mail/send-token-email email (str token))
+          (mail/send-token-email email (str token) locale)
           id)
         {:errors {:user :errors.user.register.failed}}))
     (catch Exception e
@@ -230,3 +236,20 @@
         {:errors {:picture :errors.picture.add-failed}}))
     {:errors {:picture :errors.picture.type-not-supported
               :type (:content-type file)}}))
+(defn hook-auth
+  "Check the response for correct credentials for webhook"
+  [request]
+  (let [pattern (re-pattern "^Basic (.+)$")
+        decoded (some->> (http/-get-header request "authorization")
+                         (re-find pattern)
+                         (second)
+                         (b64/decode)
+                         (codecs/bytes->str))]
+    (let [[username password] (str/split decoded #":" 2)]
+      (and (= username (get-in env [:contentful :webhook-user]))
+           (= password (get-in env [:contentful :webhook-password]))))))
+
+(defn contentful-hook [{cfobject :body-params :as request}]
+  (if (hook-auth request)
+    (cf/process-item cfobject)
+    (unauthorized)))
