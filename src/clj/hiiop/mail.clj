@@ -5,10 +5,10 @@
             [taoensso.carmine :as car]
             [taoensso.timbre :as log]
             [mount.core :refer [defstate]]
+            [hiiop.config :refer [env]]
             [hiiop.contentful :as cf]
             [hiiop.emails :as emails]
-            [hiiop.redis :refer [wcar*]]
-            [hiiop.config :refer [env]]))
+            [hiiop.redis :refer [wcar*]]))
 
 (defn send-mail [mail]
   (let [mailopts (get-in env [:aws :mail-server-opts])]
