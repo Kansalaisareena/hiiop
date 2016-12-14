@@ -1,0 +1,16 @@
+@include viewports(tiny small) {
+  @include block('opux-input') {
+
+    // opux-input__label
+    @include element('label') {
+
+      // opux-input__label--multi-select
+      @include modifier('multi-select') {
+        @include flex(0, 0, 50%);
+        box-sizing: border-box;
+        padding-left: 30px;
+        padding-right: 30px;
+      }
+    }
+  }
+}

@@ -96,9 +96,9 @@
       // opux-nav--header.is-active
       @include state('active') {
         transform: translateX(-100%);
-        -webkit-box-shadow: -7px 0px 12px 0px rgba(122,122,122,0.89);
-        -moz-box-shadow: -7px 0px 12px 0px rgba(122,122,122,0.89);
-        box-shadow: -7px 0px 12px 0px rgba(122,122,122,0.89);
+        -webkit-box-shadow: -5px 0px 12px 0px rgba(122,122,122,0.5);
+        -moz-box-shadow: -5px 0px 12px 0px rgba(122,122,122,0.5);
+        box-shadow: -5px 0px 12px 0px rgba(122,122,122,0.5);
       }
     }
   }
