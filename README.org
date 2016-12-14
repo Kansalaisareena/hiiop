@@ -84,7 +84,9 @@ Create profiles.clj under your git root to place the secrets.
          :space-id ""
          :webhook-user ""
          :webhook-password ""
-         }}}
+         }
+        }
+       }
       :profiles/test
       {:env
        {:database-url "postgresql://localhost/hiiop_test?user=youruser"
