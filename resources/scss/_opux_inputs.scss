@@ -50,9 +50,28 @@
 
   // opux-input--checkbox
   @include modifier('checkbox') {
+    display: none;
+    &:checked + label {
+      &:after {
+        background: $OP-orange;
+      }
+    }
     @include modifier('multi-select') {
       &:checked + label {
         color: $OP-orange !important;
+        &:after {
+          background: $OP-white;
+        }
+      }
+    }
+  }
+
+  // opux-input--radio
+  @include modifier('radio') {
+    display: none;
+    &:checked + label {
+      &:after {
+        background: $OP-orange;
       }
     }
   }
@@ -60,11 +79,11 @@
   // opux-input__container
   @include element('container') {
     box-sizing: border-box;
-    padding-right: 4rem;
     position: relative;
 
     // opux-input__container--date-picker
     @include modifier('date-picker') {
+      padding-right: 4rem;
       &:before {
         border: 1px solid $OP-gray;
         box-sizing: border-box;
@@ -107,5 +126,104 @@
       padding: 1.5rem 0;
       text-align: center;
     }
+
+    // opux-input__label--radio
+    @include modifier('radio') {
+      @include align-items(flex-start);
+      @include flex-direction(column);
+      @include flexbox;
+      @include justify-content(center);
+      box-sizing: border-box;
+      cursor: pointer;
+      line-height: 1.3;
+      margin: 1rem 0;
+      min-height: 30px;
+      padding-left: 45px;
+      position: relative;
+      width: 100%;
+
+      &:before {
+        @include box-shadow(1px, 1px, 3px, $OP-gray-medium , true);
+        border-radius: 50%;
+        border: 1px $OP-gray-medium solid;
+        box-sizing: border-box;
+        content: "";
+        display: block;
+        height: 30px;
+        left: 0px;
+        margin-top: -15px;
+        position: absolute;
+        top: 50%;
+        top: 50%;
+        width: 30px;
+      }
+
+      &:after {
+        @include opux-color-transition;
+        background: transparent;
+        border-radius: 50%;
+        box-sizing: border-box;
+        content: "";
+        display: block;
+        height: 18px;
+        left: 6px;
+        margin-top: -9px;
+        position: absolute;
+        top: 50%;
+        width: 18px;
+      }
+    }
+
+    // opux-input__label--checkbox
+    @include modifier('checkbox') {
+      @include align-items(flex-start);
+      @include flex-direction(column);
+      @include flexbox;
+      @include justify-content(center);
+      box-sizing: border-box;
+      cursor: pointer;
+      line-height: 1.3;
+      margin: 1rem 0;
+      min-height: 30px;
+      padding-left: 45px;
+      position: relative;
+      width: 100%;
+
+      &:before {
+        border: 1px $OP-gray-medium solid;
+        box-sizing: border-box;
+        content: "";
+        display: block;
+        height: 30px;
+        left: 0px;
+        margin-top: -15px;
+        position: absolute;
+        top: 50%;
+        top: 50%;
+        width: 30px;
+        border-radius: 2px;
+      }
+
+      &:after {
+        @include opux-color-transition;
+        background: transparent;
+        border-radius: 2px;
+        box-sizing: border-box;
+        color: $OP-white;
+        content: "\e010";
+        display: block;
+        font-family: $opux-font-family-icon;
+        font-size: 1.3rem;
+        height: 30px;
+        left: 0px;
+        line-height: 30px;
+        margin-top: -15px;
+        position: absolute;
+        text-align: center;
+        top: 50%;
+        width: 30px;
+      }
+    }
+
   }
 }

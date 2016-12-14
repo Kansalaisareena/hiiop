@@ -242,7 +242,7 @@
       :error (get-in cursors-and-schema [:max-participants :error])
       :context context})
    (html/radio-binary
-    {:class "is-open"
+    {:class "is-open opux-fieldset__item"
      :schema (get-in cursors-and-schema [:is-open :schema])
      :value (get-in cursors-and-schema [:is-open :value])
      :error (get-in cursors-and-schema [:is-open :error])
@@ -250,7 +250,7 @@
     {:pages.quest.edit.open true
      :pages.quest.edit.closed false})
    (html/checkbox-binary
-    {:class "organiser-participates"
+    {:class "organiser-participates opux-fieldset__item"
      :id (name :pages.quest.edit.organiser-participates)
      :schema (get-in cursors-and-schema [:organiser-participates :schema])
      :value (get-in cursors-and-schema [:organiser-participates :value])
@@ -258,7 +258,8 @@
      })
    (html/label
     (tr [:pages.quest.edit.organiser-participates])
-    {:for (name :pages.quest.edit.organiser-participates)})
+    {:class "opux-input__label opux-input__label--checkbox"
+     :for (name :pages.quest.edit.organiser-participates)})
    ))
 
 (rum/defc edit < rum/reactive

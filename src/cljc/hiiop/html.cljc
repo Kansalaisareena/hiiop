@@ -329,16 +329,17 @@
   (let [group-name (str class "-radio-binary-choice")
         id (str group-name "-" (name key))]
     [:div
-     {:class "opux-input__container opex-input__container--radio radio-single-choice"}
+     {:class "opux-input__container opux-input__container--radio radio-single-choice"}
      [:input
       {:type "radio"
+       :class "opux-input--radio"
        :id id
        :name group-name
        :default-checked (= @current-choice value)
        :on-change
        (fn [] (reset! current-choice value))}]
      (label
-      (tr [key])
+      [:span (tr [key])]
       {:class "opux-input_label opux-input__label--radio"
        :for id})]))
 
@@ -353,6 +354,7 @@
   [{:keys [schema value error class id context]}]
   [:input
    {:type "checkbox"
+    :class "opux-input--checkbox"
     :default-checked (rum/react value)
     :id id
     :on-change

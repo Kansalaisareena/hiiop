@@ -95,10 +95,8 @@
 
       // opux-nav--header.is-active
       @include state('active') {
+        @include box-shadow(-5px, 0px, 12px, rgba(122, 122, 122, 0.5))
         transform: translateX(-100%);
-        -webkit-box-shadow: -5px 0px 12px 0px rgba(122,122,122,0.5);
-        -moz-box-shadow: -5px 0px 12px 0px rgba(122,122,122,0.5);
-        box-shadow: -5px 0px 12px 0px rgba(122,122,122,0.5);
       }
     }
   }
