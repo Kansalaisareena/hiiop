@@ -47,10 +47,10 @@
         api-handlers/login)
 
       (POST "/contentful-hook" []
-            :body [cfobject CfObject]
-            :summary "Handles contentful webhook."
-            api-handlers/contentful-hook)
-      
+        :body [cfobject CfObject]
+        :summary "Handles contentful webhook."
+        api-handlers/contentful-hook)
+
       (context "/users" []
         :tags ["user"]
         (GET "/:id" []
@@ -79,9 +79,9 @@
                         (bad-request %1))))))
 
         (POST "/activate" []
-              :body [activation UserActivation]
-              :summary "Activates inactive user"
-              api-handlers/activate))
+          :body [activation UserActivation]
+          :summary "Activates inactive user"
+          api-handlers/activate))
 
       (context "/pictures" []
                :tags ["picture"]
@@ -99,55 +99,20 @@
                                 (path-for ::picture {:id (str (:id %1))})
                                 %1)
                                (bad-request
-                                %1))))
-                       )
-                     )
+                                %1))))))
 
-               (GET "/:id" []
-                    :name        ::picture
-                    :path-params [id :- s/Str]
-                    :summary     "Get picture"
-                    :return      Picture
-                    (fn [request]
-                      (-> (api-handlers/get-picture id)
-                          (#(if %1
-                              (ok %1)
-                              (not-found)))))
-                    ))
+        (GET "/:id" []
+          :name        ::picture
+          :path-params [id :- s/Str]
+          :summary     "Get picture"
+          :return      Picture
+          (fn [request]
+            (-> (api-handlers/get-picture id)
+                (#(if %1
+                    (ok %1)
+                    (not-found)))))))
 
       (context "/quests" []
-<<<<<<< e4f5eac6c52a902f9f453b23ae82eedff4ce4dd9
-               :tags ["quest"]
-
-               (POST "/add" []
-                     :name       ::add-quest
-                     :body       [new-quest NewQuest]
-                     :middleware [api-authenticated]
-                     :summary    "Create a new quest"
-                     :return     Quest
-                     (fn [request]
-                       (let [quest (api-handlers/add-quest
-                                    {:quest new-quest
-                                     :user (:identity request)})]
-                         (if quest
-                           (created (path-for ::quest {:id (:id quest)}) quest)
-                           (bad-request {:error "Failed to add quest!"})))))
-
-               (GET "/:id" []
-                    :name        ::quest
-                    :path-params [id :- s/Int]
-                    :summary     "Get quest"
-                    :return      Quest
-                    api-handlers/get-quest)
-
-               ;; (POST "/:id/join" []
-               ;;  :name ::quest-join
-               ;;  :path-params [id :- s/Int]
-               ;;  :body [NewPartyMember]
-               ;;  :summary "Join a quest"
-               ;;  api-handlers/join-quest)
-               ))))
-=======
         :tags ["quest"]
 
         (POST "/add" []
@@ -178,4 +143,3 @@
         ;;  :summary "Join a quest"
         ;;  api-handlers/join-quest)
         ))))
->>>>>>> Get data from contentful and use it for registration email
