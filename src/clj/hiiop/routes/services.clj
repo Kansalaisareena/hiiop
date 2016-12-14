@@ -43,10 +43,14 @@
                  true/false on success/failure"
         api-handlers/login)
 
-
+      (POST "/contentful-hook" []
+            :body [cfobject CfObject]
+            :summary "Handles contentful webhook."
+            api-handlers/contentful-hook)
+      
       (context "/users" []
         :tags ["user"]
-        (GET "/users/:id" []
+        (GET "/:id" []
           :name ::user
           :path-params [id :- s/Uuid]
           :return User
@@ -56,12 +60,11 @@
         (POST "/register" []
           :body-params [email :- Email]
           :summary "Create a new user and email password token"
-          (fn [request]
-            (let [id (api-handlers/register request)]
-              (if id
-                (created (path-for ::user {:id (str id)}))
-                (bad-request {:errors
-                              {:email"User registration failed"}})))))
+          (fn [{locale :current-locale}]
+            (if-let [id (api-handlers/register {:email email :locale locale})]
+              (created (path-for ::user {:id (str id)}))
+              (bad-request {:errors
+                            {:email"User registration failed"}}))))
 
         (POST "/activate" []
           :body [activation UserActivation]
@@ -130,5 +133,4 @@
         ;;  :body [NewPartyMember]
         ;;  :summary "Join a quest"
         ;;  api-handlers/join-quest)
-        )
-      )))
+        ))))

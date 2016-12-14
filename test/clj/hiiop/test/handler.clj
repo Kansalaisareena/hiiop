@@ -17,8 +17,8 @@
 (def test-user-id (atom nil))
 (def email-token (atom nil))
 
-(defn receive-email [email token]
-  (log/info "receive email token" token)
+(defn receive-email [email token session]
+  (log/info "receive email token: " token)
   (reset! email-token token))
 
 (use-fixtures
@@ -66,7 +66,7 @@
   (testing "/api/v1/quests/add"
     (let [app-with-session (app)
           new-test-user-id (hiiop.api-handlers/register
-                            {:body-params {:email (:email test-user)}})
+                            {:email (:email test-user)})
           wat (reset! test-user-id new-test-user-id)
           new-email-token @email-token
           activate-response (hiiop.api-handlers/activate
