@@ -8,6 +8,7 @@
             [bidi.bidi :refer [path-for]]
             [hiiop.components.dropzone :refer [dropzone-mixin]]
             [hiiop.components.core :as c]
+            [hiiop.components.navigation :as navigation]
             [hiiop.components.pikaday :refer [pikaday pikaday-mixin]]
             [hiiop.components.address-autocomplete :as address]
             [hiiop.time :as time]
@@ -17,69 +18,6 @@
 
 (rum/defc page [head body]
   [:html head body])
-
-(rum/defc top-navigation [{:keys [hierarchy tr identity current-locale]}]
-  [:nav
-   {:class "opux-nav opux-nav--header"}
-   [:ul
-    {:class "opux-menu opux-menu--main"}
-    [:li
-     {:class "opux-menu__item opux-menu__item--main"}
-     [:a
-      {:class "opux-menu__item-link opux-menu__item-link--main"
-       :href "http://tarinat.hiiop100.fi"}
-      (tr [:pages.ideas.title])]]
-    [:li
-     {:class "opux-menu__item opux-menu__item--main-quest opux-menu__item--main--browse-quest"}
-     [:a
-      {:class "opux-menu__item-link opux-menu__item-link--main"
-       :href (path-for hierarchy :browse-quests)}
-      (tr [:actions.quest.browse])]]
-    [:li
-     {:class "opux-menu__item opux-menu__item--main--quest opux-menu__item--main--create-quest"}
-     [:a
-      {:class "opux-menu__item-link opux-menu__item-link--main"
-       :href (path-for hierarchy :create-quest)}
-      (tr [:actions.quest.create])]]]
-   [:ul
-    {:class "opux-menu opux-menu--languages"}
-    [:li
-     {:class "opux-menu__item opux-menu__item--languages"}
-     [:a
-      {:href "?lang=fi"
-       :class (str
-               "opux-menu__item-link opux-menu__item-link--languages "
-               (when (= current-locale :fi) "opux-menu__item-link opux-menu__item-link--languages is-active"))}
-      "fi"]
-     ]
-    [:li
-     {:class "opux-menu__item opux-menu__item--languages"}
-     [:a
-      {:href "?lang=sv"
-       :class (str
-               "opux-menu__item-link opux-menu__item-link--languages "
-               (when (= current-locale :sv) "opux-menu__item-link opux-menu__item-link--languages is-active"))}
-      "sv"
-      ]
-     ]]
-   [:ul
-    {:class "opux-menu opux-menu--login"}
-    [:li
-     {:class "opux-menu__item opux-menu__item--login"}
-     [:a
-      {:class "opux-menu__item-link opux-menu__item-link--login"
-       :href (path-for hierarchy :login)}
-      (tr [:actions.user.login])
-      ]]
-    [:li
-     {:class "opux-menu__item opux-menu__item--login"}
-     [:a
-      {:class "opux-menu__item-link opux-menu__item-link--login"
-       :href (path-for hierarchy :user)}
-      [:i {:class "opux-icon-circled opux-icon-person"}]
-      ]
-     ]
-    ]])
 
 (defn class-label-with-error [error class]
   (let [class-str (if class
@@ -445,15 +383,13 @@
 (rum/defc header [{:keys [hierarchy tr asset-path] :as context}]
   [:header
    {:class "opux-page-section opux-page-section--header"}
-   [:div {:class "opux-mobile-hamburger"}
-    [:div {:class "opux-mobile-hamburger__button"}
-     [:div {:class "opux-mobile-hamburger-dash"}]]]
    [:h1
     {:class "opux-logo opux-logo--header"}
     [:a
      {:href (path-for hierarchy :index)}
      (tr [:name])]]
-   (top-navigation context)])
+   [:div {:id "top-navigation"}
+    (navigation/top-navigation context)]])
 
 (rum/defc body-content [header content scripts]
   [:body header content scripts])

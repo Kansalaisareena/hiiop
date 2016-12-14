@@ -54,8 +54,7 @@
       margin-bottom: -10px;
     }
 
-    &.is-active,
-    &:hover {
+    &.is-active {
       &:before {
         transform: translateY(9px) rotate(45deg);
       }
@@ -88,10 +87,19 @@
       height: 100%;
       padding-top: 120px;
       position: fixed;
-      right: 0px;
+      right: -90%;
       text-align: right;
       top: 0px;
       width: 90%;
+      transition: transform .4s ease;
+
+      // opux-nav--header.is-active
+      @include state('active') {
+        transform: translateX(-100%);
+        -webkit-box-shadow: -7px 0px 12px 0px rgba(122,122,122,0.89);
+        -moz-box-shadow: -7px 0px 12px 0px rgba(122,122,122,0.89);
+        box-shadow: -7px 0px 12px 0px rgba(122,122,122,0.89);
+      }
     }
   }
 
