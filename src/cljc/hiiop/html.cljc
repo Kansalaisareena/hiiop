@@ -369,9 +369,10 @@
   (let [content-vector (into [] content)
         default-content [:fieldset
                          {:class "opux-fieldset opux-form-section__fieldset"}
-                         [:h3
-                          {:class "opux-form-section__title"}
-                          title]]]
+                         (cond (not-empty title)
+                               [:h3
+                                {:class "opux-form-section__title"}
+                                title])]]
     [:div {:class "opux-form-section"}
      (into [] (concat default-content content-vector))]))
 

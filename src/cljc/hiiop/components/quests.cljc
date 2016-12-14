@@ -330,12 +330,13 @@
        :tr tr
        })
      (html/form-section
+      ""
+      [:div {:class "opux-fieldset__item opux-fieldset__item--inline-container"}
       (html/button
        (tr [:pages.quest.edit.button.submit])
-       {:class "opux-button opux-form__button"
+       {:class "opux-button opux-form__button opux-fieldset__inline-item"
         :type "submit"
         :active is-valid})
       (html/button
        (tr [:pages.quest.edit.button.remove])
-       {:class "opux-button opux-form__button"}))
-     ]))
+       {:class "opux-button opux-form__button opux-fieldset__inline-item"})])]))
