@@ -44,10 +44,10 @@
         api-handlers/login)
 
       (POST "/contentful-hook" []
-            :body [cfobject CfObject]
-            :summary "Handles contentful webhook."
-            api-handlers/contentful-hook)
-      
+        :body [cfobject CfObject]
+        :summary "Handles contentful webhook."
+        api-handlers/contentful-hook)
+
       (context "/users" []
         :tags ["user"]
         (GET "/:id" []
@@ -68,8 +68,8 @@
 
         (POST "/activate" []
           :body [activation UserActivation]
-                     :summary "Activates inactive user"
-                     api-handlers/activate))
+          :summary "Activates inactive user"
+          api-handlers/activate))
 
       (context "/pictures" []
         :tags ["picture"]
@@ -101,7 +101,7 @@
                 (#(if %1
                     (ok %1)
                     (not-found)))))
-        ))
+          ))
 
       (context "/quests" []
         :tags ["quest"]
