@@ -19,6 +19,16 @@
    :register "Luo tunnus"
    :remember-me "Muista minut"}
 
+  :register
+  {:title "Luo tunnus"
+   :name "Nimi"
+   :email "Luo tunnus"}
+
+  :activate
+  {:title "Salasana"
+   :password "Salasana"
+   :confirm-password "Salasana uudestaan"}
+
   :quest
   {:title "Löydä tehtävä"
    :edit
@@ -82,7 +92,8 @@
   :user
   {:login    "Kirjaudu"
    :register "Rekisteröidy"
-   :logout   "Kirjaudu ulos"}
+   :logout   "Kirjaudu ulos"
+   :save-password "Tallenna salasana"}
   }
 
  :error

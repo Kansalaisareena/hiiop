@@ -3,7 +3,9 @@
             [rum.core :as rum]
             [taoensso.timbre :as log]
             [schema.core :as schema]
-            [hiiop.components.login :as l]
+            [hiiop.components.login :as p-l]
+            [hiiop.components.activate :as p-a]
+            [hiiop.components.register :as p-r]
             [hiiop.components.quests :as quests]
             [hiiop.context :refer [context]]
             [hiiop.mangling :refer [same-keys-with-nils]]
@@ -12,7 +14,19 @@
 (defn login-page [params]
   (log/info "login-page")
   (rum/mount
-   (l/login {:context @context})
+   (p-l/login {:context @context})
+   (. js/document (getElementById "app"))))
+
+(defn register-page [params]
+  (log/info "register-page")
+  (rum/mount
+   (p-r/register {:context @context})
+   (. js/document (getElementById "app"))))
+
+(defn activate-page [params]
+  (log/info "register-page")
+  (rum/mount
+   (p-a/activate {:context @context})
    (. js/document (getElementById "app"))))
 
 (defn browse-quests-page [params]
@@ -48,6 +62,10 @@
    browse-quests-page
    :login
    login-page
+   :register
+   register-page
+   :activate
+   activate-page
    :browse-quests
    browse-quests-page
    :create-quest

@@ -6,7 +6,9 @@
             [hiiop.middleware :refer [authenticated]]
             [hiiop.layout :as layout]
             [hiiop.components.quests :as quests]
-            [hiiop.components.login :as l]
+            [hiiop.components.activate :as p-a]
+            [hiiop.components.register :as p-r]
+            [hiiop.components.login :as p-l]
             [hiiop.config :refer [env]]
             [hiiop.routes.page-hierarchy :as page-hierarchy]
             [hiiop.mangling :refer [same-keys-with-nils]]
@@ -34,8 +36,22 @@
   (let [context (create-context req)
         tr (:tr context)]
     (layout/render {:context context
-                    :content (l/login {:context context})
-                    :title (tr [:pages.index.title])})))
+                    :content (p-l/login {:context context})
+                    :title (tr [:pages.login.title])})))
+
+(defn register [req]
+  (let [context (create-context req)
+        tr (:tr context)]
+    (layout/render {:context context
+                    :content (p-r/register {:context context})
+                    :title (tr [:pages.register.title])})))
+
+(defn activate [req]
+  (let [context (create-context req)
+        tr (:tr context)]
+    (layout/render {:context context
+                    :content (p-a/activate {:context context})
+                    :title (tr [:pages.activate.title])})))
 
 (defn create-quest [req]
   (let [context (create-context req)
@@ -80,6 +96,10 @@
    index
    :login
    login
+   :register
+   register
+   :activate
+   activate
    :browse-quests
    browse-quests
    :create-quest

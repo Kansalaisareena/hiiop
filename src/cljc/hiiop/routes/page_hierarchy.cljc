@@ -7,6 +7,10 @@
    "/"
    (leaf "" :index)
    (leaf "kirjaudu" :login)
+   (leaf "rekisteroidy" :register)
+   (branch
+    "rekisteroidy/" (param :token)
+    (leaf "" :activate))
    (branch
     "tehtavat/"
     (leaf "" :browse-quests)
