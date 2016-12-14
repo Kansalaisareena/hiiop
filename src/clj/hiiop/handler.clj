@@ -6,7 +6,7 @@
             [compojure.route :as route]
             [hiiop.env :refer [defaults]]
             [mount.core :as mount]
-            [hiiop.middleware :as middleware]))
+            [hiiop.middleware :refer [wrap-base wrap-csrf wrap-formats]]))
 
 (mount/defstate init-app
   :start ((or (:init defaults) identity))
@@ -15,16 +15,12 @@
 (def app-routes
   (routes
    (-> #'pages/ring-handler
-       (wrap-routes middleware/wrap-csrf)
-       (wrap-routes middleware/wrap-formats))
+       (wrap-routes wrap-csrf)
+       (wrap-routes wrap-formats))
    #'service-routes
-   ;;(-> #'authed-routes
-   ;;    (wrap-routes middleware/wrap-csrf)
-   ;;    (wrap-routes middleware/wrap-formats)
-   ;;    (wrap-routes middleware/wrap-restricted))
    (route/not-found
     (:body
      (error-page {:status 404
                   :title "page not found"})))))
 
-(defn app [] (middleware/wrap-base #'app-routes))
+(defn app [] (wrap-base #'app-routes))

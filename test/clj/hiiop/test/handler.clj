@@ -1,5 +1,6 @@
 (ns hiiop.test.handler
   (:require [clojure.test :refer :all]
+            [mount.core :as mount]
             [ring.mock.request :refer :all]
             [clojure.java.jdbc :as jdbc]
             [taoensso.timbre :as log]
@@ -40,6 +41,16 @@
     (f)
     (db/delete-user! *db* {:id (sc/string->uuid @test-user-id)})
     ))
+
+(use-fixtures
+  :once
+  (fn [f]
+    (mount/start
+     #'hiiop.config/env
+     #'hiiop.redis/redis-connection-options
+     #'hiiop.handler/init-app
+     #'hiiop.middleware/wrap-base)
+    (f)))
 
 (deftest test-app
   (testing "main route"

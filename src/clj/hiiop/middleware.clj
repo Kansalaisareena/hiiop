@@ -18,6 +18,7 @@
             [hiiop.routes.page-hierarchy :refer [hierarchy]]
             [hiiop.env :refer [defaults]]
             [hiiop.config :refer [env]]
+            [hiiop.redis :refer [session-store]]
             [hiiop.layout :refer [*app-context* error-page]]
             [hiiop.translate :refer [supported-lang tr-opts tr-with]])
   (:import [javax.servlet ServletContext]))
@@ -133,6 +134,6 @@
       (wrap-defaults
        (-> site-defaults
            (assoc-in [:security :anti-forgery] false)
-           (assoc-in [:session :store] (carmine-store (env :redis)))))
+           (assoc-in [:session :store] session-store)))
       wrap-context
       wrap-internal-error))
