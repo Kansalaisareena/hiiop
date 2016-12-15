@@ -10,7 +10,7 @@
             [hiiop.components.register :as p-r]
             [hiiop.components.login :as p-l]
             [hiiop.config :refer [env]]
-            [hiiop.routes.page-hierarchy :as page-hierarchy]
+            [hiiop.routes.page-hierarchy :refer [hierarchy]]
             [hiiop.mangling :refer [same-keys-with-nils]]
             [hiiop.schema :refer [NewQuest new-empty-quest]]))
 
@@ -20,7 +20,7 @@
 (defn create-context [req]
   {:tr (tr-from-req req)
    :config env
-   :hierarchy page-hierarchy/hierarchy
+   :hierarchy hierarchy
    :identity (:identity req)
    :current-locale (keyword (:current-locale req))})
 
@@ -108,7 +108,7 @@
    (authenticated create-quest)})
 
 (def ring-handler
-  (let [hierarchy page-hierarchy/hierarchy]
+  (do
     (log/info hierarchy)
     (make-handler
      hierarchy
