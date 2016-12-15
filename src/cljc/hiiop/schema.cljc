@@ -46,6 +46,14 @@
    :is-moderator? s/Bool
    :is-active s/Bool})
 
+(defn new-empty-registration-info []
+  {:name "" :email ""})
+
+(def RegistrationInfo
+  "Initial registration information with only email and name"
+  {:email Email
+   :name s/Str})
+
 (def UserActivation
   "Email, password and password token"
   {:email Email

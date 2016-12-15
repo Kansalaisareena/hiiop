@@ -9,7 +9,7 @@
             [hiiop.components.quests :as quests]
             [hiiop.context :refer [context]]
             [hiiop.mangling :refer [same-keys-with-nils]]
-            [hiiop.schema :refer [new-empty-quest NewQuest Quest]]))
+            [hiiop.schema :refer [new-empty-quest NewQuest Quest RegistrationInfo new-empty-registration-info]]))
 
 (defn login-page [params]
   (log/info "login-page")
@@ -18,10 +18,15 @@
    (. js/document (getElementById "app"))))
 
 (defn register-page [params]
-  (log/info "register-page")
-  (rum/mount
-   (p-r/register {:context @context})
-   (. js/document (getElementById "app"))))
+  (let [registration-info (atom (new-empty-registration-info))
+        errors (atom (same-keys-with-nils @registration-info))]
+    (log/info "register-page" @registration-info (new-empty-registration-info))
+    (rum/mount
+     (p-r/register {:context @context
+                    :registration-info registration-info
+                    :schema RegistrationInfo
+                    :errors errors})
+     (. js/document (getElementById "app")))))
 
 (defn activate-page [params]
   (log/info "register-page")
