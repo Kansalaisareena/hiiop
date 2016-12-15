@@ -44,7 +44,7 @@
       (unauthorized))))
 
 (defn register
-  [{{email :email name :name} :body-params}]
+  [{{email :email name :name locale :locale} :body-params}]
   (try
     (let [id (:id (db/create-virtual-user! {:email email}))]
       (if (not (nil? id))

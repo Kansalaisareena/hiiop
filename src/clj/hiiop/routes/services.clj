@@ -61,13 +61,13 @@
           api-handlers/get-user)
 
         (POST "/register" []
-              :body-params [email :- Email]
+              :body-params [email :- Email name :- s/Str]
               :summary "Create a new user and email password token"
               (fn [{locale :current-locale}]
                 (if-let [id (api-handlers/register {:email email :locale locale})]
                   (created (path-for ::user {:id (str id)}))
                   (bad-request {:errors
-                                {:email"User registration failed"}}))))
+                                {:email "User registration failed"}}))))
 
         (POST "/validate-token" []
               :summary "Verify if a token is valid and returns its expiry date and user email"
