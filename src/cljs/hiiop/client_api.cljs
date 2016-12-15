@@ -1,6 +1,5 @@
 (ns hiiop.client-api
-  (:require-macros [cljs.core.async.macros :refer [go]]
-                   [schema.core :as s])
+  (:require-macros [cljs.core.async.macros :refer [go]])
   (:require [cljs-http.client :as http]
             [cljs.core.async :refer [<!]]
             [taoensso.timbre :as log]))
