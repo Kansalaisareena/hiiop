@@ -1,0 +1,86 @@
+// opux-form
+@include block('opux-form') {
+  width: 100%;
+}
+
+// opux-form-section
+@include block('opux-form-section') {
+  @include flex-direction(column);
+  @include flexbox;
+  border-bottom: 1px solid $OP-gray;
+  margin-bottom: 2rem;
+  margin-left: -1rem;
+  margin-right: -1rem;
+  padding-bottom: 2rem;
+
+  // opux-form__fieldset
+  @include element('fieldset') {
+    box-sizing: border-box;
+    margin: 0 auto;
+    max-width: 640px;
+    padding: 0 1rem;
+    width: 100%;
+  }
+}
+
+@include block('opux-fieldset') {
+  width: 100%;
+  .error {
+    color: $OP-red;
+  }
+
+  // opux-fieldset--multi-select
+  @include modifier('multi-select') {
+    @include align-items(flex-start);
+    @include flex-direction(row);
+    @include flexbox;
+    flex-wrap: wrap;
+    font-size: .8rem;
+    font-weight: 400;
+    width: 100%;
+    input.hidden {
+      display: none;
+    }
+  }
+
+  // opux-fieldset__item
+  @include element('item') {
+    margin-bottom: 25px;
+
+    // opux-fieldset__item--inline-container
+    @include modifier('inline-container') {
+      @include align-items(flex-start);
+      @include flex-direction(row);
+      @include flexbox;
+    }
+  }
+
+  // opux-fieldset__inline-item
+  @include element('inline-item') {
+    @include flex(0, 0, 50%);
+    @include flex-direction(column);
+    @include flexbox;
+    &.opux-form__button {
+      @include align-items(center);
+      max-width: 45%;
+      min-width: auto;
+      margin-left: 2.5%;
+      margin-right: 2.5%;
+    }
+  }
+}
+
+.opux-register-link,
+.opux-forget-password-link {
+  display: inline-block;
+  width: 50%;
+}
+
+.opux-register-link {
+  text-align: right;
+}
+
+
+.opux-forget-password-link {
+  text-align: left;
+}

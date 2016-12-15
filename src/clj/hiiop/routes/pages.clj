@@ -3,10 +3,14 @@
             [clojure.java.io :as io]
             [taoensso.timbre :as log]
             [bidi.ring :refer (make-handler)]
+            [hiiop.middleware :refer [authenticated]]
             [hiiop.layout :as layout]
             [hiiop.components.quests :as quests]
+            [hiiop.components.login :as l]
             [hiiop.config :refer [env]]
-            [hiiop.routes.page-hierarchy :as page-hierarchy]))
+            [hiiop.routes.page-hierarchy :refer [hierarchy]]
+            [hiiop.mangling :refer [same-keys-with-nils]]
+            [hiiop.schema :refer [NewQuest new-empty-quest]]))
 
 (defn tr-from-req [req]
   (:tempura/tr req))
@@ -14,7 +18,9 @@
 (defn create-context [req]
   {:tr (tr-from-req req)
    :config env
-   :hierarchy page-hierarchy/hierarchy})
+   :hierarchy hierarchy
+   :identity (:identity req)
+   :current-locale (keyword (:current-locale req))})
 
 (defn index [req]
   (let [context (create-context req)
@@ -24,12 +30,34 @@
                                                   :context context})
                     :title (tr [:pages.index.title])})))
 
-(defn create-quest [req]
+(defn login [req]
   (let [context (create-context req)
         tr (:tr context)]
     (layout/render {:context context
-                    :content (quests/create {:context context})
-                    :title (tr [:actions.quest.create])})))
+                    :content (l/login {:context context})
+                    :title (tr [:pages.index.title])})))
+
+(defn create-quest [req]
+  (let [context (create-context req)
+        tr (:tr context)
+        quest (atom (new-empty-quest))
+        errors (atom (same-keys-with-nils @quest))]
+    (layout/render {:title (tr [:actions.quest.create])
+                    :context context
+                    :content
+                    (quests/edit {:context context
+                                  :quest quest
+                                  :schema NewQuest
+                                  :errors errors})
+                    :scripts
+                    [(str
+                      "https://maps.googleapis.com/maps/api/js?"
+                      "key=AIzaSyDfXn9JTGue0fbkI3gqIqe7_WUn0M-dt-8"
+                      "&libraries=places"
+                      "&language=" "fi" ;; to normalize the google data
+                      "&region=FI"
+                      )]
+                    })))
 
 (defn browse-quests [req]
   (let [context (create-context req)
@@ -50,15 +78,17 @@
 (def handlers
   {:index
    index
+   :login
+   login
    :browse-quests
    browse-quests
    :create-quest
-   create-quest
+   (authenticated create-quest)
    :edit-quest
-   edit-quest})
+   (authenticated create-quest)})
 
 (def ring-handler
-  (let [hierarchy page-hierarchy/hierarchy]
+  (do
     (log/info hierarchy)
     (make-handler
      hierarchy

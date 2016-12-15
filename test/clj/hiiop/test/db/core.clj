@@ -5,12 +5,13 @@
             [clojure.java.jdbc :as jdbc]
             [mount.core :as mount]
             [clj-time.core :as t]
-            [hiiop.time :refer [add now hour]]
+            [hiiop.time :refer [add now an-hour]]
             [taoensso.timbre :as log]
             [camel-snake-kebab.extras :refer [transform-keys]]
             [camel-snake-kebab.core :refer [->kebab-case-keyword]]
             [schema.coerce :as coerce]
-            [hiiop.test.test :refer [contains-many?]]
+            [hiiop.test.data :refer [test-quest]]
+            [hiiop.test.util :refer [contains-many?]]
             [hiiop.config :refer [env]]))
 
 (use-fixtures
@@ -47,7 +48,7 @@
     (let [token (:token (db/create-password-token!
                          t-conn
                          {:email "sam.smith@example.com"
-                          :expires (add (now) hour)}))]
+                          :expires (add (now) an-hour)}))]
       (is (not (nil? token))
           "create-password-token! should return the token")
       (is (= true (:exists (db/check-token-validity t-conn {:token token})))
@@ -71,7 +72,7 @@
     (let [token (:token (db/create-password-token!
                          t-conn
                          {:email "sam@example.com"
-                          :expires (add (now) hour)}))]
+                          :expires (add (now) an-hour)}))]
       (is (not (nil? token))
           "create-password-token! should return the token")
       (is (= true (:exists (db/check-token-validity t-conn {:token token})))
@@ -89,37 +90,22 @@
   (let [quest-with-added (assoc quest
                                 :description nil
                                 :id id
-                                :is-open is-open
                                 :picture-url nil)]
     (dissoc
      quest-with-added
      :picture)))
 
-(deftest test-create-unmoderated-open-quest
+(deftest test-create-unmoderated-quest
   (jdbc/with-db-transaction [t-conn *db*]
     (jdbc/db-set-rollback-only! t-conn)
-    (let [today-at-twelve (hiiop.time/with-default-time-zone (t/today-at 12 00))
-          today-at-six (hiiop.time/with-default-time-zone (t/plus today-at-twelve (t/hours 6)))
-          quest {:name "Nälkäkeräys"
-                 :start-time today-at-twelve
-                 :end-time today-at-six
-                 :address "Raittipellontie 3"
-                 :town "Kolari"
-                 :categories ["foreign-aid"]
-                 :unmoderated-description "LOL"
-                 :max-participants 10
-                 :hashtags ["a" "b" "c" "d"]
-                 :picture nil
-                 :owner nil}
-
-          from-db (db/add-unmoderated-open-quest!
+    (let [quest (test-quest)
+          from-db (db/add-unmoderated-quest!
                    t-conn
                    (->snake_case_keywords quest))
           added-quest-id (:id from-db)
           expected-quest (transform-to-quest-db-fields
                           {:quest quest
                            :id added-quest-id
-                           :is-open true
                            :picture-url nil})]
       (is (not (= (:id added-quest-id) 0)))
       (is (= expected-quest

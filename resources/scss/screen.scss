@@ -1,37 +1,26 @@
-@import "_reset-src";
-@import "_font-faces";
-@import "_variables";
 // Import the library:
-@import "viewports";
+@import "vendors/reset-src";
+@import "vendors/font-faces";
+@import "vendors/viewports";
+@import "vendors/pikaday";
+@import "vendors/bemify";
+@import "vendors/ligature";
+@import "vendors/dropzone";
+@import "vendors/flexbox_mixins";
 
-html, body {
-  font-family: $font-family;
-  height: 100%;
-  font-weight: 200;
-  font-size: 18px;
-  color: $basic-text-colour;
-}
+// Import custom sass.
+@import 'opux_variables';
+@import 'opux_globals';
+@import 'opux_layouts';
+@import 'opux_icons';
+@import 'opux_buttons';
+@import 'opux_inputs';
+@import 'opux_forms';
+@import 'opux_navs';
 
-h1 {
-  font-size: 2rem;
-  font-weight: 300;
-  line-height: 2rem;
-}
-
-a {
-  color: $link-colour;
-  text-decoration: none;
-}
-
-.app, footer {
-  padding: 1rem;
-  margin: auto;
-  max-width: 1024px;
-}
-
-@include viewports(tiny medium) {
-  font-size: 75%;
-}
-
-@import "_header";
-@import "_footer";
+@import 'opux_layouts_mobile';
+@import 'opux_icons_mobile';
+@import 'opux_navs_mobile';
+@import 'opux_forms_mobile';
+@import 'opux_inputs_mobile';
+@import 'opux_globals_mobile';

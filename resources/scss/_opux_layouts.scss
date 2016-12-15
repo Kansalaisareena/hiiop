@@ -1,0 +1,15 @@
+@include block('opux-page-section') {
+  @include flex-direction(row);
+  @include flexbox;
+  box-sizing: border-box;
+  margin: 0 auto;
+  max-width: $screen-large;
+  padding: 0 1rem;
+  width: 100%;
+
+  // opux-page-section--header
+  @include modifier('header') {
+    border-bottom: 2px solid $OP-gray-light;
+    font-size: 20px;
+  }
+}

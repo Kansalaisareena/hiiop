@@ -9,11 +9,17 @@
             [hiiop.html                  :as html]
             [hiiop.client-config         :refer [env]]
             [hiiop.translate             :refer [tr-with tr-opts]]
-            [hiiop.context               :refer [set-context!]]
+            [hiiop.context               :refer [set-context! context]]
             [hiiop.routes.page-hierarchy :as page-routes]
+            [hiiop.components.navigation :as navigation]
             [hiiop.client-pages          :as client-pages]))
 
 (enable-console-print!)
+
+(defn mount-top-navigation [context]
+  (rum/mount
+   (navigation/top-navigation context)
+   (. js/document (getElementById "top-navigation"))))
 
 (defn get-config-and-call [this]
   (go
@@ -33,9 +39,16 @@
 (defn route! [{:keys [accept-langs langs] :as conf}]
   (let [tr (tr-with (tr-opts langs) accept-langs)
         routes page-routes/hierarchy
-        handler-route-key (match-route routes (.-pathname js/location))]
-    (set-context! {:tr tr :conf conf})
-    (when (:handler handler-route-key) (((:handler handler-route-key) client-pages/handlers)))))
+        handler-route-key (match-route routes (.-pathname js/location))
+        handler-key (:handler handler-route-key)
+        context {:tr tr :conf conf :hierarchy hiiop.routes.page-hierarchy/hierarchy :current-locale (keyword (:current-locale conf))}]
+    (set-context! context)
+    (mount-top-navigation context)
+    (log/info handler-route-key handler-key)
+    (when (and
+           handler-route-key
+           (handler-key client-pages/handlers))
+      ((handler-key client-pages/handlers) client-pages/handlers))))
 
 (defn mount-components []
   (get-config-and-call route!))

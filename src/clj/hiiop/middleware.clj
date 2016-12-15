@@ -6,6 +6,7 @@
             [ring.middleware.cookies :refer [wrap-cookies]]
             [ring.middleware.params :refer [wrap-params]]
             [ring.middleware.defaults :refer [site-defaults wrap-defaults]]
+            [ring.util.response :as response]
             [buddy.auth.accessrules :refer [restrict]]
             [buddy.auth.middleware :refer [wrap-authentication]]
             [buddy.auth :refer [authenticated?]]
@@ -13,6 +14,8 @@
             [taoensso.timbre :as log :refer [info]]
             [taoensso.tempura :as tempura]
             [taoensso.carmine.ring :refer [carmine-store]]
+            [bidi.bidi :as bidi]
+            [hiiop.routes.page-hierarchy :refer [hierarchy]]
             [hiiop.env :refer [defaults]]
             [hiiop.config :refer [env]]
             [hiiop.layout :refer [*app-context* error-page]]
@@ -46,14 +49,20 @@
 
 
 (defn auth-error [request response]
-  {:status  403
-   :headers {"Content-Type" "text/plain"}
-   :body    (str "Access to " (:uri request) " is not authorized")})
+  (let [going-to (:handler (bidi/match-route hierarchy (:path-info request)))]
+    (response/redirect
+     (str
+      (bidi/path-for hierarchy :login)
+      (when going-to (str "?sitten=" (name going-to)))))))
 
-
-(defn wrap-restricted [handler]
+(defn authenticated [handler]
   (restrict handler {:handler authenticated?
                      :on-error auth-error}))
+
+(defn api-authenticated [handler]
+  (restrict handler {:handler authenticated?
+                     :on-error (fn [request resp]
+                                 (response/status resp 401))}))
 
 (defn wrap-csrf [handler]
   (wrap-anti-forgery
@@ -104,7 +113,6 @@
                        :current-locale       (keyword current-locale))
                 (assoc request
                        :current-locale (keyword current-locale)))]
-      (log/info accepted lang current-locale)
       (if change-lang
         (-> (handler req)
             (assoc-in [:cookies "lang" :value]   (name (:current-locale req)))

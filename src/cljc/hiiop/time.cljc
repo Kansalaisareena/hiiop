@@ -1,13 +1,18 @@
 (ns hiiop.time
   (:require
+   [clojure.string :as string]
    [taoensso.timbre :as log]
    [mount.core :refer [defstate swap]]
-   #?(:clj[clj-time.core :as time]
-      :cljs[cljsjs.moment])
+   #?(:cljs [goog.string :as gstring])
+   #?(:cljs [goog.string.format])
+   #?(:clj  [clj-time.core :as time]
+      :cljs [cljsjs.moment])
    #?(:cljs [cljsjs.moment.locale.fi])
    #?(:cljs [cljsjs.moment.locale.sv])
    #?(:clj [clj-time.coerce :as timec])
-   #?(:clj [clj-time.format :as timef])))
+   #?(:clj [clj-time.format :as timef])
+   [hiiop.mangling :as mangle])
+  #?(:clj (:import [org.joda.time MutableDateTime DateTime])))
 
 #?(:cljs
    (def server-client-diff-seconds (atom 0)))
@@ -16,7 +21,14 @@
    (defn set-server-client-diff-seconds [diff]
      (swap! server-client-diff-seconds (fn [] diff))))
 
-(def print-format "dd.MM.yyyy hh.mm")
+(def date-print-format
+  #?(:clj "dd.MM.YYYY"
+     :cljs "DD.MM.YYYY"))
+(def time-print-format "HH.mm")
+(def print-format (str date-print-format " " time-print-format))
+(def transit-format
+  #?(:clj "YYYY-MM-DD'T'HH:mm:ssZ"
+     :cljs "YYYY-MM-DDTHH:mm:ssZ"))
 
 #?(:cljs (defstate locale :start :fi))
 #?(:cljs (defn switch-locale [locale]
@@ -78,47 +90,88 @@
     #?(:clj (time/millis amount)
        :cljs (.duration js/moment amount "millisecond"))))
 
-(def milli (millis 1))
+(def a-milli (millis 1))
 
 (defn seconds [amount]
   (if amount
     #?(:clj (time/seconds amount)
        :cljs (.duration js/moment amount "second"))))
 
+(def a-second (seconds 1))
+
 (defn minutes [amount]
   (if amount
     #?(:clj (time/minutes amount)
        :cljs (.duration js/moment amount "minute"))))
 
-(def minute (minutes 1))
+(def a-minute (minutes 1))
 
 (defn hours [amount]
   (if amount
     #?(:clj (time/hours amount)
        :cljs (.duration js/moment amount "hour"))))
 
-(def hour (hours 1))
+(def an-hour (hours 1))
 
 (defn days [amount]
   (if amount
     #?(:clj (time/days amount)
        :cljs (.duration js/moment amount "day"))))
 
-(def day (days 1))
+(def a-day (days 1))
 
 (defn months [amount]
   (if amount
     #?(:clj (time/months amount)
        :cljs (.duration js/moment amount "month"))))
 
-(def month (months 1))
+(def a-month (months 1))
 
 (defn years [amount]
   (if amount
     #?(:clj (time/years amount)
        :cljs (.duration js/moment amount "year"))))
 
-(def year (years 1))
+(def a-year (years 1))
+
+(defn year
+  ([from]
+   #?(:clj (time/year from)
+      :cljs (.year from)))
+  ([date to]
+   #?(:clj
+      (let [^MutableDateTime mdt (.toMutableDateTime ^DateTime date)]
+        (.toDateTime (doto mdt
+                       (.setYear to))))
+      :cljs
+      (-> (js/moment date)
+          (.year to)))))
+
+(defn month
+  ([from]
+   #?(:clj (time/month from)
+      :cljs (.month from)))
+  ([date to]
+   #?(:clj
+      (let [^MutableDateTime mdt (.toMutableDateTime ^DateTime date)]
+        (.toDateTime (doto mdt
+                       (.setMonthOfYear to))))
+      :cljs
+      (-> (js/moment date)
+          (.month to)))))
+
+(defn day
+  ([from]
+   #?(:clj (time/day from)
+      :cljs (.date from)))
+  ([date to]
+   #?(:clj
+      (let [^MutableDateTime mdt (.toMutableDateTime ^DateTime date)]
+        (.toDateTime (doto mdt
+                       (.setDayOfMonth to))))
+      :cljs
+      (-> (js/moment date)
+          (.date to)))))
 
 (defn add
   ([to amount]
@@ -141,6 +194,43 @@
      #?(:clj  (time/minus from ((to-unit units) amount))
         :cljs (.subtract from amount units)))))
 
+(defn time-to
+  ([time hours minutes seconds millis]
+   #?(:clj
+      (let [^MutableDateTime mdt (.toMutableDateTime ^DateTime time)]
+        (.toDateTime (doto mdt
+                       (.setHourOfDay      hours)
+                       (.setMinuteOfHour   minutes)
+                       (.setSecondOfMinute seconds)
+                       (.setMillisOfSecond millis))))
+      :cljs
+       (-> (js/moment time)
+           (.hours hours)
+           (.minutes minutes)
+           (.seconds seconds)
+           (.milliseconds millis))))
+  ([time hours minutes seconds]
+   (time-to time hours minutes seconds 0))
+  ([time hours minutes]
+   (time-to time hours minutes 0)))
+
+(defn use-same-date [from to]
+  (let [from-day (day from)
+        from-month (month from)
+        from-year (year from)]
+    (-> (day to from-day)
+        (month from-month)
+        (year from-year))))
+
+(defn tomorrow []
+  (add (now) a-day))
+
+(defn tomorrow-at-noon []
+  (time-to (tomorrow) 12 00))
+
+(defn today []
+  (time-to (now) 00 00))
+
 (defn relative-string
   "Returns relative time on client side and date on server side"
   ([a]
@@ -152,14 +242,56 @@
      #?(:clj (clj-time.format/unparse print-formatter a)
         :cljs (.from a b)))))
 
-(defn from-string [string]
-  #?(:clj  (with-default-time-zone (timec/from-string string))
-     :cljs (with-default-time-zone (js/moment string))))
+(defn before? [a b]
+  (if (and a b)
+    #?(:clj (time/before? a b)
+       :cljs (.isBefore a b))))
 
-(defn to-string [date]
-  #?(:clj (timef/unparse
-           (timef/with-zone
-             (timef/formatters :date-time-no-ms)
-             (time/time-zone-for-id @time-zone))
-           date)
-     :cljs (.format (.tz date @time-zone) "YYYY-MM-DDTHH:mm:ssZ")))
+(defn after? [a b]
+  (if (and a b)
+    #?(:clj (time/after? a b)
+       :cljs (.isAfter a b))))
+
+(defn from-string
+  ([string]
+   #?(:clj  (with-default-time-zone (timec/from-string string))
+      :cljs (with-default-time-zone (js/moment string))))
+  ([string format]
+   #?(:clj  (with-default-time-zone (timef/parse (timef/formatter format) string))
+      :cljs (with-default-time-zone (js/moment string format)))))
+
+(defn to-string
+  ([date format]
+   #?(:clj
+      (let [formatter (if format
+                        (timef/formatter format)
+                        (timef/formatters :date-time-no-ms))]
+        (timef/unparse
+         (timef/with-zone
+           formatter
+           (time/time-zone-for-id @time-zone))
+         date))
+      :cljs (.format (.tz date @time-zone) format)))
+   ([date]
+    #?(:clj (to-string date nil)
+       :cljs (to-string date transit-format))))
+
+(defn datetime->time [datetime]
+  {:hours #?(:clj (time/hour datetime)
+             :cljs (.hour datetime))
+   :minutes #?(:clj (time/minute datetime)
+               :cljs (.minute datetime))})
+
+(defn string->time [time-string]
+  (let [numbers (map
+                 mangle/parse-int
+                 (string/split time-string #"\."))]
+    {:hours (first numbers) :minutes (second numbers) }))
+
+(defn time->string [{:keys [hours minutes]}]
+  #?(:clj  (format "%02d.%02d" hours minutes)
+     :cljs (gstring/format "%02d.%02d" hours minutes)))
+
+(defn time? [time]
+  #?(:clj  (instance? org.joda.time.DateTime time)
+     :cljs (.isMoment js/moment time)))

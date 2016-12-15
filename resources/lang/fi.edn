@@ -11,14 +11,65 @@
   :index
   {:title :name}
 
+  :login
+  {:title "Kirjaudu"
+   :email "Sähköpostiosoite"
+   :password "Salasana"
+   :forget-password "Olen unohtanut salasanani"
+   :register "Luo tunnus"
+   :remember-me "Muista minut"}
+
   :quest
   {:title "Löydä tehtävä"
-   :create
-   {:title "Ilmoita uusi tehtävä"}
+   :edit
+   {:title "Ilmoita uusi tehtävä"
+    :subtitles
+    {:content "1/4 Tehtävän sisältö"
+     :time-place "2/4 Missä ja milloin tapahtuma järjestetään"
+     :related-to "3/4 Mihin tehtävä liittyy"
+     :participation "4/4 Osallistuminen"}
+
+    :name "Tehtävän nimi"
+    :description "Kerro tehtävästäsi"
+    :picture "Lisää kuva"
+    :hashtags "Aihetunnisteet eli hashtagit"
+    :organisation
+    {:name "Yhteisön tai organisaation nimi"
+     :description "Kerro yhteisösi toiminnasta"}
+    :start-time "Alkamisaika"
+    :end-time "Päättymisaika"
+    :location {:label "Paikka"
+               :placeholder "Anna sijainti"}
+    :max-participants
+    {:can-join "Tehtävään voi osallistua"
+     :amount-of-people "henkilöä"
+     }
+    :open "Tehtävä on avoin kaikille"
+    :closed "Vapaaehtoiseksi voi ilmoittautua ainoastaan järjestäjältä saadun yksityisen linkin kautta"
+    :organiser-participates "Osallistun lisäksi itse tehtävään"
+    :button
+    {:add-organisation "Haluatko lisätä tehtävään tietoa yhteisöstäsi tai organisaatiosta"
+     :reveal-end-time "Lisää päättymisaika"
+     :submit "Esikatsele ja julkaise"
+     :remove "Poista tehtävä"}
+    }
    }
 
   :ideas
   {:title "Kokemuksia vapaaehtoistyöstä"}
+  }
+
+ :category
+ {:kids-and-youngsters "Lapset ja nuoret"
+  :elderly "Ikäihmiset"
+  :disabilities "Vammais- ja mielenterveystyö"
+  :peer-support "Vertaistuki ja neuvonta"
+  :inequality "Syrjäytyminen ja köyhyys"
+  :foreign-aid "Kehitys- ja katastrofiapu"
+  :culture "Kulttuuri ja taide"
+  :equality "Monikulttuurisuus ja tasavertaisuus"
+  :well-being "Liikunta ja hyvinvointi"
+  :environment "Ympäristö ja eläimet"
   }
 
  :actions
@@ -31,5 +82,56 @@
   :user
   {:login    "Kirjaudu"
    :register "Rekisteröidy"
-   :logout   "Kirjaudu ulos"}}
+   :logout   "Kirjaudu ulos"}
+  }
+
+ :error
+ {:non-empty-string "Tyhjä arvo ei käy"
+  :hashtag "Hashtag alkaa risuaidalla, eikä voi sisältää viivoja."
+  :date-needs-to-be-before "Ajan pitää olla ennen %1"
+  }
+
+ :pikaday
+ {:previous-month "Edellinen"
+  :next-month     "Seuraava"
+  :months         ["tammikuu"
+                   "helmikuu"
+                   "maaliskuu"
+                   "huhtikuu"
+                   "toukokuu"
+                   "kesäkuu"
+                   "heinäkuu"
+                   "elokuu"
+                   "syyskuu"
+                   "lokakuu"
+                   "marraskuu"
+                   "joulukuu"],
+  :weekdays       ["sunnuntai"
+                   "maanantai"
+                   "tiistai"
+                   "keskiviikko"
+                   "torstai"
+                   "perjantai"
+                   "lauantai"],
+  :weekdays-short ["su" "ma" "ti" "ke" "to" "pe" "la"]
+  :first-day      1
+  }
+
+ :dropzone
+ {:dict-default-message            "Raahaa kuva tänne"
+  :dict-fallback-message           "Selaimesi ei ole tuettu"
+  :dict-invalid-file-type          "Kuvatyyppi ei ole tuettu"
+  :dict-file-too-big               "Kuva on liian iso"
+  :dict-response-error             "Kuvan lisäys ei onnistunut"
+  :dict-cancel-upload              "Peruuta kuvan lisäys"
+  :dict-cancel-upload-confirmation "Haluatko varmasti peruuttaa lisäyksen?"
+  :dict-remove-file                "Poista kuva"
+  :dict-max-files-exceeded         "Et voi lisätä enempää kuvia"
+  }
+
+ :errors
+ {:picture
+  {:type-not-supported "Kuvatyyppi %1 ei ole tuettu"
+   }
+  }
  }

@@ -1,11 +1,38 @@
 (ns hiiop.test.handler
   (:require [clojure.test :refer :all]
             [ring.mock.request :refer :all]
-            [cheshire.core :refer [generate-string parse-string]]
+            [clojure.java.jdbc :as jdbc]
             [taoensso.timbre :as log]
+            [cheshire.core :refer [generate-string parse-string]]
+            [schema.coerce :as sc]
+            [mount.core :as mount]
+            [hiiop.config :refer [load-env]]
             [hiiop.handler :refer :all]
-            [hiiop.db.core :as db]
-            [hiiop.test.test :refer [contains-many?]]))
+            [hiiop.db.core :refer [*db*] :as db]
+            [hiiop.test.util :refer [contains-many? hash-password json-post]]
+            [hiiop.test.data :refer [test-quest test-user]]
+            [schema.core :as s]
+            [clojure.pprint :as pp]))
+
+(def test-user-id (atom nil))
+(def email-token (atom nil))
+
+(defn receive-email [email token]
+  (log/info "receive email token" token)
+  (reset! email-token token))
+
+(use-fixtures
+  :once
+  (fn [f]
+    (-> (mount/only
+         #{#'hiiop.config/env
+           #'hiiop.db.core/*db*
+           #'hiiop.mail/send-token-email})
+        (mount/swap {#'hiiop.mail/send-token-email receive-email})
+        mount/start)
+    (f)
+    (db/delete-user! *db* {:id (sc/string->uuid @test-user-id)})
+    ))
 
 (deftest test-app
   (testing "main route"
@@ -29,42 +56,54 @@
           lang (first (:accept-langs config))]
       (is (= "sv" lang)))))
 
-(defn json-post [endpoint body-string]
-  (->
-    (request :post endpoint)
-    (body body-string)
-    (content-type "application/json")))
+
+(defn session-cookie-string [set-cookie]
+  (log/info "set-cookie" set-cookie)
+  (let [session-key (last (re-find #"ring-session=([^;]+)" set-cookie))]
+    (str "ring-session=" session-key)))
 
 (deftest test-api
-  (testing "/api/v1/quest/add"
-    (let [quest-to-add {:name                    "Nälkäkeräys"
-                        :organisation            {:name "Punainen risti"}
-                        :start-time              "2016-12-06T12:00:00+02:00"
-                        :end-time                "2016-12-06T18:00:00+02:00"
-                        :address                 "Raittipellontie 4"
-                        :town                    "Kolari"
-                        :categories              ["foreign-aid"]
-                        :unmoderated-description "LOL"
-                        :max-participants        1
-                        :is-open                 true}
+  (testing "/api/v1/quests/add"
+    (let [app-with-session (app)
+          new-test-user-id (hiiop.api-handlers/register
+                            {:body-params {:email (:email test-user)}})
+          wat (reset! test-user-id new-test-user-id)
+          new-email-token @email-token
+          activate-response (hiiop.api-handlers/activate
+                             {:body-params {:email (:email test-user)
+                                            :password (:password test-user)
+                                            :token new-email-token}})
+          login-request (json-post "/api/v1/login"
+                                   {:body-string
+                                    (generate-string
+                                     {:email (:email test-user)
+                                      :password (:password test-user)})})
+          login-response (app-with-session login-request)
+          set-cookie (first (get-in login-response [:headers "Set-Cookie"]))
+          session-cookie (session-cookie-string set-cookie)
+          test-data (test-quest
+                     {:use-date-string true
+                      :location-to :location
+                      :coordinates-to :coordinates
+                      :organisation-to {:in :organisation
+                                        :name :name
+                                        :description :description}})
+          quest-to-add (assoc
+                        (dissoc test-data
+                                :picture
+                                :owner)
+                        :is-open true
+                        :organiser-participates true)
           quest-to-add-json (generate-string quest-to-add)
-          response ((app) (json-post "/api/v1/quest/add" quest-to-add-json))
-          body (slurp (:body response))
-          body-map (parse-string body true)]
-      (is (= 201 (:status response)))
-      (is (> (:id body-map) 0))
-      (is (= (:start-time quest-to-add) (:start-time body-map)))
-      (is (contains-many?
-           body-map
-           :id
-           :name
-           :start-time
-           :end-time
-           :unmoderated-description
-           :address
-           :town
-           :categories
-           :max-participants
-           :is-open))
-      (db/delete-quest-by-id! {:id (:id body-map)}))
-    ))
+          add-request (json-post "/api/v1/quests/add"
+                             {:body-string quest-to-add-json
+                              :cookies session-cookie})
+          add-response (app-with-session add-request)
+          add-body (slurp (:body add-response))
+          add-body-map (parse-string add-body true)]
+      (is (= 201 (:status add-response)))
+      (is (> (:id add-body-map) 0))
+      (is (= (:start-time quest-to-add) (:start-time add-body-map)))
+      (pp/pprint add-body-map)
+      (db/delete-quest-by-id! {:id (:id add-body-map)})
+      )))

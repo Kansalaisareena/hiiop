@@ -1,0 +1,43 @@
+// Define what ranges you want and what they're called:
+$screen-large: 1024px;
+$screen-medium: 768px;
+$screen-small: 480px;
+
+$VIEWPORTS_CONFIG:
+  up-to $screen-small it-is "tiny",
+  up-to $screen-medium it-is "small",
+  up-to $screen-large it-is "medium",
+  beyond-that it-is "large";
+
+$font-family: Chevin, Helvetica, Arial, sans-serif;
+
+$OP-dark-gray: #323232;
+$OP-gray-light: #f0f0f0;
+$OP-gray: #6e6e6e;
+$OP-gray-medium: #a0a0a0;
+$OP-orange: #ff6a10;
+$OP-red: #ee1d47;
+$OP-white: #fff;
+
+$basic-text-colour: $OP-gray;
+$highlight-colour: $OP-orange;
+$link-colour: $OP-orange;
+
+$header-height: 100px;
+
+// Generic mixins
+@mixin opux-color-transition() {
+  transition: background 0.3s, color 0.3s ease, border-color 0.3s ease;
+}
+
+@mixin box-shadow($top, $left, $blur, $color, $inset: false) {
+  @if $inset {
+    -webkit-box-shadow:inset $top $left $blur $color;
+    -moz-box-shadow:inset $top $left $blur $color;
+    box-shadow:inset $top $left $blur $color;
+  } @else {
+    -webkit-box-shadow: $top $left $blur $color;
+    -moz-box-shadow: $top $left $blur $color;
+    box-shadow: $top $left $blur $color;
+  }
+}

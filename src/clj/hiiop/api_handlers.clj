@@ -1,14 +1,20 @@
 (ns hiiop.api-handlers
-  (:require [ring.util.http-response :refer :all]
+  (:require [clojure.pprint :as pp]
+            [ring.util.http-response :refer :all]
             [mount.core :as mount]
             [buddy.auth :refer [authenticated?]]
             [buddy.hashers :as hashers]
-            [compojure.api.sweet :as s]
-            [schema.coerce :as coerce]
+            [compojure.api.sweet :as sweet]
             [taoensso.timbre :as log]
+            [schema.core :as s]
+            [schema-tools.core :as st]
+            [schema-tools.coerce :as stc]
+            [schema.coerce :as sc]
             [hiiop.db.core :as db]
             [hiiop.time :as time]
-            [hiiop.mail :as mail]))
+            [hiiop.mail :as mail]
+            [hiiop.schema :as hs]
+            [hiiop.file-upload :refer [upload-picture]]))
 
 (defn login-status
   [request]
@@ -37,63 +43,173 @@
     (if (nil? id)
       nil
       (let [token (:token (db/create-password-token!
-                           {:email email :expires (time/add (time/now) time/hour)}))]
-        (mail/send-token email (str token))
+                           {:email email :expires (time/add (time/now) time/an-hour)}))]
+        (mail/send-token-email email (str token))
         (str id)))))
 
 (defn activate
   [{{:keys [email password token]} :body-params}]
   (let [pwhash (hashers/derive password {:alg :bcrypt+blake2b-512})
-        token-uuid (coerce/string->uuid token)]
+        token-uuid (sc/string->uuid token)]
     (db/activate-user! {:pass pwhash :email email :token token-uuid})
     (ok)))
 
 (defn get-user [{{id :id} :params}]
-  (ok (str (db/get-user-by-id {:id (coerce/string->uuid id)}))))
+  (ok (str (db/get-user-by-id {:id (sc/string->uuid id)}))))
 
-(defn time-from [keyword map]
-  (time/from-string (keyword map)))
+(defn api-quest->db-quest
+  [{:keys [hashtags
+           start-time
+           end-time
+           location
+           categories
+           picture-id
+           organisation
+           organiser-participates] :as quest-from-api}]
+  (-> quest-from-api
+      (assoc :hashtags (when hashtags (vec (distinct hashtags))))
+      (assoc :categories (vec (distinct categories)))
+      (assoc :start-time  (time/from-string start-time))
+      (assoc :end-time (time/from-string end-time))
+      (assoc :picture picture-id)
+      (assoc :organisation (:name organisation))
+      (assoc :organisation-description (:description organisation))
+      (conj (:coordinates location))
+      (conj location)
+      (assoc :street-number (:street-number location))
+      (dissoc :location :coordinates :picture-id)
+      (db/->snake_case_keywords))
+    )
 
-(defn quest-to-db-form [quest-from-api user]
-  (let [distinct-hashtags (vec (distinct (:hashtags quest-from-api)))
-        distinct-categories (vec (distinct (:categories quest-from-api)))
-        is-open (if (:is-open quest-from-api)
-                  (:is-open quest-from-api)
-                  true)
-        start-time (time-from :start-time quest-from-api)
-        end-time (time-from :end-time quest-from-api)
-        picture-id (:picture-id quest-from-api)
-        with-added-fields (assoc quest-from-api
-                                 :start-time start-time
-                                 :end-time end-time
-                                 :hashtags distinct-hashtags
-                                 :picture picture-id
-                                 :is-open is-open
-                                 :owner (:id user))]
-    (dissoc with-added-fields
-            :picture-id)))
+(def DBQuest
+  {:id hs/NaturalNumber
+   :name hs/NonEmptyString
+   :description (s/maybe hs/NonEmptyString)
+   :organisation (s/maybe hs/NonEmptyString)
+   :organisation_description (s/maybe hs/NonEmptyString)
+   :start_time (s/constrained s/Any time/time? :error.not-valid-date)
+   :end_time (s/constrained s/Any time/time? :error.not-valid-date)
+   :street_number (s/maybe s/Int)
+   :street (s/maybe hs/NonEmptyString)
+   :town hs/NonEmptyString
+   :postal_code hs/NonEmptyString
+   :country hs/NonEmptyString
+   :latitude (s/maybe hs/NonEmptyString)
+   :longitude (s/maybe hs/NonEmptyString)
+   :google_maps_url (s/maybe hs/NonEmptyString)
+   :google_place_id (s/maybe hs/NonEmptyString)
+   :categories [s/Keyword]
+   :unmoderated_description hs/NonEmptyString
+   :max_participants s/Num
+   :hashtags [s/Str]
+   :picture (s/maybe s/Uuid)
+   :owner s/Uuid
+   :is_open s/Bool
+   :secret_party s/Uuid})
 
-(defn time-to-string [keyword map]
+(def NewDBQuest
+  (st/dissoc DBQuest
+             :id
+             :description
+             :secret_party))
+
+(def api-quest->db-quest-coercer
+  (stc/coercer NewDBQuest
+               {NewDBQuest api-quest->db-quest}))
+
+(def location-keys
+  [:street-number
+   :street
+   :town
+   :postal-code
+   :country
+   :longitude
+   :latitude
+   :google-place-id
+   :google-maps-url])
+
+(defn location-flat->location-structure [db-quest]
+  (let [location-data (select-keys db-quest location-keys)
+        coordinates (when
+                        (and
+                         (:latitude location-data)
+                         (:longitude location-data))
+                      {:coordinates
+                       {:latitude (:latitude location-data)
+                        :longitude (:longitude location-data)}})
+        location-data-no-lat-lon (dissoc location-data :latitude :longitude)
+        location-structure (conj location-data-no-lat-lon coordinates)
+        quest-no-location-data (apply dissoc db-quest location-keys)]
+    (conj quest-no-location-data {:location location-structure})))
+
+(defn time->string [keyword map]
   (time/to-string (keyword map)))
 
-(defn start-and-end-time-to-string [map]
-  (log/info "start-and-end-time-to-string" map)
+(defn times->strings [map]
   (assoc map
-         :start-time (time-to-string :start-time map)
-         :end-time   (time-to-string :end-time map)))
+         :start-time (time->string :start-time map)
+         :end-time   (time->string :end-time map)))
+
+(defn string-categories->keyword-categories [db-quest]
+  (assoc db-quest :categories
+         (into [] (map keyword (:categories db-quest)))))
+
+(defn db-quest->api-quest [{:keys [organisation
+                                   organisation-description] :as db-quest}]
+  (-> db-quest
+      (location-flat->location-structure)
+      (times->strings)
+      (string-categories->keyword-categories)
+      (assoc :organisation
+             {:name organisation :description organisation-description})
+      (dissoc :organisation :organisation-description)))
+
+(def db-quest->api-quest-coercer
+  (stc/coercer hs/Quest
+               {hs/Quest db-quest->api-quest}))
 
 (defn add-quest [{:keys [quest user]}]
-  (let [quest-to-db (quest-to-db-form quest user)
-        create-with! (if (:is-open quest-to-db)
-                       db/add-unmoderated-open-quest!
-                       db/add-unmoderated-secret-quest!)
-        quest-id (:id (create-with! (db/->snake_case_keywords quest-to-db)))
-        quest-from-db (db/get-quest-by-id {:id quest-id})
-        quest-to-api (start-and-end-time-to-string quest-from-db)]
-    quest-to-api))
+  (try
+    (-> quest
+        (assoc :owner (:id user))
+        (dissoc :organiser-participates)
+        (api-quest->db-quest-coercer)
+        (db/add-unmoderated-quest!)
+        (#(db/get-quest-by-id {:id (:id %)}))
+        (db-quest->api-quest-coercer))
+    (catch Exception e
+      (log/error e)
+      )))
 
 (defn get-quest [{{id :id} :params}]
   (ok (db/get-quest-by-id {:id id})))
 
 (defn join-quest [params]
   (created ""))
+
+(defn get-picture [id])
+
+(defn picture-supported? [file]
+  (-> (:content-type file)
+      (#(re-find #"^image/(jpg|jpeg|png|gif)$" %1))))
+
+(defn add-picture [file]
+  (if (picture-supported? file)
+    (try
+      (let [picture-id (:id (db/add-picture! {:url ""}))]
+        (log/info picture-id)
+        (-> picture-id
+            (upload-picture file)
+            (#(db/update-picture-url! {:id picture-id
+                                       :url %1}))
+            ((fn [db-reply]
+               (log/info db-reply)
+               {:id picture-id
+                :url (:url db-reply)}))
+            ))
+      (catch Exception e
+        (log/error e)
+        {:errors {:picture :errors.picture.add-failed}}
+        ))
+    {:errors {:picture :errors.picture.type-not-supported
+              :type (:content-type file)}}))

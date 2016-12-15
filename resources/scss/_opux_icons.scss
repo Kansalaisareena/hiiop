@@ -1,0 +1,46 @@
+// Generate multi-select icons
+$opux-icon-multi-select-name-collection: (elderly, equality, culture, foreign-aid, disabilities, kids-and-youngsters, well-being, environment, peer-support, inequality, end);
+
+$opux-icon-cross-name-collection: (eyeglasses, law, sound, globe, handicap, children, football, water, personnel, smiley-disappointed, end);
+
+@mixin opux-multi-select-icon-generate(
+  $selector, $names: $opux-icon-multi-select-name-collection,
+  $codes: $opux-icon-cross-name-collection
+) {
+  @for $i from 1 to length($names) {
+    $name: nth($names, $i);
+    #{$selector}--#{$name}:before {
+      @include opux-icon-named(nth($codes, $i))
+    }
+  }
+}
+
+@include opux-multi-select-icon-generate('.opux-icon--multi-select');
+
+@include block('opux-icon') {
+  // opux-icon--multi-select
+  @include modifier('multi-select') {
+    padding-bottom: .5rem;
+    &:before {
+      font-weight: 200;
+      font-size: 3rem;
+    }
+  }
+}
+
+@include block('opux-logo') {
+  @include flexbox;
+  padding: 0px;
+  a {
+    text-decoration: none;
+    color: $basic-text-colour;
+  }
+
+  // opux-logo--header
+  @include modifier('header') {
+    @include flex(1.5);
+    @include flex-direction(column);
+    @include justify-content(center);
+    height: $header-height;
+  }
+}

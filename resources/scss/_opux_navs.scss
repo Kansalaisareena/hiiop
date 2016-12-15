@@ -1,0 +1,109 @@
+@include block('opux-nav') {
+  @include flex-direction(row);
+  @include flexbox;
+
+  // opux-nav--header
+  @include modifier('header') {
+    @include flex(9);
+  }
+}
+
+@include block('opux-menu') {
+  @include flex-direction(row);
+  @include flexbox;
+  @include flexbox;
+  @include justify-content(center);
+  list-style: none;
+  height: $header-height;
+  margin: 0px;
+  padding: 0px;
+
+  // opux-menu--main
+  @include modifier('main') {
+    @include flex(12);
+  }
+  // opux-menu--languages
+  @include modifier('languages') {
+    @include flex(2);
+  }
+  // opux-menu--login
+  @include modifier('login') {
+    @include flex(2);
+  }
+
+  // opux-menu__item
+  @include element('item') {
+    @include flexbox;
+
+    // opux-menu__item--languages
+    @include modifier('languages') {
+      @include flex(1);
+      text-align: center;
+      &:first-child {
+        position: relative;
+        &:after {
+          border-right: 1px solid $OP-gray;
+          content: "";
+          display: inline-block;
+          height: 30px;
+          margin-top: -15px;
+          position: absolute;
+          right: 0px;
+          top: 50%;
+          width: 1px;
+        }
+      }
+    }
+
+    // opux-menu__item--login
+    @include modifier('login') {
+      @include flex-direction(column);
+      @include flexbox;
+      @include justify-content(center);
+      height: $header-height;
+      padding-left: 1rem;
+    }
+  }
+
+  // opux-menu__item-link
+  @include element('item-link') {
+    color: $basic-text-colour;
+    text-decoration: none;
+
+    // opux-menu__item-link--main
+    @include modifier('main') {
+      @include flex-direction(column);
+      @include flexbox;
+      @include justify-content(center);
+      height: $header-height;
+      padding: 0 0.75rem;
+      text-align: center;
+      width: 100%;
+    }
+
+    // opux-menu__item-link--languages
+    @include modifier('languages') {
+      @include flex(1);
+      @include flex-direction(column);
+      @include flexbox;
+      @include justify-content(center);
+      height: $header-height;
+      text-transform: uppercase;
+
+      // opux-menu__item-link--languages--is-active
+      @include state('active') {
+        color: $OP-orange;
+      }
+    }
+
+    // opux-menu__item-link--login
+    @include modifier('login') {
+      .opux-icon-circled.opux-icon-person {
+        display: inline-block;
+        &:before {
+          font-size: 50px;
+        }
+      }
+    }
+  }
+}

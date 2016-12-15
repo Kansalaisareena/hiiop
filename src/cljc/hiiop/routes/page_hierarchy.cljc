@@ -6,6 +6,7 @@
   (branch
    "/"
    (leaf "" :index)
+   (leaf "kirjaudu" :login)
    (branch
     "tehtavat/"
     (leaf "" :browse-quests)

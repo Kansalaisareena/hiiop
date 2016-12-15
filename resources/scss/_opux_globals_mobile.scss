@@ -1,0 +1,6 @@
+@include viewports(tiny small) {
+  body {
+    font-size: 0.8rem;
+    padding-top: $header-height;
+  }
+}

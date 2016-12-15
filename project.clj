@@ -4,7 +4,7 @@
   :url "http://example.com/FIXME"
 
   :dependencies [[bouncer                                "1.0.0"]
-                 [cider/cider-nrepl                      "0.14.0-SNAPSHOT"]
+                 [cider/cider-nrepl                      "0.14.0"]
                  [cljs-http                              "0.1.42"]
                  [compojure                              "1.5.1"]
                  [conman                                 "0.6.2"]
@@ -39,7 +39,22 @@
                  [com.draines/postal                     "2.0.2"]
                  [bidi                                   "2.0.14"]
                  [metosin/schema-tools                   "0.9.0"]
-                 [cljsjs/moment                          "2.15.2-3"]]
+                 [com.novemberain/pantomime              "2.8.0"]
+                 [amazonica                              "0.3.78"
+                  :exclusions [com.amazonaws/aws-java-sdk
+                               com.amazonaws/amazon-kinesis-client
+                               com.fasterxml.jackson.core/jackson-annotations
+                               joda-time
+                               org.apache.httpcomponents/httpclient
+                               com.fasterxml.jackson.core/jackson-databind
+                               ]]
+                 [com.amazonaws/aws-java-sdk-core        "1.11.63"
+                  :exclusions [commons-logging]]
+                 [com.amazonaws/aws-java-sdk-s3          "1.11.63"
+                  :exclusions [commons-logging]]
+                 [cljsjs/moment                          "2.15.2-3"]
+                 [cljsjs/pikaday                         "1.4.0-1"]
+                 [cljsjs/dropzone                        "4.3.0-0"]]
 
   :min-lein-version "2.7.1"
 
@@ -62,8 +77,17 @@
    [lein-auto "0.1.2"]
    [lein-asset-minifier "0.3.0"]
    [shmish111/lein-git-version "1.0.13"]
-   [lein-essthree "0.2.2"]
-   [lein-heroku "0.5.3"]]
+   [lein-essthree "0.2.2"
+    :exclusions
+    [amazonica
+     org.apache.commons/commons-compress
+     com.fasterxml.jackson.core/jackson-core]]
+   [lein-heroku "0.5.3"
+    :exclusions
+    [commons-codec
+     org.apache.commons/commons-compress
+     com.fasterxml.jackson.core/jackson-core]]]
+
 
   :sassc
   [{:src "resources/scss/screen.scss"
@@ -137,18 +161,20 @@
    :dev           [:project/dev :profiles/dev]
    :test          [:project/dev :project/test :profiles/test]
 
-   :project/dev  {:dependencies [[prone "1.1.2"]
-                                 [ring/ring-mock "0.3.0"]
-                                 [ring/ring-devel "1.5.0"]
-                                 [pjstadig/humane-test-output "0.8.1"]
-                                 [binaryage/devtools "0.8.2"]
-                                 [com.cemerick/piggieback "0.2.2-SNAPSHOT"]
-                                 [doo "0.1.7"]
-                                 [figwheel-sidecar "0.5.8"]]
-                  :plugins      [[com.jakemccrary/lein-test-refresh "0.14.0"]
-                                 [lein-doo "0.1.7"]
-                                 [lein-figwheel "0.5.8"]
-                                 [org.clojure/clojurescript "1.9.293"]]
+   :project/dev  {:dependencies
+                  [[prone                        "1.1.2"]
+                   [ring/ring-mock               "0.3.0"]
+                   [ring/ring-devel              "1.5.0"]
+                   [pjstadig/humane-test-output  "0.8.1"]
+                   [binaryage/devtools           "0.8.2"]
+                   [com.cemerick/piggieback      "0.2.2-SNAPSHOT"]
+                   [doo                          "0.1.7"]
+                   [figwheel-sidecar             "0.5.8"]]
+                  :plugins
+                  [[com.jakemccrary/lein-test-refresh  "0.18.0"]
+                   [lein-doo                           "0.1.7"]
+                   [lein-figwheel                      "0.5.8"]
+                   [org.clojure/clojurescript          "1.9.293"]]
 
                   :prep-tasks ["git-version"]
 
