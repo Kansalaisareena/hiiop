@@ -54,7 +54,7 @@
           api-handlers/get-user)
 
         (POST "/register" []
-          :body-params [email :- Email]
+          :body-params [email :- Email name :- s/Str]
           :summary "Create a new user and email password token"
           (fn [request]
             (let [id (api-handlers/register request)]

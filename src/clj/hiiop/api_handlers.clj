@@ -38,12 +38,13 @@
       (unauthorized))))
 
 (defn register
-  [{{email :email} :body-params}]
+  [{{email :email name :name} :body-params}]
   (let [id (:id (db/create-virtual-user! {:email email}))]
     (if (nil? id)
       nil
       (let [token (:token (db/create-password-token!
                            {:email email :expires (time/add (time/now) time/an-hour)}))]
+        (db/update-user! {:id id :name name :email email})
         (mail/send-token-email email (str token))
         (str id)))))
 

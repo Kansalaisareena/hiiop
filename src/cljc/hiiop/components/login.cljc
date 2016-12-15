@@ -34,6 +34,7 @@
      [:div {:class "opux-form-section"}
       [:h2 (tr [:pages.login.title])]
       [:div {:class "opux-fieldset opux-form-section__fieldset"}
+
        [:div {:class "opux-fieldset__item"}
         (html/label
          (tr [:pages.login.email])
@@ -44,6 +45,7 @@
           :type "text"
           :class "opux-input opux-input--text email"
           :error (atom nil)})]
+
        [:div {:class "opux-fieldset opux-fieldset__item"}
         (html/label
          (tr [:pages.login.password])
@@ -54,6 +56,7 @@
           :type "password"
           :class "opux-input opux-input--text password"
           :error (atom nil)})]
+
        [:div {:class "opux-fieldset__inline-container opux-fieldset opux-fieldset__item opux-fieldset--login-links"}
         [:a {:class "opux-forget-password-link"
              :href "#"}
