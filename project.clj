@@ -37,6 +37,7 @@
                  [buddy/buddy-hashers                    "1.0.0"]
                  [com.taoensso/carmine                   "2.15.0"]
                  [com.taoensso/tempura                   "1.0.0-RC4"]
+                 [com.taoensso/encore                    "2.87.0"]
                  [com.taoensso/timbre                    "4.7.4"]
                  [com.draines/postal                     "2.0.2"]
                  [bidi                                   "2.0.14"]
@@ -55,9 +56,11 @@
                  [com.amazonaws/aws-java-sdk-s3          "1.11.63"
                   :exclusions [commons-logging]]
                  [cljsjs/moment                          "2.15.2-3"]
+                 [cljsjs/moment-timezone                 "0.5.10-0"]
                  [cljsjs/pikaday                         "1.4.0-1"]
                  [cljsjs/dropzone                        "4.3.0-0"]
-                 [clj-http                               "2.3.0"]]
+                 [clj-http                               "2.3.0"]
+                 ]
 
   :min-lein-version "2.7.1"
   :jvm-opts ["-server" "-Dconf=.lein-env" "-Duser.timezone=Europe/Helsinki"]
