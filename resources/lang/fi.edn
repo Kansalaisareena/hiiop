@@ -144,5 +144,12 @@
  {:picture
   {:type-not-supported "Kuvatyyppi %1 ei ole tuettu"
    }
-  }
+
+  :user
+  {:register
+   {:fail ""
+    :success ""}}
+
+  {:token
+   {:invalid ""}}
  }

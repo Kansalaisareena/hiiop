@@ -19,6 +19,15 @@
           body (:body response)]
       (= status 201))))
 
+(defn validate-token [token]
+  (go
+    (let [response (<! (http/post
+                        "api/v1/users/validate-token"
+                        {:json-params token}))
+          status (:status response)
+          body (:body response)]
+      body))
+
 (defn add-quest [quest]
   (log/info "add-quest called with" quest)
   (go

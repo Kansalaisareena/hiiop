@@ -39,14 +39,19 @@
 
 (defn register
   [{{email :email name :name} :body-params}]
-  (let [id (:id (db/create-virtual-user! {:email email}))]
-    (if (nil? id)
-      nil
-      (let [token (:token (db/create-password-token!
-                           {:email email :expires (time/add (time/now) time/an-hour)}))]
-        (db/update-user! {:id id :name name :email email})
-        (mail/send-token-email email (str token))
-        (str id)))))
+  (try
+    (let [id (:id (db/create-virtual-user! {:email email}))]
+      (if (nil? id)
+        nil
+        (let [token (:token (db/create-password-token!
+                             {:email email :expires (time/add (time/now) time/an-hour)}))]
+
+          (db/update-user! {:id id :name name :email email})
+          (mail/send-token-email email (str token))
+          (str id))))
+    (catch Exception e
+      (log/error e)
+      {:errors {:user :errors.user.register.failed}})))
 
 (defn activate
   [{{:keys [email password token]} :body-params}]
@@ -54,6 +59,16 @@
         token-uuid (sc/string->uuid token)]
     (db/activate-user! {:pass pwhash :email email :token token-uuid})
     (ok)))
+
+(defn validate-token [{{:keys [token]} :body-params}]
+  (try
+    (let [token-uuid (sc/string->uuid token)
+          token-info (db/get-token-info token-uuid)]
+      (if (not-empty token-info)
+        (token-info)))
+    (catch Exception e
+      (log/error e)
+      {:errors {:token :errors.user.token.invalid}})))
 
 (defn get-user [{{id :id} :params}]
   (ok (str (db/get-user-by-id {:id (sc/string->uuid id)}))))
@@ -210,7 +225,6 @@
             ))
       (catch Exception e
         (log/error e)
-        {:errors {:picture :errors.picture.add-failed}}
-        ))
+        {:errors {:picture :errors.picture.add-failed}}))
     {:errors {:picture :errors.picture.type-not-supported
               :type (:content-type file)}}))

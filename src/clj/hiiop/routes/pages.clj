@@ -53,9 +53,12 @@
 
 (defn activate [req]
   (let [context (create-context req)
-        tr (:tr context)]
+        tr (:tr context)
+        route-params (:route-params req)
+        token (:token route-params)]
     (layout/render {:context context
-                    :content (p-a/activate {:context context})
+                    :content (p-a/activate {:context context
+                                            :token token})
                     :title (tr [:pages.activate.title])})))
 
 (defn create-quest [req]

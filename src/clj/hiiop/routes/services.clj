@@ -9,7 +9,8 @@
             [hiiop.time :as time]
             [hiiop.config :refer [env]]
             [hiiop.api-handlers :as api-handlers]
-            [hiiop.schema :refer :all]))
+            [hiiop.schema :refer :all]
+            [hiiop.db.core :as db]))
 
 (defapi service-routes
   {:swagger {:ui "/--help"
@@ -54,81 +55,89 @@
           api-handlers/get-user)
 
         (POST "/register" []
-          :body-params [email :- Email name :- s/Str]
-          :summary "Create a new user and email password token"
-          (fn [request]
-            (let [id (api-handlers/register request)]
-              (if id
-                (created (path-for ::user {:id (str id)}))
-                (bad-request {:errors
-                              {:email"User registration failed"}})))))
+              :body-params [email :- Email name :- s/Str]
+              :summary "Create a new user and email password token"
+              (fn [request]
+                (-> (api-handlers/register request)
+                    (#(if (not (:errors %1))
+                        (created (path-for ::user {:id (str %1)}))
+                        (bad-request %1))))))
+
+        (POST "/validate-token" []
+              :body-params [token :- s/Str]
+              :summary "Verify if a token is valid and returns its expiry date and user email"
+              :body [tokeninfo TokenInfo]
+              (fn [request]
+                (-> (api-handlers/validate-token request)
+                    (#(if (not (:errors %1))
+                        (ok (str %1))
+                        (bad-request %1))))))
 
         (POST "/activate" []
-          :body [activation UserActivation]
-                     :summary "Activates inactive user"
-                     api-handlers/activate))
+              :body [activation UserActivation]
+              :summary "Activates inactive user"
+              api-handlers/activate))
 
       (context "/pictures" []
-        :tags ["picture"]
+               :tags ["picture"]
 
-        (POST "/add" []
-          :name             ::add-picture
-          :multipart-params [file :- TempFileUpload]
-          :middleware       [wrap-multipart-params api-authenticated]
-          :summary          "Handles picture upload"
-          :return           Picture
-          (fn [request]
-            (-> (api-handlers/add-picture file)
-                (#(if (not (:errors %1))
-                    (created
-                     (path-for ::picture {:id (str (:id %1))})
-                     %1)
-                    (bad-request
-                     %1))))
-            )
-          )
+               (POST "/add" []
+                     :name             ::add-picture
+                     :multipart-params [file :- TempFileUpload]
+                     :middleware       [wrap-multipart-params api-authenticated]
+                     :summary          "Handles picture upload"
+                     :return           Picture
+                     (fn [request]
+                       (-> (api-handlers/add-picture file)
+                           (#(if (not (:errors %1))
+                               (created
+                                (path-for ::picture {:id (str (:id %1))})
+                                %1)
+                               (bad-request
+                                %1))))
+                       )
+                     )
 
-        (GET "/:id" []
-          :name        ::picture
-          :path-params [id :- s/Str]
-          :summary     "Get picture"
-          :return      Picture
-          (fn [request]
-            (-> (api-handlers/get-picture id)
-                (#(if %1
-                    (ok %1)
-                    (not-found)))))
-        ))
+               (GET "/:id" []
+                    :name        ::picture
+                    :path-params [id :- s/Str]
+                    :summary     "Get picture"
+                    :return      Picture
+                    (fn [request]
+                      (-> (api-handlers/get-picture id)
+                          (#(if %1
+                              (ok %1)
+                              (not-found)))))
+                    ))
 
       (context "/quests" []
-        :tags ["quest"]
+               :tags ["quest"]
 
-        (POST "/add" []
-          :name       ::add-quest
-          :body       [new-quest NewQuest]
-          :middleware [api-authenticated]
-          :summary    "Create a new quest"
-          :return     Quest
-          (fn [request]
-            (let [quest (api-handlers/add-quest
-                         {:quest new-quest
-                          :user (:identity request)})]
-              (if quest
-                (created (path-for ::quest {:id (:id quest)}) quest)
-                (bad-request {:error "Failed to add quest!"})))))
+               (POST "/add" []
+                     :name       ::add-quest
+                     :body       [new-quest NewQuest]
+                     :middleware [api-authenticated]
+                     :summary    "Create a new quest"
+                     :return     Quest
+                     (fn [request]
+                       (let [quest (api-handlers/add-quest
+                                    {:quest new-quest
+                                     :user (:identity request)})]
+                         (if quest
+                           (created (path-for ::quest {:id (:id quest)}) quest)
+                           (bad-request {:error "Failed to add quest!"})))))
 
-        (GET "/:id" []
-          :name        ::quest
-          :path-params [id :- s/Int]
-          :summary     "Get quest"
-          :return      Quest
-          api-handlers/get-quest)
+               (GET "/:id" []
+                    :name        ::quest
+                    :path-params [id :- s/Int]
+                    :summary     "Get quest"
+                    :return      Quest
+                    api-handlers/get-quest)
 
-        ;; (POST "/:id/join" []
-        ;;  :name ::quest-join
-        ;;  :path-params [id :- s/Int]
-        ;;  :body [NewPartyMember]
-        ;;  :summary "Join a quest"
-        ;;  api-handlers/join-quest)
-        )
-      )))
+               ;; (POST "/:id/join" []
+               ;;  :name ::quest-join
+               ;;  :path-params [id :- s/Int]
+               ;;  :body [NewPartyMember]
+               ;;  :summary "Join a quest"
+               ;;  api-handlers/join-quest)
+               ))))

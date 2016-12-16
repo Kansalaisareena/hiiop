@@ -3,12 +3,13 @@
    [rum.core :as rum]
    [schema.core :as s]
    [hiiop.schema :as schema]
+   [hiiop.components.core :as c]
    [taoensso.timbre :as log]
    [bidi.bidi :refer [path-for]]
    [hiiop.html :as html]
    [hiiop.routes.page-hierarchy :as pages]))
 
-(rum/defc activate [{:keys [context]}]
+(rum/defc activate [{:keys [context token]}]
   (let [tr (:tr context)
         credentials (atom {:password "" :confirm-password ""})
         password (rum/cursor credentials :password)
@@ -45,5 +46,4 @@
        [:input
         {:class "opux-button"
          :type "submit"
-         :value (tr [:actions.user.save-password])}]
-       ]]]))
+         :value (tr [:actions.user.save-password])}]]]]))

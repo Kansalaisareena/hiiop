@@ -14,6 +14,12 @@
             [schema.core :as s]
             [clojure.pprint :as pp]))
 
+(defn remove-user-by-email [user]
+  (try
+    (db/delete-user-by-email! user)
+    (catch Exception e
+      (log/error e))))
+
 (def test-user-id (atom nil))
 (def email-token (atom nil))
 
@@ -63,6 +69,89 @@
     (str "ring-session=" session-key)))
 
 (deftest test-api
+
+  (testing "api/v1/users/register"
+    (remove-user-by-email test-user)
+
+    (testing "with valid info"
+      (let [app-with-session (app)
+            register-request (json-post
+                              "/api/v1/users/register"
+                              {:body-string
+                               (generate-string {:email (:email test-user)
+                                                 :name (:name test-user)})})
+            response (app-with-session register-request)]
+        (is (= 201 (:status response)))
+        (remove-user-by-email test-user)))
+
+    (testing "with duplicate email"
+      (let [app-with-session (app)
+            create-resp (hiiop.api-handlers/register
+                         {:body-params {:email (:email test-user)}})
+            register-request (json-post
+                              "/api/v1/users/register"
+                              {:body-string
+                               (generate-string {:email (:email test-user)
+                                                 :name (:name test-user)})})
+            response (app-with-session register-request)]
+        (is (= 400 (:status response)))
+        (remove-user-by-email test-user)))
+
+    (testing "with invalid email"
+      (let [app-with-session (app)
+            invalid-emails [""
+                            "invalidemail"
+                            "another-tricky@one"
+                            "it'sa.trap@joker.com"
+                            "it*sa.trap@joker.com"
+                            "it sa.trap@joker.com"
+                            "almost@valid.com@butno"]]
+        (doseq [email invalid-emails]
+          (let [register-request (json-post
+                                  "/api/v1/users/register"
+                                  {:body-string
+                                   (generate-string {:email email
+                                                     :name "Test User"})})
+                resp (app-with-session register-request)]
+            (is (= 400 (:status resp)))
+            (if (= 201 (:status resp))
+              (log/error email))))
+        (doseq [email invalid-emails]
+          (remove-user-by-email {:email email}))
+        (remove-user-by-email test-user))))
+
+  (testing "/api/v1/users/validate-token"
+    (remove-user-by-email test-user)
+
+    (testing "with valid token"
+      (let [app-with-session (app)
+            uid (hiiop.api-handlers/register
+                 {:body-params {:email (:email test-user)
+                                :name (:name test-user)}})
+            token (db/get-token-by-user-id {:user_id (sc/string->uuid uid)})
+            request (json-post
+                     "/api/v1/users/validate-token"
+                     {:body-string
+                      (generate-string {:token (:token token)})})
+            response (app-with-session request)
+            body (slurp (:body response))
+            body-map (parse-string body true)]
+        (is (= 200 (:status response)))
+        (is (not (nil? (:token body-map))))
+        (is (not (nil? (:expires body-map))))
+        (is (= (str uid) (:uid body-map)))
+        (is (= (:email test-user)(:email body-map))))
+      (remove-user-by-email test-user))
+
+    (testing "with invalid token"
+      (let [app-with-session (app)
+            request (json-post
+                     "/api/v1/users/validate-token"
+                     {:body-string
+                      (generate-string {:token "for sure invalid token"})})
+            response (app-with-session request)]
+        (is (= 400 (:status response))))))
+
   (testing "/api/v1/quests/add"
     (let [app-with-session (app)
           new-test-user-id (hiiop.api-handlers/register
@@ -96,8 +185,8 @@
                         :organiser-participates true)
           quest-to-add-json (generate-string quest-to-add)
           add-request (json-post "/api/v1/quests/add"
-                             {:body-string quest-to-add-json
-                              :cookies session-cookie})
+                                 {:body-string quest-to-add-json
+                                  :cookies session-cookie})
           add-response (app-with-session add-request)
           add-body (slurp (:body add-response))
           add-body-map (parse-string add-body true)]
@@ -105,5 +194,4 @@
       (is (> (:id add-body-map) 0))
       (is (= (:start-time quest-to-add) (:start-time add-body-map)))
       (pp/pprint add-body-map)
-      (db/delete-quest-by-id! {:id (:id add-body-map)})
-      )))
+      (db/delete-quest-by-id! {:id (:id add-body-map)}))))

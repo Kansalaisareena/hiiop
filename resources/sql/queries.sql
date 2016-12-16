@@ -62,7 +62,7 @@ WHERE email = :email
 DELETE FROM users
 WHERE id = :id
 
--- :name delete-user-by-email! :? :*
+-- :name delete-user-by-email! :! :n
 -- :doc delete user by email
 DELETE FROM users
 where email = :email
@@ -183,12 +183,33 @@ ON CONFLICT (user_id) DO
         token = uuid_generate_v4()
 RETURNING token
 
+-- :name get-token-by-user-id :? :1 :uuid
+-- :doc get token by user id
+SELECT token
+FROM password_tokens
+WHERE user_id = :user_id
+
 -- :name check-token-validity :? :1
 -- :doc "Check if password token is valid"
 SELECT EXISTS
   (SELECT 1 FROM password_tokens
     WHERE token = :token AND
           expires > now())
+
+-- :name get-token-info :? :1 :token
+-- :doc retrieve a user email given the token.
+SELECT
+  t.token as token,
+  u.id as id,
+  u.email as email,
+  t.expires as expires
+FROM
+  users u,
+  password_tokens t
+WHERE
+  t.token = :token AND
+  t.user_id = u.id AND
+  t.expires > now()
 
 -- :name activate-user! :! :1
 -- :doc "Activate user with password token"
