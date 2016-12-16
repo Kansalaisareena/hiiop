@@ -412,8 +412,7 @@
   (let [tr (:tr context)
         asset-path (:asset-path context)
         default-scripts
-        [[:script {:src (str asset-path "/js/app.js") :type "text/javascript"}]
-         [:script {:src "https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.10/moment-timezone-with-data-2010-2020.min.js" :type "text/javascript"}]]
+        [[:script {:src (str asset-path "/js/app.js") :type "text/javascript"}]]
         script-tags (into default-scripts (map script-tag scripts))]
     (page
      (head-content {:title (tr [:title] [title]) :asset-path asset-path})
