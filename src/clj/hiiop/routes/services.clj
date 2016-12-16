@@ -11,8 +11,7 @@
             [hiiop.config :refer [env]]
             [hiiop.api-handlers :as api-handlers]
             [hiiop.schema :refer :all]
-            [hiiop.db.core :as db]
-            [schema.coerce :as sc]))
+            [hiiop.db.core :as db]))
 
 (defapi service-routes
   {:swagger {:ui "/--help"
@@ -76,6 +75,16 @@
                 (-> (api-handlers/validate-token request)
                     (#(if (not (:errors %1))
                         (ok %1)
+                        (bad-request %1))))))
+
+        (POST "/validate-token" []
+              :body-params [token :- s/Str]
+              :summary "Verify if a token is valid and returns its expiry date and user email"
+              :body [tokeninfo TokenInfo]
+              (fn [request]
+                (-> (api-handlers/validate-token request)
+                    (#(if (not (:errors %1))
+                        (ok (str %1))
                         (bad-request %1))))))
 
         (POST "/activate" []

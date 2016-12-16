@@ -88,6 +88,7 @@
 (deftest test-api
 
   (testing "api/v1/users/register"
+    (remove-user-by-email test-user)
 
     (testing "with valid info"
       (let [app-with-session (app)
@@ -137,6 +138,7 @@
         (remove-user-by-email test-user))))
 
   (testing "/api/v1/users/validate-token"
+    (remove-user-by-email test-user)
 
     (testing "with valid token"
       (let [app-with-session (app)
@@ -163,10 +165,11 @@
             request (json-post
                      "/api/v1/users/validate-token"
                      {:body-string
-                      (generate-string {:token (sc/string->uuid "0c161cc5-1a3b-442f-96c7-8a653140134b")})})
+                      (generate-string {:token
+                                        (sc/string->uuid
+                                         "0c161cc5-1a3b-442f-96c7-8a653140134b")})})
             response (app-with-session request)]
-        (is (= 400 (:status response)))))
-    )
+        (is (= 400 (:status response))))))
 
   (testing "/api/v1/quests/add"
     (let [current-app (app)
@@ -209,5 +212,4 @@
           ((fn [add-body]
              (pp/pprint add-body)
              add-body))
-          (#(db/delete-quest-by-id! {:id (:id %1)})))
-      )))
+          (#(db/delete-quest-by-id! {:id (:id %1)}))))))
