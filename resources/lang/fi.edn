@@ -142,14 +142,12 @@
 
  :errors
  {:picture
-  {:type-not-supported "Kuvatyyppi %1 ei ole tuettu"
-   }
+  {:type-not-supported "Kuvatyyppi %1 ei ole tuettu"}
 
   :user
-  {:register
-   {:fail ""
-    :success ""}}
+  {:register {:fail ""
+              :success ""}
 
-  {:token
-   {:invalid ""}}
+   :token {:invalid ""}}
+  }
  }
