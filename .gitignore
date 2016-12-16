@@ -1,12 +1,9 @@
 *jar
-
 .lein-plugins/
 /classes/
-/lib/
 /log/
 /out/
 /target/
-
 .lein-deps-sum
 .lein-repl-history
 .nrepl-port

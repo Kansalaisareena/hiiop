@@ -9,6 +9,7 @@
       :cljs [cljsjs.moment])
    #?(:cljs [cljsjs.moment.locale.fi])
    #?(:cljs [cljsjs.moment.locale.sv])
+   #?(:cljs [cljsjs.moment-timezone])
    #?(:clj [clj-time.coerce :as timec])
    #?(:clj [clj-time.format :as timef])
    [hiiop.mangling :as mangle])
