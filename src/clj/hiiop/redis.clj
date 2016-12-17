@@ -3,8 +3,7 @@
             [taoensso.carmine :as car]
             [taoensso.carmine.ring :refer [carmine-store]]
             [taoensso.timbre :as log]
-            [hiiop.config :refer [env]])
-  (:import [java.net URI]))
+            [hiiop.config :refer [env]]))
 
 (defstate redis-connection-options
   :start (let [uri (env :redis)]

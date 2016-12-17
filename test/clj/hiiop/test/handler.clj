@@ -1,19 +1,18 @@
 (ns hiiop.test.handler
   (:require [clojure.test :refer :all]
+            [clojure.pprint :as pp]
+            [clojure.java.jdbc :as jdbc]
             [mount.core :as mount]
             [ring.mock.request :refer :all]
-            [clojure.java.jdbc :as jdbc]
             [taoensso.timbre :as log]
             [cheshire.core :refer [generate-string parse-string]]
             [schema.coerce :as sc]
-            [mount.core :as mount]
+            [schema.core :as s]
             [hiiop.config :refer [load-env]]
             [hiiop.handler :refer :all]
             [hiiop.db.core :refer [*db*] :as db]
             [hiiop.test.util :refer [contains-many? hash-password json-post]]
-            [hiiop.test.data :refer [test-quest test-user]]
-            [schema.core :as s]
-            [clojure.pprint :as pp]))
+            [hiiop.test.data :refer [test-quest test-user]]))
 
 (def test-user-id (atom nil))
 (def email-token (atom nil))
@@ -25,25 +24,10 @@
 (use-fixtures
   :once
   (fn [f]
-    (-> (mount/only
-         #{#'hiiop.config/env
-           #'hiiop.db.core/*db*
-           #'hiiop.mail/send-token-email})
-        (mount/swap {#'hiiop.mail/send-token-email receive-email})
-        mount/start)
+    (mount/start-with {#'hiiop.mail/send-token-email receive-email})
     (f)
     (db/delete-user! *db* {:id (sc/string->uuid @test-user-id)})
     ))
-
-(use-fixtures
-  :once
-  (fn [f]
-    (mount/start
-     #'hiiop.config/env
-     #'hiiop.redis/redis-connection-options
-     #'hiiop.handler/init-app
-     #'hiiop.middleware/wrap-base)
-    (f)))
 
 (deftest test-app
   (testing "main route"
@@ -73,48 +57,68 @@
   (let [session-key (last (re-find #"ring-session=([^;]+)" set-cookie))]
     (str "ring-session=" session-key)))
 
+(defn create-test-user [{:keys [user-data save-id-to read-token-from]}]
+  (-> (hiiop.api-handlers/register {:email (:email user-data)
+                                    :locale :fi})
+      (#(reset! save-id-to %))
+      ((fn [id]
+         (hiiop.api-handlers/activate
+          {:body-params {:email (:email user-data)
+                         :password (:password user-data)
+                         :token @read-token-from}})))))
+
+(defn login-and-get-cookie [{:keys [with user-data]}]
+  (-> (json-post "/api/v1/login"
+                 {:body-string
+                  (generate-string
+                   {:email (:email user-data)
+                    :password (:password user-data)})})
+      (with)
+      (get-in [:headers "Set-Cookie"])
+      (first)
+      (session-cookie-string)))
+
 (deftest test-api
   (testing "/api/v1/quests/add"
-    (let [app-with-session (app)
-          new-test-user-id (hiiop.api-handlers/register
-                            {:email (:email test-user)})
-          wat (reset! test-user-id new-test-user-id)
-          new-email-token @email-token
-          activate-response (hiiop.api-handlers/activate
-                             {:body-params {:email (:email test-user)
-                                            :password (:password test-user)
-                                            :token new-email-token}})
-          login-request (json-post "/api/v1/login"
-                                   {:body-string
-                                    (generate-string
-                                     {:email (:email test-user)
-                                      :password (:password test-user)})})
-          login-response (app-with-session login-request)
-          set-cookie (first (get-in login-response [:headers "Set-Cookie"]))
-          session-cookie (session-cookie-string set-cookie)
-          test-data (test-quest
-                     {:use-date-string true
-                      :location-to :location
-                      :coordinates-to :coordinates
-                      :organisation-to {:in :organisation
-                                        :name :name
-                                        :description :description}})
-          quest-to-add (assoc
-                        (dissoc test-data
-                                :picture
-                                :owner)
-                        :is-open true
-                        :organiser-participates true)
-          quest-to-add-json (generate-string quest-to-add)
-          add-request (json-post "/api/v1/quests/add"
-                             {:body-string quest-to-add-json
-                              :cookies session-cookie})
-          add-response (app-with-session add-request)
-          add-body (slurp (:body add-response))
-          add-body-map (parse-string add-body true)]
-      (is (= 201 (:status add-response)))
-      (is (> (:id add-body-map) 0))
-      (is (= (:start-time quest-to-add) (:start-time add-body-map)))
-      (pp/pprint add-body-map)
-      (db/delete-quest-by-id! {:id (:id add-body-map)})
+    (let [current-app (app)
+          test-user-response (create-test-user
+                              {:user-data test-user
+                               :save-id-to test-user-id
+                               :read-token-from email-token})
+          login-cookie (login-and-get-cookie
+                        {:with current-app
+                         :user-data test-user})
+          quest-to-add (test-quest
+                        {:use-date-string true
+                         :location-to :location
+                         :coordinates-to :coordinates
+                         :organisation-to {:in :organisation
+                                           :name :name
+                                           :description :description}})]
+      (-> quest-to-add
+          (dissoc :picture
+                  :owner)
+          (assoc :is-open true
+                 :organiser-participates true)
+          (generate-string)
+          (#(json-post "/api/v1/quests/add"
+                       {:body-string %1
+                        :cookies login-cookie}))
+          (current-app)
+          ((fn [add-response]
+             (is (= 201 (:status add-response)))
+             add-response))
+          (:body)
+          (slurp)
+          (parse-string true)
+          ((fn [add-body]
+             (is (> (:id add-body) 0))
+             add-body))
+          ((fn [add-body]
+             (is (= (:start-time quest-to-add) (:start-time add-body)))
+             add-body))
+          ((fn [add-body]
+             (pp/pprint add-body)
+             add-body))
+          (#(db/delete-quest-by-id! {:id (:id %1)})))
       )))
