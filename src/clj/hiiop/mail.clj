@@ -1,19 +1,39 @@
 (ns hiiop.mail
-  (:require [mount.core :refer [defstate]]
+  (:require [clojure.core.async :refer [go]]
             [postal.core :refer [send-message]]
-            [clojure.core.async :refer [go]]
+            [rum.core :refer [render-static-markup]]
+            [taoensso.carmine :as car]
+            [taoensso.timbre :as log]
+            [mount.core :refer [defstate]]
+            [hiiop.contentful :as cf]
+            [hiiop.emails :as emails]
+            [hiiop.redis :refer [wcar*]]
             [hiiop.config :refer [env]]))
 
-(defn send-mail [settings mail]
-  (go
-    (send-message settings mail)))
-
-(defn send-token [email token]
+(defn send-mail [mail]
   (let [mailopts (get-in env [:aws :mail-server-opts])]
-    (send-mail mailopts
-               {:from (get-in env [:aws :sender-address])
+    (go
+      (send-message mailopts mail))))
+
+(defn mail-content [emailkey locale]
+  (-> (car/get (str "email:" emailkey))
+      (wcar*)
+      (:fields)
+      (dissoc :emailkey)
+      (cf/localize-fields locale)))
+
+(defn send-token [email token locale]
+  (let [content (mail-content "activation" locale)]
+    (send-mail {:from (get-in env [:aws :sender-address])
                 :to email
-                :body token
-                :subject "Hiiop password token"})))
+                :body [{:type "text/html"
+                        :content (render-static-markup
+                                  (emails/activate-account
+                                   {:activation-url (str token)
+                                    :title (content :otsikko)
+                                    :body-text (content :leipateksti)
+                                    :button-text (content :ekanappiteksti)
+                                    }))}]
+                :subject (content :otsikko)})))
 
 (defstate send-token-email :start send-token)

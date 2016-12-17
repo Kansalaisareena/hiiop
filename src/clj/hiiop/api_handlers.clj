@@ -1,5 +1,6 @@
 (ns hiiop.api-handlers
   (:require [clojure.pprint :as pp]
+            [hiiop.config :refer [env]]
             [ring.util.http-response :refer :all]
             [mount.core :as mount]
             [buddy.auth :refer [authenticated?]]
@@ -14,7 +15,12 @@
             [hiiop.time :as time]
             [hiiop.mail :as mail]
             [hiiop.schema :as hs]
-            [hiiop.file-upload :refer [upload-picture]]))
+            [hiiop.file-upload :refer [upload-picture]]
+            [hiiop.contentful :as cf]
+            [buddy.core.codecs :as codecs]
+            [buddy.core.codecs.base64 :as b64]
+            [buddy.auth.http :as http]
+            [cuerdas.core :as str]))
 
 (defn login-status
   [request]
@@ -37,15 +43,14 @@
              :session (assoc session :identity user-id))
       (unauthorized))))
 
-(defn register
-  [{{email :email} :body-params}]
+(defn register [{:keys [email locale] :as args}]
   (let [id (:id (db/create-virtual-user! {:email email}))]
-    (if (nil? id)
-      nil
-      (let [token (:token (db/create-password-token!
-                           {:email email :expires (time/add (time/now) time/an-hour)}))]
-        (mail/send-token-email email (str token))
-        (str id)))))
+    (when id
+      (let [token (:token
+                   (db/create-password-token!
+                    {:email email :expires (time/add (time/now) time/an-hour)}))]
+        (mail/send-token-email email (str token) locale)
+        id))))
 
 (defn activate
   [{{:keys [email password token]} :body-params}]
@@ -79,7 +84,7 @@
       (assoc :street-number (:street-number location))
       (dissoc :location :coordinates :picture-id)
       (db/->snake_case_keywords))
-    )
+  )
 
 (def DBQuest
   {:id hs/NaturalNumber
@@ -213,3 +218,20 @@
         ))
     {:errors {:picture :errors.picture.type-not-supported
               :type (:content-type file)}}))
+(defn hook-auth
+  "Check the response for correct credentials for webhook"
+  [request]
+  (let [pattern (re-pattern "^Basic (.+)$")
+        decoded (some->> (http/-get-header request "authorization")
+                         (re-find pattern)
+                         (second)
+                         (b64/decode)
+                         (codecs/bytes->str))]
+    (let [[username password] (str/split decoded #":" 2)]
+      (and (= username (get-in env [:contentful :webhook-user]))
+           (= password (get-in env [:contentful :webhook-password]))))))
+
+(defn contentful-hook [{cfobject :body-params :as request}]
+  (if (hook-auth request)
+    (cf/process-item cfobject)
+    (unauthorized)))

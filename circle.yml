@@ -17,6 +17,7 @@ dependencies:
   cache_directories:
     - bin
   pre:
+    - mvn deploy:deploy-file -DgroupId=cljsjs -DartifactId=moment-timezone   -Dversion=0.5.10-0 -Dpackaging=jar -Dfile=moment-timezone-0.5.10-0.jar -Durl=file:maven_repository
     - bash ./scripts/ci-install-sassc.sh
 
 database:
@@ -28,10 +29,20 @@ deployment:
     branch: master
     commands:
       - lein uberjar
-      - HIIOP_ASSET_BUCKET="hiiop-dev" lein essthree
+      - aws s3 sync resources/public/ s3://hiiop-dev --delete
       - heroku git:remote --app hiiop-dev
       - heroku maintenance:on --app hiiop-dev
       - DATABASE_URL="$(heroku config:get "DATABASE_URL" --app hiiop-dev)?sslmode=require" lein migratus migrate
       - HEROKU_APP="hiiop-dev" lein heroku deploy-uberjar
       - heroku maintenance:off --app hiiop-dev
 
+  scratch:
+    branch: scratch
+    commands:
+      - lein uberjar
+      - aws s3 sync resources/public/ s3://hiiop-scratch --delete
+      - heroku git:remote --app hiiop-scratch
+      - heroku maintenance:on --app hiiop-scratch
+      - DATABASE_URL="$(heroku config:get "DATABASE_URL" --app hiiop-scratch)?sslmode=require" lein migratus migrate
+      - HEROKU_APP="hiiop-scratch" lein heroku deploy-uberjar
+      - heroku maintenance:off --app hiiop-scratch

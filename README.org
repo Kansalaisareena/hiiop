@@ -57,9 +57,9 @@
 ** Secrets
 
 Create profiles.clj under your git root to place the secrets.
-   #+BEGIN_EXAMPLE
-   {:profiles/dev
-     {:env
+   #+BEGIN_SRC clojure
+     {:profiles/dev
+      {:env
        {:database-url "postgresql://localhost/hiiop_dev?user=youruser"
         :timezone "Europe/Helsinki"
         :aws
@@ -79,12 +79,19 @@ Create profiles.clj under your git root to place the secrets.
         ""
         :aws-secret-access-key
         ""
-        }}
+        :contentful
+        {:cd-api-key ""
+         :space-id ""
+         :webhook-user ""
+         :webhook-password ""
+         }
+        }
+       }
       :profiles/test
       {:env
        {:database-url "postgresql://localhost/hiiop_test?user=youruser"
         :timezone "Europe/Helsinki"}}}
-   #+END_EXAMPLE
+   #+END_SRC
 
 ** Migrations
    Manage migrations with the following commands (prepend =lein

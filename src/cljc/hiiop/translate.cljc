@@ -1,21 +1,23 @@
 (ns hiiop.translate
-  (:require [taoensso.tempura :as tempura :refer [tr]]
+  (:require [clojure.set      :refer [intersection]]
+            [taoensso.tempura :as tempura :refer [tr]]
             [taoensso.encore  :as enc]
-            [clojure.set      :refer [intersection]]
-            #?(:cljs
-               [taoensso.timbre :as log
-                :refer-macros [trace  debug  info  warn  error  fatal  report]]
-               :clj
-               [taoensso.timbre :as log
-                :refer [trace debug info warn error fatal report]])))
+            [taoensso.timbre  :as log]))
 
 (def default-locale :fi)
 
-(defn load-resource [filename]
+(defn load-resource [filename & second]
   #?(:clj
      (try
-       (info "Loading translation" filename)
-       (enc/read-edn (enc/slurp-file-resource filename))
+       (log/info "Loading translation" filename)
+       (let [content (enc/read-edn (slurp (clojure.java.io/resource filename)))]
+         (if (not content)
+           (if (not second)
+             (load-resource (str "/" filename) :second)
+             (throw
+              (ex-info "Failed to load dictionary resource"
+                       {:filename filename})))
+           content))
        (catch Exception e
          (throw
           (ex-info "Failed to load dictionary resource"
