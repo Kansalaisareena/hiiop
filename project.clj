@@ -2,6 +2,7 @@
 
   :description "FIXME: write description"
   :url "http://example.com/FIXME"
+  :repositories {"project" "file:maven_repository"}
 
   :dependencies [[bouncer                                "1.0.0"]
                  [cider/cider-nrepl                      "0.14.0"]
