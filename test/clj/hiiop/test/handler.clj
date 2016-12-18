@@ -219,4 +219,7 @@
           ((fn [add-body]
              (pp/pprint add-body)
              add-body))
-          (#(db/delete-quest-by-id! {:id (:id %1)}))))))
+          (#(db/delete-quest-by-id! {:id (:id %1)})))
+      ))
+
+  )

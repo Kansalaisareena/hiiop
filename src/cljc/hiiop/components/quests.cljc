@@ -277,10 +277,10 @@
      ::quest-validator
      (fn [key _ old new]
        (let [value-or-error (checker new)]
-         (log/info value-or-error)
          (cond
            (:--value value-or-error) (set-valid! true)
-           (:--error value-or-error) (set-valid! false)))))
+           (:--error value-or-error) (set-valid! false)))
+       ))
     [:form
      {:class "opux-form"
       :on-submit

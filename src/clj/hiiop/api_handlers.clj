@@ -264,10 +264,12 @@
   (-> (:content-type file)
       (#(re-find #"^image/(jpg|jpeg|png|gif)$" %1))))
 
-(defn add-picture [file]
+(defn add-picture [{:keys [file user]}]
   (if (picture-supported? file)
     (try
-      (let [picture-id (:id (db/add-picture! {:url ""}))]
+      (let [picture-id (:id
+                        (db/add-picture! {:url ""
+                                          :owner (:id user)}))]
         (log/info picture-id)
         (-> picture-id
             (upload-picture file)

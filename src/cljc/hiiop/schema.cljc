@@ -108,7 +108,7 @@
   "Quest"
   {:id NaturalNumber
    :name NonEmptyString
-   (s/optional-key :description) (s/maybe s/Str)
+   :description NonEmptyString
    :start-time DateTime
    :end-time DateTime
    :location Location
@@ -192,6 +192,7 @@
               type-error (:type data)
               found-error (or schema-error type-error :unknown-error)]
           {:--error found-error}))))
+
 (def CfObject
   "Contentful object"
   {:sys s/Any

@@ -101,14 +101,16 @@
           :summary          "Handles picture upload"
           :return           Picture
           (fn [request]
-            (-> (api-handlers/add-picture file)
+            (-> (api-handlers/add-picture
+                 {:file file
+                  :user (:identity request)})
                 (#(if (not (:errors %1))
                     (created (path-for ::picture {:id (str (:id %1))}) %1)
                     (bad-request %1))))))
 
         (GET "/:id" []
           :name        ::picture
-          :path-params [id :- s/Str]
+          :path-params [id :- String]
           :summary     "Get picture"
           :return      Picture
           (fn [request]

@@ -37,12 +37,13 @@
         coerced-value (:--value value-or-error)
         coerced-error (:--error value-or-error)]
     (if coerced-value
-      (do (reset! value coerced-value)
-          (reset! error nil))
+      (do
+        (reset! value coerced-value)
+        (reset! error nil))
       (reset! error coerced-error))))
 
 (rum/defcs label < rum/reactive
-  (rum/local nil ::error)
+                   (rum/local nil ::error)
   [state text {:keys [for class error] :as or-content} & content]
   (let [local-error (::error state)
         also-content (if (sequential? or-content)

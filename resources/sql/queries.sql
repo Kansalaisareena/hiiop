@@ -341,8 +341,8 @@ UPDATE users
 
 -- :name add-picture! :? :1
 -- :doc "Add picture"
-INSERT INTO pictures (url)
-VALUES (:url)
+INSERT INTO pictures (url, owner)
+VALUES (:url, :owner)
 RETURNING id
 
 -- :name update-picture-url! :? :1
