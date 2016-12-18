@@ -48,7 +48,7 @@
     (when (and
            handler-route-key
            (handler-key client-pages/handlers))
-      ((handler-key client-pages/handlers) client-pages/handlers))))
+      ((handler-key client-pages/handlers) handler-route-key))))
 
 (defn mount-components []
   (get-config-and-call route!))

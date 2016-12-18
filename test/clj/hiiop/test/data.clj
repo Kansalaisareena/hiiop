@@ -66,6 +66,5 @@
 (def test-user
   {:name "Test user"
    :email "test@email.com"
-   :pass (hash-password "password#")
    :password "password#"
    :is_active true})

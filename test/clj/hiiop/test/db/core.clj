@@ -87,12 +87,10 @@
             "User should be inactive")))))
 
 (defn transform-to-quest-db-fields [{:keys [quest id is-open picture-url]}]
-  (let [quest-with-added (assoc quest
-                                :id id
-                                :picture-url nil)]
-    (dissoc
-     quest-with-added
-     :picture)))
+  (-> quest
+      (assoc :id id
+             :picture-url nil
+             :picture nil)))
 
 (deftest test-create-moderated-quest
   (jdbc/with-db-transaction [t-conn *db*]

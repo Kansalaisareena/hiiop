@@ -267,12 +267,22 @@
      (if (rum/react error)
        [:span {:class "error"} (rum/react error)])]))
 
+(defn readable-address [{:keys [street street-number town]}]
+  (-> (filter #(not (nil? %)) [street street-number town])
+      ((fn [address]
+         (let [last-dropped (drop-last address)
+               before-last (last last-dropped)
+               all-but-last-two (drop-last last-dropped)]
+           (concat all-but-last-two [(str before-last ",") (last address)]))))
+      (#(clojure.string/join " " %1))))
+
 (rum/defc location-selector < address/autocomplete-mixin
-  [{:keys [place class placeholder]}]
+  [{:keys [location class placeholder]}]
   [:input
    {:type "text"
     :class (str "autocomplete " class)
-    :placeholder placeholder}])
+    :placeholder placeholder
+    :default-value (readable-address @location)}])
 
 (defn multi-choice [tr choice-text-fn selected choice]
   (let [id (str "multi-choice-" (name choice))
@@ -324,7 +334,7 @@
      (input
       (conj params
             {:class "opux-input opux-input--text opux-input--inline"
-             :transform-value #(if (string? %) (mangling/parse-int %))}))
+             :transform-value #(if (string? %) (mangling/parse-natural-number %))}))
      [:span {:class "opux-input__suffix"}
       (tr [:pages.quest.edit.max-participants.amount-of-people])]]))
 

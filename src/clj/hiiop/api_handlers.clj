@@ -60,10 +60,16 @@
 
 (defn activate [{:keys [email password token]}]
   (let [pwhash (hashers/derive password {:alg :bcrypt+blake2b-512})
-        token-uuid (sc/string->uuid token)]
-    (db/activate-user! {:pass pwhash :email email :token token-uuid})
-    (db/delete-password-token! {:token token-uuid})
-    (ok)))
+        token-uuid (sc/string->uuid token)
+        activate-user (db/activate-user!
+                       {:pass pwhash
+                        :email email
+                        :token token-uuid})]
+    (if (> activate-user 0)
+      (do
+        (db/delete-password-token! {:token token-uuid})
+        true)
+      false)))
 
 (defn validate-token [token-uuid]
   (log/info "validate-token" token-uuid)
@@ -87,7 +93,7 @@
    :hashtags                 :unmoderated_hashtags
    :picture                  :unmoderated_picture})
 
-(defn api-quest->new-moderated-db-quest
+(defn api-quest->moderated-db-quest
   [{:keys [hashtags
            start-time
            end-time
@@ -108,7 +114,7 @@
       (conj (:coordinates location))
       (conj location)
       (assoc :street-number (:street-number location))
-      (dissoc :location :coordinates :picture-id)
+      (dissoc :location :coordinates :picture-id :picture-url)
       (db/->snake_case_keywords))
   )
 
@@ -142,8 +148,7 @@
    :picture (s/maybe s/Uuid)
    :unmoderated_picture (s/maybe s/Uuid)
    :owner s/Uuid
-   :is_open s/Bool
-   :secret_party s/Uuid})
+   :is_open s/Bool})
 
 (def UnmoderatedDBQuest
   (apply
@@ -169,11 +174,15 @@
              :id
              :secret_party))
 
-(def api-quest->new-moderated-db-quest-coercer
-  (stc/coercer NewModeratedDBQuest
-               {NewModeratedDBQuest api-quest->new-moderated-db-quest}))
+(def api-quest->moderated-db-quest-coercer
+  (stc/coercer ModeratedDBQuest
+               {ModeratedDBQuest api-quest->moderated-db-quest}))
 
-(def api-quest->new-unmoderated-db-quest-coercer
+(def new-api-quest->new-moderated-db-quest-coercer
+  (stc/coercer NewModeratedDBQuest
+               {NewModeratedDBQuest api-quest->moderated-db-quest}))
+
+(def new-api-quest->new-unmoderated-db-quest-coercer
   (stc/coercer NewUnmoderatedDBQuest
                {NewUnmoderatedDBQuest api-quest->new-unmoderated-db-quest}))
 
@@ -216,11 +225,14 @@
          (into [] (map keyword (:categories db-quest)))))
 
 (defn db-quest->api-quest [{:keys [organisation
-                                   organisation-description] :as db-quest}]
+                                   organisation-description
+                                   picture] :as db-quest}]
   (-> db-quest
       (location-flat->location-structure)
       (times->strings)
       (string-categories->keyword-categories)
+      (dissoc :picture)
+      (assoc :picture-id picture)
       (assoc :organisation
              {:name organisation :description organisation-description})
       (dissoc :organisation :organisation-description)))
@@ -234,7 +246,7 @@
     (-> quest
         (assoc :owner (:id user))
         (dissoc :organiser-participates)
-        (api-quest->new-moderated-db-quest-coercer)
+        (new-api-quest->new-moderated-db-quest-coercer)
         (db/add-moderated-quest!)
         (#(db/get-moderated-quest-by-id {:id (:id %)}))
         (db-quest->api-quest-coercer))
@@ -248,6 +260,19 @@
         (db-quest->api-quest-coercer))
     (catch Exception e
       (log/error e))))
+
+(defn edit-quest [{:keys [quest user]}]
+  (try
+    (-> quest
+        (assoc :owner (:id user))
+        (dissoc :organiser-participates)
+        (api-quest->moderated-db-quest-coercer)
+        (db/update-moderated-quest!)
+        (#(db/get-moderated-quest-by-id {:id (:id %)}))
+        (db-quest->api-quest-coercer))
+    (catch Exception e
+      (log/error e)
+      {:errors {:quest "Failed to update"}})))
 
 (defn get-quests-for-owner [owner]
   (try
@@ -286,6 +311,7 @@
         {:errors {:picture :errors.picture.add-failed}}))
     {:errors {:picture :errors.picture.type-not-supported
               :type (:content-type file)}}))
+
 (defn hook-auth
   "Check the response for correct credentials for webhook"
   [request]

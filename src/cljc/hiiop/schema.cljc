@@ -11,7 +11,7 @@
   #?(:clj (:import [schema.utils ValidationError]
                    [schema.core Constrained])))
 
-(def Email #"(^[a-zA-Z0-9._+]+@[^@.]+\.[^@.]+)$")
+(def Email #"(^[a-zA-Z0-9._+-]+@[^@.]+\.[^@.]+)$")
 
 (def Password s/Str)
 
@@ -114,20 +114,19 @@
    :location Location
    :max-participants NPlus
    :categories [Category]
-   :picture-url (s/maybe s/Str)
+   (s/optional-key :picture-id) (s/maybe s/Str)
+   (s/optional-key :picture-url) (s/maybe s/Str)
    (s/optional-key :hashtags) [Hashtag]
    :is-open s/Bool
    :owner s/Uuid
    (s/optional-key :organisation) (s/maybe Organisation)})
 
 (def NewQuest
-  (st/assoc
-   (st/dissoc Quest
-              :id
-              :owner
-              :picture-url)
-   :organiser-participates s/Bool
-   (s/optional-key :picture-id) (s/maybe s/Str)))
+  (-> Quest
+      (st/assoc :organiser-participates s/Bool)
+      (st/dissoc :id
+                 :owner
+                 :picture-url)))
 
 ;(def UrlLike #"http[s]{0,1}:\/\/.*")
 

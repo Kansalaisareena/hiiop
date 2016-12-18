@@ -194,6 +194,7 @@ SELECT
   q.categories as categories,
   q.max_participants as max_participants,
   q.hashtags as hashtags,
+  q.picture as picture,
   (SELECT url FROM pictures WHERE id = q.picture) as picture_url,
   q.is_open as is_open,
   q.owner as owner
@@ -263,6 +264,36 @@ FROM
   quests q
 WHERE
   q.owner = :owner;
+
+-- :name update-moderated-quest! :? :1
+-- :doc "Update moderated quest"
+UPDATE
+  quests
+SET
+  name = :name,
+  description = :description,
+  organisation = :organisation,
+  organisation_description = :organisation_description,
+  start_time = :start_time,
+  end_time = :end_time,
+  street_number = :street_number,
+  street = :street,
+  town = :town,
+  postal_code = :postal_code,
+  country = :country,
+  latitude = :latitude,
+  longitude = :longitude,
+  google_maps_url = :google_maps_url,
+  google_place_id = :google_place_id,
+  categories = :categories,
+  max_participants = :max_participants,
+  hashtags = :hashtags,
+  picture = :picture,
+  is_open = :is_open
+WHERE
+  id = :id AND
+  owner = :owner
+RETURNING id
 
 -- :name get-quest-secret-party-id :? :1
 -- :doc get quest secret party id by id

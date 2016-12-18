@@ -11,9 +11,29 @@
             [hiiop.config :refer [load-env]]
             [hiiop.handler :refer :all]
             [hiiop.db.core :refer [*db*] :as db]
-            [hiiop.test.util :refer [contains-many? hash-password json-post]]
+            [hiiop.test.util :refer [contains-many? hash-password json-request]]
             [hiiop.test.data :refer [test-quest test-user]]
             [schema-tools.core :as st]))
+
+(defn log-it [in id]
+  (log/info id in)
+  in)
+
+(defn has-status [response status]
+  (is (= status (:status response)))
+  response)
+
+(defn do-this [to with]
+  (with to)
+  to)
+
+(defn just-do [_ this]
+  (this)
+  _)
+
+(defn check [this with]
+  (with this)
+  this)
 
 (defn remove-user-by-email [user]
   (try
@@ -29,6 +49,25 @@
   (log/info "receive email token: " token)
   (reset! email-token token))
 
+(defn session-cookie-string [set-cookie]
+  (log/info "set-cookie" set-cookie)
+  (if set-cookie
+    (let [session-key (last (re-find #"ring-session=([^;]+)" set-cookie))]
+      (str "ring-session=" session-key))
+    (throw (ex-info "Failed to find login cookie"
+                    {:cookie set-cookie}))))
+
+(defn create-test-user [{:keys [user-data save-id-to read-token-from]}]
+  (-> (hiiop.api-handlers/register {:email (:email user-data)
+                                    :name "Wat"
+                                    :locale :fi})
+      (#(reset! save-id-to %))
+      ((fn [id]
+         (hiiop.api-handlers/activate
+          {:email    (:email user-data)
+           :password (:password user-data)
+           :token    @read-token-from})))))
+
 (use-fixtures
   :once
   (fn [f]
@@ -37,8 +76,7 @@
         (mount/swap {#'hiiop.mail/send-token-email receive-email})
         mount/start)
     (f)
-    (db/delete-user! *db* {:id (sc/string->uuid @test-user-id)})
-    ))
+    (db/delete-user! *db* {:id (sc/string->uuid @test-user-id)})))
 
 (deftest test-app
   (testing "main route"
@@ -63,32 +101,50 @@
       (is (= "sv" lang)))))
 
 
-(defn session-cookie-string [set-cookie]
-  (log/info "set-cookie" set-cookie)
-  (let [session-key (last (re-find #"ring-session=([^;]+)" set-cookie))]
-    (str "ring-session=" session-key)))
-
-(defn create-test-user [{:keys [user-data save-id-to read-token-from]}]
-  (-> (hiiop.api-handlers/register {:email (:email user-data)
-                                    :name "Wat"
-                                    :locale :fi})
-      (#(reset! save-id-to %))
-      ((fn [id]
-         (hiiop.api-handlers/activate
-          {:email    (:email user-data)
-           :password (:password user-data)
-           :token    @read-token-from})))))
-
 (defn login-and-get-cookie [{:keys [with user-data]}]
-  (-> (json-post "/api/v1/login"
-                 {:body-string
-                  (generate-string
-                   {:email (:email user-data)
-                    :password (:password user-data)})})
+  (-> (json-request "/api/v1/login"
+                    {:type :post
+                     :body-string
+                     (generate-string
+                      {:email (:email user-data)
+                       :password (:password user-data)})})
       (with)
       (get-in [:headers "Set-Cookie"])
       (first)
       (session-cookie-string)))
+
+(defn add-quest [{:keys [login-cookie with quest]}]
+  (-> quest
+      (dissoc :picture
+              :owner)
+      (assoc :is-open true
+             :organiser-participates true)
+      (generate-string)
+      (#(json-request "/api/v1/quests/add"
+                      {:type :post
+                       :body-string %1
+                       :cookies login-cookie}))
+      (with)
+      (has-status 201)
+      (:body)
+      (slurp)
+      (parse-string true)
+      ))
+
+(defn edit-quest [{:keys [login-cookie with quest]}]
+  (-> (generate-string quest)
+      (#(json-request (str "/api/v1/quests/" (:id quest))
+                      {:type :put
+                       :body-string %1
+                       :cookies login-cookie}))
+      (do-this pp/pprint)
+      (with)
+      (has-status 200)
+      (do-this #(log/info %1))
+      (:body)
+      (slurp)
+      (parse-string true)
+      ))
 
 (deftest test-api
 
@@ -97,9 +153,10 @@
     (testing "with valid info"
       (let [current-app (app)
             unique-email "unique.email@example.com"]
-        (-> (json-post
+        (-> (json-request
              "/api/v1/users/register"
-             {:body-string
+             {:type :post
+              :body-string
               (generate-string {:email unique-email
                                 :name (:name test-user)})})
             (current-app)
@@ -113,9 +170,10 @@
                          {:email (:email test-user)
                           :name (:name test-user)
                           :locale :fi})
-            register-request (json-post
+            register-request (json-request
                               "/api/v1/users/register"
-                              {:body-string
+                              {:type :post
+                               :body-string
                                (generate-string {:email (:email test-user)
                                                  :name (:name test-user)})})
             response (app-with-session register-request)]
@@ -132,9 +190,10 @@
                             "it sa.trap@joker.com"
                             "almost@valid.com@butno"]]
         (doseq [email invalid-emails]
-          (let [register-request (json-post
+          (let [register-request (json-request
                                   "/api/v1/users/register"
-                                  {:body-string
+                                  {:type :post
+                                   :body-string
                                    (generate-string {:email email
                                                      :name "Test User"})})
                 resp (app-with-session register-request)]
@@ -152,9 +211,10 @@
                  {:email (:email test-user)
                   :name (:name test-user)
                   :locale :fi})
-            request (json-post
+            request (json-request
                      "/api/v1/users/validate-token"
-                     {:body-string
+                     {:type :post
+                      :body-string
                       (generate-string {:token @email-token})})
             response (app-with-session request)
             body (slurp (:body response))
@@ -168,9 +228,10 @@
 
     (testing "with invalid token"
       (let [app-with-session (app)
-            request (json-post
+            request (json-request
                      "/api/v1/users/validate-token"
-                     {:body-string
+                     {:type :post
+                      :body-string
                       (generate-string {:token
                                         (sc/string->uuid
                                          "0c161cc5-1a3b-442f-96c7-8a653140134b")})})
@@ -180,10 +241,10 @@
 
   (testing "/api/v1/quests/add"
     (let [current-app (app)
-          test-user-response (create-test-user
-                              {:user-data test-user
-                               :save-id-to test-user-id
-                               :read-token-from email-token})
+          user-created (create-test-user
+                        {:user-data test-user
+                         :save-id-to test-user-id
+                         :read-token-from email-token})
           login-cookie (login-and-get-cookie
                         {:with current-app
                          :user-data test-user})
@@ -194,32 +255,45 @@
                          :organisation-to {:in :organisation
                                            :name :name
                                            :description :description}})]
-      (-> quest-to-add
-          (dissoc :picture
-                  :owner)
-          (assoc :is-open true
-                 :organiser-participates true)
-          (generate-string)
-          (#(json-post "/api/v1/quests/add"
-                       {:body-string %1
-                        :cookies login-cookie}))
-          (current-app)
-          ((fn [add-response]
-             (is (= 201 (:status add-response)))
-             add-response))
-          (:body)
-          (slurp)
-          (parse-string true)
-          ((fn [add-body]
-             (is (> (:id add-body) 0))
-             add-body))
-          ((fn [add-body]
-             (is (= (:start-time quest-to-add) (:start-time add-body)))
-             add-body))
-          ((fn [add-body]
-             (pp/pprint add-body)
-             add-body))
-          (#(db/delete-quest-by-id! {:id (:id %1)})))
+      (-> (add-quest
+           {:with current-app
+            :quest quest-to-add
+            :login-cookie login-cookie})
+          (check #(is (> (:id %1) 0)))
+          (check #(is (= (:start-time quest-to-add) (:start-time %1))))
+          (do-this pp/pprint)
+          (#(db/delete-quest-by-id! {:id (:id %1)}))
+          (just-do #(db/delete-user! *db* {:id (sc/string->uuid @test-user-id)})))
       ))
 
+  (testing "PUT /api/v1/quests/:id"
+    (let [current-app (app)
+          user-created (create-test-user
+                        {:user-data test-user
+                         :save-id-to test-user-id
+                         :read-token-from email-token})
+          login-cookie (login-and-get-cookie
+                        {:with current-app
+                         :user-data test-user})
+          quest-to-add (test-quest
+                        {:use-date-string true
+                         :location-to :location
+                         :coordinates-to :coordinates
+                         :organisation-to {:in :organisation
+                                           :name :name
+                                           :description :description}})]
+      (-> (add-quest
+           {:with current-app
+            :quest quest-to-add
+            :login-cookie login-cookie})
+          (assoc :name "WAAT"
+                 :description "OMG!")
+          (#(edit-quest {:with current-app
+                         :quest %1
+                         :login-cookie login-cookie}))
+          (check #(is (= "WAAT" (:name %1))))
+          (check #(is (= "OMG!" (:description %1))))
+          (#(db/delete-quest-by-id! {:id (:id %1)}))
+          (just-do #(db/delete-user! *db* {:id (sc/string->uuid @test-user-id)})))
+      ))
   )
