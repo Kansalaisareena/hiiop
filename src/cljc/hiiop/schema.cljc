@@ -127,7 +127,7 @@
               :owner
               :picture-url)
    :organiser-participates s/Bool
-   (s/optional-key :picture-id) s/Uuid))
+   (s/optional-key :picture-id) (s/maybe s/Str)))
 
 ;(def UrlLike #"http[s]{0,1}:\/\/.*")
 
@@ -191,6 +191,7 @@
               schema-error (message-from-constrained (:schema data))
               type-error (:type data)
               found-error (or schema-error type-error :unknown-error)]
+          (log/error "select-schema-either" e)
           {:--error found-error}))))
 
 (def CfObject

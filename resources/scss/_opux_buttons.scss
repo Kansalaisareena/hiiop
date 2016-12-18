@@ -17,4 +17,7 @@
     border-color: $OP-orange;
     color: $OP-white;
   }
+  &:disabled {
+    color: lighten($OP-gray, 30);
+  }
 }

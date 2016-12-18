@@ -25,18 +25,16 @@
       (map display quests)]]))
 
 (defn add-organisation-to [quest]
-  (swap! quest
-         #(identity
-           (assoc (deref quest)
-                  :organisation
-                  {:name ""
-                   :description ""}))))
+  (reset! quest
+         (assoc (deref quest)
+                :organisation
+                {:name ""
+                 :description ""})))
 
 (defn add-to-errors [errors values]
-  (swap! errors
-         #(identity
-           (conj (deref errors)
-                 values))))
+  (reset! errors
+          (conj (deref errors)
+                 values)))
 
 (defn enable-organisation [enable]
   (reset! enable true))
@@ -85,7 +83,6 @@
        {:value (get-in cursors-and-schema [:picture-id :value])
         :error (get-in cursors-and-schema [:picture-id :error])
         :context context
-        :transform sc/string->uuid
         :tr (partial tr [:page.quest.edit.picture.upload-failed])})
       ]
      [:div {:class "opux-fieldset__item"}
