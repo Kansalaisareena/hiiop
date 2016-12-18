@@ -68,13 +68,13 @@
      [:div {:class "opux-fieldset__item"}
       (html/label
        (tr [:pages.quest.edit.description])
-       {:class "opux-input__label opux-input__label--unmoderated-description"
-        :error (get-in cursors-and-schema [:unmoderated-description :error])})
+       {:class "opux-input__label opux-input__label--description"
+        :error (get-in cursors-and-schema [:description :error])})
       (html/text
        {:class "opux-input opux-input--textarea opux-input--textarea--unmoderated-description"
-        :value (get-in cursors-and-schema [:unmoderated-description :value])
-        :error (get-in cursors-and-schema [:unmoderated-description :error])
-        :schema (get-in cursors-and-schema [:unmoderated-description :schema])
+        :value (get-in cursors-and-schema [:description :value])
+        :error (get-in cursors-and-schema [:description :error])
+        :schema (get-in cursors-and-schema [:description :schema])
         :context context})]
      [:div {:class "opux-fieldset__item"}
       (html/label

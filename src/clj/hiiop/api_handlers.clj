@@ -79,7 +79,15 @@
 (defn get-user [{{id :id} :params}]
   (ok (str (db/get-user-by-id {:id (sc/string->uuid id)}))))
 
-(defn api-quest->db-quest
+(def moderated->unmoderated-db-quest-keys
+  {:name                     :unmoderated_name
+   :description              :unmoderated_description
+   :organisation             :unmoderated_organisation
+   :organisation_description :unmoderated_organisation_description
+   :hashtags                 :unmoderated_hashtags
+   :picture                  :unmoderated_picture})
+
+(defn api-quest->new-moderated-db-quest
   [{:keys [hashtags
            start-time
            end-time
@@ -103,12 +111,18 @@
       (db/->snake_case_keywords))
   )
 
+(defn api-quest->new-unmoderated-db-quest [])
+
 (def DBQuest
   {:id hs/NaturalNumber
    :name hs/NonEmptyString
-   :description (s/maybe hs/NonEmptyString)
+   :unmoderated_name hs/NonEmptyString
+   :description hs/NonEmptyString
+   :unmoderated_description hs/NonEmptyString
    :organisation (s/maybe hs/NonEmptyString)
+   :unmoderated_organisation (s/maybe hs/NonEmptyString)
    :organisation_description (s/maybe hs/NonEmptyString)
+   :unmoderated_organisation_description (s/maybe hs/NonEmptyString)
    :start_time (s/constrained s/Any time/time? :error.not-valid-date)
    :end_time (s/constrained s/Any time/time? :error.not-valid-date)
    :street_number (s/maybe s/Int)
@@ -121,23 +135,47 @@
    :google_maps_url (s/maybe hs/NonEmptyString)
    :google_place_id (s/maybe hs/NonEmptyString)
    :categories [s/Keyword]
-   :unmoderated_description hs/NonEmptyString
    :max_participants s/Num
    :hashtags [s/Str]
+   :unmoderated_hashtags [s/Str]
    :picture (s/maybe s/Uuid)
+   :unmoderated_picture (s/maybe s/Uuid)
    :owner s/Uuid
    :is_open s/Bool
    :secret_party s/Uuid})
 
-(def NewDBQuest
-  (st/dissoc DBQuest
+(def UnmoderatedDBQuest
+  (apply
+   st/dissoc
+   (concat
+    [DBQuest]
+    (keys moderated->unmoderated-db-quest-keys))))
+
+(def ModeratedDBQuest
+  (apply
+   st/dissoc
+   (concat
+    [DBQuest]
+    (vals moderated->unmoderated-db-quest-keys))))
+
+(def NewUnmoderatedDBQuest
+  (st/dissoc UnmoderatedDBQuest
              :id
-             :description
              :secret_party))
 
-(def api-quest->db-quest-coercer
-  (stc/coercer NewDBQuest
-               {NewDBQuest api-quest->db-quest}))
+(def NewModeratedDBQuest
+  (st/dissoc ModeratedDBQuest
+             :id
+             :secret_party))
+
+(def api-quest->new-moderated-db-quest-coercer
+  (stc/coercer NewModeratedDBQuest
+               {NewModeratedDBQuest api-quest->new-moderated-db-quest}))
+
+(def api-quest->new-unmoderated-db-quest-coercer
+  (stc/coercer NewUnmoderatedDBQuest
+               {NewUnmoderatedDBQuest api-quest->new-unmoderated-db-quest}))
+
 
 (def location-keys
   [:street-number
@@ -195,16 +233,27 @@
     (-> quest
         (assoc :owner (:id user))
         (dissoc :organiser-participates)
-        (api-quest->db-quest-coercer)
-        (db/add-unmoderated-quest!)
-        (#(db/get-quest-by-id {:id (:id %)}))
+        (api-quest->new-moderated-db-quest-coercer)
+        (db/add-moderated-quest!)
+        (#(db/get-moderated-quest-by-id {:id (:id %)}))
         (db-quest->api-quest-coercer))
     (catch Exception e
       (log/error e)
       )))
 
-(defn get-quest [{{id :id} :params}]
-  (ok (db/get-quest-by-id {:id id})))
+(defn get-quest [id]
+  (try
+    (-> (db/get-moderated-quest-by-id {:id id})
+        (db-quest->api-quest-coercer))
+    (catch Exception e
+      (log/error e))))
+
+(defn get-quests-for-owner [owner]
+  (try
+    (-> (db/get-moderated-quest-by-owner {:owner owner})
+        (db-quest->api-quest-coercer))
+    (catch Exception e
+      (log/error e))))
 
 (defn join-quest [params]
   (created ""))

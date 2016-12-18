@@ -113,7 +113,6 @@
    :end-time DateTime
    :location Location
    :max-participants NPlus
-   :unmoderated-description NonEmptyString
    :categories [Category]
    :picture-url (s/maybe s/Str)
    (s/optional-key :hashtags) [Hashtag]
@@ -125,7 +124,6 @@
   (st/assoc
    (st/dissoc Quest
               :id
-              :description
               :owner
               :picture-url)
    :organiser-participates s/Bool
@@ -141,7 +139,7 @@
 
 (defn new-empty-quest []
   {:name ""
-   :unmoderated-description ""
+   :description ""
    :hashtags []
    :start-time (time/to-string
                 (time/tomorrow-at-noon)
