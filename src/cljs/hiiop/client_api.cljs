@@ -27,7 +27,7 @@
                         {:json-params token}))
           status (:status response)
           body (:body response)]
-      body))
+      body)))
 
 (defn add-quest [quest]
   (log/info "add-quest called with" quest)
