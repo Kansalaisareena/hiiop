@@ -64,16 +64,16 @@
     (db/activate-user! {:pass pwhash :email email :token token-uuid})))
 
 (defn validate-token [request]
-  (let [token (:token (:body-params request))]
-    (try
-      (let [token-uuid (sc/string->uuid token)
-            token-info (db/get-token-info {:token token-uuid})]
-        (if (nil? token-info)
-          {:errors {:token :errors.user.token.invalid}}
-          token-info))
-      (catch Exception e
-        (log/error e)
-        {:errors {:token :errors.user.token.invalid}}))))
+  (try
+    (let [token (:token (:body-params request))
+          token-uuid (sc/string->uuid token)
+          token-info (db/get-token-info {:token token-uuid})]
+      (if (nil? token-info)
+        {:errors {:token :errors.user.token.invalid}}
+        token-info))
+    (catch Exception e
+      (log/error e)
+      {:errors {:token :errors.user.token.invalid}})))
 
 (defn get-user [{{id :id} :params}]
   (ok (str (db/get-user-by-id {:id (sc/string->uuid id)}))))

@@ -79,7 +79,7 @@
             (-> (api-handlers/validate-token request)
                 (#(if (:errors %1)
                     (bad-request %1)
-                    (ok {:body %1}))))))
+                    (ok %1))))))
 
         (POST "/activate" []
           :body [activation UserActivation]

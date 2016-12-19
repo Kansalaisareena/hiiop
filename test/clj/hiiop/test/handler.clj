@@ -158,7 +158,7 @@
                       (generate-string {:token @email-token})})
             response (app-with-session request)
             body (slurp (:body response))
-            body-map (:body (parse-string body true))]
+            body-map (parse-string body true)]
         (is (= 200 (:status response)))
         (is (= false (empty? (:token body-map))))
         (is (= false (empty? (:expires body-map))))

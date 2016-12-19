@@ -2,6 +2,7 @@
   (:require-macros [cljs.core.async.macros :refer [go]]
                    [schema.core :as s])
   (:require [cljs-http.client :as http]
+            [schema.coerce :as sc]
             [cljs.core.async :refer [<!]]
             [taoensso.timbre :as log]))
 
@@ -23,7 +24,7 @@
 (defn validate-token [token]
   (go
     (let [response (<! (http/post
-                        "api/v1/users/validate-token"
+                        "/api/v1/users/validate-token"
                         {:json-params token}))
           status (:status response)
           body (:body response)]
