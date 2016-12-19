@@ -25,14 +25,17 @@
 (def test-user-id (atom nil))
 (def email-token (atom nil))
 
-(defn receive-email [email token session]
+(defn receive-email [email token locale]
   (log/info "receive email token: " token)
   (reset! email-token token))
 
 (use-fixtures
   :once
   (fn [f]
-    (mount/start-with {#'hiiop.mail/send-token-email receive-email})
+    (-> (mount/except [#'hiiop.core/http-server
+                       #'hiiop.core/repl-server])
+        (mount/swap {#'hiiop.mail/send-token-email receive-email})
+        mount/start)
     (f)
     (db/delete-user! *db* {:id (sc/string->uuid @test-user-id)})
     ))
@@ -65,17 +68,16 @@
   (let [session-key (last (re-find #"ring-session=([^;]+)" set-cookie))]
     (str "ring-session=" session-key)))
 
-(defn create-test-user [{:keys [user-data save-id-to save-token-to]}]
-  (let [uid (hiiop.api-handlers/register
-             {:body-params {:email (:email user-data)
-                            :name (:name user-data)}})
-        token (db/get-token-by-user-id {:user_id uid})]
-    (reset! save-id-to uid)
-    (reset! save-token-to token)
-    (hiiop.api-handlers/activate
-     {:body-params {:email (:email user-data)
-                    :password (:password user-data)
-                    :token (:token token)}})))
+(defn create-test-user [{:keys [user-data save-id-to read-token-from]}]
+  (-> (hiiop.api-handlers/register {:email (:email user-data)
+                                    :name "Wat"
+                                    :locale :fi})
+      (#(reset! save-id-to %))
+      ((fn [id]
+         (hiiop.api-handlers/activate
+          {:email    (:email user-data)
+           :password (:password user-data)
+           :token    @read-token-from})))))
 
 (defn login-and-get-cookie [{:keys [with user-data]}]
   (-> (json-post "/api/v1/login"
@@ -102,14 +104,15 @@
                                 :name (:name test-user)})})
             (current-app)
             ((fn [response]
-               (is (= 201 (:status response))))))
+               (is (= 200 (:status response))))))
         (remove-user-by-email {:email unique-email})))
 
     (testing "with duplicate email"
       (let [app-with-session (app)
             create-resp (hiiop.api-handlers/register
-                         {:body-params {:email (:email test-user)
-                                        :name (:name test-user)}})
+                         {:email (:email test-user)
+                          :name (:name test-user)
+                          :locale :fi})
             register-request (json-post
                               "/api/v1/users/register"
                               {:body-string
@@ -136,7 +139,7 @@
                                                      :name "Test User"})})
                 resp (app-with-session register-request)]
             (is (= 400 (:status resp)))
-            (if (= 201 (:status resp))
+            (if (= 200 (:status resp))
               (log/error email))))
         (doseq [email invalid-emails]
           (remove-user-by-email {:email email})))))
@@ -146,13 +149,13 @@
     (testing "with valid token"
       (let [app-with-session (app)
             uid (hiiop.api-handlers/register
-                 {:body-params {:email (:email test-user)
-                                :name (:name test-user)}})
-            token (db/get-token-by-user-id {:user_id (sc/string->uuid uid)})
+                 {:email (:email test-user)
+                  :name (:name test-user)
+                  :locale :fi})
             request (json-post
                      "/api/v1/users/validate-token"
                      {:body-string
-                      (generate-string {:token (:token token)})})
+                      (generate-string {:token @email-token})})
             response (app-with-session request)
             body (slurp (:body response))
             body-map (:body (parse-string body true))]
@@ -180,7 +183,7 @@
           test-user-response (create-test-user
                               {:user-data test-user
                                :save-id-to test-user-id
-                               :save-token-to email-token})
+                               :read-token-from email-token})
           login-cookie (login-and-get-cookie
                         {:with current-app
                          :user-data test-user})

@@ -43,31 +43,25 @@
              :session (assoc session :identity user-id))
       (unauthorized))))
 
-(defn register [request]
-  (let [body-params (:body-params request)
-        email (:email body-params)
-        name (:name body-params)
-        current-locale (:current-locale request)]
-    (try
-      (let [id (:id (db/create-virtual-user! {:email email}))]
-        (if (nil? id)
-          {:errors {:user :errors.user.register.failed}}
-          (let [token (db/create-password-token!
+(defn register [{:keys [email name locale]}]
+  (try
+    (let [id (:id (db/create-virtual-user! {:email email}))]
+      (if (nil? id)
+        {:errors {:user :errors.user.register.failed}}
+        (let [token (db/create-password-token!
                      {:email email
                       :expires (time/add (time/now) time/an-hour)})]
           (db/update-user! {:id id :name name :email email})
-          (mail/send-token-email email (str (:token token)) current-locale)
+          (mail/send-token-email email (str (:token token)) locale)
           id)))
     (catch Exception e
       (log/error e)
-      {:errors {:user :errors.user.register.failed}}))))
+      {:errors {:user :errors.user.register.failed}})))
 
-(defn activate
-  [{{:keys [email password token]} :body-params}]
+(defn activate [{:keys [email password token]}]
   (let [pwhash (hashers/derive password {:alg :bcrypt+blake2b-512})
         token-uuid (sc/string->uuid token)]
-    (db/activate-user! {:pass pwhash :email email :token token-uuid})
-    (ok)))
+    (db/activate-user! {:pass pwhash :email email :token token-uuid})))
 
 (defn validate-token [request]
   (let [token (:token (:body-params request))]

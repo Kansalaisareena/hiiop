@@ -14,7 +14,7 @@
     (leaf "" :activate))
 
    ;; Profile
-   (leaf "/kayttaya" :index)
+   (leaf "/kayttaja" :index)
 
    ;; Quests
    (branch
@@ -22,7 +22,6 @@
     (leaf "" :browse-quests)
     (leaf "luo" :create-quest)
     ;; add :id
-
 
     (branch
      "muokkaa/" (param :quest-id)

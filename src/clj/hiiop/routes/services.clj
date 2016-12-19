@@ -61,47 +61,50 @@
           api-handlers/get-user)
 
         (POST "/register" []
-              :body-params [email :- Email name :- s/Str]
-              :summary "Create a new user and email password token"
-              (fn [request]
-                (-> (api-handlers/register request)
-                    (#(if (:errors %1)
-                        (bad-request %1)
-                        {:status 201
-                         :headers {}
-                         :body %1})))))
+          :body-params [email :- Email name :- s/Str]
+          :summary "Create a new user and email password token"
+          (fn [request]
+            (-> (api-handlers/register
+                 {:email email
+                  :name name
+                  :locale (:current-locale request)})
+                (#(if (:errors %1)
+                    (bad-request %1)
+                    (ok))))))
 
         (POST "/validate-token" []
-              :summary "Verify if a token is valid and returns its expiry date and user email"
-              :body-params [token :- s/Uuid]
-              (fn [request]
-                (-> (api-handlers/validate-token request)
-                    (#(if (:errors %1)
-                        (bad-request %1)
-                        (ok {:body %1}))))))
+          :summary "Verify if a token is valid and returns its expiry date and user email"
+          :body-params [token :- s/Uuid]
+          (fn [request]
+            (-> (api-handlers/validate-token request)
+                (#(if (:errors %1)
+                    (bad-request %1)
+                    (ok {:body %1}))))))
 
         (POST "/activate" []
-              :body [activation UserActivation]
-              :summary "Activates inactive user"
-              api-handlers/activate))
+          :body [activation UserActivation]
+          :summary "Activates inactive user"
+          (fn [request]
+            (if (api-handlers/activate activation)
+              (ok)
+              (bad-request))
+            ))
+        )
 
       (context "/pictures" []
-               :tags ["picture"]
+        :tags ["picture"]
 
-               (POST "/add" []
-                     :name             ::add-picture
-                     :multipart-params [file :- TempFileUpload]
-                     :middleware       [wrap-multipart-params api-authenticated]
-                     :summary          "Handles picture upload"
-                     :return           Picture
-                     (fn [request]
-                       (-> (api-handlers/add-picture file)
-                           (#(if (not (:errors %1))
-                               (created
-                                (path-for ::picture {:id (str (:id %1))})
-                                %1)
-                               (bad-request
-                                %1))))))
+        (POST "/add" []
+          :name             ::add-picture
+          :multipart-params [file :- TempFileUpload]
+          :middleware       [wrap-multipart-params api-authenticated]
+          :summary          "Handles picture upload"
+          :return           Picture
+          (fn [request]
+            (-> (api-handlers/add-picture file)
+                (#(if (not (:errors %1))
+                    (created (path-for ::picture {:id (str (:id %1))}) %1)
+                    (bad-request %1))))))
 
         (GET "/:id" []
           :name        ::picture
