@@ -54,13 +54,6 @@
   {:email Email
    :name s/Str})
 
-(def TokenInfo
-  "Token's information and its related user info"
-  {:token s/Uuid
-   :uid s/Uuid
-   :email Email
-   :expires DateTime})
-
 (def UserActivation
   "Email, password and password token"
   {:email Email

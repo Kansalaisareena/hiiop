@@ -18,7 +18,8 @@
   (try
     (db/delete-user-by-email! user)
     (catch Exception e
-      (log/error e))))
+      ;;(log/error e)
+      )))
 
 (def test-user-id (atom nil))
 (def email-token (atom nil))
@@ -71,7 +72,6 @@
 (deftest test-api
 
   (testing "api/v1/users/register"
-    (remove-user-by-email test-user)
 
     (testing "with valid info"
       (let [app-with-session (app)
@@ -121,7 +121,6 @@
         (remove-user-by-email test-user))))
 
   (testing "/api/v1/users/validate-token"
-    (remove-user-by-email test-user)
 
     (testing "with valid token"
       (let [app-with-session (app)
@@ -139,18 +138,19 @@
         (is (= 200 (:status response)))
         (is (not (nil? (:token body-map))))
         (is (not (nil? (:expires body-map))))
-        (is (= (str uid) (:uid body-map)))
-        (is (= (:email test-user)(:email body-map))))
-      (remove-user-by-email test-user))
+        (is (= (str uid) (:user-id body-map)))
+        (is (= (:email test-user)(:email body-map)))
+        (remove-user-by-email test-user)))
 
     (testing "with invalid token"
       (let [app-with-session (app)
             request (json-post
                      "/api/v1/users/validate-token"
                      {:body-string
-                      (generate-string {:token "for sure invalid token"})})
+                      (generate-string {:token (sc/string->uuid "0c161cc5-1a3b-442f-96c7-8a653140134b")})})
             response (app-with-session request)]
-        (is (= 400 (:status response))))))
+        (is (= 400 (:status response)))))
+    )
 
   (testing "/api/v1/quests/add"
     (let [app-with-session (app)

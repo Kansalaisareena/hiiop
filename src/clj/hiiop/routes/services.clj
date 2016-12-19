@@ -2,6 +2,7 @@
   (:require [ring.util.http-response :refer :all]
             [compojure.api.sweet :refer :all]
             [ring.swagger.upload :refer [wrap-multipart-params TempFileUpload]]
+            [cheshire.core :refer [generate-string parse-string]]
             [buddy.auth.middleware :refer [wrap-authentication]]
             [schema.core :as s]
             [taoensso.timbre :as log]
@@ -10,7 +11,8 @@
             [hiiop.config :refer [env]]
             [hiiop.api-handlers :as api-handlers]
             [hiiop.schema :refer :all]
-            [hiiop.db.core :as db]))
+            [hiiop.db.core :as db]
+            [schema.coerce :as sc]))
 
 (defapi service-routes
   {:swagger {:ui "/--help"
@@ -60,17 +62,16 @@
               (fn [request]
                 (-> (api-handlers/register request)
                     (#(if (not (:errors %1))
-                        (created (path-for ::user {:id (str %1)}))
+                        (created %1)
                         (bad-request %1))))))
 
         (POST "/validate-token" []
-              :body-params [token :- s/Str]
               :summary "Verify if a token is valid and returns its expiry date and user email"
-              :body [tokeninfo TokenInfo]
+              :body-params [token :- s/Uuid]
               (fn [request]
                 (-> (api-handlers/validate-token request)
                     (#(if (not (:errors %1))
-                        (ok (str %1))
+                        (ok %1)
                         (bad-request %1))))))
 
         (POST "/activate" []

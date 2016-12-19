@@ -41,14 +41,14 @@
   [{{email :email name :name} :body-params}]
   (try
     (let [id (:id (db/create-virtual-user! {:email email}))]
-      (if (nil? id)
-        nil
+      (if (not (nil? id))
         (let [token (:token (db/create-password-token!
-                             {:email email :expires (time/add (time/now) time/an-hour)}))]
-
+                             {:email email
+                              :expires (time/add (time/now) time/an-hour)}))]
           (db/update-user! {:id id :name name :email email})
           (mail/send-token-email email (str token))
-          (str id))))
+          id)
+        {:errors {:user :errors.user.register.failed}}))
     (catch Exception e
       (log/error e)
       {:errors {:user :errors.user.register.failed}})))
@@ -60,15 +60,17 @@
     (db/activate-user! {:pass pwhash :email email :token token-uuid})
     (ok)))
 
-(defn validate-token [{{:keys [token]} :body-params}]
-  (try
-    (let [token-uuid (sc/string->uuid token)
-          token-info (db/get-token-info token-uuid)]
-      (if (not-empty token-info)
-        (token-info)))
-    (catch Exception e
-      (log/error e)
-      {:errors {:token :errors.user.token.invalid}})))
+(defn validate-token [request]
+  (let [token (:token (:body-params request))]
+    (try
+      (let [token-uuid (sc/string->uuid token)
+            token-info (db/get-token-info {:token token-uuid})]
+        (if (nil? token-info)
+          {:errors {:token :errors.user.token.invalid}}
+          token-info))
+      (catch Exception e
+        (log/error e)
+        {:errors {:token :errors.user.token.invalid}}))))
 
 (defn get-user [{{id :id} :params}]
   (ok (str (db/get-user-by-id {:id (sc/string->uuid id)}))))
@@ -95,7 +97,7 @@
       (assoc :street-number (:street-number location))
       (dissoc :location :coordinates :picture-id)
       (db/->snake_case_keywords))
-    )
+  )
 
 (def DBQuest
   {:id hs/NaturalNumber
