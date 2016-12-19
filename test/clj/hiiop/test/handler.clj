@@ -5,14 +5,15 @@
             [mount.core :as mount]
             [ring.mock.request :refer :all]
             [taoensso.timbre :as log]
-            [cheshire.core :refer [generate-string parse-string]]
+            [cheshire.core :refer [parse-stream generate-string parse-string]]
             [schema.coerce :as sc]
             [schema.core :as s]
             [hiiop.config :refer [load-env]]
             [hiiop.handler :refer :all]
             [hiiop.db.core :refer [*db*] :as db]
             [hiiop.test.util :refer [contains-many? hash-password json-post]]
-            [hiiop.test.data :refer [test-quest test-user]]))
+            [hiiop.test.data :refer [test-quest test-user]]
+            [schema-tools.core :as st]))
 
 (defn remove-user-by-email [user]
   (try
@@ -64,15 +65,18 @@
   (let [session-key (last (re-find #"ring-session=([^;]+)" set-cookie))]
     (str "ring-session=" session-key)))
 
-(defn create-test-user [{:keys [user-data save-id-to read-token-from]}]
-  (-> (hiiop.api-handlers/register {:email (:email user-data)
-                                    :locale :fi})
-      (#(reset! save-id-to %))
-      ((fn [id]
-         (hiiop.api-handlers/activate
-          {:body-params {:email (:email user-data)
-                         :password (:password user-data)
-                         :token @read-token-from}})))))
+(defn create-test-user [{:keys [user-data save-id-to save-token-to]}]
+  (let [uid (hiiop.api-handlers/register
+             {:body-params {:email (:email user-data)
+                            :name (:name user-data)
+                            :locale "fi"}})
+        token (db/get-token-by-user-id {:user_id uid})]
+    (reset! save-id-to uid)
+    (reset! save-token-to token)
+    (hiiop.api-handlers/activate
+     {:body-params {:email (:email user-data)
+                    :password (:password user-data)
+                    :token (:token token)}})))
 
 (defn login-and-get-cookie [{:keys [with user-data]}]
   (-> (json-post "/api/v1/login"
@@ -90,25 +94,31 @@
   (testing "api/v1/users/register"
 
     (testing "with valid info"
-      (let [app-with-session (app)
-            register-request (json-post
-                              "/api/v1/users/register"
-                              {:body-string
-                               (generate-string {:email (:email test-user)
-                                                 :name (:name test-user)})})
-            response (app-with-session register-request)]
-        (is (= 201 (:status response)))
-        (remove-user-by-email test-user)))
+      (let [current-app (app)
+            unique-email "unique.email@example.com"]
+        (-> (json-post
+             "/api/v1/users/register"
+             {:body-string
+              (generate-string {:email unique-email
+                                :name (:name test-user)
+                                :locale "fi"})})
+            (current-app)
+            ((fn [response]
+               (is (= 201 (:status response))))))
+        (remove-user-by-email {:email unique-email})))
 
     (testing "with duplicate email"
       (let [app-with-session (app)
             create-resp (hiiop.api-handlers/register
-                         {:body-params {:email (:email test-user)}})
+                         {:body-params {:email (:email test-user)
+                                        :name (:name test-user)
+                                        :locale "fi"}})
             register-request (json-post
                               "/api/v1/users/register"
                               {:body-string
                                (generate-string {:email (:email test-user)
-                                                 :name (:name test-user)})})
+                                                 :name (:name test-user)
+                                                 :locale "fi"})})
             response (app-with-session register-request)]
         (is (= 400 (:status response)))
         (remove-user-by-email test-user)))
@@ -127,14 +137,14 @@
                                   "/api/v1/users/register"
                                   {:body-string
                                    (generate-string {:email email
-                                                     :name "Test User"})})
+                                                     :name "Test User"
+                                                     :locale "fi"})})
                 resp (app-with-session register-request)]
             (is (= 400 (:status resp)))
             (if (= 201 (:status resp))
               (log/error email))))
         (doseq [email invalid-emails]
-          (remove-user-by-email {:email email}))
-        (remove-user-by-email test-user))))
+          (remove-user-by-email {:email email})))))
 
   (testing "/api/v1/users/validate-token"
 
@@ -142,7 +152,8 @@
       (let [app-with-session (app)
             uid (hiiop.api-handlers/register
                  {:body-params {:email (:email test-user)
-                                :name (:name test-user)}})
+                                :name (:name test-user)
+                                :locale "fi"}})
             token (db/get-token-by-user-id {:user_id (sc/string->uuid uid)})
             request (json-post
                      "/api/v1/users/validate-token"
@@ -150,12 +161,12 @@
                       (generate-string {:token (:token token)})})
             response (app-with-session request)
             body (slurp (:body response))
-            body-map (parse-string body true)]
+            body-map (:body (parse-string body true))]
         (is (= 200 (:status response)))
-        (is (not (nil? (:token body-map))))
-        (is (not (nil? (:expires body-map))))
-        (is (= (str uid) (:user-id body-map)))
-        (is (= (:email test-user)(:email body-map)))
+        (is (= false (empty? (:token body-map))))
+        (is (= false (empty? (:expires body-map))))
+        (is (= (str uid) (str (:user-id body-map))))
+        (is (= (:email test-user) (:email body-map)))
         (remove-user-by-email test-user)))
 
     (testing "with invalid token"
@@ -175,7 +186,7 @@
           test-user-response (create-test-user
                               {:user-data test-user
                                :save-id-to test-user-id
-                               :read-token-from email-token})
+                               :save-token-to email-token})
           login-cookie (login-and-get-cookie
                         {:with current-app
                          :user-data test-user})

@@ -47,14 +47,14 @@
   [{{email :email name :name locale :locale} :body-params}]
   (try
     (let [id (:id (db/create-virtual-user! {:email email}))]
-      (if (not (nil? id))
-        (let [token (:token (db/create-password-token!
-                             {:email email
-                              :expires (time/add (time/now) time/an-hour)}))]
+      (if (nil? id)
+        {:errors {:user :errors.user.register.failed}}
+        (let [token (db/create-password-token!
+                     {:email email
+                      :expires (time/add (time/now) time/an-hour)})]
           (db/update-user! {:id id :name name :email email})
-          (mail/send-token-email email (str token) locale)
-          id)
-        {:errors {:user :errors.user.register.failed}}))
+          (mail/send-token-email email (str (:token token)) (keyword locale))
+          id)))
     (catch Exception e
       (log/error e)
       {:errors {:user :errors.user.register.failed}})))

@@ -61,28 +61,29 @@
           api-handlers/get-user)
 
         (POST "/register" []
-              :body-params [email :- Email name :- s/Str]
+              :body-params [email :- Email name :- s/Str locale :- s/Str]
               :summary "Create a new user and email password token"
-              (fn [{locale :current-locale}]
-                (if-let [id (api-handlers/register {:email email :locale locale})]
-                  (created (path-for ::user {:id (str id)}))
-                  (bad-request {:errors
-                                {:email "User registration failed"}}))))
+              (fn [request]
+                (-> (api-handlers/register request)
+                    (#(if (:errors %1)
+                        (bad-request %1)
+                        {:status 201
+                         :headers {}
+                         :body %1})))))
 
         (POST "/validate-token" []
               :summary "Verify if a token is valid and returns its expiry date and user email"
               :body-params [token :- s/Uuid]
               (fn [request]
                 (-> (api-handlers/validate-token request)
-                    (#(if (not (:errors %1))
-                        (ok %1)
-                        (bad-request %1))))))
-
+                    (#(if (:errors %1)
+                        (bad-request %1)
+                        (ok {:body %1}))))))
 
         (POST "/activate" []
-          :body [activation UserActivation]
-          :summary "Activates inactive user"
-          api-handlers/activate))
+              :body [activation UserActivation]
+              :summary "Activates inactive user"
+              api-handlers/activate))
 
       (context "/pictures" []
                :tags ["picture"]
