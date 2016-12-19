@@ -58,4 +58,12 @@
           body (:body response)]
       body)))
 
-(defn edit-quest [quest])
+(defn edit-quest [quest]
+  (log/info "edit-quest called with" quest)
+  (go
+    (let [response (<! (http/put (str base-path "quests/" (:id quest))
+                                  {:json-params quest}))
+          status (:status response)
+          body (:body response)]
+      body)))
+

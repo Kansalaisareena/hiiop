@@ -232,7 +232,7 @@
       (times->strings)
       (string-categories->keyword-categories)
       (dissoc :picture)
-      (assoc :picture-id picture)
+      (assoc :picture-id (str picture))
       (assoc :organisation
              {:name organisation :description organisation-description})
       (dissoc :organisation :organisation-description)))
@@ -264,7 +264,7 @@
 (defn edit-quest [{:keys [quest user]}]
   (try
     (-> quest
-        (assoc :owner (:id user))
+        (assoc :owner (:id user)) ;; TODO When moderating, this is different!
         (dissoc :organiser-participates)
         (api-quest->moderated-db-quest-coercer)
         (db/update-moderated-quest!)
