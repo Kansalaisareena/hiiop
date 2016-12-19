@@ -68,8 +68,7 @@
 (defn create-test-user [{:keys [user-data save-id-to save-token-to]}]
   (let [uid (hiiop.api-handlers/register
              {:body-params {:email (:email user-data)
-                            :name (:name user-data)
-                            :locale "fi"}})
+                            :name (:name user-data)}})
         token (db/get-token-by-user-id {:user_id uid})]
     (reset! save-id-to uid)
     (reset! save-token-to token)
@@ -100,8 +99,7 @@
              "/api/v1/users/register"
              {:body-string
               (generate-string {:email unique-email
-                                :name (:name test-user)
-                                :locale "fi"})})
+                                :name (:name test-user)})})
             (current-app)
             ((fn [response]
                (is (= 201 (:status response))))))
@@ -111,14 +109,12 @@
       (let [app-with-session (app)
             create-resp (hiiop.api-handlers/register
                          {:body-params {:email (:email test-user)
-                                        :name (:name test-user)
-                                        :locale "fi"}})
+                                        :name (:name test-user)}})
             register-request (json-post
                               "/api/v1/users/register"
                               {:body-string
                                (generate-string {:email (:email test-user)
-                                                 :name (:name test-user)
-                                                 :locale "fi"})})
+                                                 :name (:name test-user)})})
             response (app-with-session register-request)]
         (is (= 400 (:status response)))
         (remove-user-by-email test-user)))
@@ -137,8 +133,7 @@
                                   "/api/v1/users/register"
                                   {:body-string
                                    (generate-string {:email email
-                                                     :name "Test User"
-                                                     :locale "fi"})})
+                                                     :name "Test User"})})
                 resp (app-with-session register-request)]
             (is (= 400 (:status resp)))
             (if (= 201 (:status resp))
@@ -152,8 +147,7 @@
       (let [app-with-session (app)
             uid (hiiop.api-handlers/register
                  {:body-params {:email (:email test-user)
-                                :name (:name test-user)
-                                :locale "fi"}})
+                                :name (:name test-user)}})
             token (db/get-token-by-user-id {:user_id (sc/string->uuid uid)})
             request (json-post
                      "/api/v1/users/validate-token"

@@ -43,21 +43,24 @@
              :session (assoc session :identity user-id))
       (unauthorized))))
 
-(defn register
-  [{{email :email name :name locale :locale} :body-params}]
-  (try
-    (let [id (:id (db/create-virtual-user! {:email email}))]
-      (if (nil? id)
-        {:errors {:user :errors.user.register.failed}}
-        (let [token (db/create-password-token!
+(defn register [request]
+  (let [body-params (:body-params request)
+        email (:email body-params)
+        name (:name body-params)
+        current-locale (:current-locale request)]
+    (try
+      (let [id (:id (db/create-virtual-user! {:email email}))]
+        (if (nil? id)
+          {:errors {:user :errors.user.register.failed}}
+          (let [token (db/create-password-token!
                      {:email email
                       :expires (time/add (time/now) time/an-hour)})]
           (db/update-user! {:id id :name name :email email})
-          (mail/send-token-email email (str (:token token)) (keyword locale))
+          (mail/send-token-email email (str (:token token)) current-locale)
           id)))
     (catch Exception e
       (log/error e)
-      {:errors {:user :errors.user.register.failed}})))
+      {:errors {:user :errors.user.register.failed}}))))
 
 (defn activate
   [{{:keys [email password token]} :body-params}]
