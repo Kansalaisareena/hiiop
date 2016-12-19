@@ -78,14 +78,6 @@
                         (ok %1)
                         (bad-request %1))))))
 
-        (POST "/validate-token" []
-              :summary "Verify if a token is valid and returns its expiry date and user email"
-              :body-params [token :- s/Uuid]
-              (fn [request]
-                (-> (api-handlers/validate-token request)
-                    (#(if (not (:errors %1))
-                        (ok %1)
-                        (bad-request %1))))))
 
         (POST "/activate" []
           :body [activation UserActivation]
