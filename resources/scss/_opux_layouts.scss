@@ -25,3 +25,46 @@
     max-width: 620px;
   }
 }
+
+@include block('opux-card-list-container') {
+  background: $OP-gray-light;
+  margin-left: -1rem;
+  margin-right: -1rem;
+  min-width: 100%;
+  padding: 1.5rem 1rem;
+}
+
+@include block('opux-card-list') {
+  @include align-items(flex-start);
+  @include flex-direction(row);
+  @include flex-wrap(wrap);
+  @include flexbox;
+  width: 100%;
+
+  @include element('subtitle') {
+    padding-bottom: 1rem;
+    padding-top: 1rem;
+  }
+}
+
+@include block('opux-card-container') {
+  @include flex(0, 0, calc(100% * (1/3)));
+  @include flex-direction(column);
+  @include flexbox;
+  box-sizing: border-box;
+  padding: .5rem;
+}
+
+@include block('opux-card') {
+  background: $OP-white;
+  width: 100%;
+
+  @include element('image-container') {
+    width: 100%;
+  }
+
+  @include element('image') {
+    height: auto;
+    width: 100%;
+  }
+}

@@ -15,40 +15,52 @@
             [hiiop.schema :as hs]))
 
 (rum/defc card []
-  [:div {:class "opux-list-card"}
+  [:div {:class "opux-card-container"}
+   [:div {:class "opux-card"}
 
-   (if (not-empty status)
-     [:div {:class "opux-list-card__status"}
-      "status | status status"])
+    [:div {:class "opux-card__image-container"}
+     [:img {:class "opux-card__image"
+            :src "https://media.giphy.com/media/HNQVf0ik57nHy/giphy-facebook_s.jpg"}]]
 
-   [:div {:class "opux-list-card__image-container"}
-    [:img {:class "opux-list-card__image"
-           :src "https://media.giphy.com/media/HNQVf0ik57nHy/giphy-facebook_s.jpg"}]]
+    [:span {:class "opux-card__location"}
+     "Helsinki"]
 
-   [:span {:class "opux-list-card__location"}
-    "Helsinki"]
+    [:span {:class "opux-card__attendance"}
+     23]
 
-   [:span {:class "opux-list-card__attendance"}
-    23]
+    [:h3 {:class "opux-card__title"}
+     "Konalan kehitysvammaisten iltatanhutapahtuma"]
 
-   [:h3 {:class "opux-list-card__title"}
-    "Konalan kehitysvammaisten iltatanhutapahtuma"]
+    [:span {:class "opux-card__date"}
+     "Keskiviikko 28.1"]
 
-   [:span {:class "opux-list-card__date"}
-    "Keskiviikko 28.1"]
-
-   [:span {:class "opux-list-card__time"}
-    "18.00-20.00"]])
+    [:span {:class "opux-card__time"}
+     "18.00-20.00"]]])
 
 (rum/defc display [quest]
   [:li quest])
 
 (rum/defc list-quests [{:keys [context quests]}]
   (let [tr (:tr context)]
-    [:div
-     [:h2 (tr [:pages.quest.title])]
-     [:ul
-      (map display quests)]]))
+    [:div {:class "opux-card-list-container"}
+
+     [:div
+      {:class "opux-content opux-content--small opux-centered opux-card-list__subtitle"}
+      [:p
+       "Juuri näillä hakuehdoilla ei löytynyt tapahtumia. Koita valita useampia kiinnostuksen kohteita."]]
+
+     [:h2 {:class "opux-centered"}
+      "Helmikuussa"]
+
+     [:ul {:class "opux-card-list"}
+      (repeat 10 (card))]
+
+     [:h2 {:class "opux-centered"}
+      "Maaliskuussa "]
+
+     [:ul {:class "opux-card-list"}
+      (repeat 10 (card))]
+     ]))
 
 (defn add-organisation-to [quest]
   (swap! quest
