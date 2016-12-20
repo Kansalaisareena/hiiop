@@ -12,7 +12,12 @@
             [hiiop.config :refer [env]]
             [hiiop.routes.page-hierarchy :refer [hierarchy]]
             [hiiop.mangling :refer [same-keys-with-nils]]
-            [hiiop.schema :refer [NewQuest RegistrationInfo new-empty-quest new-empty-registration-info]]))
+            [hiiop.schema :refer [NewQuest
+                                  RegistrationInfo
+                                  UserActivation
+                                  new-empty-quest
+                                  new-empty-registration-info
+                                  new-empty-activation-info]]))
 
 (defn tr-from-req [req]
   (:tempura/tr req))
@@ -54,11 +59,16 @@
 (defn activate [req]
   (let [context (create-context req)
         tr (:tr context)
+        activation-info (atom (new-empty-activation-info))
+        errors (atom (same-keys-with-nils @activation-info))
         route-params (:route-params req)
         token (:token route-params)]
     (layout/render {:context context
                     :content (p-a/activate {:context context
-                                            :token token})
+                                            :activation-info activation-info
+                                            :token token
+                                            :schema UserActivation
+                                            :errors errors})
                     :title (tr [:pages.activate.title])})))
 
 (defn create-quest [req]

@@ -30,6 +30,15 @@
           body (:body response)]
       body)))
 
+(defn activate-user [activation-info]
+  (go
+    (let [response (<! (http/post
+                        "/api/v1/users/activate"
+                        {:json-params activation-info}))
+          status (:status response)
+          body (:body response)]
+      body)))
+
 (defn add-quest [quest]
   (log/info "add-quest called with" quest)
   (go

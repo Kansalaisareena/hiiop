@@ -58,7 +58,14 @@
   "Email, password and password token"
   {:email Email
    :password Password
+   :confirm-password Password
    :token s/Uuid})
+
+(defn new-empty-activation-info []
+  {:token nil
+   :email ""
+   :password ""
+   :confirm-password ""})
 
 (def UserCredentials
   "Email and password"

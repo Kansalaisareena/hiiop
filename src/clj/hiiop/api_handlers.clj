@@ -61,7 +61,9 @@
 (defn activate [{:keys [email password token]}]
   (let [pwhash (hashers/derive password {:alg :bcrypt+blake2b-512})
         token-uuid (sc/string->uuid token)]
-    (db/activate-user! {:pass pwhash :email email :token token-uuid})))
+    (db/activate-user! {:pass pwhash :email email :token token-uuid})
+    (db/delete-password-token! {:token token-uuid})
+    (ok)))
 
 (defn validate-token [request]
   (try

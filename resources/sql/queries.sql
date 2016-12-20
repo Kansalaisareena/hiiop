@@ -183,7 +183,7 @@ ON CONFLICT (user_id) DO
         token = uuid_generate_v4()
 RETURNING token
 
--- :name delete-password-token :! :n
+-- :name delete-password-token! :! :n
 -- :doc "Delete a token"
 DELETE FROM password_tokens
 WHERE token = :token

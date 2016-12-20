@@ -9,7 +9,15 @@
             [hiiop.components.quests :as quests]
             [hiiop.context :refer [context]]
             [hiiop.mangling :refer [same-keys-with-nils]]
-            [hiiop.schema :refer [new-empty-quest NewQuest Quest RegistrationInfo new-empty-registration-info]]))
+            [hiiop.schema :refer [NewQuest
+                                  Quest
+                                  RegistrationInfo
+                                  UserActivation
+                                  new-empty-registration-info
+                                  new-empty-quest
+                                  new-empty-activation-info
+                                  ]]
+            [clojure.string :as string]))
 
 (defn login-page [params]
   (log/info "login-page")
@@ -29,10 +37,17 @@
      (. js/document (getElementById "app")))))
 
 (defn activate-page [params]
-  (log/info "register-page")
-  (rum/mount
-   (p-a/activate {:context @context})
-   (. js/document (getElementById "app"))))
+  (let [activation-info (atom (new-empty-activation-info))
+        errors (atom (same-keys-with-nils @activation-info))]
+    (log/info "register-page" @activation-info (new-empty-activation-info))
+    (rum/mount
+     (p-a/activate {:context @context
+                    :token (last (string/split
+                                  (.-href (.-location js/window)) #"/"))
+                    :activation-info activation-info
+                    :schema UserActivation
+                    :errors errors})
+     (. js/document (getElementById "app")))))
 
 (defn browse-quests-page [params]
   (log/info "browse-quests-page")
