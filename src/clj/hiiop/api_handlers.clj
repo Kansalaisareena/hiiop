@@ -78,7 +78,14 @@
       {:errors {:token :errors.user.token.invalid}})))
 
 (defn get-user [{{id :id} :params}]
-  (ok (str (db/get-user-by-id {:id (sc/string->uuid id)}))))
+  (try
+    (let [user-info (db/get-user-by-id {:id (sc/string->uuid id)})]
+      (if (nil? user-info)
+        {:errors {:user :errors.user.not-found}}
+        user-info))
+    (catch Exception e
+      (log/error e)
+      {:errors {:users :errors.user.not-found}})))
 
 (defn api-quest->db-quest
   [{:keys [hashtags
