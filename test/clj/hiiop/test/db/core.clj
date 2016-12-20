@@ -87,27 +87,34 @@
             "User should be inactive")))))
 
 (defn transform-to-quest-db-fields [{:keys [quest id is-open picture-url]}]
-  (let [quest-with-added (assoc quest
-                                :description nil
-                                :id id
-                                :picture-url nil)]
-    (dissoc
-     quest-with-added
-     :picture)))
+  (-> quest
+      (assoc :id id
+             :picture-url nil
+             :picture nil)))
 
-(deftest test-create-unmoderated-quest
+(deftest test-create-moderated-quest
   (jdbc/with-db-transaction [t-conn *db*]
     (jdbc/db-set-rollback-only! t-conn)
     (let [quest (test-quest)
-          from-db (db/add-unmoderated-quest!
-                   t-conn
-                   (->snake_case_keywords quest))
-          added-quest-id (:id from-db)
-          expected-quest (transform-to-quest-db-fields
-                          {:quest quest
-                           :id added-quest-id
-                           :picture-url nil})]
-      (is (not (= (:id added-quest-id) 0)))
-      (is (= expected-quest
-             (db/get-quest-by-id t-conn {:id added-quest-id}))))
-    ))
+          added-quest-id (atom nil)]
+      (-> quest
+          (#(db/add-moderated-quest!
+             t-conn
+             (->snake_case_keywords %1)))
+          (:id)
+          (#(reset! added-quest-id %1))
+          ((fn [_]
+             (transform-to-quest-db-fields
+              {:quest quest
+               :id @added-quest-id
+               :picture-url nil})))
+          ((fn [expected-quest]
+             (is (not (= @added-quest-id 0)))
+             expected-quest))
+          ((fn [expected-quest]
+             (is
+              (= expected-quest
+                 (db/get-moderated-quest-by-id
+                  t-conn
+                  {:id @added-quest-id}))))))
+    )))

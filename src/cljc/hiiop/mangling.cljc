@@ -14,8 +14,8 @@
 (defn same-keys-with-nils [map-value]
   (reduce conj (map (fn [key] {key nil}) (keys map-value))))
 
-(defn parse-int [number-string]
-  (#?(:clj biginteger
+(defn parse-natural-number [number-string]
+  (#?(:clj Long/parseLong
       :cljs #(js/parseInt % 10)) number-string))
 
 (def ->keys-camelCase (partial transform-keys ->camelCaseString))

@@ -285,7 +285,7 @@
 
 (defn string->time [time-string]
   (let [numbers (map
-                 mangle/parse-int
+                 mangle/parse-natural-number
                  (string/split time-string #"\."))]
     {:hours (first numbers) :minutes (second numbers) }))
 

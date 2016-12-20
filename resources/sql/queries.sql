@@ -79,7 +79,8 @@ WHERE email = :email
 -- :name add-unmoderated-quest! :? :1
 -- :doc add a quest
 INSERT INTO quests
-(name,
+(unmoderated_name,
+ unmoderated_description,
  start_time,
  end_time,
  street_number,
@@ -92,16 +93,16 @@ INSERT INTO quests
  google_maps_url,
  google_place_id,
  categories,
- unmoderated_description,
  max_participants,
- hashtags,
- picture,
- owner,
- organisation,
- organisation_description,
- is_open)
+ unmoderated_hashtags
+ unmoderated_picture,
+ unmoderated_organisation,
+ unmoderated_organisation_description,
+ is_open,
+ owner)
 VALUES
-(:name,
+(:unmoderated_name,
+ :unmoderated_description,
  :start_time,
  :end_time,
  :street_number,
@@ -114,21 +115,71 @@ VALUES
  :google_maps_url,
  :google_place_id,
  :categories,
- :unmoderated_description,
+ :max_participants,
+ :unmoderated_hashtags,
+ :unmoderated_picture,
+ :unmoderated_organisation,
+ :unmoderated_organisation_description,
+ :is_open,
+ :owner)
+RETURNING id
+
+-- :name add-moderated-quest! :? :1
+-- :doc add a quest
+INSERT INTO quests
+(name,
+ description,
+ organisation,
+ organisation_description,
+ start_time,
+ end_time,
+ street_number,
+ street,
+ town,
+ postal_code,
+ country,
+ latitude,
+ longitude,
+ google_maps_url,
+ google_place_id,
+ categories,
+ max_participants,
+ hashtags,
+ picture,
+ is_open,
+ owner)
+VALUES
+(:name,
+ :description,
+ :organisation,
+ :organisation_description,
+ :start_time,
+ :end_time,
+ :street_number,
+ :street,
+ :town,
+ :postal_code,
+ :country,
+ :latitude,
+ :longitude,
+ :google_maps_url,
+ :google_place_id,
+ :categories,
  :max_participants,
  :hashtags,
  :picture,
- :owner,
- :organisation,
- :organisation_description,
- :is_open)
+ :is_open,
+ :owner)
 RETURNING id
 
--- :name get-quest-by-id :? :1
+-- :name get-moderated-quest-by-id :? :1
 -- :doc get quest by id
 SELECT
   q.id as id,
   q.name as name,
+  q.description as description,
+  q.organisation as organisation,
+  q.organisation_description as organisation_description,
   q.start_time as start_time,
   q.end_time as end_time,
   q.street_number as street_number,
@@ -141,19 +192,108 @@ SELECT
   q.google_maps_url as google_maps_url,
   q.google_place_id as google_place_id,
   q.categories as categories,
-  q.description as description,
-  q.unmoderated_description as unmoderated_description,
   q.max_participants as max_participants,
   q.hashtags as hashtags,
+  q.picture as picture,
   (SELECT url FROM pictures WHERE id = q.picture) as picture_url,
-  q.owner as owner,
-  q.organisation as organisation,
-  q.organisation_description as organisation_description,
-  q.is_open as is_open
+  q.is_open as is_open,
+  q.owner as owner
+FROM
+  quests q
+WHERE
+  q.id = :id AND
+  q.name IS NOT NULL AND
+  q.is_rejected = FALSE;
+
+-- :name get-unmoderated-quest-by-id :? :1
+-- :doc get quest by id
+SELECT
+  q.id as id,
+  q.unmoderated_name as unmoderated_name,
+  q.unmoderated_description as unmoderated_description,
+  q.unmoderated_organisation as unmoderated_organisation,
+  q.unmoderated_organisation_description as unmoderated_organisation_description,
+  q.start_time as start_time,
+  q.end_time as end_time,
+  q.street_number as street_number,
+  q.street as street,
+  q.postal_code as postal_code,
+  q.town as town,
+  q.country as country,
+  q.latitude as latitude,
+  q.longitude as longitude,
+  q.google_maps_url as google_maps_url,
+  q.google_place_id as google_place_id,
+  q.categories as categories,
+  q.max_participants as max_participants,
+  q.unmoderated_hashtags as unmoderated_hashtags,
+  (SELECT url FROM pictures WHERE id = q.unmoderated_picture) as unmoderated_picture_url,
+  q.is_open as is_open,
+  q.owner as owner
 FROM
   quests q
 WHERE
   q.id = :id
+
+-- :name get-moderated-quest-by-owner :? :1
+-- :doc get quest by owner
+SELECT
+  q.id as id,
+  q.name as name,
+  q.description as description,
+  q.organisation as organisation,
+  q.organisation_description as organisation_description,
+  q.start_time as start_time,
+  q.end_time as end_time,
+  q.street_number as street_number,
+  q.street as street,
+  q.postal_code as postal_code,
+  q.town as town,
+  q.country as country,
+  q.latitude as latitude,
+  q.longitude as longitude,
+  q.google_maps_url as google_maps_url,
+  q.google_place_id as google_place_id,
+  q.categories as categories,
+  q.max_participants as max_participants,
+  q.hashtags as hashtags,
+  (SELECT url FROM pictures WHERE id = q.picture) as picture_url,
+  q.is_open as is_open,
+  q.owner as owner
+FROM
+  quests q
+WHERE
+  q.owner = :owner;
+
+-- :name update-moderated-quest! :? :1
+-- :doc "Update moderated quest"
+UPDATE
+  quests
+SET
+  name = :name,
+  description = :description,
+  organisation = :organisation,
+  organisation_description = :organisation_description,
+  start_time = :start_time,
+  end_time = :end_time,
+  street_number = :street_number,
+  street = :street,
+  town = :town,
+  postal_code = :postal_code,
+  country = :country,
+  latitude = :latitude,
+  longitude = :longitude,
+  google_maps_url = :google_maps_url,
+  google_place_id = :google_place_id,
+  categories = :categories,
+  max_participants = :max_participants,
+  hashtags = :hashtags,
+  picture = :picture,
+  is_open = :is_open
+WHERE
+  id = :id AND
+  owner = :owner
+RETURNING id
 
 -- :name get-quest-secret-party-id :? :1
 -- :doc get quest secret party id by id
@@ -232,8 +372,8 @@ UPDATE users
 
 -- :name add-picture! :? :1
 -- :doc "Add picture"
-INSERT INTO pictures (url)
-VALUES (:url)
+INSERT INTO pictures (url, owner)
+VALUES (:url, :owner)
 RETURNING id
 
 -- :name update-picture-url! :? :1

@@ -1,10 +1,10 @@
 (ns hiiop.components.address-autocomplete
   (:require [rum.core :as rum]
             [taoensso.timbre :as log]
-            [hiiop.mangling :refer [parse-int]]))
+            [hiiop.mangling :refer [parse-natural-number]]))
 
 (def google-keys->readable
-  {:street_number               {:key :street-number :transform parse-int}
+  {:street_number               {:key :street-number :transform parse-natural-number}
    :route                       {:key :street :transform identity}
    :postal_code                 {:key :postal-code :transform identity}
    :locality                    {:key :town :transform identity}

@@ -48,10 +48,10 @@
    (let [start-time (today-at-noon)
          end-time (today-at-six)]
      (-> {:name "Nälkäkeräys"
+          :description "LOL"
           :start-time (if use-date-string (time/to-string start-time) start-time)
           :end-time (if use-date-string (time/to-string end-time) end-time)
           :categories ["foreign-aid"]
-          :unmoderated-description "LOL"
           :max-participants 10
           :hashtags ["#a" "#b" "#c" "#d"]
           :picture nil
@@ -66,6 +66,5 @@
 (def test-user
   {:name "Test user"
    :email "test@email.com"
-   :pass (hash-password "password#")
    :password "password#"
    :is_active true})

@@ -101,14 +101,16 @@
           :summary          "Handles picture upload"
           :return           Picture
           (fn [request]
-            (-> (api-handlers/add-picture file)
+            (-> (api-handlers/add-picture
+                 {:file file
+                  :user (:identity request)})
                 (#(if (not (:errors %1))
                     (created (path-for ::picture {:id (str (:id %1))}) %1)
                     (bad-request %1))))))
 
         (GET "/:id" []
           :name        ::picture
-          :path-params [id :- s/Str]
+          :path-params [id :- String]
           :summary     "Get picture"
           :return      Picture
           (fn [request]
@@ -136,10 +138,29 @@
 
         (GET "/:id" []
           :name        ::quest
-          :path-params [id :- s/Int]
+          :path-params [id :- Long]
           :summary     "Get quest"
           :return      Quest
-          api-handlers/get-quest)
+          (fn [request]
+            (let [quest (api-handlers/get-quest id)]
+              (if quest
+                (ok quest)
+                (not-found)))))
+
+        (PUT "/:id" []
+          :name        ::quest-edit
+          :path-params [id :- Long]
+          :body        [quest Quest]
+          :summary     "Edit quest"
+          :return      Quest
+          (fn [request]
+            (-> (api-handlers/edit-quest
+                 {:quest quest
+                  :user (:identity request)})
+                (#(if (not (:errors %1))
+                    (ok %1)
+                    (bad-request %1))))
+            ))
 
         ;; (POST "/:id/join" []
         ;;  :name ::quest-join

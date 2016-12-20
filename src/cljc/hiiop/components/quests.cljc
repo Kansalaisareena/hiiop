@@ -25,21 +25,58 @@
       (map display quests)]]))
 
 (defn add-organisation-to [quest]
-  (swap! quest
-         #(identity
-           (assoc (deref quest)
-                  :organisation
-                  {:name ""
-                   :description ""}))))
+  (reset! quest
+         (assoc (deref quest)
+                :organisation
+                {:name ""
+                 :description ""})))
 
 (defn add-to-errors [errors values]
-  (swap! errors
-         #(identity
-           (conj (deref errors)
-                 values))))
+  (reset! errors
+          (conj (deref errors)
+                 values)))
 
 (defn enable-organisation [enable]
   (reset! enable true))
+
+(rum/defcs picture-upload < rum/reactive
+                            (rum/local nil ::picture-url)
+  [state {:keys [cursors-and-schema context tr]}]
+  (let [local-picture-url (::picture-url state)
+        default-content [:div {:class "opux-fieldset__item"}]
+        picture-url (get-in cursors-and-schema [:picture-url :value])]
+    (when picture-url
+      (do
+        (reset! local-picture-url @picture-url)
+        (add-watch
+         picture-url
+         ::local-picture-url
+         (fn [key _ _ new]
+           (reset! local-picture-url new)))))
+    (into
+     default-content
+     (if (not (rum/react local-picture-url))
+       [(html/label
+         (tr [:pages.quest.edit.picture])
+         {:class "opux-input__label opux-input__label--picture-label"
+          :error (get-in cursors-and-schema [:picture-id :error])})
+        (html/file-input
+         {:value (get-in cursors-and-schema [:picture-id :value])
+          :error (get-in cursors-and-schema [:picture-id :error])
+          :context context
+          :tr (partial tr [:page.quest.edit.picture.upload-failed])})
+        ]
+       [[:img {:src @picture-url
+               :on-click
+               (fn []
+                 #?(:cljs
+                    (do
+                      (if (js/confirm (tr [:page.quest.edit.picture.remove]))
+                        (reset! picture-url nil)
+                      ))))
+               }]])
+     )
+    ))
 
 (rum/defcs edit-content < rum/reactive
                           (rum/local false ::organisation-enabled)
@@ -49,7 +86,7 @@
                  errors
                  is-valid
                  cursors-and-schema
-                 tr]}]
+                 tr] :as args}]
   (let [organisation-enabled (::organisation-enabled state)]
     (html/form-section
      (tr [:pages.quest.edit.subtitles.content])
@@ -68,26 +105,15 @@
      [:div {:class "opux-fieldset__item"}
       (html/label
        (tr [:pages.quest.edit.description])
-       {:class "opux-input__label opux-input__label--unmoderated-description"
-        :error (get-in cursors-and-schema [:unmoderated-description :error])})
+       {:class "opux-input__label opux-input__label--description"
+        :error (get-in cursors-and-schema [:description :error])})
       (html/text
        {:class "opux-input opux-input--textarea opux-input--textarea--unmoderated-description"
-        :value (get-in cursors-and-schema [:unmoderated-description :value])
-        :error (get-in cursors-and-schema [:unmoderated-description :error])
-        :schema (get-in cursors-and-schema [:unmoderated-description :schema])
+        :value (get-in cursors-and-schema [:description :value])
+        :error (get-in cursors-and-schema [:description :error])
+        :schema (get-in cursors-and-schema [:description :schema])
         :context context})]
-     [:div {:class "opux-fieldset__item"}
-      (html/label
-       (tr [:pages.quest.edit.picture])
-       {:class "opux-input__label opux-input__label--picture-label"
-        :error (get-in cursors-and-schema [:picture-id :error])})
-      (html/file-input
-       {:value (get-in cursors-and-schema [:picture-id :value])
-        :error (get-in cursors-and-schema [:picture-id :error])
-        :context context
-        :transform sc/string->uuid
-        :tr (partial tr [:page.quest.edit.picture.upload-failed])})
-      ]
+     (picture-upload args)
      [:div {:class "opux-fieldset__item"}
       (html/label
        (tr [:pages.quest.edit.hashtags])
@@ -249,17 +275,18 @@
      :context context}
     {:pages.quest.edit.open true
      :pages.quest.edit.closed false})
-   (html/checkbox-binary
-    {:class "organiser-participates opux-fieldset__item"
-     :id (name :pages.quest.edit.organiser-participates)
-     :schema (get-in cursors-and-schema [:organiser-participates :schema])
-     :value (get-in cursors-and-schema [:organiser-participates :value])
-     :error (get-in cursors-and-schema [:organiser-participates :error])
-     })
-   (html/label
-    (tr [:pages.quest.edit.organiser-participates])
-    {:class "opux-input__label opux-input__label--checkbox"
-     :for (name :pages.quest.edit.organiser-participates)})
+   (when (get-in cursors-and-schema [:organiser-participates :value])
+     (html/checkbox-binary
+      {:class "organiser-participates opux-fieldset__item"
+       :id (name :pages.quest.edit.organiser-participates)
+       :schema (get-in cursors-and-schema [:organiser-participates :schema])
+       :value (get-in cursors-and-schema [:organiser-participates :value])
+       :error (get-in cursors-and-schema [:organiser-participates :error])
+       })
+     (html/label
+      (tr [:pages.quest.edit.organiser-participates])
+      {:class "opux-input__label opux-input__label--checkbox"
+       :for (name :pages.quest.edit.organiser-participates)}))
    ))
 
 (rum/defc edit < rum/reactive
@@ -271,16 +298,18 @@
         is-valid (atom false)
         checker (partial hs/select-schema-either schema)
         set-valid! (fn [validity] (reset! is-valid validity))
-        show-end-time (atom false)]
+        show-end-time (atom false)
+        check-and-set-validity!
+        (fn [quest-value]
+          (let [value-or-error (checker quest-value)]
+            (cond
+              (:--value value-or-error) (set-valid! true)
+              (:--error value-or-error) (set-valid! false))))]
+    (check-and-set-validity! @quest)
     (add-watch
      quest
      ::quest-validator
-     (fn [key _ old new]
-       (let [value-or-error (checker new)]
-         (log/info value-or-error)
-         (cond
-           (:--value value-or-error) (set-valid! true)
-           (:--error value-or-error) (set-valid! false)))))
+     (fn [key _ old new] (check-and-set-validity! new)))
     [:form
      {:class "opux-form"
       :on-submit
