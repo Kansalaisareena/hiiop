@@ -5,8 +5,10 @@
             [taoensso.carmine :as car]
             [taoensso.timbre :as log]
             [mount.core :refer [defstate]]
+            [bidi.bidi :refer [path-for]]
             [hiiop.contentful :as cf]
             [hiiop.emails :as emails]
+            [hiiop.routes.page-hierarchy :refer [hierarchy]]
             [hiiop.redis :refer [wcar*]]
             [hiiop.config :refer [env]]))
 
@@ -29,7 +31,7 @@
                 :body [{:type "text/html"
                         :content (render-static-markup
                                   (emails/activate-account
-                                   {:activation-url (str token)
+                                   {:activation-url (str (:site-base-url env) (path-for hierarchy :activate :token (str token)))
                                     :title (content :otsikko)
                                     :body-text (content :leipateksti)
                                     :button-text (content :ekanappiteksti)

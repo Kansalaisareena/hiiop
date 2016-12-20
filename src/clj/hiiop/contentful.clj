@@ -60,7 +60,7 @@
   (try (-> (get-all-items)
            (refresh-items))
        (catch Exception e
-         (log/info "Updating items failed"))))
+         (log/info "Updating items failed: " e))))
 
 (defn localize-fields [fields locale]
   "Given the :fields part of a multi-locale contentful object, returns
