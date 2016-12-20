@@ -424,9 +424,8 @@
   [{:keys [context title content csrf-token servlet-context scripts]}]
   (let [tr (:tr context)
         asset-path (:asset-path context)
-        default-scripts
-        [[:script {:src (str asset-path "/js/app.js") :type "text/javascript"}]]
-        script-tags (into default-scripts (map script-tag scripts))]
+        default-script (str asset-path "/js/app.js")
+        script-tags (vec (map script-tag (conj scripts default-script)))]
     (page
      (head-content {:title (tr [:title] [title]) :asset-path asset-path})
      (body-content
