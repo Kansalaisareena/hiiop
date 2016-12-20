@@ -19,7 +19,8 @@
                         {:json-params credentials}))
           status (:status response)
           body (:body response)]
-      (= status 200))))
+      (conj {:success (= status 200)}
+            body))))
 
 (defn validate-token [token]
   (go

@@ -22,7 +22,9 @@
   :register
   {:title "Luo tunnus"
    :name "Nimi"
-   :email "Luo tunnus"}
+   :email "Sähköposti"
+   :check-your-email "Tarkista sähköpostisi"
+   :email-sent "Varmistusviesti lähetetty"}
 
   :activate
   {:title "Salasana"
@@ -145,9 +147,14 @@
   {:type-not-supported "Kuvatyyppi %1 ei ole tuettu"}
 
   :user
-  {:register {:fail ""
-              :success ""}
+  {:register
+   {:fail ""
+    :success ""}
+   :token
+   {:invalid ""}}
 
-   :token {:invalid ""}}
+  :email
+  {:not-valid "Sähköposti, kuten erkki@esimerkki.fi"
+   :in-use "Sähköposti on jo käytössä"}
   }
  }

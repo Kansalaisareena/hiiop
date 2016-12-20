@@ -47,7 +47,7 @@
   (try
     (let [id (:id (db/create-virtual-user! {:email email}))]
       (if (nil? id)
-        {:errors {:user :errors.user.register.failed}}
+        {:errors {:email :errors.email.in-use}}
         (let [token (db/create-password-token!
                      {:email email
                       :expires (time/add (time/now) time/an-hour)})]
@@ -56,7 +56,7 @@
           id)))
     (catch Exception e
       (log/error e)
-      {:errors {:user :errors.user.register.failed}})))
+      {:errors {:email :errors.email.in-use}})))
 
 (defn activate [{:keys [email password token]}]
   (let [pwhash (hashers/derive password {:alg :bcrypt+blake2b-512})
