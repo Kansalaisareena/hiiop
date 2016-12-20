@@ -19,6 +19,21 @@
    :register "Luo tunnus"
    :remember-me "Muista minut"}
 
+  :register
+  {:title "Luo tunnus"
+   :name "Nimi"
+   :email "Sähköposti"
+   :check-your-email "Tarkista sähköpostisi"
+   :email-sent "Varmistusviesti lähetetty"}
+
+  :activate
+  {:title "Luo salasana"
+   :password "Salasana"
+   :confirm-password "Salasana uudestaan"
+   :done
+   {:title "Käyttäjä luotu!"
+    :text "Voit nyt kirjautua."}}
+
   :quest
   {:title "Löydä tehtävä"
    :edit
@@ -82,7 +97,8 @@
   :user
   {:login    "Kirjaudu"
    :register "Rekisteröidy"
-   :logout   "Kirjaudu ulos"}
+   :logout   "Kirjaudu ulos"
+   :save-password "Tallenna salasana"}
   }
 
  :error
@@ -131,7 +147,17 @@
 
  :errors
  {:picture
-  {:type-not-supported "Kuvatyyppi %1 ei ole tuettu"
-   }
+  {:type-not-supported "Kuvatyyppi %1 ei ole tuettu"}
+
+  :user
+  {:register
+   {:fail "Rekisteröinti epäonnistui."
+    :success "Rekisteröinti onnistui!"}
+   :token
+   {:invalid "Rekisteröintiavain ei ole enää voimassa."}}
+
+  :email
+  {:not-valid "Sähköposti, kuten erkki@esimerkki.fi"
+   :in-use "Sähköposti on jo käytössä"}
   }
  }

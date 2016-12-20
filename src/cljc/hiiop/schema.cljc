@@ -11,7 +11,7 @@
   #?(:clj (:import [schema.utils ValidationError]
                    [schema.core Constrained])))
 
-(def Email #"[^@]+@[^.]+\..+")
+(def Email #"(^[a-zA-Z0-9._+]+@[^@.]+\.[^@.]+)$")
 
 (def Password s/Str)
 
@@ -46,11 +46,26 @@
    :is-moderator? s/Bool
    :is-active s/Bool})
 
+(defn new-empty-registration-info []
+  {:name "" :email ""})
+
+(def RegistrationInfo
+  "Initial registration information with only email and name"
+  {:email Email
+   :name s/Str})
+
 (def UserActivation
   "Email, password and password token"
   {:email Email
    :password Password
+   :confirm-password Password
    :token s/Uuid})
+
+(defn new-empty-activation-info []
+  {:token nil
+   :email ""
+   :password ""
+   :confirm-password ""})
 
 (def UserCredentials
   "Email and password"

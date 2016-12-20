@@ -43,21 +43,38 @@
              :session (assoc session :identity user-id))
       (unauthorized))))
 
-(defn register [{:keys [email locale] :as args}]
-  (let [id (:id (db/create-virtual-user! {:email email}))]
-    (when id
-      (let [token (:token
-                   (db/create-password-token!
-                    {:email email :expires (time/add (time/now) time/an-hour)}))]
-        (mail/send-token-email email (str token) locale)
-        id))))
+(defn register [{:keys [email name locale]}]
+  (try
+    (let [id (:id (db/create-virtual-user! {:email email}))]
+      (if (nil? id)
+        {:errors {:email :errors.email.in-use}}
+        (let [token (db/create-password-token!
+                     {:email email
+                      :expires (time/add (time/now) time/an-hour)})]
+          (db/update-user! {:id id :name name :email email})
+          (mail/send-token-email email (str (:token token)) locale)
+          id)))
+    (catch Exception e
+      (log/error e)
+      {:errors {:email :errors.email.in-use}})))
 
-(defn activate
-  [{{:keys [email password token]} :body-params}]
+(defn activate [{:keys [email password token]}]
   (let [pwhash (hashers/derive password {:alg :bcrypt+blake2b-512})
         token-uuid (sc/string->uuid token)]
     (db/activate-user! {:pass pwhash :email email :token token-uuid})
+    (db/delete-password-token! {:token token-uuid})
     (ok)))
+
+(defn validate-token [token-uuid]
+  (log/info "validate-token" token-uuid)
+  (try
+    (let [token-info (db/get-token-info {:token token-uuid})]
+      (if (nil? token-info)
+        {:errors {:token :errors.user.token.invalid}}
+        token-info))
+    (catch Exception e
+      (log/error e)
+      {:errors {:token :errors.user.token.invalid}})))
 
 (defn get-user [{{id :id} :params}]
   (ok (str (db/get-user-by-id {:id (sc/string->uuid id)}))))
@@ -214,8 +231,7 @@
             ))
       (catch Exception e
         (log/error e)
-        {:errors {:picture :errors.picture.add-failed}}
-        ))
+        {:errors {:picture :errors.picture.add-failed}}))
     {:errors {:picture :errors.picture.type-not-supported
               :type (:content-type file)}}))
 (defn hook-auth

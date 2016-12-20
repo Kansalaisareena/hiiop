@@ -7,10 +7,22 @@
    "/"
    (leaf "" :index)
    (leaf "kirjaudu" :login)
+   (leaf "rekisteroidy" :register)
+
+   (branch
+    "rekisteroidy/" (param :token)
+    (leaf "" :activate))
+
+   ;; Profile
+   (leaf "/kayttaja" :index)
+
+   ;; Quests
    (branch
     "tehtavat/"
     (leaf "" :browse-quests)
     (leaf "luo" :create-quest)
+    ;; add :id
+
     (branch
      "muokkaa/" (param :quest-id)
      (leaf "" :edit-quest)))))

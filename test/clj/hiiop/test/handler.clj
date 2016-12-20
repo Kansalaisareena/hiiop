@@ -5,26 +5,37 @@
             [mount.core :as mount]
             [ring.mock.request :refer :all]
             [taoensso.timbre :as log]
-            [cheshire.core :refer [generate-string parse-string]]
+            [cheshire.core :refer [parse-stream generate-string parse-string]]
             [schema.coerce :as sc]
             [schema.core :as s]
             [hiiop.config :refer [load-env]]
             [hiiop.handler :refer :all]
             [hiiop.db.core :refer [*db*] :as db]
             [hiiop.test.util :refer [contains-many? hash-password json-post]]
-            [hiiop.test.data :refer [test-quest test-user]]))
+            [hiiop.test.data :refer [test-quest test-user]]
+            [schema-tools.core :as st]))
+
+(defn remove-user-by-email [user]
+  (try
+    (db/delete-user-by-email! user)
+    (catch Exception e
+      ;;(log/error e)
+      )))
 
 (def test-user-id (atom nil))
 (def email-token (atom nil))
 
-(defn receive-email [email token session]
+(defn receive-email [email token locale]
   (log/info "receive email token: " token)
   (reset! email-token token))
 
 (use-fixtures
   :once
   (fn [f]
-    (mount/start-with {#'hiiop.mail/send-token-email receive-email})
+    (-> (mount/except [#'hiiop.core/http-server
+                       #'hiiop.core/repl-server])
+        (mount/swap {#'hiiop.mail/send-token-email receive-email})
+        mount/start)
     (f)
     (db/delete-user! *db* {:id (sc/string->uuid @test-user-id)})
     ))
@@ -59,13 +70,14 @@
 
 (defn create-test-user [{:keys [user-data save-id-to read-token-from]}]
   (-> (hiiop.api-handlers/register {:email (:email user-data)
+                                    :name "Wat"
                                     :locale :fi})
       (#(reset! save-id-to %))
       ((fn [id]
          (hiiop.api-handlers/activate
-          {:body-params {:email (:email user-data)
-                         :password (:password user-data)
-                         :token @read-token-from}})))))
+          {:email    (:email user-data)
+           :password (:password user-data)
+           :token    @read-token-from})))))
 
 (defn login-and-get-cookie [{:keys [with user-data]}]
   (-> (json-post "/api/v1/login"
@@ -79,6 +91,93 @@
       (session-cookie-string)))
 
 (deftest test-api
+
+  (testing "api/v1/users/register"
+
+    (testing "with valid info"
+      (let [current-app (app)
+            unique-email "unique.email@example.com"]
+        (-> (json-post
+             "/api/v1/users/register"
+             {:body-string
+              (generate-string {:email unique-email
+                                :name (:name test-user)})})
+            (current-app)
+            ((fn [response]
+               (is (= 200 (:status response))))))
+        (remove-user-by-email {:email unique-email})))
+
+    (testing "with duplicate email"
+      (let [app-with-session (app)
+            create-resp (hiiop.api-handlers/register
+                         {:email (:email test-user)
+                          :name (:name test-user)
+                          :locale :fi})
+            register-request (json-post
+                              "/api/v1/users/register"
+                              {:body-string
+                               (generate-string {:email (:email test-user)
+                                                 :name (:name test-user)})})
+            response (app-with-session register-request)]
+        (is (= 400 (:status response)))
+        (remove-user-by-email test-user)))
+
+    (testing "with invalid email"
+      (let [app-with-session (app)
+            invalid-emails [""
+                            "invalidemail"
+                            "another-tricky@one"
+                            "it'sa.trap@joker.com"
+                            "it*sa.trap@joker.com"
+                            "it sa.trap@joker.com"
+                            "almost@valid.com@butno"]]
+        (doseq [email invalid-emails]
+          (let [register-request (json-post
+                                  "/api/v1/users/register"
+                                  {:body-string
+                                   (generate-string {:email email
+                                                     :name "Test User"})})
+                resp (app-with-session register-request)]
+            (is (= 400 (:status resp)))
+            (if (= 200 (:status resp))
+              (log/error email))))
+        (doseq [email invalid-emails]
+          (remove-user-by-email {:email email})))))
+
+  (testing "/api/v1/users/validate-token"
+
+    (testing "with valid token"
+      (let [app-with-session (app)
+            uid (hiiop.api-handlers/register
+                 {:email (:email test-user)
+                  :name (:name test-user)
+                  :locale :fi})
+            request (json-post
+                     "/api/v1/users/validate-token"
+                     {:body-string
+                      (generate-string {:token @email-token})})
+            response (app-with-session request)
+            body (slurp (:body response))
+            body-map (parse-string body true)]
+        (is (= 200 (:status response)))
+        (is (= false (empty? (:token body-map))))
+        (is (= false (empty? (:expires body-map))))
+        (is (= (str uid) (str (:user-id body-map))))
+        (is (= (:email test-user) (:email body-map)))
+        (remove-user-by-email test-user)))
+
+    (testing "with invalid token"
+      (let [app-with-session (app)
+            request (json-post
+                     "/api/v1/users/validate-token"
+                     {:body-string
+                      (generate-string {:token
+                                        (sc/string->uuid
+                                         "0c161cc5-1a3b-442f-96c7-8a653140134b")})})
+            response (app-with-session request)]
+        (is (= 400 (:status response)))))
+    )
+
   (testing "/api/v1/quests/add"
     (let [current-app (app)
           test-user-response (create-test-user
@@ -120,5 +219,4 @@
           ((fn [add-body]
              (pp/pprint add-body)
              add-body))
-          (#(db/delete-quest-by-id! {:id (:id %1)})))
-      )))
+          (#(db/delete-quest-by-id! {:id (:id %1)}))))))

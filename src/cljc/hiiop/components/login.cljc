@@ -34,6 +34,7 @@
      [:div {:class "opux-form-section"}
       [:h2 (tr [:pages.login.title])]
       [:div {:class "opux-fieldset opux-form-section__fieldset"}
+
        [:div {:class "opux-fieldset__item"}
         (html/label
          (tr [:pages.login.email])
@@ -44,6 +45,7 @@
           :type "text"
           :class "opux-input opux-input--text email"
           :error (atom nil)})]
+
        [:div {:class "opux-fieldset opux-fieldset__item"}
         (html/label
          (tr [:pages.login.password])
@@ -54,23 +56,24 @@
           :type "password"
           :class "opux-input opux-input--text password"
           :error (atom nil)})]
+
        [:div {:class "opux-fieldset__inline-container opux-fieldset opux-fieldset__item opux-fieldset--login-links"}
         [:a {:class "opux-forget-password-link"
              :href "#"}
          (tr [:pages.login.forget-password])]
         [:a {:class "opux-register-link"
-             :href "#"}
+             :href (path-for pages/hierarchy :register)}
          (tr [:pages.login.register])]]
 
        [:input
         {:type "checkbox"
          :class "opux-input--checkbox"
          :default-checked false
-         :id (name :pages.login.forget-password)}]
+         :id (name :pages.login.remember-me)}]
        (html/label
-        (tr [:pages.login.forget-password])
+        (tr [:pages.login.remember-me])
         {:class "opux-input__label opux-input__label--checkbox"
-         :for (name :pages.login.forget-password)})
+         :for (name :pages.login.remember-me)})
 
        [:input
         {:class "opux-button"

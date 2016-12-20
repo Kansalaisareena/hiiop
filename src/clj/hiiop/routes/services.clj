@@ -2,6 +2,7 @@
   (:require [ring.util.http-response :refer :all]
             [compojure.api.sweet :refer :all]
             [ring.swagger.upload :refer [wrap-multipart-params TempFileUpload]]
+            [cheshire.core :refer [generate-string parse-string]]
             [buddy.auth.middleware :refer [wrap-authentication]]
             [schema.core :as s]
             [taoensso.timbre :as log]
@@ -9,7 +10,9 @@
             [hiiop.time :as time]
             [hiiop.config :refer [env]]
             [hiiop.api-handlers :as api-handlers]
-            [hiiop.schema :refer :all]))
+            [hiiop.schema :refer :all]
+            [hiiop.db.core :as db]
+            [schema.coerce :as sc]))
 
 (defapi service-routes
   {:swagger {:ui "/--help"
@@ -58,18 +61,35 @@
           api-handlers/get-user)
 
         (POST "/register" []
-          :body-params [email :- Email]
+          :body-params [email :- Email name :- s/Str]
           :summary "Create a new user and email password token"
-          (fn [{locale :current-locale}]
-            (if-let [id (api-handlers/register {:email email :locale locale})]
-              (created (path-for ::user {:id (str id)}))
-              (bad-request {:errors
-                            {:email"User registration failed"}}))))
+          (fn [request]
+            (-> (api-handlers/register
+                 {:email email
+                  :name name
+                  :locale (:current-locale request)})
+                (#(if (:errors %1)
+                    (bad-request %1)
+                    (ok))))))
+
+        (POST "/validate-token" []
+          :summary "Verify if a token is valid and returns its expiry date and user email"
+          :body-params [token :- s/Uuid]
+          (fn [request]
+            (-> (api-handlers/validate-token token)
+                (#(if (:errors %1)
+                    (bad-request %1)
+                    (ok %1))))))
 
         (POST "/activate" []
           :body [activation UserActivation]
           :summary "Activates inactive user"
-          api-handlers/activate))
+          (fn [request]
+            (if (api-handlers/activate activation)
+              (ok)
+              (bad-request))
+            ))
+        )
 
       (context "/pictures" []
         :tags ["picture"]
@@ -83,13 +103,8 @@
           (fn [request]
             (-> (api-handlers/add-picture file)
                 (#(if (not (:errors %1))
-                    (created
-                     (path-for ::picture {:id (str (:id %1))})
-                     %1)
-                    (bad-request
-                     %1))))
-            )
-          )
+                    (created (path-for ::picture {:id (str (:id %1))}) %1)
+                    (bad-request %1))))))
 
         (GET "/:id" []
           :name        ::picture
@@ -100,8 +115,7 @@
             (-> (api-handlers/get-picture id)
                 (#(if %1
                     (ok %1)
-                    (not-found)))))
-          ))
+                    (not-found)))))))
 
       (context "/quests" []
         :tags ["quest"]

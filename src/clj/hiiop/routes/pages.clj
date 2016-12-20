@@ -6,11 +6,18 @@
             [hiiop.middleware :refer [authenticated]]
             [hiiop.layout :as layout]
             [hiiop.components.quests :as quests]
-            [hiiop.components.login :as l]
+            [hiiop.components.activate :as p-a]
+            [hiiop.components.register :as p-r]
+            [hiiop.components.login :as p-l]
             [hiiop.config :refer [env]]
             [hiiop.routes.page-hierarchy :refer [hierarchy]]
             [hiiop.mangling :refer [same-keys-with-nils]]
-            [hiiop.schema :refer [NewQuest new-empty-quest]]))
+            [hiiop.schema :refer [NewQuest
+                                  RegistrationInfo
+                                  UserActivation
+                                  new-empty-quest
+                                  new-empty-registration-info
+                                  new-empty-activation-info]]))
 
 (defn tr-from-req [req]
   (:tempura/tr req))
@@ -34,8 +41,35 @@
   (let [context (create-context req)
         tr (:tr context)]
     (layout/render {:context context
-                    :content (l/login {:context context})
-                    :title (tr [:pages.index.title])})))
+                    :content (p-l/login {:context context})
+                    :title (tr [:pages.login.title])})))
+
+(defn register [req]
+  (let [context (create-context req)
+        registration-info (atom (new-empty-registration-info))
+        errors (atom (same-keys-with-nils @registration-info))
+        tr (:tr context)]
+    (layout/render {:context context
+                    :content (p-r/register {:context context
+                                            :registration-info registration-info
+                                            :schema RegistrationInfo
+                                            :errors errors})
+                    :title (tr [:pages.register.title])})))
+
+(defn activate [req]
+  (let [context (create-context req)
+        tr (:tr context)
+        activation-info (atom (new-empty-activation-info))
+        errors (atom (same-keys-with-nils @activation-info))
+        route-params (:route-params req)
+        token (:token route-params)]
+    (layout/render {:context context
+                    :content (p-a/activate {:context context
+                                            :activation-info activation-info
+                                            :token token
+                                            :schema UserActivation
+                                            :errors errors})
+                    :title (tr [:pages.activate.title])})))
 
 (defn create-quest [req]
   (let [context (create-context req)
@@ -80,6 +114,10 @@
    index
    :login
    login
+   :register
+   register
+   :activate
+   activate
    :browse-quests
    browse-quests
    :create-quest
