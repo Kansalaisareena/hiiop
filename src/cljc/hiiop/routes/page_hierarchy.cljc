@@ -14,7 +14,7 @@
     (leaf "" :activate))
 
    ;; Profile
-   (leaf "/kayttaja" :index)
+   (leaf "kayttaja" :profile)
 
    ;; Quests
    (branch

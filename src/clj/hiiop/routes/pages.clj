@@ -5,6 +5,7 @@
             [bidi.ring :refer (make-handler)]
             [hiiop.middleware :refer [authenticated]]
             [hiiop.layout :as layout]
+            [hiiop.components.profile :as p-p]
             [hiiop.components.quests :as quests]
             [hiiop.components.activate :as p-a]
             [hiiop.components.register :as p-r]
@@ -71,6 +72,13 @@
                                             :schema RegistrationInfo
                                             :errors errors})
                     :title (tr [:pages.register.title])})))
+
+(defn profile [req]
+  (let [context (create-context req)
+        tr (:tr context)]
+    (layout/render {:context context
+                    :content (p-p/profile {:context context
+                                           :quests ["a" "b" "c" "d"]})})))
 
 (defn activate [req]
   (let [context (create-context req)
@@ -146,6 +154,8 @@
    register
    :activate
    activate
+   :profile
+   (authenticated profile)
    :browse-quests
    browse-quests
    :create-quest

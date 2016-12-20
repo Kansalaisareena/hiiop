@@ -14,6 +14,11 @@
   }
 }
 
+@include block('opux-section') {
+  display: block;
+  width: 100%;
+}
+
 @include block('opux-content') {
   box-sizing: border-box;
   margin: 0 auto;
@@ -110,4 +115,8 @@
       @include flex(2);
     }
   }
+}
+
+@include block('opux-centered') {
+  text-align: center;
 }

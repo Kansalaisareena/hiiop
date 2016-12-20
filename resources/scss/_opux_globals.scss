@@ -37,7 +37,3 @@ a {
   color: $link-colour;
   text-decoration: none;
 }
-
-@include block('opux-centered') {
-  text-align: center;
-}

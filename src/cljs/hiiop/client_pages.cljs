@@ -3,6 +3,7 @@
             [rum.core :as rum]
             [taoensso.timbre :as log]
             [schema.core :as schema]
+            [hiiop.components.profile :as p-p]
             [hiiop.components.login :as p-l]
             [hiiop.components.activate :as p-a]
             [hiiop.components.register :as p-r]
@@ -51,6 +52,14 @@
                     :errors errors})
      (. js/document (getElementById "app")))))
 
+(defn profile-page [params]
+  (log/info "profile-page")
+  (rum/mount
+   (p-p/profile {:context @context
+                 :quests ["a" "b" "c" "d"]})
+   (. js/document (getElementById "app"))))
+
+
 (defn browse-quests-page [params]
   (let [quest-filter (atom (new-empty-quest-filter))
         errors (atom (same-keys-with-nils @quest-filter))]
@@ -89,6 +98,8 @@
    browse-quests-page
    :login
    login-page
+   :profile
+   profile-page
    :register
    register-page
    :activate
