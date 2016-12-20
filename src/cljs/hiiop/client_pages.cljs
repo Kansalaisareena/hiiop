@@ -43,7 +43,7 @@
     (rum/mount
      (p-a/activate {:context @context
                     :token (last (string/split
-                                  (.-href (.-location js/window)) #"/"))
+                                  (.-pathname (.-location js/window)) #"/"))
                     :activation-info activation-info
                     :schema UserActivation
                     :errors errors})
