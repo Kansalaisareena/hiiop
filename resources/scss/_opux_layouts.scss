@@ -35,11 +35,16 @@
 }
 
 @include block('opux-card-list') {
-  @include align-items(flex-start);
+  @include align-items(start);
   @include flex-direction(row);
   @include flex-wrap(wrap);
   @include flexbox;
   width: 100%;
+  padding-bottom: 2rem;
+
+  @include modifier('centered') {
+    @include justify-content(center);
+  }
 
   @include element('subtitle') {
     padding-bottom: 1rem;
@@ -58,6 +63,30 @@
 @include block('opux-card') {
   background: $OP-white;
   width: 100%;
+  font-weight: 400;
+  font-size: .9rem;
+
+  @include block('opux-inline-icon') {
+    width: 50%;
+
+    &.opux-inline-icon-clock {
+      padding-left: 2.5rem;
+      &:before {
+        left: 1rem;
+      }
+    }
+  }
+
+  @include element('title') {
+    box-sizing: content-box;
+    display: block;
+    font-size: 1.3rem;
+    font-weight: 300;
+    padding: .7rem;
+    color: $basic-text-colour;
+    text-align: left;
+    width: 100%;
+  }
 
   @include element('image-container') {
     width: 100%;

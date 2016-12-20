@@ -19,22 +19,23 @@
    [:div {:class "opux-card"}
 
     [:div {:class "opux-card__image-container"}
-     [:img {:class "opux-card__image"
-            :src "https://media.giphy.com/media/HNQVf0ik57nHy/giphy-facebook_s.jpg"}]]
+     [:a {:href "#"}
+      [:img {:class "opux-card__image"
+             :src "https://media.giphy.com/media/HNQVf0ik57nHy/giphy-facebook_s.jpg"}]]]
 
-    [:span {:class "opux-card__location"}
+    [:span {:class "opux-card__location opux-inline-icon opux-inline-icon-location"}
      "Helsinki"]
 
-    [:span {:class "opux-card__attendance"}
+    [:span {:class "opux-card__attendance opux-inline-icon opux-inline-icon-personnel opux-inline-icon--right"}
      23]
 
-    [:h3 {:class "opux-card__title"}
+    [:a {:class "opux-card__title" :href "#"}
      "Konalan kehitysvammaisten iltatanhutapahtuma"]
 
-    [:span {:class "opux-card__date"}
+    [:span {:class "opux-card__date opux-inline-icon opux-inline-icon-calendar"}
      "Keskiviikko 28.1"]
 
-    [:span {:class "opux-card__time"}
+    [:span {:class "opux-card__time opux-inline-icon opux-inline-icon-clock"}
      "18.00-20.00"]]])
 
 (rum/defc display [quest]
@@ -53,13 +54,13 @@
       "Helmikuussa"]
 
      [:ul {:class "opux-card-list"}
-      (repeat 10 (card))]
+      (repeat 7 (card))]
 
      [:h2 {:class "opux-centered"}
       "Maaliskuussa "]
 
      [:ul {:class "opux-card-list"}
-      (repeat 10 (card))]
+      (repeat 8 (card))]
      ]))
 
 (defn add-organisation-to [quest]

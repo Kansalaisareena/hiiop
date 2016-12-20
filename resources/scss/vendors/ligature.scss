@@ -79,6 +79,7 @@ $opux-icon-font-file-basename: 'opuxicons';
 
 @include opux-icon-fontface();
 @include opux-icon-generate('.opux-icon');
+@include opux-icon-generate('.opux-inline-icon');
 
 .opux-icon {
   @extend %opux-icon-base;
@@ -91,5 +92,11 @@ $opux-icon-font-file-basename: 'opuxicons';
   @extend %opux-icon-base-circled;
   &:before {
     @extend %opux-icon-base-circled;
+  }
+}
+
+.opux-inline-icon {
+  &:before {
+    @extend %opux-icon-base;
   }
 }
