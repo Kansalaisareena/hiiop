@@ -12,10 +12,16 @@
             [hiiop.redis :refer [wcar*]]
             [hiiop.config :refer [env]]))
 
+(defstate email-sending-config :start
+  {:host    (:smtp-server env)
+   :port    (:smtp-port env)
+   :user    (:smtp-user env)
+   :pass    (:smtp-password env)
+   :sender  (:sender-address env)})
+
 (defn send-mail [mail]
-  (let [mailopts (get-in env [:aws :mail-server-opts])]
-    (go
-      (send-message mailopts mail))))
+  (go
+    (send-message email-sending-config mail)))
 
 (defn mail-content [emailkey locale]
   (-> (car/get (str "email:" emailkey))
@@ -26,7 +32,7 @@
 
 (defn send-token [email token locale]
   (let [content (mail-content "activation" locale)]
-    (send-mail {:from (get-in env [:aws :sender-address])
+    (send-mail {:from (:sender email-sending-config)
                 :to email
                 :body [{:type "text/html"
                         :content (render-static-markup

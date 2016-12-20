@@ -63,13 +63,13 @@ Create profiles.clj under your git root to place the secrets.
        {:database-url "postgresql://localhost/hiiop_dev?user=youruser"
         :timezone "Europe/Helsinki"
         :site-base-url ""
-        :aws
-        {:sender-address ""
-         :mail-server-opts
-         {:user ""
-          :pass ""
-          :host ""
-          :port "" }}
+
+        :sender-address  ""
+        :smtp-server     ""
+        :smtp-port       ""
+        :smtp-user       ""
+        :smtp-password   ""
+
         :redis
         {:uri ""}
         :hiiop-pictures-bucket
