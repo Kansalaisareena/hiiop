@@ -75,7 +75,8 @@
   {:store :database :db ~(get (System/getenv) "DATABASE_URL")}
 
   :plugins
-  [[lein-cprop "1.0.1"]
+  [[lein-resource "16.9.1"]
+   [lein-cprop "1.0.1"]
    [migratus-lein "0.4.3"]
    [lein-cljsbuild "1.1.4"]
    [lein-immutant "2.1.0"]
@@ -121,6 +122,18 @@
            :include-files ["target/uberjar/hiiop.jar"]
            :process-types { "web" "java -jar $JVM_OPTS target/uberjar/hiiop.jar" }}
 
+  :resource {:resource-paths ["target/cljsbuild/public/js"]
+             :skip-stencil [#"target/cljsbuild/public/js.*"]
+             :target-path
+             ~(str "resources/public/"
+                   (apply
+                    str
+                    (clojure.string/trim
+                     (:out
+                      (clojure.java.shell/sh
+                       "git" "rev-parse" "--verify" "HEAD"))))
+                   "/js")}
+
   :essthree
   {:deploy {:type       :directory
             :bucket     ~(get (System/getenv) "HIIOP_ASSET_BUCKET")
@@ -129,7 +142,7 @@
 
   :profiles
   {:uberjar {:omit-source true
-             :prep-tasks ["git-version" "compile" ["cljsbuild" "once" "min"] "minify-assets"]
+             :prep-tasks ["git-version" "compile" ["cljsbuild" "once" "min"] "resource" "minify-assets"]
              :cljsbuild
              {:builds
               {:min
@@ -137,7 +150,7 @@
                 :compiler
                 {:output-to "target/cljsbuild/public/js/app.js"
                  :output-dir "target/cljsbuild/public/js/"
-                 :source-map "target/cljsbuild/public/js/app.js.map"
+                 ;:source-map "target/cljsbuild/public/js/app.js.map"
                  :externs ["react/externs/react.js"
                            "externs/google_maps_api_v3.js"]
                  :optimizations :advanced
@@ -153,12 +166,6 @@
                                         "git" "rev-parse" "--verify" "HEAD"))))
                      "/css/screen.css")
                "resources/public/css"
-               ~(str "resources/public/"
-                     (apply str (clojure.string/trim
-                                 (:out (clojure.java.shell/sh
-                                        "git" "rev-parse" "--verify" "HEAD"))))
-                     "/js/app.js")
-               "target/cljsbuild/public/js"
                }
               }
 
