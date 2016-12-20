@@ -101,7 +101,6 @@
                                                   :context context})
                     :title (tr [:actions.quest.create])})))
 
-
 (defn edit-quest [req]
   (let [context (create-context req)
         tr (:tr context)]

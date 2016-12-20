@@ -14,6 +14,32 @@
             [hiiop.html :as html]
             [hiiop.schema :as hs]))
 
+(rum/defc card []
+  [:div {:class "opux-list-card"}
+
+   (if (not-empty status)
+     [:div {:class "opux-list-card__status"}
+      "status | status status"])
+
+   [:div {:class "opux-list-card__image-container"}
+    [:img {:class "opux-list-card__image"
+           :src "https://media.giphy.com/media/HNQVf0ik57nHy/giphy-facebook_s.jpg"}]]
+
+   [:span {:class "opux-list-card__location"}
+    "Helsinki"]
+
+   [:span {:class "opux-list-card__attendance"}
+    23]
+
+   [:h3 {:class "opux-list-card__title"}
+    "Konalan kehitysvammaisten iltatanhutapahtuma"]
+
+   [:span {:class "opux-list-card__date"}
+    "Keskiviikko 28.1"]
+
+   [:span {:class "opux-list-card__time"}
+    "18.00-20.00"]])
+
 (rum/defc display [quest]
   [:li quest])
 
@@ -42,7 +68,7 @@
   (reset! enable true))
 
 (rum/defcs edit-content < rum/reactive
-                          (rum/local false ::organisation-enabled)
+  (rum/local false ::organisation-enabled)
   [state {:keys [context
                  quest
                  schema
