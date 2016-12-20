@@ -76,7 +76,7 @@
           :summary "Verify if a token is valid and returns its expiry date and user email"
           :body-params [token :- s/Uuid]
           (fn [request]
-            (-> (api-handlers/validate-token request)
+            (-> (api-handlers/validate-token token)
                 (#(if (:errors %1)
                     (bad-request %1)
                     (ok %1))))))

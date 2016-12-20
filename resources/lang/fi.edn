@@ -27,9 +27,12 @@
    :email-sent "Varmistusviesti lähetetty"}
 
   :activate
-  {:title "Salasana"
+  {:title "Luo salasana"
    :password "Salasana"
-   :confirm-password "Salasana uudestaan"}
+   :confirm-password "Salasana uudestaan"
+   :done
+   {:title "Käyttäjä luotu!"
+    :text "Voit nyt kirjautua."}}
 
   :quest
   {:title "Löydä tehtävä"
@@ -148,10 +151,10 @@
 
   :user
   {:register
-   {:fail ""
-    :success ""}
+   {:fail "Rekisteröinti epäonnistui."
+    :success "Rekisteröinti onnistui!"}
    :token
-   {:invalid ""}}
+   {:invalid "Rekisteröintiavain ei ole enää voimassa."}}
 
   :email
   {:not-valid "Sähköposti, kuten erkki@esimerkki.fi"

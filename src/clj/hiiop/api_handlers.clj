@@ -65,11 +65,10 @@
     (db/delete-password-token! {:token token-uuid})
     (ok)))
 
-(defn validate-token [request]
+(defn validate-token [token-uuid]
+  (log/info "validate-token" token-uuid)
   (try
-    (let [token (:token (:body-params request))
-          token-uuid (sc/string->uuid token)
-          token-info (db/get-token-info {:token token-uuid})]
+    (let [token-info (db/get-token-info {:token token-uuid})]
       (if (nil? token-info)
         {:errors {:token :errors.user.token.invalid}}
         token-info))
