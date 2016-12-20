@@ -39,8 +39,8 @@
   @include flex-direction(row);
   @include flex-wrap(wrap);
   @include flexbox;
-  width: 100%;
   padding-bottom: 2rem;
+  width: 100%;
 
   @include modifier('centered') {
     @include justify-content(center);
@@ -62,9 +62,9 @@
 
 @include block('opux-card') {
   background: $OP-white;
-  width: 100%;
-  font-weight: 400;
   font-size: .9rem;
+  font-weight: 400;
+  width: 100%;
 
   @include block('opux-inline-icon') {
     width: 50%;
@@ -78,12 +78,12 @@
   }
 
   @include element('title') {
-    box-sizing: content-box;
+    box-sizing: border-box;
+    color: $basic-text-colour;
     display: block;
     font-size: 1.3rem;
     font-weight: 300;
     padding: .7rem;
-    color: $basic-text-colour;
     text-align: left;
     width: 100%;
   }
