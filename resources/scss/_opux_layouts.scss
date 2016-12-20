@@ -97,3 +97,17 @@
     width: 100%;
   }
 }
+
+@include block('opux-card-filter') {
+  width: 100%;
+  @include flexbox;
+  @include flex-direction(row);
+
+  @include element('field') {
+    @include flex(1);
+
+    @include modifier('category') {
+      @include flex(2);
+    }
+  }
+}

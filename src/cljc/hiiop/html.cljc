@@ -305,11 +305,14 @@
   (let [tr (:tr context)
         make-multi-choice (partial multi-choice tr hs/category-choice value)
         single (cond
-                 (and (not (set? schema)) (sequential? schema)) (st/schema-value (first schema))
+                 (and (not (set? schema))
+                      (sequential? schema))
+                 (st/schema-value (first schema))
                  :else (st/schema-value schema))
         all (cond
               (or (set? single) (sequential? single))
-              (into [:div {:class "opux-fieldset opux-fieldset--multi-select"}] (mapcat identity (map make-multi-choice single))))]
+              (into [:div {:class "opux-fieldset opux-fieldset--multi-select"}]
+                    (mapcat identity (map make-multi-choice single))))]
     all))
 
 (rum/defc max-participants [{:keys [schema value error context] :as params}]

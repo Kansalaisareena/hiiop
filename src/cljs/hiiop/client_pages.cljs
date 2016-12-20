@@ -13,8 +13,10 @@
                                   Quest
                                   RegistrationInfo
                                   UserActivation
+                                  QuestFilter
                                   new-empty-registration-info
                                   new-empty-quest
+                                  new-empty-quest-filter
                                   new-empty-activation-info
                                   ]]
             [clojure.string :as string]))
@@ -50,11 +52,16 @@
      (. js/document (getElementById "app")))))
 
 (defn browse-quests-page [params]
-  (log/info "browse-quests-page")
-  (rum/mount
-   (quests/list-quests {:quests ["a" "b" "c" "d"]
-                        :context @context})
-   (. js/document (getElementById "app"))))
+  (let [quest-filter (atom (new-empty-quest-filter))
+        errors (atom (same-keys-with-nils @quest-filter))]
+    (log/info "browse-quests-page")
+    (rum/mount
+     (quests/list-quests {:quests ["a" "b" "c" "d"]
+                          :context @context
+                          :quest-filter quest-filter
+                          :errors errors
+                          :schema QuestFilter})
+     (. js/document (getElementById "app")))))
 
 (defn create-quest-page [params]
   (let [quest (atom (new-empty-quest))

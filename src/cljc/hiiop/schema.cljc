@@ -104,6 +104,23 @@
    (s/optional-key :google-maps-url) (s/maybe NonEmptyString)
    })
 
+(def QuestFilter
+  "Quest listing filter"
+  {:categories [Category]
+   :location Location
+   :start-time DateTime
+   :end-time DateTime})
+
+(defn new-empty-quest-filter []
+  {:categories []
+   :location {}
+   :start-time (time/to-string
+                (time/tomorrow-at-noon)
+                time/transit-format)
+   :end-time (time/to-string
+              (time/time-to (time/tomorrow) 23 45)
+              time/transit-format)})
+
 (def Quest
   "Quest"
   {:id NaturalNumber

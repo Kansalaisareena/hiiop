@@ -15,7 +15,9 @@
             [hiiop.schema :refer [NewQuest
                                   RegistrationInfo
                                   UserActivation
+                                  QuestFilter
                                   new-empty-quest
+                                  new-empty-quest-filter
                                   new-empty-registration-info
                                   new-empty-activation-info]]))
 
@@ -31,11 +33,25 @@
 
 (defn index [req]
   (let [context (create-context req)
-        tr (:tr context)]
+        tr (:tr context)
+        quest-filter (atom (new-empty-quest-filter))
+        errors (atom (same-keys-with-nils @quest-filter))]
     (layout/render {:context context
                     :content (quests/list-quests {:quests ["a" "a" "a"]
-                                                  :context context})
-                    :title (tr [:pages.index.title])})))
+                                                  :quest-filter quest-filter
+                                                  :context context
+                                                  :schema QuestFilter})
+                    :title (tr [:actions.quest.create])
+
+                    :scripts
+                    [(str
+                      "https://maps.googleapis.com/maps/api/js?"
+                      "key=AIzaSyDfXn9JTGue0fbkI3gqIqe7_WUn0M-dt-8"
+                      "&libraries=places"
+                      "&language=" "fi" ;; to normalize the google data
+                      "&region=FI"
+                      )]
+                    })))
 
 (defn login [req]
   (let [context (create-context req)
@@ -95,11 +111,24 @@
 
 (defn browse-quests [req]
   (let [context (create-context req)
-        tr (:tr context)]
+        tr (:tr context)
+        quest-filter (atom (new-empty-quest-filter))
+        errors (atom (same-keys-with-nils @quest-filter))]
     (layout/render {:context context
                     :content (quests/list-quests {:quests ["a" "a" "a"]
-                                                  :context context})
-                    :title (tr [:actions.quest.create])})))
+                                                  :quest-filter quest-filter
+                                                  :context context
+                                                  :schema QuestFilter})
+                    :title (tr [:actions.quest.create])
+                    :scripts
+                    [(str
+                      "https://maps.googleapis.com/maps/api/js?"
+                      "key=AIzaSyDfXn9JTGue0fbkI3gqIqe7_WUn0M-dt-8"
+                      "&libraries=places"
+                      "&language=" "fi" ;; to normalize the google data
+                      "&region=FI"
+                      )]
+                    })))
 
 (defn edit-quest [req]
   (let [context (create-context req)
