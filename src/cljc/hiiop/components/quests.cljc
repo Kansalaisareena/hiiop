@@ -23,20 +23,19 @@
       [:img {:class "opux-card__image"
              :src "https://media.giphy.com/media/HNQVf0ik57nHy/giphy-facebook_s.jpg"}]]]
 
-    [:span {:class "opux-card__location opux-inline-icon opux-inline-icon-location"}
-     "Helsinki"]
+    [:div {:class "opux-card__content"}
+     [:span {:class "opux-card__location opux-inline-icon opux-inline-icon-location"}
+      "Helsinki"]
+     [:span {:class "opux-card__attendance opux-inline-icon opux-inline-icon-personnel opux-inline-icon--right"}
+      23]
 
-    [:span {:class "opux-card__attendance opux-inline-icon opux-inline-icon-personnel opux-inline-icon--right"}
-     23]
+     [:a {:class "opux-card__title" :href "#"}
+      "Konalan kehitysvammaisten iltatanhutapahtuma"]
 
-    [:a {:class "opux-card__title" :href "#"}
-     "Konalan kehitysvammaisten iltatanhutapahtuma"]
-
-    [:span {:class "opux-card__date opux-inline-icon opux-inline-icon-calendar"}
-     "Keskiviikko 28.1"]
-
-    [:span {:class "opux-card__time opux-inline-icon opux-inline-icon-clock"}
-     "18.00-20.00"]]])
+     [:span {:class "opux-card__date opux-inline-icon opux-inline-icon-calendar"}
+      "Keskiviikko 28.1"]
+     [:span {:class "opux-card__time opux-inline-icon opux-inline-icon-clock"}
+      "18.00-20.00"]]]])
 
 (rum/defc display [quest]
   [:li quest])
