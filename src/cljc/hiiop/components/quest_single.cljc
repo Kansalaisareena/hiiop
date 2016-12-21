@@ -44,13 +44,13 @@
        [:i {:class "opux-icon opux-icon-calendar"}]
        (time/to-string (time/from-string start-time) time/date-print-format)]]
 
-     [:div {:class "opux-content opux-content--medium"} (wrap-paragraph description)]
+     [:div {:class "opux-content opux-content--medium"} (html/wrap-paragraph description)]
 
      (if (not (nil? organisation))
        [:div {:class "opux-content opux-content--medium"}
         [:h3 (:name organisation)]
         (if (not (nil? (:description organisation)))
-          (wrap-paragraph (:description organisation)))])
+          (html/wrap-paragraph (:description organisation)))])
 
      [:div {:class "opux-content opux-content--medium opux-content--quest-footer"}
       (if (not-empty hashtags)

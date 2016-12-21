@@ -1,6 +1,7 @@
 (ns hiiop.html
   (:require [rum.core :as rum]
             [taoensso.timbre :as log]
+            [clojure.string :as string]
             [schema.core :as s]
             #?(:cljs [schema.core :refer [EnumSchema]])
             [schema-tools.core :as st]
