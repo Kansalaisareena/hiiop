@@ -6,6 +6,7 @@
             [hiiop.middleware :refer [authenticated]]
             [hiiop.layout :as layout]
             [hiiop.components.profile :as p-p]
+            [hiiop.components.quest-single :as quest]
             [hiiop.components.quests :as quests]
             [hiiop.components.activate :as p-a]
             [hiiop.components.register :as p-r]
@@ -22,7 +23,7 @@
                                   new-empty-quest-filter
                                   new-empty-registration-info
                                   new-empty-activation-info]]
-            [hiiop.api-handlers :refer [get-quest]]))
+            [hiiop.api-handlers :refer [get-quest get-user]]))
 
 (defn tr-from-req [req]
   (:tempura/tr req))
@@ -165,6 +166,20 @@
         :quest quest
         :title-key :actions.quest.edit}))))
 
+(defn quest [req]
+  (let [id (get-in req [:params :quest-id])
+        quest (get-quest (parse-natural-number id))
+        owner-name (:name (get-user (:owner quest)))
+        context (create-context req)
+        tr (:tr context)]
+    (if quest
+      (layout/render {:title (tr [:actions.quest.create])
+                      :context context
+                      :content
+                      (quest/quest {:context context
+                                    :quest (atom (assoc quest
+                                                  :owner-name owner-name))})}))))
+
 (def handlers
   {:index
    index
@@ -176,6 +191,8 @@
    activate
    :profile
    (authenticated profile)
+   :quest
+   quest
    :browse-quests
    browse-quests
    :create-quest

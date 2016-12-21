@@ -71,3 +71,14 @@ $opux-icon-cross-name-collection: (eyeglasses, law, sound, globe, handicap, chil
     }
   }
 }
+
+.opux-content--quest-header,
+.opux-content--quest-footer {
+  @include block('opux-icon') {
+    &:before {
+      font-size: 1.5rem;
+    }
+    margin-right: .5rem;
+    margin-top: -.2rem;
+  }
+}

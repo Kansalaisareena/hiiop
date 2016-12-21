@@ -9,8 +9,9 @@
             [hiiop.components.login :as p-l]
             [hiiop.components.activate :as p-a]
             [hiiop.components.register :as p-r]
+            [hiiop.components.quest-single :as quest]
             [hiiop.components.quests :as quests]
-            [hiiop.client-api :refer [get-quest]]
+            [hiiop.client-api :refer [get-quest get-user-info]]
             [hiiop.context :refer [context]]
             [hiiop.mangling :refer [parse-natural-number same-keys-with-nils]]
             [hiiop.mangling :refer [same-keys-with-nils]]
@@ -110,6 +111,33 @@
              (. js/document (getElementById "app"))))
           ))))
 
+(defn quest-page [params]
+  (go
+    (let [id (parse-natural-number
+              (get-in params [:route-params :quest-id]))
+          quest (<! (get-quest id))
+          user-info (<! (get-user-info (str (:owner quest))))
+          owner-name (:name user-info)]
+      (-> quest
+          (#(assoc %1
+                   :categories
+                   (into [] (map keyword (:categories %1)))
+                   :owner-name owner-name))
+          (atom)
+          ((fn [quest]
+             {:quest quest}))
+          (#(assoc %1
+                   :errors
+                   (-> (:quest %1)
+                       (deref)
+                       (same-keys-with-nils)
+                       (atom))))
+          (assoc :context @context)
+          (#(rum/mount
+             (quest/quest %1)
+             (. js/document (getElementById "app"))))
+          ))))
+
 (def handlers
   {:index
    browse-quests-page
@@ -121,6 +149,8 @@
    register-page
    :activate
    activate-page
+   :quest
+   quest-page
    :browse-quests
    browse-quests-page
    :create-quest

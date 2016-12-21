@@ -131,6 +131,7 @@
    :location Location
    :max-participants NPlus
    :categories [Category]
+   (s/optional-key :owner-name) (s/maybe s/Str)
    (s/optional-key :picture-id) (s/maybe s/Str)
    (s/optional-key :picture-url) (s/maybe s/Str)
    (s/optional-key :hashtags) [Hashtag]

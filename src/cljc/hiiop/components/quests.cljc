@@ -161,6 +161,7 @@
               :description nil}}))})
        (let [organisation-name-error (rum/cursor-in errors [:organisation :name])
              organisation-description-error (rum/cursor-in errors [:organisation :description])]
+         [:div
          [:div {:class "opux-fieldset__item"}
           (html/label
            (tr [:pages.quest.edit.organisation.name])
@@ -183,7 +184,7 @@
             :error organisation-description-error
             :schema hs/NonEmptyString
             :context context}
-           )])))))
+           )]])))))
 
 (defn reveal-end-time [end-time-revealed]
   (swap! end-time-revealed #(identity true)))
