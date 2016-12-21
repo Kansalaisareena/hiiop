@@ -18,7 +18,7 @@
             [taoensso.timbre :as log :refer [info]]
             [taoensso.tempura :as tempura]
             [taoensso.carmine.ring :refer [carmine-store]]
-            [mount.core :refer [defstate]]
+            [mount.core :refer [defstate start]]
             [bidi.bidi :as bidi]
             [cuerdas.core :as str]
             [hiiop.routes.page-hierarchy :refer [hierarchy]]
@@ -29,9 +29,6 @@
             [hiiop.translate :refer [supported-lang tr-opts tr-with]])
   (:import [javax.servlet ServletContext]))
 
-
-
-(defstate dev-authdata :start {:username "dev" :password "sln"})
 
 (defn check-simple-auth [auth-data request]
   (let [pattern (re-pattern "^Basic (.+)$")
@@ -46,10 +43,12 @@
 
 (defn wrap-simple-auth [auth-data handler]
   (fn [request]
-    (let [auth-ok (check-simple-auth auth-data request)]
+    (if-not (empty? auth-data)
       (if (check-simple-auth auth-data request)
         (handler request)
-        (unauthorized)))))
+        (-> (unauthorized)
+            (assoc-in [:headers "WWW-Authenticate"] "Basic realm=\"hiiop\"")))
+      (handler request))))
 
 (defn wrap-context [handler]
   (fn [request]

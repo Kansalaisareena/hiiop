@@ -3,7 +3,6 @@
             [compojure.api.sweet :refer :all]
             [ring.swagger.upload :refer [wrap-multipart-params TempFileUpload]]
             [cheshire.core :refer [generate-string parse-string]]
-            [buddy.auth.middleware :refer [wrap-authentication]]
             [schema.core :as s]
             [taoensso.timbre :as log]
             [schema.coerce :as sc]
