@@ -13,13 +13,16 @@
             [hiiop.config :refer [env]]))
 
 (defstate email-sending-config :start
-  {:host    (:smtp-server env)
-   :port    (:smtp-port env)
-   :user    (:smtp-user env)
-   :pass    (:smtp-password env)
-   :sender  (:sender-address env)})
+  (let [email-config {:host    (:smtp-server env)
+                      :port    (:smtp-port env)
+                      :user    (:smtp-user env)
+                      :pass    (:smtp-password env)
+                      :sender  (:sender-address env)}]
+    (log/info "starting with email config" email-config)
+    email-config))
 
 (defn send-mail [mail]
+  (log/info "sending mail" mail)
   (go
     (send-message email-sending-config mail)))
 
