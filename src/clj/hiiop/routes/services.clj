@@ -90,9 +90,25 @@
           (fn [request]
             (if (api-handlers/activate activation)
               (ok)
-              (bad-request))
-            ))
-        )
+              (bad-request))))
+
+        (POST "/reset-password" []
+              :body [email Email]
+              :summary "Creates a password reset token and sends it to
+              the given email address."
+              (fn [request]
+                (try (api-handlers/reset-password email)
+                     (catch Exception e
+                       (log/info e)))
+                (ok)))
+
+        (POST "/change-password" []
+          :body [password-reset UserActivation]
+          :summary "Activates inactive user"
+          (fn [request]
+            (if (api-handlers/change-password password-reset)
+             (ok)
+             (bad-request {:error "Password change failed."})))))
 
       (context "/pictures" []
         :tags ["picture"]
@@ -108,8 +124,11 @@
                  {:file file
                   :user (:identity request)})
                 (#(if (not (:errors %1))
-                    (created (path-for ::picture {:id (str (:id %1))}) %1)
-                    (bad-request %1))))))
+                    (created
+                     (path-for ::picture {:id (str (:id %1))})
+                     %1)
+                    (bad-request
+                     %1))))))
 
         (GET "/:id" []
           :name        ::picture

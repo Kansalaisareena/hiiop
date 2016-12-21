@@ -6,6 +6,7 @@
             [buddy.auth :refer [authenticated?]]
             [buddy.hashers :as hashers]
             [compojure.api.sweet :as sweet]
+            [conman.core :refer [with-transaction]]
             [taoensso.timbre :as log]
             [schema.core :as s]
             [schema-tools.core :as st]
@@ -58,19 +59,6 @@
       (log/error e)
       {:errors {:email :errors.email.in-use}})))
 
-(defn activate [{:keys [email password token]}]
-  (let [pwhash (hashers/derive password {:alg :bcrypt+blake2b-512})
-        token-uuid (sc/string->uuid token)
-        activate-user (db/activate-user!
-                       {:pass pwhash
-                        :email email
-                        :token token-uuid})]
-    (if (> activate-user 0)
-      (do
-        (db/delete-password-token! {:token token-uuid})
-        true)
-      false)))
-
 (defn validate-token [token-uuid]
   (log/info "validate-token" token-uuid)
   (try
@@ -81,6 +69,26 @@
     (catch Exception e
       (log/error e)
       {:errors {:token :errors.user.token.invalid}})))
+
+(defn activate [{:keys [email password token]}]
+  "Attempt to activate user with token. If successful, delete token,
+  set password and set user active."
+  (let [pwhash (hashers/derive password {:alg :bcrypt+blake2b-512})
+        token-uuid (sc/string->uuid token)]
+    (< 0 (with-transaction [db/*db*]
+           (db/activate-user! {:pass pwhash :email email :token token-uuid})
+           (db/delete-password-token! {:token token-uuid})))))
+
+
+(defn reset-password [email]
+  (db/create-password-token!
+   {:email email :expires (time/add (time/now) time/an-hour)}))
+
+(defn change-password [{:keys [email password token]}]
+  (let [pwhash (hashers/derive password {:alg :bcrypt+blake2b-512})]
+    (= 1 (with-transaction [db/*db*]
+           (db/change-password! {:email email :pass pwhash :token token})
+           (db/delete-password-token! {:token token})))))
 
 (defn get-user [{{id :id} :params}]
   (try
