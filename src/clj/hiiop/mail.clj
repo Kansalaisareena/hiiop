@@ -37,14 +37,19 @@
   (let [content (mail-content "activation" locale)]
     (send-mail {:from (:sender email-sending-config)
                 :to email
-                :body [{:type "text/html"
-                        :content (render-static-markup
-                                  (emails/activate-account
-                                   {:activation-url (str (:site-base-url env) (path-for hierarchy :activate :token (str token)))
-                                    :title (content :otsikko)
-                                    :body-text (content :leipateksti)
-                                    :button-text (content :ekanappiteksti)
-                                    }))}]
+                :body [{:type "text/html; charset=utf-8"
+                        :content
+                        (render-static-markup
+                         (emails/activate-account
+                          {:activation-url
+                           (str (:site-base-url env)
+                                (path-for hierarchy
+                                          :activate
+                                          :token (str token)))
+                           :title (content :otsikko)
+                           :body-text (content :leipateksti)
+                           :button-text (content :ekanappiteksti)
+                           }))}]
                 :subject (content :otsikko)})))
 
 (defstate send-token-email :start send-token)
