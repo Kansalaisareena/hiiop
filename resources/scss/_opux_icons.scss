@@ -38,8 +38,9 @@ $opux-icon-cross-name-collection: (eyeglasses, law, sound, globe, handicap, chil
 
   // opux-logo--header
   @include modifier('header') {
-    @include flex(1.5);
+    @include flex(1);
     @include flex-direction(column);
+    @include align-items(flex-start);
     @include justify-content(center);
     height: $header-height;
   }

@@ -9,8 +9,15 @@
 
   // opux-page-section--header
   @include modifier('header') {
-    border-bottom: 2px solid $OP-gray-light;
+    @include box-shadow(-5px, 0px, 12px, rgba(122, 122, 122, 0.5))
+    background: $OP-white;
+    box-sizing: border-box;
     font-size: 20px;
+    left: 0px;
+    max-width: 100%;
+    position: fixed;
+    top: 0px;
+    width: 100%;
   }
 }
 
@@ -118,7 +125,7 @@
   // opux-card__actions
   @include element('actions') {
     background: $OP-white;
-    border-top: 2px solid $OP-gray-light;
+    border-top: 1px solid $OP-gray-light;
     box-sizing: border-box;
     padding: .8rem;
     text-align: center;

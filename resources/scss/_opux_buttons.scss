@@ -41,6 +41,7 @@
   display: inline-block;
   margin: 0 .4rem;
   &:before {
+    color: $OP-gray-medium;
     font-size: 2.8rem;
   }
 }
