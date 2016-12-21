@@ -36,7 +36,7 @@
       (time/set-server-client-diff-seconds diff)
       (this conf))))
 
-(defn route! [{:keys [accept-langs langs identity session] :as conf}]
+(defn route! [{:keys [accept-langs langs identity] :as conf}]
   (let [tr (tr-with (tr-opts langs) accept-langs)
         routes page-routes/hierarchy
         handler-route-key (match-route routes (.-pathname js/location))
@@ -45,8 +45,7 @@
                  :conf conf
                  :hierarchy hiiop.routes.page-hierarchy/hierarchy
                  :current-locale (keyword (:current-locale conf))
-                 :identity (:identity conf)
-                 :session (:session conf)}]
+                 :identity (:identity conf)}]
     (set-context! context)
     (mount-top-navigation context)
     (log/info handler-route-key handler-key)
