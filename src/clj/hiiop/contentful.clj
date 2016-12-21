@@ -5,11 +5,12 @@
             [hiiop.config :refer [env]]
             [hiiop.translate :refer [default-locale]]
             [taoensso.carmine :as car]
+            [mount.core :refer [defstate]]
             [taoensso.timbre :as log]))
 
 (def cf-url "https://cdn.contentful.com/")
-(def items-url (str cf-url "spaces/" (:space-id (:contentful env)) "/entries?access_token="
-                    (:cd-api-key (:contentful env)) "&locale=*"))
+(defstate items-url :start (str cf-url "spaces/" (:space-id (:contentful env)) "/entries?access_token="
+                                (:cd-api-key (:contentful env)) "&locale=*"))
 
 (defn process-email [{{{emailkey :fi} :emailkey} :fields :as email-object}]
   "Store email object in redis."
@@ -60,7 +61,7 @@
   (try (-> (get-all-items)
            (refresh-items))
        (catch Exception e
-         (log/info "Updating items failed"))))
+         (log/info "Updating items failed: " e))))
 
 (defn localize-fields [fields locale]
   "Given the :fields part of a multi-locale contentful object, returns

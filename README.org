@@ -62,6 +62,7 @@ Create profiles.clj under your git root to place the secrets.
       {:env
        {:database-url "postgresql://localhost/hiiop_dev?user=youruser"
         :timezone "Europe/Helsinki"
+        :site-base-url ""
         :aws
         {:sender-address ""
          :mail-server-opts
