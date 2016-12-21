@@ -18,24 +18,33 @@
    [:div {:class "opux-card"}
 
     [:div {:class "opux-card__image-container"}
+     [:div {:class "opux-card__status"}
+      "Oma tapahtuma | Odottaa hyväksymistä"]
      [:a {:href "#"}
       [:img {:class "opux-card__image"
              :src "https://media.giphy.com/media/HNQVf0ik57nHy/giphy-facebook_s.jpg"}]]]
 
-    [:span {:class "opux-card__location opux-inline-icon opux-inline-icon-location"}
-     "Helsinki"]
+    [:div {:class "opux-card__content"}
 
-    [:span {:class "opux-card__attendance opux-inline-icon opux-inline-icon-personnel opux-inline-icon--right"}
-     23]
+     [:span {:class "opux-card__location opux-inline-icon opux-inline-icon-location"}
+      "Helsinki"]
+     [:span {:class "opux-card__attendance opux-inline-icon opux-inline-icon-personnel opux-inline-icon--right"}
+      23]
 
-    [:a {:class "opux-card__title" :href "#"}
-     "Konalan kehitysvammaisten iltatanhutapahtuma"]
+     [:a {:class "opux-card__title" :href "#"}
+      "Konalan kehitysvammaisten iltatanhutapahtuma"]
 
-    [:span {:class "opux-card__date opux-inline-icon opux-inline-icon-calendar"}
-     "Keskiviikko 28.1"]
+     [:span {:class "opux-card__date opux-inline-icon opux-inline-icon-calendar"}
+      "Keskiviikko 28.1"]
+     [:span {:class "opux-card__time opux-inline-icon opux-inline-icon-clock"}
+      "18.00-20.00"]
 
-    [:span {:class "opux-card__time opux-inline-icon opux-inline-icon-clock"}
-     "18.00-20.00"]]])
+     [:div {:class "opux-card__actions"}
+      [:span {:class "opux-card-action opux-icon-circled opux-icon-trashcan"}]
+      [:span {:class "opux-card-action opux-icon-circled opux-icon-personnel"}]
+      [:span {:class "opux-card-action opux-icon-circled opux-icon-edit"}]
+      ]
+     ]]])
 
 (rum/defcs profile < rum/reactive
   (rum/local "" ::email)
@@ -69,19 +78,16 @@
         (tr [:pages.profile.edit])]]]
 
      [:div {:class "opux-card-list-container"}
-      [:div
-       {:class "opux-content opux-content--small opux-centered opux-card-list__subtitle"}
-       [:p (tr [:pages.quest.list.not-found])]]
 
       [:h2 {:class "opux-centered"}
-       "Helmikuussa"]
+       (tr [:pages.profile.attending])]
 
-      [:ul {:class "opux-card-list"}
-       (repeat 7 (card))]
+      [:ul {:class "opux-card-list opux-card-list--centered"}
+       (repeat 2 (card))]
 
       [:h2 {:class "opux-centered"}
-       "Maaliskuussa "]
+       (tr [:pages.profile.submissions])]
 
       [:ul {:class "opux-card-list"}
-       (repeat 8 (card))]
+       (repeat 5 (card))]
       ]]))
