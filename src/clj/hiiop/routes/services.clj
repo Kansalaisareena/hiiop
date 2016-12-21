@@ -6,13 +6,14 @@
             [buddy.auth.middleware :refer [wrap-authentication]]
             [schema.core :as s]
             [taoensso.timbre :as log]
-            [hiiop.middleware :refer [api-authenticated]]
+            [schema.coerce :as sc]
+            [hiiop.contentful :as cf]
+            [hiiop.middleware :refer [api-authenticated wrap-simple-auth]]
             [hiiop.time :as time]
             [hiiop.config :refer [env]]
             [hiiop.api-handlers :as api-handlers]
             [hiiop.schema :refer :all]
-            [hiiop.db.core :as db]
-            [schema.coerce :as sc]))
+            [hiiop.db.core :as db]))
 
 (defapi service-routes
   {:swagger {:ui "/--help"
@@ -49,7 +50,14 @@
       (POST "/contentful-hook" []
         :body [cfobject CfObject]
         :summary "Handles contentful webhook."
-        api-handlers/contentful-hook)
+        (wrap-simple-auth {:username (get-in env [:contentful :webhook-user])
+                           :password (get-in env [:contentful :webhook-password])}
+                          (fn [request]
+                            (try (do (cf/process-item cfobject)
+                                     (ok))
+                                 (catch Exception e
+                                   (log/info "Contentful hook failed: " e)
+                                   (internal-server-error))))))
 
       (context "/users" []
         :tags ["user"]
