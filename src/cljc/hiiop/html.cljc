@@ -436,3 +436,21 @@
       [:div {:id "app" :class "opux-page-section" :dangerouslySetInnerHTML {:__html content}}]
       (into [:div {:class "script-tags"}] script-tags)
       ))))
+
+(defn wrap-paragraph [content]
+  (into [:div]
+        (map #(if (not (nil? %)) [:p %] "")
+             (string/split content #"\n"))))
+
+(defn append-if-valid [text separator]
+  (if (not (nil? text))
+    (str ", " text)
+    ""))
+
+(defn combine-text [separator first-text & args]
+  (if (nil? first-text)
+    (if args
+      (let [[new-first & rest] args]
+        (recur separator new-first rest))
+      "")
+    (str first-text (string/join (map #(append-if-valid % separator) args)))))

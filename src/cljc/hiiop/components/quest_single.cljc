@@ -3,26 +3,9 @@
      (:require-macros [cljs.core.async.macros :refer [go]]))
   (:require [clojure.string :as string]
             [rum.core :as rum]
+            [hiiop.html :as html]
             [hiiop.time :as time]
             [taoensso.timbre :as log]))
-
-(rum/defc wrap-paragraph [content]
-  (into [:div]
-        (map #(if (not (nil? %)) [:p %] "")
-             (string/split content #"\n"))))
-
-(defn append-if-valid [text]
-  (if (not (nil? text))
-    (str ", " text)
-    ""))
-
-(defn combine-info [first-text & args]
-  (if (nil? first-text)
-    (if args
-      (let [[new-first & rest] args]
-        (recur new-first rest))
-      "")
-    (str first-text (string/join (map append-if-valid args)))))
 
 (rum/defc quest [{:keys [context quest]}]
   (let [{:keys [name
@@ -42,8 +25,6 @@
                 google-maps-url]} location
         tr (:tr context)]
 
-    (println @quest)
-
     [:div {:class "opux-section"}
 
      [:div {:class "opux-content opux-content--quest-image-header"
@@ -55,10 +36,10 @@
      [:div {:class "opux-content opux-content--medium opux-content--quest-header"}
       [:p
        [:i {:class "opux-icon opux-icon-person"}]
-       (combine-info owner-name (:name organisation))]
+       (html/combine-text ", " owner-name (:name organisation))]
       [:p
        [:i {:class "opux-icon opux-icon-location"}]
-       (combine-info street-number street town postal-code)]
+       (html/combine-text ", " street-number street town postal-code)]
       [:p
        [:i {:class "opux-icon opux-icon-calendar"}]
        (time/to-string (time/from-string start-time) time/date-print-format)]]
