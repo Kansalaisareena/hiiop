@@ -1,5 +1,6 @@
 (ns hiiop.contentful
-  (:require [clj-http.client :as http]
+  (:require [mount.core :refer [defstate]]
+            [clj-http.client :as http]
             [hiiop.redis :refer [wcar*]]
             [cheshire.core :refer [parse-string]]
             [hiiop.config :refer [env]]
@@ -69,3 +70,4 @@
   the default locale one is returned."
   (into {} (for [[k v] fields] [k (get v locale (get v default-locale))])))
 
+(defstate contentful-init :start (update-all-items))

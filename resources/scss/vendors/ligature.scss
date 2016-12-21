@@ -4,22 +4,22 @@ $opux-font-family-icon-circled:'opuxicons-circled';
 $opux-font-family-icon-health: 'opuxicons-health';
 $opux-font-family-icon-health-circled:   'opuxicons-health-circled';
 $opux-font-family-hand: 'OPHand';
-$opux-font-path: '../fonts/';
+$opux-font-path: '/fonts/';
 
 @mixin opux-icon-fontface() {
   @font-face {
     font-family: $opux-font-family-icon;
-    src: url("../fonts/opuxicons.woff2?f27bbba844bae7b00bf201712640b6f5") format("woff2"),
-		url("../fonts/opuxicons.woff?f27bbba844bae7b00bf201712640b6f5") format("woff"),
-		url("../fonts/opuxicons.ttf?f27bbba844bae7b00bf201712640b6f5") format("truetype");
+    src: url("/fonts/opuxicons.woff2?f27bbba844bae7b00bf201712640b6f5") format("woff2"),
+		url("/fonts/opuxicons.woff?f27bbba844bae7b00bf201712640b6f5") format("woff"),
+		url("/fonts/opuxicons.ttf?f27bbba844bae7b00bf201712640b6f5") format("truetype");
     font-weight: normal;
     font-style: normal;
   }
   @font-face {
     font-family: $opux-font-family-icon-circled;
-    src: url("../fonts/opuxicons-circled.woff2?f27bbba844bae7b00bf201712640b6f5") format("woff2"),
-		url("../fonts/opuxicons-circled.woff?f27bbba844bae7b00bf201712640b6f5") format("woff"),
-		url("../fonts/opuxicons-circled.ttf?f27bbba844bae7b00bf201712640b6f5") format("truetype");
+    src: url("/fonts/opuxicons-circled.woff2?f27bbba844bae7b00bf201712640b6f5") format("woff2"),
+		url("/fonts/opuxicons-circled.woff?f27bbba844bae7b00bf201712640b6f5") format("woff"),
+		url("/fonts/opuxicons-circled.ttf?f27bbba844bae7b00bf201712640b6f5") format("truetype");
     font-weight: normal;
     font-style: normal;
   }

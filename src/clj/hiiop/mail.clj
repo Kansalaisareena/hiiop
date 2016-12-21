@@ -12,10 +12,19 @@
             [hiiop.redis :refer [wcar*]]
             [hiiop.config :refer [env]]))
 
+(defstate email-sending-config :start
+  (let [email-config {:host    (:smtp-server env)
+                      :port    (:smtp-port env)
+                      :user    (:smtp-user env)
+                      :pass    (:smtp-password env)
+                      :sender  (:sender-address env)}]
+    (log/info "starting with email config" email-config)
+    email-config))
+
 (defn send-mail [mail]
-  (let [mailopts (get-in env [:aws :mail-server-opts])]
-    (go
-      (send-message mailopts mail))))
+  (log/info "sending mail" mail)
+  (go
+    (send-message email-sending-config mail)))
 
 (defn mail-content [emailkey locale]
   (-> (car/get (str "email:" emailkey))
@@ -26,16 +35,21 @@
 
 (defn send-token [email token locale]
   (let [content (mail-content "activation" locale)]
-    (send-mail {:from (get-in env [:aws :sender-address])
+    (send-mail {:from (:sender email-sending-config)
                 :to email
-                :body [{:type "text/html"
-                        :content (render-static-markup
-                                  (emails/activate-account
-                                   {:activation-url (str (:site-base-url env) (path-for hierarchy :activate :token (str token)))
-                                    :title (content :otsikko)
-                                    :body-text (content :leipateksti)
-                                    :button-text (content :ekanappiteksti)
-                                    }))}]
+                :body [{:type "text/html; charset=utf-8"
+                        :content
+                        (render-static-markup
+                         (emails/activate-account
+                          {:activation-url
+                           (str (:site-base-url env)
+                                (path-for hierarchy
+                                          :activate
+                                          :token (str token)))
+                           :title (content :otsikko)
+                           :body-text (content :leipateksti)
+                           :button-text (content :ekanappiteksti)
+                           }))}]
                 :subject (content :otsikko)})))
 
 (defstate send-token-email :start send-token)
