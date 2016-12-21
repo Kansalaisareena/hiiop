@@ -328,12 +328,6 @@ RETURNING token
 DELETE FROM password_tokens
 WHERE token = :token
 
--- :name get-token-by-user-id :? :1 :uuid
--- :doc "Get token by user id"
-SELECT token
-FROM password_tokens
-WHERE user_id = :user_id
-
 -- :name check-token-validity :? :1
 -- :doc "Check if password token is valid"
 SELECT EXISTS
@@ -360,9 +354,22 @@ WHERE
 -- :doc "Activate user with password token"
 UPDATE users
   SET pass = :pass,
-      email = :email,
       is_active = true
-  WHERE is_active = false
+  WHERE email = :email AND
+        is_active = false
+    AND EXISTS (
+      SELECT 1
+      FROM password_tokens
+        WHERE id = user_id AND
+              expires > now() AND
+              token = :token)
+
+-- :name change-password! :! :1
+-- :doc "Change user password with password token"
+UPDATE users
+  SET pass = :pass
+  WHERE email = :email AND
+        is_active = true
     AND EXISTS (
       SELECT 1
       FROM password_tokens

@@ -22,7 +22,7 @@
       "Oma tapahtuma | Odottaa hyväksymistä"]
      [:a {:href "#"}
       [:img {:class "opux-card__image"
-             :src "https://media.giphy.com/media/HNQVf0ik57nHy/giphy-facebook_s.jpg"}]]]
+             :src "https://placeholdit.imgix.net/~text?txtsize=33&txt=quest%20image&w=480&h=300"}]]]
 
     [:div {:class "opux-card__content"}
 
