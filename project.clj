@@ -151,9 +151,8 @@
                 {:output-to "target/cljsbuild/public/js/app.js"
                  ;;:output-dir "target/cljsbuild/public/js/"
                  ;;:source-map "target/cljsbuild/public/js/app.js.map"
-                 :externs ["react/externs/react.js"
-                           "externs/google_maps_api_v3.js"]
-                 :optimizations :advanced
+                 :externs ["react/externs/react.js"]
+                 :optimizations :simple
                  :pretty-print false
                  :closure-warnings
                  {:externs-validation :off :non-standard-jsdoc :off}}}}}
