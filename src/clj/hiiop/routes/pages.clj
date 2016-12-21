@@ -5,6 +5,7 @@
             [bidi.ring :refer (make-handler)]
             [hiiop.middleware :refer [authenticated]]
             [hiiop.layout :as layout]
+            [hiiop.components.profile :as p-p]
             [hiiop.components.quests :as quests]
             [hiiop.components.activate :as p-a]
             [hiiop.components.register :as p-r]
@@ -16,7 +17,9 @@
                                   NewQuest
                                   RegistrationInfo
                                   UserActivation
+                                  QuestFilter
                                   new-empty-quest
+                                  new-empty-quest-filter
                                   new-empty-registration-info
                                   new-empty-activation-info]]
             [hiiop.api-handlers :refer [get-quest]]))
@@ -33,11 +36,25 @@
 
 (defn index [req]
   (let [context (create-context req)
-        tr (:tr context)]
+        tr (:tr context)
+        quest-filter (atom (new-empty-quest-filter))
+        errors (atom (same-keys-with-nils @quest-filter))]
     (layout/render {:context context
                     :content (quests/list-quests {:quests ["a" "a" "a"]
-                                                  :context context})
-                    :title (tr [:pages.index.title])})))
+                                                  :quest-filter quest-filter
+                                                  :context context
+                                                  :schema QuestFilter})
+                    :title (tr [:actions.quest.create])
+
+                    :scripts
+                    [(str
+                      "https://maps.googleapis.com/maps/api/js?"
+                      "key=AIzaSyDfXn9JTGue0fbkI3gqIqe7_WUn0M-dt-8"
+                      "&libraries=places"
+                      "&language=" "fi" ;; to normalize the google data
+                      "&region=FI"
+                      )]
+                    })))
 
 (defn login [req]
   (let [context (create-context req)
@@ -57,6 +74,13 @@
                                             :schema RegistrationInfo
                                             :errors errors})
                     :title (tr [:pages.register.title])})))
+
+(defn profile [req]
+  (let [context (create-context req)
+        tr (:tr context)]
+    (layout/render {:context context
+                    :content (p-p/profile {:context context
+                                           :quests ["a" "b" "c" "d"]})})))
 
 (defn activate [req]
   (let [context (create-context req)
@@ -103,6 +127,27 @@
                       )]
                     })))
 
+(defn browse-quests [req]
+  (let [context (create-context req)
+        tr (:tr context)
+        quest-filter (atom (new-empty-quest-filter))
+        errors (atom (same-keys-with-nils @quest-filter))]
+    (layout/render {:context context
+                    :content (quests/list-quests {:quests ["a" "a" "a"]
+                                                  :quest-filter quest-filter
+                                                  :context context
+                                                  :schema QuestFilter})
+                    :title (tr [:actions.quest.create])
+                    :scripts
+                    [(str
+                      "https://maps.googleapis.com/maps/api/js?"
+                      "key=AIzaSyDfXn9JTGue0fbkI3gqIqe7_WUn0M-dt-8"
+                      "&libraries=places"
+                      "&language=" "fi" ;; to normalize the google data
+                      "&region=FI"
+                      )]
+                    })))
+
 (defn create-quest [req]
   (edit-quest-with-schema
    {:request req
@@ -129,6 +174,8 @@
    register
    :activate
    activate
+   :profile
+   (authenticated profile)
    :browse-quests
    browse-quests
    :create-quest

@@ -2,7 +2,7 @@
   @include opux-color-transition;
   background: none;
   border-radius: 24px;
-  border: 1px solid $OP-gray;
+  border: 1px solid $OP-gray-medium;
   box-sizing: border-box;
   color: $OP-gray;
   cursor: pointer;
@@ -19,5 +19,32 @@
   }
   &:disabled {
     color: lighten($OP-gray, 30);
+  }
+
+  // opux-button--spacing
+  @include modifier('spacing') {
+    margin-left: .5rem;
+    margin-right: .5em
+  }
+
+  // opux-button--highlight
+  @include modifier('highlight') {
+    background: $OP-orange;
+    color: $OP-white;
+  }
+
+  // opux-button--dull
+  @include modifier('dull') {
+    background: $OP-gray-light;
+  }
+}
+
+@include block('opux-card-action') {
+  cursor: pointer;
+  display: inline-block;
+  margin: 0 .4rem;
+  &:before {
+    color: $OP-gray-medium;
+    font-size: 2.8rem;
   }
 }

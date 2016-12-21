@@ -38,9 +38,36 @@ $opux-icon-cross-name-collection: (eyeglasses, law, sound, globe, handicap, chil
 
   // opux-logo--header
   @include modifier('header') {
-    @include flex(1.5);
+    @include flex(1);
     @include flex-direction(column);
+    @include align-items(flex-start);
     @include justify-content(center);
     height: $header-height;
+  }
+}
+
+// opux-inline-icon
+@include block('opux-inline-icon') {
+  box-sizing: border-box;
+  display: inline-block;
+  padding: .5rem .5rem .5rem 2rem;
+  position: relative;
+  line-height: 1.5rem;
+
+  &:before {
+    font-size: 1.3rem;
+    left: .5rem;
+    position: absolute;
+  }
+
+  // opux-inline-icon--right
+  @include modifier('right') {
+    text-align: right;
+    padding: .5rem 2rem .5rem .5rem;
+
+    &:before {
+      left: auto;
+      right: .5rem;
+    }
   }
 }

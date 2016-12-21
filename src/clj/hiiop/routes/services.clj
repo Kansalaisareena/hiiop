@@ -56,9 +56,12 @@
         (GET "/:id" []
           :name ::user
           :path-params [id :- s/Uuid]
-          :return User
           :summary "Return user object"
-          api-handlers/get-user)
+          (fn [request]
+            (-> (api-handlers/get-user request)
+                (#(if (:errors %1)
+                    (bad-request %1)
+                    (ok %1))))))
 
         (POST "/register" []
           :body-params [email :- Email name :- s/Str]

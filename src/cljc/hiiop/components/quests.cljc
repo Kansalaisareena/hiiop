@@ -14,15 +14,31 @@
             [hiiop.html :as html]
             [hiiop.schema :as hs]))
 
+(rum/defc card []
+  [:div {:class "opux-card-container"}
+   [:div {:class "opux-card"}
+
+    [:div {:class "opux-card__image-container"}
+     [:a {:href "#"}
+      [:img {:class "opux-card__image"
+             :src "https://media.giphy.com/media/HNQVf0ik57nHy/giphy-facebook_s.jpg"}]]]
+
+    [:div {:class "opux-card__content"}
+     [:span {:class "opux-card__location opux-inline-icon opux-inline-icon-location"}
+      "Helsinki"]
+     [:span {:class "opux-card__attendance opux-inline-icon opux-inline-icon-personnel opux-inline-icon--right"}
+      23]
+
+     [:a {:class "opux-card__title" :href "#"}
+      "Konalan kehitysvammaisten iltatanhutapahtuma"]
+
+     [:span {:class "opux-card__date opux-inline-icon opux-inline-icon-calendar"}
+      "Keskiviikko 28.1"]
+     [:span {:class "opux-card__time opux-inline-icon opux-inline-icon-clock"}
+      "18.00-20.00"]]]])
+
 (rum/defc display [quest]
   [:li quest])
-
-(rum/defc list-quests [{:keys [context quests]}]
-  (let [tr (:tr context)]
-    [:div
-     [:h2 (tr [:pages.quest.title])]
-     [:ul
-      (map display quests)]]))
 
 (defn add-organisation-to [quest]
   (reset! quest
@@ -79,7 +95,7 @@
     ))
 
 (rum/defcs edit-content < rum/reactive
-                          (rum/local false ::organisation-enabled)
+  (rum/local false ::organisation-enabled)
   [state {:keys [context
                  quest
                  schema
@@ -174,7 +190,7 @@
 
 (rum/defcs edit-time-place < rum/reactive
   (rum/local false ::end-time-revealed)
-  [state {:keys [quest is-valid cursors-and-schema context tr]}]
+  [state {:keys [cursors-and-schema context tr]}]
   (let [end-time-revealed (::end-time-revealed state)
         end-time (get-in cursors-and-schema [:end-time :value])
         start-time (get-in cursors-and-schema [:start-time :value])]
@@ -369,3 +385,72 @@
       (html/button
        (tr [:pages.quest.edit.button.remove])
        {:class "opux-button opux-form__button opux-fieldset__inline-item"})])]))
+
+(rum/defcs quest-categories-filter < rum/reactive
+  (rum/local false ::is-active)
+  [state {:keys [cursors-and-schema context tr]}]
+  (let [is-active (::is-active state)]
+    [:div {:class "opux-card-filter__field opux-card-filter__field--category"}
+     [:div {:class "opux-card-filter__label"}
+      (tr [:pages.quest.list.filter.category])]
+     [:span {:class "opux-icon opux-icon-plus opux-card-filter--category-filter"}]
+     (html/form-section
+      ""
+      (html/multi-selector-for-schema
+       {:schema (get-in cursors-and-schema [:categories :schema])
+        :value (get-in cursors-and-schema [:categories :value])
+        :error (get-in cursors-and-schema [:categories :error])
+        :context context}))]))
+
+(rum/defc quest-filters [{:keys [tr cursors-and-schema context]}]
+  [:div {:class "opux-content opux-card-filter"}
+   (quest-categories-filter {:context context
+                             :tr tr
+                             :cursors-and-schema cursors-and-schema})
+
+   [:div {:class "opux-card-filter__field opex-card-filter__field--datetime"}
+    [:div {:class "opux-card-filter__label"}
+     (tr [:pages.quest.list.filter.where])]
+    (html/location-selector
+     {:class "opux-input opux-input--location-selector"
+      :location (get-in cursors-and-schema [:location :value])
+      :error (get-in cursors-and-schema [:location :error])
+      :schema (get-in cursors-and-schema [:location :schema])
+      :placeholder (tr [:pages.quest.edit.location.placeholder])
+      :context context})]
+
+   [:div {:class "opux-card-filter__field opex-card-filter__field--datetime"}
+    [:div {:class "opux-card-filter__label"}
+     (tr [:pages.quest.list.filter.when])]]])
+
+(rum/defc list-quests
+  [{:keys [context quests quest-filter schema errors]}]
+  (let [tr (:tr context)
+        cursors-and-schema
+        (c/value-and-error-cursors-and-schema {:for quest-filter
+                                               :schema schema
+                                               :errors errors})]
+    [:div {:class "opux-section"}
+     [:h1 (tr [:pages.quest.list.title])]
+
+     (quest-filters {:cursors-and-schema cursors-and-schema
+                     :tr tr
+                     :context context})
+
+     [:div {:class "opux-card-list-container"}
+      [:div
+       {:class "opux-content opux-content--small opux-centered opux-card-list__subtitle"}
+       [:p (tr [:pages.quest.list.not-found])]]
+
+      [:h2 {:class "opux-centered"}
+       "Helmikuussa"]
+
+      [:ul {:class "opux-card-list"}
+       (repeat 7 (card))]
+
+      [:h2 {:class "opux-centered"}
+       "Maaliskuussa "]
+
+      [:ul {:class "opux-card-list"}
+       (repeat 8 (card))]
+      ]]))

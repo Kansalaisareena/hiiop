@@ -1,16 +1,18 @@
+#top-navigation {
+  @include flex(12);
+}
+
 @include block('opux-nav') {
   @include flex-direction(row);
   @include flexbox;
 
   // opux-nav--header
   @include modifier('header') {
-    @include flex(9);
   }
 }
 
 @include block('opux-menu') {
   @include flex-direction(row);
-  @include flexbox;
   @include flexbox;
   @include justify-content(center);
   list-style: none;
@@ -20,7 +22,9 @@
 
   // opux-menu--main
   @include modifier('main') {
+    @include flex-direction(row)
     @include flex(12);
+    @include align-items(flex-start)
   }
   // opux-menu--languages
   @include modifier('languages') {
@@ -76,7 +80,7 @@
       @include flexbox;
       @include justify-content(center);
       height: $header-height;
-      padding: 0 0.75rem;
+      padding: 0 1rem;
       text-align: center;
       width: 100%;
     }

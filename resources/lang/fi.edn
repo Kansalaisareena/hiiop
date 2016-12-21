@@ -36,8 +36,10 @@
 
   :quest
   {:title "Löydä tehtävä"
+
    :edit
    {:title "Ilmoita uusi tehtävä"
+
     :subtitles
     {:content "1/4 Tehtävän sisältö"
      :time-place "2/4 Missä ja milloin tapahtuma järjestetään"
@@ -48,6 +50,7 @@
     :description "Kerro tehtävästäsi"
     :picture "Lisää kuva"
     :hashtags "Aihetunnisteet eli hashtagit"
+
     :organisation
     {:name "Yhteisön tai organisaation nimi"
      :description "Kerro yhteisösi toiminnasta"}
@@ -55,18 +58,30 @@
     :end-time "Päättymisaika"
     :location {:label "Paikka"
                :placeholder "Anna sijainti"}
+
     :max-participants
     {:can-join "Tehtävään voi osallistua"
-     :amount-of-people "henkilöä"
-     }
+     :amount-of-people "henkilöä"}
+
     :open "Tehtävä on avoin kaikille"
     :closed "Vapaaehtoiseksi voi ilmoittautua ainoastaan järjestäjältä saadun yksityisen linkin kautta"
     :organiser-participates "Osallistun lisäksi itse tehtävään"
+
     :button
     {:add-organisation "Haluatko lisätä tehtävään tietoa yhteisöstäsi tai organisaatiosta"
      :reveal-end-time "Lisää päättymisaika"
      :submit "Esikatsele ja julkaise"
      :remove "Poista tehtävä"}
+
+    :list
+    {:title "Löydä itsellesi vapaaehtoistehtävä"
+     :not-found "Juuri näillä hakuehdoilla ei löytynyt tapahtumia. Koita valita useampia kiinnostuksen kohteita."
+
+     :filter
+     {:category "Kiinnostuksen kohde"
+      :where "Misa?"
+      :when "Milloin?"
+      }}
     }
    }
 

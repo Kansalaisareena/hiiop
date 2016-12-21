@@ -136,7 +136,7 @@
 	@if $value == nowrap {
 		-ms-flex-wrap: none;
 	} @else {
-		-ms-flex-wrap: $value; 
+		-ms-flex-wrap: $value;
 	}
 	flex-wrap: $value;
 }
@@ -222,9 +222,9 @@
 
 // Flexbox Basis
 //
-// The 'flex-basis' property sets the flex basis. Negative lengths are invalid. 
+// The 'flex-basis' property sets the flex basis. Negative lengths are invalid.
 //
-// Values: Like "width" 
+// Values: Like "width"
 // Default: auto
 //
 // http://www.w3.org/TR/css3-flexbox/#flex-basis-property
@@ -252,7 +252,6 @@
 // http://w3.org/tr/css3-flexbox/#flex-property
 
 @mixin flex($fg: 1, $fs: null, $fb: null) {
-    
 	// Set a variable to be used by box-flex properties
 	$fg-boxflex: $fg;
 

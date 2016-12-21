@@ -67,3 +67,10 @@
           body (:body response)]
       body)))
 
+(defn get-user-info [id]
+  (go
+    (let [response (<! (http/get
+                        (str "/api/v1/users/" id)))
+          status (:status response)
+          body (:body response)]
+      body)))

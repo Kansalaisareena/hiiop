@@ -5,6 +5,7 @@
             [rum.core :as rum]
             [taoensso.timbre :as log]
             [schema.core :as schema]
+            [hiiop.components.profile :as p-p]
             [hiiop.components.login :as p-l]
             [hiiop.components.activate :as p-a]
             [hiiop.components.register :as p-r]
@@ -17,8 +18,10 @@
                                   Quest
                                   RegistrationInfo
                                   UserActivation
+                                  QuestFilter
                                   new-empty-registration-info
                                   new-empty-quest
+                                  new-empty-quest-filter
                                   new-empty-activation-info
                                   ]]
             [clojure.string :as string]))
@@ -53,12 +56,25 @@
                     :errors errors})
      (. js/document (getElementById "app")))))
 
-(defn browse-quests-page [params]
-  (log/info "browse-quests-page")
+(defn profile-page [params]
+  (log/info "profile-page")
   (rum/mount
-   (quests/list-quests {:quests ["a" "b" "c" "d"]
-                        :context @context})
+   (p-p/profile {:context @context
+                 :quests ["a" "b" "c" "d"]})
    (. js/document (getElementById "app"))))
+
+
+(defn browse-quests-page [params]
+  (let [quest-filter (atom (new-empty-quest-filter))
+        errors (atom (same-keys-with-nils @quest-filter))]
+    (log/info "browse-quests-page")
+    (rum/mount
+     (quests/list-quests {:quests ["a" "b" "c" "d"]
+                          :context @context
+                          :quest-filter quest-filter
+                          :errors errors
+                          :schema QuestFilter})
+     (. js/document (getElementById "app")))))
 
 (defn create-quest-page [params]
   (let [quest (atom (new-empty-quest))
@@ -99,6 +115,8 @@
    browse-quests-page
    :login
    login-page
+   :profile
+   profile-page
    :register
    register-page
    :activate
