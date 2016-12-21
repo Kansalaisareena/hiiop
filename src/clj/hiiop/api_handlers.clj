@@ -47,7 +47,7 @@
   (try
     (let [id (:id (db/create-virtual-user! {:email email}))]
       (if (nil? id)
-        {:errors {:user :errors.user.register.failed}}
+        {:errors {:email :errors.email.in-use}}
         (let [token (db/create-password-token!
                      {:email email
                       :expires (time/add (time/now) time/an-hour)})]
@@ -56,20 +56,25 @@
           id)))
     (catch Exception e
       (log/error e)
-      {:errors {:user :errors.user.register.failed}})))
+      {:errors {:email :errors.email.in-use}})))
 
 (defn activate [{:keys [email password token]}]
   (let [pwhash (hashers/derive password {:alg :bcrypt+blake2b-512})
-        token-uuid (sc/string->uuid token)]
-    (db/activate-user! {:pass pwhash :email email :token token-uuid})
-    (db/delete-password-token! {:token token-uuid})
-    (ok)))
+        token-uuid (sc/string->uuid token)
+        activate-user (db/activate-user!
+                       {:pass pwhash
+                        :email email
+                        :token token-uuid})]
+    (if (> activate-user 0)
+      (do
+        (db/delete-password-token! {:token token-uuid})
+        true)
+      false)))
 
-(defn validate-token [request]
+(defn validate-token [token-uuid]
+  (log/info "validate-token" token-uuid)
   (try
-    (let [token (:token (:body-params request))
-          token-uuid (sc/string->uuid token)
-          token-info (db/get-token-info {:token token-uuid})]
+    (let [token-info (db/get-token-info {:token token-uuid})]
       (if (nil? token-info)
         {:errors {:token :errors.user.token.invalid}}
         token-info))
@@ -87,7 +92,15 @@
       (log/error e)
       {:errors {:users :errors.user.not-found}})))
 
-(defn api-quest->db-quest
+(def moderated->unmoderated-db-quest-keys
+  {:name                     :unmoderated_name
+   :description              :unmoderated_description
+   :organisation             :unmoderated_organisation
+   :organisation_description :unmoderated_organisation_description
+   :hashtags                 :unmoderated_hashtags
+   :picture                  :unmoderated_picture})
+
+(defn api-quest->moderated-db-quest
   [{:keys [hashtags
            start-time
            end-time
@@ -101,22 +114,29 @@
       (assoc :categories (vec (distinct categories)))
       (assoc :start-time  (time/from-string start-time))
       (assoc :end-time (time/from-string end-time))
-      (assoc :picture picture-id)
+      (assoc :picture (when (not (= picture-id ""))
+                        (sc/string->uuid picture-id)))
       (assoc :organisation (:name organisation))
       (assoc :organisation-description (:description organisation))
       (conj (:coordinates location))
       (conj location)
       (assoc :street-number (:street-number location))
-      (dissoc :location :coordinates :picture-id)
+      (dissoc :location :coordinates :picture-id :picture-url)
       (db/->snake_case_keywords))
   )
+
+(defn api-quest->new-unmoderated-db-quest [])
 
 (def DBQuest
   {:id hs/NaturalNumber
    :name hs/NonEmptyString
-   :description (s/maybe hs/NonEmptyString)
+   :unmoderated_name hs/NonEmptyString
+   :description hs/NonEmptyString
+   :unmoderated_description hs/NonEmptyString
    :organisation (s/maybe hs/NonEmptyString)
+   :unmoderated_organisation (s/maybe hs/NonEmptyString)
    :organisation_description (s/maybe hs/NonEmptyString)
+   :unmoderated_organisation_description (s/maybe hs/NonEmptyString)
    :start_time (s/constrained s/Any time/time? :error.not-valid-date)
    :end_time (s/constrained s/Any time/time? :error.not-valid-date)
    :street_number (s/maybe s/Int)
@@ -129,23 +149,50 @@
    :google_maps_url (s/maybe hs/NonEmptyString)
    :google_place_id (s/maybe hs/NonEmptyString)
    :categories [s/Keyword]
-   :unmoderated_description hs/NonEmptyString
    :max_participants s/Num
    :hashtags [s/Str]
+   :unmoderated_hashtags [s/Str]
    :picture (s/maybe s/Uuid)
+   :unmoderated_picture (s/maybe s/Uuid)
    :owner s/Uuid
-   :is_open s/Bool
-   :secret_party s/Uuid})
+   :is_open s/Bool})
 
-(def NewDBQuest
-  (st/dissoc DBQuest
+(def UnmoderatedDBQuest
+  (apply
+   st/dissoc
+   (concat
+    [DBQuest]
+    (keys moderated->unmoderated-db-quest-keys))))
+
+(def ModeratedDBQuest
+  (apply
+   st/dissoc
+   (concat
+    [DBQuest]
+    (vals moderated->unmoderated-db-quest-keys))))
+
+(def NewUnmoderatedDBQuest
+  (st/dissoc UnmoderatedDBQuest
              :id
-             :description
              :secret_party))
 
-(def api-quest->db-quest-coercer
-  (stc/coercer NewDBQuest
-               {NewDBQuest api-quest->db-quest}))
+(def NewModeratedDBQuest
+  (st/dissoc ModeratedDBQuest
+             :id
+             :secret_party))
+
+(def api-quest->moderated-db-quest-coercer
+  (stc/coercer ModeratedDBQuest
+               {ModeratedDBQuest api-quest->moderated-db-quest}))
+
+(def new-api-quest->new-moderated-db-quest-coercer
+  (stc/coercer NewModeratedDBQuest
+               {NewModeratedDBQuest api-quest->moderated-db-quest}))
+
+(def new-api-quest->new-unmoderated-db-quest-coercer
+  (stc/coercer NewUnmoderatedDBQuest
+               {NewUnmoderatedDBQuest api-quest->new-unmoderated-db-quest}))
+
 
 (def location-keys
   [:street-number
@@ -185,11 +232,14 @@
          (into [] (map keyword (:categories db-quest)))))
 
 (defn db-quest->api-quest [{:keys [organisation
-                                   organisation-description] :as db-quest}]
+                                   organisation-description
+                                   picture] :as db-quest}]
   (-> db-quest
       (location-flat->location-structure)
       (times->strings)
       (string-categories->keyword-categories)
+      (dissoc :picture)
+      (assoc :picture-id (str picture))
       (assoc :organisation
              {:name organisation :description organisation-description})
       (dissoc :organisation :organisation-description)))
@@ -203,16 +253,40 @@
     (-> quest
         (assoc :owner (:id user))
         (dissoc :organiser-participates)
-        (api-quest->db-quest-coercer)
-        (db/add-unmoderated-quest!)
-        (#(db/get-quest-by-id {:id (:id %)}))
+        (new-api-quest->new-moderated-db-quest-coercer)
+        (db/add-moderated-quest!)
+        (#(db/get-moderated-quest-by-id {:id (:id %)}))
         (db-quest->api-quest-coercer))
     (catch Exception e
       (log/error e)
       )))
 
-(defn get-quest [{{id :id} :params}]
-  (ok (db/get-quest-by-id {:id id})))
+(defn get-quest [id]
+  (try
+    (-> (db/get-moderated-quest-by-id {:id id})
+        (db-quest->api-quest-coercer))
+    (catch Exception e
+      (log/error e))))
+
+(defn edit-quest [{:keys [quest user]}]
+  (try
+    (-> quest
+        (assoc :owner (:id user)) ;; TODO When moderating, this is different!
+        (dissoc :organiser-participates)
+        (api-quest->moderated-db-quest-coercer)
+        (db/update-moderated-quest!)
+        (#(db/get-moderated-quest-by-id {:id (:id %)}))
+        (db-quest->api-quest-coercer))
+    (catch Exception e
+      (log/error e)
+      {:errors {:quest "Failed to update"}})))
+
+(defn get-quests-for-owner [owner]
+  (try
+    (-> (db/get-moderated-quest-by-owner {:owner owner})
+        (db-quest->api-quest-coercer))
+    (catch Exception e
+      (log/error e))))
 
 (defn join-quest [params]
   (created ""))
@@ -223,10 +297,12 @@
   (-> (:content-type file)
       (#(re-find #"^image/(jpg|jpeg|png|gif)$" %1))))
 
-(defn add-picture [file]
+(defn add-picture [{:keys [file user]}]
   (if (picture-supported? file)
     (try
-      (let [picture-id (:id (db/add-picture! {:url ""}))]
+      (let [picture-id (:id
+                        (db/add-picture! {:url ""
+                                          :owner (:id user)}))]
         (log/info picture-id)
         (-> picture-id
             (upload-picture file)
@@ -242,6 +318,7 @@
         {:errors {:picture :errors.picture.add-failed}}))
     {:errors {:picture :errors.picture.type-not-supported
               :type (:content-type file)}}))
+
 (defn hook-auth
   "Check the response for correct credentials for webhook"
   [request]

@@ -12,15 +12,17 @@
             [hiiop.components.login :as p-l]
             [hiiop.config :refer [env]]
             [hiiop.routes.page-hierarchy :refer [hierarchy]]
-            [hiiop.mangling :refer [same-keys-with-nils]]
-            [hiiop.schema :refer [NewQuest
+            [hiiop.mangling :refer [parse-natural-number same-keys-with-nils]]
+            [hiiop.schema :refer [Quest
+                                  NewQuest
                                   RegistrationInfo
                                   UserActivation
                                   QuestFilter
                                   new-empty-quest
                                   new-empty-quest-filter
                                   new-empty-registration-info
-                                  new-empty-activation-info]]))
+                                  new-empty-activation-info]]
+            [hiiop.api-handlers :refer [get-quest]]))
 
 (defn tr-from-req [req]
   (:tempura/tr req))
@@ -95,17 +97,25 @@
                                             :errors errors})
                     :title (tr [:pages.activate.title])})))
 
-(defn create-quest [req]
+(defn browse-quests [req]
   (let [context (create-context req)
+        tr (:tr context)]
+    (layout/render {:context context
+                    :content (quests/list-quests {:quests ["a" "a" "a"]
+                                                  :context context})
+                    :title (tr [:actions.quest.create])})))
+
+(defn edit-quest-with-schema [{:keys [request schema quest title-key]}]
+  (let [context (create-context request)
         tr (:tr context)
-        quest (atom (new-empty-quest))
-        errors (atom (same-keys-with-nils @quest))]
-    (layout/render {:title (tr [:actions.quest.create])
+        quest-atom (atom quest)
+        errors (atom (same-keys-with-nils @quest-atom))]
+    (layout/render {:title (tr [])
                     :context context
                     :content
                     (quests/edit {:context context
-                                  :quest quest
-                                  :schema NewQuest
+                                  :quest quest-atom
+                                  :schema schema
                                   :errors errors})
                     :scripts
                     [(str
@@ -138,12 +148,22 @@
                       )]
                     })))
 
+(defn create-quest [req]
+  (edit-quest-with-schema
+   {:request req
+    :schema NewQuest
+    :quest (new-empty-quest)
+    :title-key :actions.quest.create}))
+
 (defn edit-quest [req]
-  (let [context (create-context req)
-        tr (:tr context)]
-    (layout/render {:context context
-                    :content "Edit event"
-                    :title (tr [:actions.quest.edit])})))
+  (let [id (get-in req [:params :quest-id])
+        quest (get-quest (parse-natural-number id))]
+    (if quest
+      (edit-quest-with-schema
+       {:request req
+        :schema Quest
+        :quest quest
+        :title-key :actions.quest.edit}))))
 
 (def handlers
   {:index
@@ -161,7 +181,7 @@
    :create-quest
    (authenticated create-quest)
    :edit-quest
-   (authenticated create-quest)})
+   (authenticated edit-quest)})
 
 (def ring-handler
   (do

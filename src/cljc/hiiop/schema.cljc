@@ -11,7 +11,7 @@
   #?(:clj (:import [schema.utils ValidationError]
                    [schema.core Constrained])))
 
-(def Email #"(^[a-zA-Z0-9._+]+@[^@.]+\.[^@.]+)$")
+(def Email #"(^[a-zA-Z0-9._+-]+@[^@.]+\.[^@.]+)$")
 
 (def Password s/Str)
 
@@ -125,28 +125,25 @@
   "Quest"
   {:id NaturalNumber
    :name NonEmptyString
-   (s/optional-key :description) (s/maybe s/Str)
+   :description NonEmptyString
    :start-time DateTime
    :end-time DateTime
    :location Location
    :max-participants NPlus
-   :unmoderated-description NonEmptyString
    :categories [Category]
-   :picture-url (s/maybe s/Str)
+   (s/optional-key :picture-id) (s/maybe s/Str)
+   (s/optional-key :picture-url) (s/maybe s/Str)
    (s/optional-key :hashtags) [Hashtag]
    :is-open s/Bool
    :owner s/Uuid
    (s/optional-key :organisation) (s/maybe Organisation)})
 
 (def NewQuest
-  (st/assoc
-   (st/dissoc Quest
-              :id
-              :description
-              :owner
-              :picture-url)
-   :organiser-participates s/Bool
-   (s/optional-key :picture-id) s/Uuid))
+  (-> Quest
+      (st/assoc :organiser-participates s/Bool)
+      (st/dissoc :id
+                 :owner
+                 :picture-url)))
 
 ;(def UrlLike #"http[s]{0,1}:\/\/.*")
 
@@ -158,7 +155,7 @@
 
 (defn new-empty-quest []
   {:name ""
-   :unmoderated-description ""
+   :description ""
    :hashtags []
    :start-time (time/to-string
                 (time/tomorrow-at-noon)
@@ -210,7 +207,9 @@
               schema-error (message-from-constrained (:schema data))
               type-error (:type data)
               found-error (or schema-error type-error :unknown-error)]
+          (log/error "select-schema-either" e)
           {:--error found-error}))))
+
 (def CfObject
   "Contentful object"
   {:sys s/Any

@@ -8,9 +8,9 @@
 (defn contains-many? [m & ks]
   (every? #(contains? m %) ks))
 
-(defn json-post [endpoint {:keys [body-string cookies]}]
+(defn json-request [endpoint {:keys [type body-string cookies]}]
   (->
-   (request :post endpoint)
+   (request type endpoint)
    (header "cookie" cookies)
    (body body-string)
    (content-type "application/json")))

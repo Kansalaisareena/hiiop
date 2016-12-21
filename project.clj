@@ -136,7 +136,10 @@
                {:source-paths ["src/cljc" "src/cljs" "env/prod/cljs"]
                 :compiler
                 {:output-to "target/cljsbuild/public/js/app.js"
-                 :externs ["react/externs/react.js"]
+                 :output-dir "target/cljsbuild/public/js/"
+                 :source-map "target/cljsbuild/public/js/app.js.map"
+                 :externs ["react/externs/react.js"
+                           "externs/google_maps_api_v3.js"]
                  :optimizations :advanced
                  :pretty-print false
                  :closure-warnings

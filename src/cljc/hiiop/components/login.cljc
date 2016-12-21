@@ -62,18 +62,18 @@
              :href "#"}
          (tr [:pages.login.forget-password])]
         [:a {:class "opux-register-link"
-             :href "#"}
+             :href (path-for pages/hierarchy :register)}
          (tr [:pages.login.register])]]
 
        [:input
         {:type "checkbox"
          :class "opux-input--checkbox"
          :default-checked false
-         :id (name :pages.login.forget-password)}]
+         :id (name :pages.login.remember-me)}]
        (html/label
-        (tr [:pages.login.forget-password])
+        (tr [:pages.login.remember-me])
         {:class "opux-input__label opux-input__label--checkbox"
-         :for (name :pages.login.forget-password)})
+         :for (name :pages.login.remember-me)})
 
        [:input
         {:class "opux-button"

@@ -1,5 +1,7 @@
 (ns hiiop.client-pages
+  (:require-macros [cljs.core.async.macros :refer [go]])
   (:require [clojure.data :as data]
+            [cljs.core.async :refer [<!]]
             [rum.core :as rum]
             [taoensso.timbre :as log]
             [schema.core :as schema]
@@ -8,7 +10,9 @@
             [hiiop.components.activate :as p-a]
             [hiiop.components.register :as p-r]
             [hiiop.components.quests :as quests]
+            [hiiop.client-api :refer [get-quest]]
             [hiiop.context :refer [context]]
+            [hiiop.mangling :refer [parse-natural-number same-keys-with-nils]]
             [hiiop.mangling :refer [same-keys-with-nils]]
             [hiiop.schema :refer [NewQuest
                                   Quest
@@ -83,15 +87,28 @@
      (. js/document (getElementById "app")))))
 
 (defn edit-quest-page [params]
-  (let [quest (atom (new-empty-quest))
-        errors (atom (same-keys-with-nils @quest))]
-    (log/info "edit-quest-page" @quest (new-empty-quest))
-    (rum/mount
-     (quests/edit {:context @context
-                   :quest quest
-                   :errors errors
-                   :schema Quest})
-     (. js/document (getElementById "app")))))
+  (go
+    (let [id (parse-natural-number
+              (get-in params [:route-params :quest-id]))
+          quest (<! (get-quest id))]
+      (-> quest
+          (#(assoc %1
+                   :categories
+                   (into [] (map keyword (:categories %1)))))
+          (atom)
+          ((fn [quest] {:quest quest}))
+          (#(assoc %1
+                   :errors
+                   (-> (:quest %1)
+                       (deref)
+                       (same-keys-with-nils)
+                       (atom))))
+          (assoc :context @context)
+          (assoc :schema Quest)
+          (#(rum/mount
+             (quests/edit %1)
+             (. js/document (getElementById "app"))))
+          ))))
 
 (def handlers
   {:index

@@ -17,6 +17,9 @@
     border-color: $OP-orange;
     color: $OP-white;
   }
+  &:disabled {
+    color: lighten($OP-gray, 30);
+  }
 
   // opux-button--spacing
   @include modifier('spacing') {
