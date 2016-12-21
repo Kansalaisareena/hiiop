@@ -107,7 +107,8 @@
   :quest
   {:create  "Ilmoita tehtävä"
    :browse  "Löydä tehtävä"
-   :edit    "Muokkaa tehtävää"}
+   :edit    "Muokkaa tehtävää"
+   :participants "vapaata paikkaa"}
 
   :user
   {:login    "Kirjaudu"

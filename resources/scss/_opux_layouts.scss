@@ -31,11 +31,34 @@
   box-sizing: border-box;
   margin: 0 auto;
   max-width: $screen-large;
-  padding: 0 1rem;
+  padding: 1rem;
   width: 100%;
+
+  @include modifier('medium') {
+    max-width: 900px;
+  }
 
   @include modifier('small') {
     max-width: 620px;
+  }
+
+  @include modifier('quest-image-header') {
+    background-color: $OP-gray-light;
+    background-size: cover;
+    display: block;
+    height: 1px;
+    padding-bottom: 50%;
+  }
+
+  @include modifier('quest-header') {
+    font-size: 1.3rem;
+    p {
+      margin-bottom: .5rem;
+    }
+  }
+
+  @include modifier('quest-footer') {
+    font-size: 1.3rem;
   }
 }
 

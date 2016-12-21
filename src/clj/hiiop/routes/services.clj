@@ -58,7 +58,7 @@
           :path-params [id :- s/Uuid]
           :summary "Return user object"
           (fn [request]
-            (-> (api-handlers/get-user request)
+            (-> (api-handlers/get-user (:id (:params request)))
                 (#(if (:errors %1)
                     (bad-request %1)
                     (ok %1))))))

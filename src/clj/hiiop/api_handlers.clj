@@ -70,6 +70,7 @@
       (log/error e)
       {:errors {:token :errors.user.token.invalid}})))
 
+
 (defn activate [{:keys [email password token]}]
   "Attempt to activate user with token. If successful, delete token,
   set password and set user active."
@@ -90,7 +91,7 @@
            (db/change-password! {:email email :pass pwhash :token token})
            (db/delete-password-token! {:token token})))))
 
-(defn get-user [{{id :id} :params}]
+(defn get-user [id]
   (try
     (let [user-info (db/get-user-by-id {:id (sc/string->uuid id)})]
       (if (nil? user-info)
@@ -248,9 +249,9 @@
       (string-categories->keyword-categories)
       (dissoc :picture)
       (assoc :picture-id (str picture))
+      (dissoc :organisation :organisation-description)
       (assoc :organisation
-             {:name organisation :description organisation-description})
-      (dissoc :organisation :organisation-description)))
+             {:name organisation :description organisation-description})))
 
 (def db-quest->api-quest-coercer
   (stc/coercer hs/Quest

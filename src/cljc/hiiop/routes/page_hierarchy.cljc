@@ -16,13 +16,17 @@
    ;; Profile
    (leaf "kayttaja" :profile)
 
+   (leaf "luo-tehtava" :create-quest)
+
    ;; Quests
    (branch
     "tehtavat/"
-    (leaf "" :browse-quests)
-    (leaf "luo" :create-quest)
-    ;; add :id
+    (leaf "" :browse-quests))
+
+    (branch
+     "tehtavat/" (param :quest-id)
+     (leaf "" :quest))
 
     (branch
      "muokkaa/" (param :quest-id)
-     (leaf "" :edit-quest)))))
+     (leaf "" :edit-quest))))
