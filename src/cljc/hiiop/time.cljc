@@ -46,7 +46,7 @@
 
 (def time-zone (atom "Europe/Helsinki"))
 (defn switch-time-zone [time-zone-param]
-  (swap! time-zone (fn [] time-zone-param))
+  (reset! time-zone time-zone-param)
   #?(:clj (time/default-time-zone @time-zone)))
 
 
