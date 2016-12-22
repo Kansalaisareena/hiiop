@@ -72,7 +72,8 @@
   :once
   (fn [f]
     (-> (mount/except [#'hiiop.core/http-server
-                       #'hiiop.core/repl-server])
+                       #'hiiop.core/repl-server
+                       #'hiiop.contentful/contentful-init])
         (mount/swap {#'hiiop.mail/send-token-email receive-email})
         mount/start)
     (f)
