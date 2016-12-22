@@ -196,7 +196,7 @@
         (PUT "/:id" []
           :name        ::quest-edit
           :path-params [id :- Long]
-          :body        [quest Quest]
+          :body        [quest EditQuest]
           :summary     "Edit quest"
           :return      Quest
           (fn [request]
