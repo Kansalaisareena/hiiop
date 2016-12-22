@@ -174,3 +174,10 @@
 @include block('opux-centered') {
   text-align: center;
 }
+
+@include block('opux-line') {
+  margin: 2rem 0;
+  border-bottom: 1px solid $OP-gray;
+  height: 1px;
+  width: 100%;
+}

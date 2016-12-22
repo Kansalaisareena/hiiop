@@ -5,9 +5,11 @@
             [rum.core :as rum]
             [hiiop.html :as html]
             [hiiop.time :as time]
+            [hiiop.components.quest-signup-form :refer [signup-form]]
             [taoensso.timbre :as log]))
 
-(rum/defc quest [{:keys [context quest]}]
+(rum/defc quest < rum/reactive
+  [{:keys [context quest quest-signup-info errors schema]}]
   (let [{:keys [name
                 organisation
                 owner-name
@@ -59,4 +61,9 @@
        [:i {:class "opux-icon opux-icon-personnel"}]
        (str max-participants " " (tr [:pages.quest.participants]))]]
 
-     ]))
+     [:div {:class "opux-line"}]
+
+     (signup-form {:context context
+                   :quest-signup-info quest-signup-info
+                   :schema schema
+                   :errors errors})]))

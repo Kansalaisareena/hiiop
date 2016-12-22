@@ -100,6 +100,38 @@
         width: 40px;
       }
     }
+
+    // opux-input__container--number-tick
+    @include modifier('number-tick') {
+      position: relative;
+      box-sizing: border-box;
+      padding-left: 50px;
+      padding-right: 50px;
+      max-width: 200px;
+
+      .opux-number-tick-input__control {
+        position: absolute;
+        &:before {
+          background: $OP-orange;
+          border-radius: 2px;
+          border: 1px solid $OP-orange;
+          color: $OP-white;
+          cursor: pointer;
+          height: 41px;
+          line-height: 41px;
+          text-align: center;
+          width: 41px;
+        }
+        &.opux-icon-minus {
+          left: 0px;
+          top: 0px;
+        }
+        &.opux-icon-plus {
+          right: 0px;
+          top: 0px;
+        }
+      }
+    }
   }
 
   // opux-input__label
@@ -108,6 +140,7 @@
     display: block;
     padding: .5rem 0;
     width: 100%;
+    font-size: 1rem;
 
     // opux-input__label--error
     @include modifier('error') {

@@ -104,7 +104,7 @@
      [:input
       {:type type
        :class class
-       :default-value (usable-to-value (rum/react value))
+       :value (usable-to-value (rum/react value))
        :on-change
        (fn [e]
          (-> (value-from-event e usable-transform)
@@ -113,6 +113,31 @@
        [:span
         {:class (class-error-or-hide error)}
         (if (rum/react error) (tr [(rum/react error)]))])]))
+
+(rum/defc number-input-with-ticker < rum/reactive
+  [{:keys [type value schema error class context min-value max-value error-key]}]
+  (let [tr (:tr context)
+        coercer (stc/coercer schema {schema #(identity %)} error-key)
+        save-val-or-error (partial save-value-or-error coercer value error)
+        ]
+    [:div {:class "opux-input__container opux-input__container--number-tick"}
+     [:span {:class "opux-number-tick-input__control opux-icon opux-icon-minus"
+       :on-click (fn [e]
+                   (.preventDefault e)
+                   (save-val-or-error (- @value 1)))}]
+     (input
+      {:class (str "opux-input opux-input--number-ticker " class)
+       :type "number"
+       :error error
+       :value value
+       :schema schema
+       :transform-value #(if (string? %) (mangling/parse-natural-number %))
+       :context context})
+
+     [:span {:class "opux-number-tick-input__control opux-icon opux-icon-plus"
+      :on-click (fn [e]
+                  (.preventDefault e)
+                  (save-val-or-error (inc @value)))}]]))
 
 (rum/defc text < rum/reactive
   [{:keys [label value schema matcher error class context error-key]}]

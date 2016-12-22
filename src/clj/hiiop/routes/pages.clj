@@ -19,7 +19,9 @@
                                   RegistrationInfo
                                   UserActivation
                                   QuestFilter
+                                  QuestSignup
                                   new-empty-quest
+                                  new-empty-quest-signup-info
                                   new-empty-quest-filter
                                   new-empty-registration-info
                                   new-empty-activation-info]]
@@ -169,6 +171,8 @@
 (defn quest [req]
   (let [id (get-in req [:params :quest-id])
         quest (get-quest (parse-natural-number id))
+        quest-signup-info (atom (new-empty-quest-signup-info))
+        errors (atom (same-keys-with-nils @quest-signup-info))
         owner-name (:name (get-user (:owner quest)))
         context (create-context req)
         tr (:tr context)]
@@ -178,7 +182,10 @@
                       :content
                       (quest/quest {:context context
                                     :quest (atom (assoc quest
-                                                  :owner-name owner-name))})}))))
+                                                        :owner-name owner-name))
+                                    :quest-signup-info quest-signup-info
+                                    :errors errors
+                                    :schema QuestSignup})}))))
 
 (def handlers
   {:index

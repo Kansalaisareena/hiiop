@@ -11,26 +11,38 @@
   #?(:clj (:import [schema.utils ValidationError]
                    [schema.core Constrained])))
 
-(def Email #"(^[a-zA-Z0-9._+-]+@[^@.]+\.[^@.]+)$")
+(def Email
+  (s/constrained
+   #"(^[a-zA-Z0-9._+-]+@[^@.]+\.[^@.]+)$"
+   #(= % %) :errors.email.not-valid))
 
 (def Password s/Str)
+
+(def Phone
+  (s/constrained
+   #"^(([^\.\-\,a-wy-z]([\(]?(\+|[x])?\d+[\)]?)?[\s\.\-\,]?([\(]?\d+[\)]?)?[\s\.\-\,]?(\d+[\s\.\-\,]?)+[^\.\-\,a-z])|((\+|[x])?\d+))$"
+   (fn [val] (not (nil? val))) :errors.phone.not-valid))
+
+(def Agreement
+  (s/constrained
+   s/Bool #(= true %) :errors.quest.please-agree))
 
 (def DateTime
   (s/constrained
    #"^([\+-]?\d{4}(?!\d{2}\b))((-?)((0[1-9]|1[0-2])(\3([12]\d|0[1-9]|3[01]))?|W([0-4]\d|5[0-2])(-?[1-7])?|(00[1-9]|0[1-9]\d|[12]\d{2}|3([0-5]\d|6[1-6])))([T\s]((([01]\d|2[0-3])((:?)[0-5]\d)?|24\:?00)([\.,]\d+(?!:))?)?(\17[0-5]\d([\.,]\d+)?)?([zZ]|([\+-])([01]\d|2[0-3]):?([0-5]\d)?)?)?)?$"
-   time/from-string :error.not-valid-date))
+   time/from-string :errors.not-valid-date))
 
 (def NaturalNumber
   "A schema for natural number integer"
-  (s/constrained s/Int (comp not neg?) :error.natural-number))
+  (s/constrained s/Int (comp not neg?) :errors.number.not-greater-than-one))
 
 (def NPlus
   "A schema for natural number integer greater than one"
-  (s/constrained NaturalNumber (partial < 0) :error.greater-than-zero))
+  (s/constrained NaturalNumber (partial < 0) :errors.number.greater-than-zero))
 
 (def NonEmptyString
   "A schema for non-empty string"
-  (s/constrained s/Str (fn [val] (> (count val) 0)) :error.non-empty-string))
+  (s/constrained s/Str (fn [val] (> (count val) 0)) :errors.non-empty-string))
 
 (def Organisation
   "Organisation"
@@ -145,6 +157,17 @@
       (st/dissoc :id
                  :owner
                  :picture-url)))
+
+(def QuestSignup
+  "Quest signup information"
+  {:name s/Str
+   :email Email
+   :phone Phone
+   :participate-days NPlus
+   :agreement Agreement})
+
+(defn new-empty-quest-signup-info []
+  {:name "" :email "" :phone "" :participate-days 1 :agreement false})
 
 ;(def UrlLike #"http[s]{0,1}:\/\/.*")
 

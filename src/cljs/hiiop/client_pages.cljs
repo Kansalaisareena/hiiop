@@ -20,8 +20,10 @@
                                   RegistrationInfo
                                   UserActivation
                                   QuestFilter
+                                  QuestSignup
                                   new-empty-registration-info
                                   new-empty-quest
+                                  new-empty-quest-signup-info
                                   new-empty-quest-filter
                                   new-empty-activation-info
                                   ]]
@@ -112,31 +114,36 @@
           ))))
 
 (defn quest-page [params]
-  (go
-    (let [id (parse-natural-number
-              (get-in params [:route-params :quest-id]))
-          quest (<! (get-quest id))
-          user-info (<! (get-user-info (str (:owner quest))))
-          owner-name (:name user-info)]
-      (-> quest
-          (#(assoc %1
-                   :categories
-                   (into [] (map keyword (:categories %1)))
-                   :owner-name owner-name))
-          (atom)
-          ((fn [quest]
-             {:quest quest}))
-          (#(assoc %1
-                   :errors
-                   (-> (:quest %1)
-                       (deref)
-                       (same-keys-with-nils)
-                       (atom))))
-          (assoc :context @context)
-          (#(rum/mount
-             (quest/quest %1)
-             (. js/document (getElementById "app"))))
-          ))))
+  (let [quest-signup-info (atom (new-empty-quest-signup-info))
+        errors (atom (same-keys-with-nils @quest-signup-info))]
+    (go
+      (let [id (parse-natural-number
+                (get-in params [:route-params :quest-id]))
+            quest (<! (get-quest id))
+            user-info (<! (get-user-info (str (:owner quest))))
+            owner-name (:name user-info)]
+        (-> quest
+            (#(assoc %1
+                     :categories
+                     (into [] (map keyword (:categories %1)))
+                     :owner-name owner-name))
+            (atom)
+            ((fn [quest]
+               {:quest quest}))
+            (#(assoc %1
+                     :errors
+                     (-> (:quest %1)
+                         (deref)
+                         (same-keys-with-nils)
+                         (atom))))
+            (assoc :context @context
+                   :quest-signup-info quest-signup-info
+                   :errors errors
+                   :schema QuestSignup)
+            (#(rum/mount
+               (quest/quest %1)
+               (. js/document (getElementById "app"))))
+            )))))
 
 (def handlers
   {:index
