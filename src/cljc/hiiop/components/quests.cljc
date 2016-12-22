@@ -405,7 +405,7 @@
         (fn []
           (reset! view "edit"))})
       (html/button
-       (tr [:pages.quest.edit.button.publish])
+       (tr [:pages.quest.preview.buttons.publish])
        {:class "opux-button opux-form__button opux-fieldset__inline-item"
         :type "submit"
         :active is-valid
