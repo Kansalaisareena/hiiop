@@ -17,6 +17,7 @@
             [hiiop.mangling :refer [same-keys-with-nils]]
             [hiiop.schema :refer [NewQuest
                                   Quest
+                                  EditQuest
                                   RegistrationInfo
                                   UserActivation
                                   QuestFilter
@@ -111,7 +112,7 @@
                        (same-keys-with-nils)
                        (atom))))
           (assoc :context @context)
-          (assoc :schema Quest)
+          (assoc :schema EditQuest)
           (#(rum/mount
              (quests/edit %1)
              (. js/document (getElementById "app"))))

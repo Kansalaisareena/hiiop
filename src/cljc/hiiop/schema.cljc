@@ -151,16 +151,18 @@
    :owner s/Uuid
    (s/optional-key :organisation) (s/maybe Organisation)})
 
-(def Quests
-  "Quest list"
-  [Quests])
+(def EditQuest Quest)
 
 (def NewQuest
-  (-> Quest
+  (-> EditQuest
       (st/assoc :organiser-participates s/Bool)
       (st/dissoc :id
                  :owner
                  :picture-url)))
+
+(def Quests
+  "Quest list"
+  [Quests])
 
 (def QuestSignup
   "Quest signup information"

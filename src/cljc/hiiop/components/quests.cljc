@@ -275,6 +275,7 @@
     {:schema (get-in cursors-and-schema [:categories :schema])
      :value (get-in cursors-and-schema [:categories :value])
      :error (get-in cursors-and-schema [:categories :error])
+     :choice-name-fn hs/category-choice
      :context context})
    )
   (html/form-section
@@ -366,6 +367,7 @@
        {:schema (get-in cursors-and-schema [:categories :schema])
         :value (get-in cursors-and-schema [:categories :value])
         :error (get-in cursors-and-schema [:categories :error])
+        :choice-name-fn hs/category-choice
         :context context})
       )
      (edit-participation-settings
@@ -401,6 +403,7 @@
        {:schema (get-in cursors-and-schema [:categories :schema])
         :value (get-in cursors-and-schema [:categories :value])
         :error (get-in cursors-and-schema [:categories :error])
+        :choice-name-fn hs/category-choice
         :context context}))]))
 
 (rum/defc quest-filters [{:keys [tr cursors-and-schema context]}]

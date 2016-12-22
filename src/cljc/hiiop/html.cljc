@@ -340,13 +340,21 @@
               :for id}
              (tr [(choice-text-fn choice)]))]))))
 
-(rum/defc multi-selector-for-schema [{:keys [schema context value]}]
+(rum/defc multi-selector-for-schema < rum/reactive
+  [{:keys [schema context value choice-name-fn error]}]
   (let [tr (:tr context)
-        make-multi-choice (partial multi-choice tr hs/category-choice value)
+        make-multi-choice (partial multi-choice tr choice-name-fn value)
         single (cond
+                 (and (not (set? schema))
+                      (sequential? schema)
+                      (instance? schema.core.One
+                                 (first (st/schema-value schema))))
+                 (last (first (:schema (first (st/schema-value schema)))))
+
                  (and (not (set? schema))
                       (sequential? schema))
                  (st/schema-value (first schema))
+
                  :else (st/schema-value schema))
         all (cond
               (or (set? single) (sequential? single))
