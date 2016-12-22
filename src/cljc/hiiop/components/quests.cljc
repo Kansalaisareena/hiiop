@@ -455,7 +455,7 @@
   (let [is-active (::is-active state)]
     [:div {:class "opux-card-filter__field opux-card-filter__field--category"}
      [:div {:class "opux-card-filter__label"}
-      (tr [:pages.quest.list.filter.category])]
+      (tr [:pages.quest.browse.filter.category])]
      [:span {:class "opux-icon opux-icon-plus opux-card-filter--category-filter"}]
      (html/form-section
       ""
@@ -474,7 +474,7 @@
 
    [:div {:class "opux-card-filter__field opex-card-filter__field--datetime"}
     [:div {:class "opux-card-filter__label"}
-     (tr [:pages.quest.list.filter.where])]
+     (tr [:pages.quest.browse.filter.where])]
     (html/location-selector
      {:class "opux-input opux-input--location-selector"
       :location (get-in cursors-and-schema [:location :value])
@@ -485,7 +485,16 @@
 
    [:div {:class "opux-card-filter__field opex-card-filter__field--datetime"}
     [:div {:class "opux-card-filter__label"}
-     (tr [:pages.quest.list.filter.when])]]])
+     (tr [:pages.quest.browse.filter.when])
+     ;; (html/datepicker
+     ;;  {:date (atom (time/now))
+     ;;   :error (atom nil)
+     ;;   :schema hs/DateTime
+     ;;   :class "opux-fieldset__item opux-fieldset__item--inline-container start-time"
+     ;;   :value-format time/transit-format
+     ;;   :format time/date-print-format
+     ;;   :context context})
+     ]]])
 
 (rum/defc list-quests
   [{:keys [context quests quest-filter schema errors]}]
@@ -496,7 +505,7 @@
                                                :errors errors})]
     [:div {:class "opux-section"}
      [:h1 {:class "opux-centered"}
-      (tr [:pages.quest.list.title])]
+      (tr [:pages.quest.browse.title])]
 
      (quest-filters {:cursors-and-schema cursors-and-schema
                      :tr tr
@@ -505,7 +514,7 @@
      [:div {:class "opux-card-list-container"}
       [:div
        {:class "opux-content opux-content--small opux-centered opux-card-list__subtitle"}
-       [:p (tr [:pages.quest.list.not-found])]]
+       [:p (tr [:pages.quest.browse.not-found])]]
 
       [:h2 {:class "opux-centered"}
        "Helmikuussa"]

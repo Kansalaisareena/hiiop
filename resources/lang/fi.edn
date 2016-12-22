@@ -66,6 +66,10 @@ Mikäli et jostain syystä pääse osallistumaan tapahtumaan ilmoitathan siitä 
 Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit kutsua osallistujia ainoastaan lähettämällä heille linkin, jonka saat sähköpostiisi tapahtuman julkaisun jälkeen."
     }
 
+   :edited
+   {:title "Tehtävääsi on muokattu"
+    :content "Tehtävä on edelleen julkinen. Tekemäsi muutokset tulevat näkyviin 1-2 päivän kuluessa."}
+
    :edit
    {:title "Ilmoita uusi tehtävä"
 
@@ -102,16 +106,17 @@ Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit
      :preview "Esikatsele ja julkaise"
      :submit "Julkaise"
      :remove "Poista tehtävä"}
+    }
 
-    :list
-    {:title "Löydä itsellesi vapaaehtoistehtävä"
-     :not-found "Juuri näillä hakuehdoilla ei löytynyt tapahtumia. Koita valita useampia kiinnostuksen kohteita."
+   :browse
+   {:title "Hiiop! Löydä sinulle sopiva vapaaehtoistehtävä"
+    :not-found "Juuri näillä hakuehdoilla ei löytynyt tapahtumia. Koita valita useampia kiinnostuksen kohteita."
 
-     :filter
-     {:category "Kiinnostuksen kohde"
-      :where "Missä?"
-      :when "Milloin?"
-      }}
+    :filter
+    {:category "Kiinnostuksen kohde"
+     :where "Missä?"
+     :when "Milloin?"
+     }
     }
 
    :preview

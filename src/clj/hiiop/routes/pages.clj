@@ -44,7 +44,7 @@
         quest-filter (atom (new-empty-quest-filter))
         errors (atom (same-keys-with-nils @quest-filter))]
     (layout/render {:context context
-                    :content (quests/list-quests {:quests ["a" "a" "a"]
+                    :content (quests/list-quests {:quests []
                                                   :quest-filter quest-filter
                                                   :context context
                                                   :schema QuestFilter})
