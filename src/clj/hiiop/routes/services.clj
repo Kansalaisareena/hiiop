@@ -205,7 +205,11 @@
                   :user (:identity request)})
                 (#(if (not (:errors %1))
                     (ok %1)
-                    (bad-request %1))))
+                    (cond
+                      (get-in %1 [:errors :unauthorized])
+                      (unauthorized %1)
+                      :else
+                      (bad-request %1)))))
             ))
 
         ;; (POST "/:id/join" []

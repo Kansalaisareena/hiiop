@@ -299,7 +299,9 @@
         (api-quest->moderated-db-quest-coercer)
         (db/update-moderated-quest!)
         (#(db/get-moderated-quest-by-id {:id (:id %)}))
-        (db-quest->api-quest-coercer))
+        (#(if %1
+            (db-quest->api-quest-coercer %1)
+            {:errors {:unauthorized :errors.unauthorized.title}})))
     (catch Exception e
       (log/error e)
       {:errors {:quest "Failed to update"}})))

@@ -234,5 +234,10 @@ Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit
 
   :agreement
   {:please-agree "Please agree to the terms and conditions"}
+
+  :unauthorized
+  {:title "Muokkaaminen epäonnistui."
+   :content "Hups, muokkaaminen epäonnistui. Tapahtuma ei ole sinun."
+   }
   }
  }

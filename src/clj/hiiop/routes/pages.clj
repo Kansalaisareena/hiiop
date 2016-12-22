@@ -1,5 +1,6 @@
 (ns hiiop.routes.pages
   (:require [ring.util.http-response :as response]
+            [ring.util.response :as rup]
             [clojure.java.io :as io]
             [taoensso.timbre :as log]
             [bidi.ring :refer (make-handler)]
@@ -10,6 +11,7 @@
             [hiiop.components.quests :as quests]
             [hiiop.components.activate :as p-a]
             [hiiop.components.register :as p-r]
+            [hiiop.components.errors :as e]
             [hiiop.components.login :as p-l]
             [hiiop.config :refer [env]]
             [hiiop.routes.page-hierarchy :refer [hierarchy]]
@@ -165,13 +167,18 @@
 
 (defn edit-quest [req]
   (let [id (get-in req [:params :quest-id])
-        quest (get-quest (parse-natural-number id))]
-    (if quest
+        identity (:identity req)
+        quest (get-quest (parse-natural-number id))
+        owner? (= (:owner quest) (:id identity))
+        context (create-context req)
+        tr (:tr context)]
+    (if (and owner? quest)
       (edit-quest-with-schema
        {:request req
         :schema EditQuest
         :quest quest
-        :title-key :actions.quest.edit}))))
+        :title-key :actions.quest.edit})
+      (rup/redirect "/"))))
 
 (defn quest [req]
   (let [id (get-in req [:params :quest-id])
