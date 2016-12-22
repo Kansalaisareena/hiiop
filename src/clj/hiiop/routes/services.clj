@@ -189,7 +189,7 @@
                   (-> (api-handlers/delete-quest
                        {:id id
                         :user (:identity request)})
-                      #(if (not (:errors %1))
+                      #(if (nil? %1)
                          (ok)
                       (bad-request %1)))))
 
