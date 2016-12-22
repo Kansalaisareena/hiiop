@@ -1,10 +1,10 @@
 {
  :missing ":fi teksti puuttuu"
- :name "HiiOP"
- :title "HiiOP – %1"
+ :name "Hiiop"
+ :title "Hiiop – %1"
 
  :header
- {:title "HiiOP"}
+ {:title "Hiiop"}
 
  :pages
  {
@@ -46,7 +46,6 @@
   :quest
   {:title "Löydä tehtävä"
 
-   ;; single quest page
    :single
    {:signup-form-subtitle "Olet ilmoittautumassa tapahtumaan. Huomioithan että ilmoittautuminen on sitova.
 Mikäli et jostain syystä pääse osallistumaan tapahtumaan ilmoitathan siitä suoraan järjestäjälle. "
@@ -56,6 +55,16 @@ Mikäli et jostain syystä pääse osallistumaan tapahtumaan ilmoitathan siitä 
     :participants-phone "Puhelinnumero"
     :number-of-participating-days "Kuinka monena päivänä aion osallistua"
     :agree-to-terms-and-conditions "Olen lukenut palvelun ehdot ja hyväksyn n"}
+
+   :created
+   {:title "Tehtäväsi on luotu"
+    :public
+     "Onneksi olkoon, olet luonut julkisen vapaaehtoistehtävän! Voit nyt tarkastella luomaasi vapaaehtoistehtävää omalla profiilisivullasi. Kaikki vapaaehtoistehtävät tarkastetaan ja tämän jälkeen löydät tehtäväsi myös kaikkien vapaaehtoistehtävien listauksesta. Tähän menee suunnilleen 1-2 päivää."
+    :private
+     "Onneksi olkoon, olet luonut yksityisen vapaaehtoistehtävän! Voit nyt tarkastella luomaasi tehtävää omalla profiilisivullasi. Kaikki vapaaehtoistehtävät tarkastetaan ja tämän jälkeen löydät tehtäväsi suljettuna myös kaikkien vapaaehtoistehtävien listauksesta.
+
+Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit kutsua osallistujia ainoastaan lähettämällä heille linkin, jonka saat sähköpostiisi tapahtuman julkaisun jälkeen."
+    }
 
    :edit
    {:title "Ilmoita uusi tehtävä"
@@ -90,7 +99,8 @@ Mikäli et jostain syystä pääse osallistumaan tapahtumaan ilmoitathan siitä 
     :button
     {:add-organisation "Haluatko lisätä tehtävään tietoa yhteisöstäsi tai organisaatiosta"
      :reveal-end-time "Lisää päättymisaika"
-     :submit "Esikatsele ja julkaise"
+     :preview "Esikatsele ja julkaise"
+     :submit "Julkaise"
      :remove "Poista tehtävä"}
 
     :list
@@ -99,12 +109,18 @@ Mikäli et jostain syystä pääse osallistumaan tapahtumaan ilmoitathan siitä 
 
      :filter
      {:category "Kiinnostuksen kohde"
-      :where "Misa?"
+      :where "Missä?"
       :when "Milloin?"
       }}
     }
-   }
 
+   :preview
+   {:title "Tehtävän esikatselu"
+    :check "Tarkista kohteesi tiedot ja, että sinulla on oikeus käyttää lisäämääsi kuvaa."
+    :buttons {:edit "Muokkaa"
+              :publish "Julkaise tehtävä"}
+    }
+   }
   :ideas
   {:title "Kokemuksia vapaaehtoistyöstä"}
   }

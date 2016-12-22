@@ -65,7 +65,8 @@
                                   {:json-params quest}))
           status (:status response)
           body (:body response)]
-      body)))
+      {:success (= status 201)
+       :body body})))
 
 (defn delete-quest [id]
   (log/info "delete-quest called with" id)
@@ -82,7 +83,8 @@
                                   {:json-params quest}))
           status (:status response)
           body (:body response)]
-      body)))
+      {:success (= status 200)
+       :body body})))
 
 (defn get-user-info [id]
   (go

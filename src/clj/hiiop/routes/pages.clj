@@ -15,6 +15,7 @@
             [hiiop.routes.page-hierarchy :refer [hierarchy]]
             [hiiop.mangling :refer [parse-natural-number same-keys-with-nils]]
             [hiiop.schema :refer [Quest
+                                  EditQuest
                                   NewQuest
                                   RegistrationInfo
                                   UserActivation
@@ -168,7 +169,7 @@
     (if quest
       (edit-quest-with-schema
        {:request req
-        :schema Quest
+        :schema EditQuest
         :quest quest
         :title-key :actions.quest.edit}))))
 

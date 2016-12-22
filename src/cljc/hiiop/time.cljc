@@ -20,7 +20,7 @@
 
 #?(:cljs
    (defn set-server-client-diff-seconds [diff]
-     (swap! server-client-diff-seconds (fn [] diff))))
+     (reset! server-client-diff-seconds diff)))
 
 (def date-print-format
   #?(:clj "dd.MM.YYYY"
