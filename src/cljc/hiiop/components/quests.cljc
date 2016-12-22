@@ -82,6 +82,7 @@
         (html/file-input
          {:value (get-in cursors-and-schema [:picture-id :value])
           :error (get-in cursors-and-schema [:picture-id :error])
+          :url picture-url
           :context context
           :tr (partial tr [:page.quest.edit.picture.upload-failed])})
         ]
@@ -426,13 +427,21 @@
      (qs/quest {:quest quest :context context})
      ]))
 
-(rum/defc quest-created < rum/reactive
+(rum/defc quest-edit-success < rum/reactive
   [{:keys [context quest schema errors view is-valid]}]
-  (let [tr (:tr context)]
-    [:h1 (tr [:pages.quest.created.title])]
-    [:p (tr [(if (:is-open @quest)
-               :pages.quest.created.public
-               :pages.quest.created.private)])]
+  (let [tr (:tr context)
+        edit (:id @quest)
+        title (if edit
+                :pages.quest.edited.title
+                :pages.quest.created.title)
+        content (if edit
+                  :pages.quest.edited.content
+                  (cond
+                    (:is-open @quest) :pages.quest.created.public
+                    :else :pages.quest.created.private))]
+    [:div {:class "opux-content"}
+     [:h1 (tr [title])]
+     [:p (tr [content])]]
     ))
 
 (rum/defcs edit < rum/reactive
@@ -445,8 +454,8 @@
     (cond
       (= @view "edit") (edit-form (conj args locals))
       (= @view "preview") (preview (conj args locals))
-      (= @view "success") (quest-created {:quest quest
-                                          :context context})
+      (= @view "success") (quest-edit-success {:quest quest
+                                               :context context})
       )))
 
 (rum/defcs quest-categories-filter < rum/reactive

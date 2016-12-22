@@ -415,7 +415,7 @@
       (reset! value (checked-from-event e)))}])
 
 (rum/defcs file-input < dropzone-mixin
-  [state {:keys [value error]}]
+  [state {:keys [value url error]}]
   [:div {:class "dropzone picture-upload"}])
 
 (rum/defc form-section [title & content]

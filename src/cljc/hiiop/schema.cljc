@@ -157,8 +157,7 @@
   (-> EditQuest
       (st/assoc :organiser-participates s/Bool)
       (st/dissoc :id
-                 :owner
-                 :picture-url)))
+                 :owner)))
 
 (def Quests
   "Quest list"
@@ -194,6 +193,7 @@
               (time/time-to (time/tomorrow) 23 45)
               time/transit-format)
    :picture-id nil
+   :picture-url nil
    :location {}
    :max-participants 10
    :categories []

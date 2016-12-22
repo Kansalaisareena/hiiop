@@ -250,8 +250,10 @@
       (dissoc :picture)
       (assoc :picture-id (str picture))
       (dissoc :organisation :organisation-description)
-      (assoc :organisation
-             {:name organisation :description organisation-description})))
+      (#(if organisation
+          (assoc %1 :organisation
+                 {:name organisation :description organisation-description})
+          %1))))
 
 (def db-quest->api-quest-coercer
   (stc/coercer hs/Quest

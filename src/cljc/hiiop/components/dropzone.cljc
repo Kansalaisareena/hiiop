@@ -14,16 +14,17 @@
          (#(js/Dropzone. dom-arg %1)))
      :clj nil))
 
-(defn on-state-change-set! [tr transform value error event]
+(defn on-state-change-set! [tr transform value error url event]
   #?(:cljs
      (let [server-response (.. event -target -response)]
        (when (and server-response (> (count server-response) 0))
          (-> (js->clj (.parse js/JSON (.. event -target -response))
                       :keywordize-keys true)
              (#(if (:errors %1)
-                 (reset! error
-                         (tr))
-                 (reset! value (transform (:id %1)))))
+                 (reset! error (tr))
+                 (do
+                   (reset! value (transform (:id %1)))
+                   (reset! url (:url %1)))))
              )
          ))))
 
@@ -44,7 +45,8 @@
                                 tr
                                 transform
                                 (:value args)
-                                (:error args))]
+                                (:error args)
+                                (:url args))]
        (assoc
         state
         ::instance
