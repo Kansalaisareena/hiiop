@@ -23,8 +23,7 @@
 
   // opux-button--spacing
   @include modifier('spacing') {
-    margin-left: .5rem;
-    margin-right: .5em
+    margin: .5rem;
   }
 
   // opux-button--highlight

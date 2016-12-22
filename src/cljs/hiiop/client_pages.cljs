@@ -71,12 +71,6 @@
                      :quests quests})
        (. js/document (getElementById "app"))))))
 
-(log/info "profile-page")
-(rum/mount
- (p-p/profile {:context @context
-               :quests ["a" "b" "c" "d"]})
- (. js/document (getElementById "app")))
-
 (defn browse-quests-page [params]
   (let [quest-filter (atom (new-empty-quest-filter))
         errors (atom (same-keys-with-nils @quest-filter))]

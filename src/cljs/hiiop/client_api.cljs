@@ -63,6 +63,14 @@
           body (:body response)]
       body)))
 
+(defn delete-quest [id]
+  (log/info "delete-quest called with" id)
+  (go
+    (let [response (<! (http/delete
+                        (str base-path "/quests/" id)))]
+      (when (= (:status response) 200)
+        (:body response)))))
+
 (defn edit-quest [quest]
   (log/info "edit-quest called with" quest)
   (go

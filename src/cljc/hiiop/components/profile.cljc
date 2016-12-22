@@ -15,7 +15,33 @@
             [hiiop.html :as html]
             [hiiop.schema :as hs]))
 
-(rum/defc quest-card [quest]
+(defn quest-card-action-delete
+  [{:keys [quest card-state tr]}]
+     (let [reset-card-state #(reset! card-state "default")]
+
+       [:div {:class "opux-card__overlay"}
+        [:div {:class "opux-content opux-centered"}
+         (tr [:pages.profile.do-you-want-to-delete])]
+
+        [:span
+         {:class "opux-button opux-button--highlight opux-button--spacing"
+          :on-click (fn [e]
+                      (reset-card-state)
+                      #?(:cljs
+                         (go
+                           (<! (api/delete-quest (:id quest))))))}
+         (tr [:pages.profile.delete])]
+
+        [:span
+         {:class "opux-button opux-button--dull opux-button--spacing"
+          :on-click reset-card-state}
+         (tr [:pages.profile.cancel])]
+        ]
+       ))
+
+(rum/defcs quest-card < rum/reactive
+  (rum/local "default" ::card-state)
+  [state {:keys [quest context]}]
   (let [{:keys [name
                 location
                 id
@@ -23,10 +49,12 @@
                 picture-url
                 max-participants]} quest
         quest-link (path-for hierarchy :quest :quest-id id)
-        town (:town location)]
+        town (:town location)
+        card-state (::card-state state)
+        tr (:tr context)]
 
     [:div {:class "opux-card-container"}
-     [:div {:class "opux-card"}
+     [:div {:class "opux-card opux-card--with-actions"}
 
       [:div {:class "opux-card__image-container"}
        [:div {:class "opux-card__status"}
@@ -53,10 +81,19 @@
         (time/to-string (time/from-string start-time) time/hour-minute-format)]
 
        [:div {:class "opux-card__actions"}
-        [:span {:class "opux-card-action opux-icon-circled opux-icon-trashcan"}]
+        [:span
+         {:class "opux-card-action opux-icon-circled opux-icon-trashcan"
+          :on-click (fn [e]
+                         (if (not (= @card-state "delete"))
+                           (reset! card-state "delete")))}]
         [:span {:class "opux-card-action opux-icon-circled opux-icon-personnel"}]
-        [:span {:class "opux-card-action opux-icon-circled opux-icon-edit"}]
-        ]]]]))
+        [:span {:class "opux-card-action opux-icon-circled opux-icon-edit"}]]
+
+          (if (= @card-state "delete")
+            (quest-card-action-delete {:quest quest
+                                       :card-state card-state
+                                       :tr tr}))
+       ]]]))
 
 (defn get-past-quests
   [quests]
@@ -69,7 +106,7 @@
   [quests]
   (let [today (time/today)]
     (filter (fn [quest]
-              (time/after? (time/from-string (:start-time quest)) today))
+              (time/after? (time/from-string (:end-time quest)) today))
             quests)))
 
 (rum/defc profile
@@ -98,7 +135,7 @@
 
       (if (not-empty upcoming-quests)
         [:ul {:class "opux-card-list opux-card-list--centered"}
-         (map #(quest-card %) upcoming-quests)]
+         (map #(quest-card {:quest % :context context}) upcoming-quests)]
         [:h3 "You have no upcoming quests"]
         )
 
@@ -107,5 +144,5 @@
          (tr [:pages.profile.past-quests])])
       (if (not-empty past-quests)
         [:ul {:class "opux-card-list"}
-         (map #(quest-card %) past-quests)])
+         (map #(quest-card {:quest % :context context}) past-quests)])
       ]]))

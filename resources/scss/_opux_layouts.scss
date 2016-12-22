@@ -95,9 +95,39 @@
 }
 
 @include block('opux-card') {
+  background: $OP-white;
   font-size: .9rem;
   font-weight: 400;
+  position: relative;
   width: 100%;
+
+  @include modifier('with-actions') {
+    padding-bottom: 80px;
+  }
+
+  // opux-card__overlay
+  @include element('overlay') {
+    @include align-content(center);
+    @include align-items(center);
+    @include flex-direction(row);
+    @include flex-wrap(wrap);
+    @include flexbox;
+    background: $OP-white;
+    bottom: 0px;
+    left: 0px;
+    position: absolute;
+    top: 38px;
+    width: 100%;
+
+    .opux-content {
+        padding-bottom: 2rem;
+    }
+
+    .opux-button {
+      margin-left: auto;
+      margin-right: auto;
+    }
+  }
 
   // opux-inline-icon
   @include block('opux-inline-icon') {
@@ -113,6 +143,7 @@
 
   // opux-card__status
   @include element('status') {
+    background: $OP-gray-light;
     padding: .5rem;
   }
 
@@ -151,8 +182,11 @@
   @include element('actions') {
     background: $OP-white;
     border-top: 1px solid $OP-gray-light;
+    bottom: 0px;
     box-sizing: border-box;
+    left: 0px;
     padding: .8rem;
+    position: absolute;
     text-align: center;
     width: 100%;
   }
