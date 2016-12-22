@@ -146,6 +146,18 @@
       (parse-string true)
       ))
 
+(defn delete-quest [{:keys [login-cookie with quest]}]
+  (-> (generate-string quest)
+      (#(json-request (str "/api/v1/quests/" (:id quest))
+                      {:type :delete
+                       :body-string %1
+                       :cookies login-cookie}))
+      (do-this pp/pprint)
+      (with)
+      (has-status 200)
+      (do-this #(log/info %1))
+      ))
+
 (deftest test-api
 
   (testing "api/v1/users/register"
@@ -293,6 +305,39 @@
                          :login-cookie login-cookie}))
           (check #(is (= "WAAT" (:name %1))))
           (check #(is (= "OMG!" (:description %1))))
+          (#(db/delete-quest-by-id! {:id (:id %1)}))
+          (just-do #(db/delete-user! *db* {:id (sc/string->uuid @test-user-id)})))
+      ))
+
+  (testing "DELETE /api/v1/quests/:id"
+    (let [current-app (app)
+          user-created (create-test-user
+                        {:user-data test-user
+                         :save-id-to test-user-id
+                         :read-token-from email-token})
+          login-cookie (login-and-get-cookie
+                        {:with current-app
+                         :user-data test-user})
+          quest-to-add (test-quest
+                        {:use-date-string true
+                         :location-to :location
+                         :coordinates-to :coordinates
+                         :organisation-to {:in :organisation
+                                           :name :name
+                                           :description :description}})]
+      (-> (add-quest
+           {:with current-app
+            :quest quest-to-add
+            :login-cookie login-cookie})
+          ((fn [quest]
+             {:response
+              (delete-quest {:with current-app
+                             :quest quest
+                             :login-cookie login-cookie})
+              :id (:id quest)}
+             ))
+          (check #(is (nil? (:errors (:response %1)))))
+          (check #(is (nil? (db/get-moderated-quest-by-id {:id (:id %1)}))))
           (#(db/delete-quest-by-id! {:id (:id %1)}))
           (just-do #(db/delete-user! *db* {:id (sc/string->uuid @test-user-id)})))
       ))

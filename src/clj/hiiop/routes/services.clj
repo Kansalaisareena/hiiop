@@ -180,6 +180,19 @@
                 (ok quest)
                 (not-found)))))
 
+        (DELETE "/:id" []
+                :name        ::quest-delete
+                :path-params [id :- Long]
+                :middleware [api-authenticated]
+                :summary     "Delete quest"
+                (fn [request]
+                  (-> (api-handlers/delete-quest
+                       {:id id
+                        :user (:identity request)})
+                      #(if (not (:errors %1))
+                         (ok)
+                      (bad-request %1)))))
+
         (PUT "/:id" []
           :name        ::quest-edit
           :path-params [id :- Long]
