@@ -292,10 +292,13 @@
 
 (defn get-quests-for-owner [owner]
   (try
-    (-> (db/get-moderated-quest-by-owner {:owner owner})
-        (db-quest->api-quest-coercer))
+    ;; TODO: the profile page using this handler to get all moderated
+    ;; and unmoderated quests for the user. But we only have moderated quests for now
+    (-> (db/get-moderated-quests-by-owner {:owner owner})
+        ((partial map db-quest->api-quest-coercer)))
     (catch Exception e
-      (log/error e))))
+      (log/error e)
+      {:errors {:quests :errors.quest.unexpected-error}})))
 
 (defn join-quest [params]
   (created ""))

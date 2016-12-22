@@ -48,6 +48,11 @@
       (when (= (:status response) 200)
         (:body response)))))
 
+(defn get-own-quests []
+  (go
+    (let [response (<! (http/get (str base-path "/quests/own")))]
+      (when (= (:status response) 200)
+        (:body response)))))
 
 (defn add-quest [quest]
   (log/info "add-quest called with" quest)

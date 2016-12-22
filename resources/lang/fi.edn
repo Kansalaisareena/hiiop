@@ -127,6 +127,10 @@ Mikäli et jostain syystä pääse osallistumaan tapahtumaan ilmoitathan siitä 
    :register "Rekisteröidy"
    :logout   "Kirjaudu ulos"
    :save-password "Tallenna salasana"}
+
+  :profile
+  {:sign-out "Kirjaudu ulos"
+   :edit "Muokkaa"}
   }
 
  :error

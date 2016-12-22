@@ -25,7 +25,7 @@
                                   new-empty-quest-filter
                                   new-empty-registration-info
                                   new-empty-activation-info]]
-            [hiiop.api-handlers :refer [get-quest get-user]]))
+            [hiiop.api-handlers :refer [get-quest get-user get-quests-for-owner]]))
 
 (defn tr-from-req [req]
   (:tempura/tr req))
@@ -80,10 +80,14 @@
 
 (defn profile [req]
   (let [context (create-context req)
+        owner (:id (:identity context))
+        user-info (get-user owner)
+        quests (get-quests-for-owner (:id (:identity context)))
         tr (:tr context)]
     (layout/render {:context context
                     :content (p-p/profile {:context context
-                                           :quests ["a" "b" "c" "d"]})})))
+                                           :user-info user-info
+                                           :quests quests})})))
 
 (defn activate [req]
   (let [context (create-context req)

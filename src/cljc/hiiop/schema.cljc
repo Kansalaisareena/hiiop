@@ -151,6 +151,10 @@
    :owner s/Uuid
    (s/optional-key :organisation) (s/maybe Organisation)})
 
+(def Quests
+  "Quest list"
+  [Quests])
+
 (def NewQuest
   (-> Quest
       (st/assoc :organiser-participates s/Bool)

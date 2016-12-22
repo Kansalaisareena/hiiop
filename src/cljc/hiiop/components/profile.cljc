@@ -46,36 +46,21 @@
       ]
      ]]])
 
-(rum/defcs profile < rum/reactive
-  (rum/local "" ::email)
-  (rum/local "" ::name)
-  (rum/local false ::processed)
-  [state {:keys [context quests]}]
-  (let [email (::email state)
-        name (::name state)
-        processed (::processed state)
+(rum/defc profile [{:keys [context quests user-info]}]
+  (let [{:keys [email name]} user-info
         tr (:tr context)]
-
-    #?(:cljs
-       (when-not (rum/react processed)
-         (go
-           (let [user-info (<! (api/get-user-info (:id (:identity context))))]
-             (when (nil? (:errors user-info))
-               (reset! processed true)
-               (reset! email (:email user-info))
-               (reset! name (:name user-info)))))))
 
     [:div {:class "opux-section opux-section--profile"}
 
      [:div {:class "opux-content opux-content--small"}
-      [:h1 (rum/react name)]
-      [:h3 (rum/react email)]
+      [:h1 {:class "opux-centered"} name]
+      [:h3 {:class "opux-centered"} email]
 
       [:div {:class "opux-section opux-centered"}
        [:span {:class "opux-button opux-button--spacing opux-button--dull"}
-        (tr [:pages.profile.sign-out])]
+        (tr [:actions.profile.sign-out])]
        [:span {:class "opux-button opux-button--spacing opux-button--highlight"}
-        (tr [:pages.profile.edit])]]]
+        (tr [:actions.profile.edit])]]]
 
      [:div {:class "opux-card-list-container"}
 

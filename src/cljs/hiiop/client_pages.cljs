@@ -11,7 +11,7 @@
             [hiiop.components.register :as p-r]
             [hiiop.components.quest-single :as quest]
             [hiiop.components.quests :as quests]
-            [hiiop.client-api :refer [get-quest get-user-info]]
+            [hiiop.client-api :refer [get-quest get-user-info get-own-quests]]
             [hiiop.context :refer [context]]
             [hiiop.mangling :refer [parse-natural-number same-keys-with-nils]]
             [hiiop.mangling :refer [same-keys-with-nils]]
@@ -60,12 +60,22 @@
      (. js/document (getElementById "app")))))
 
 (defn profile-page [params]
-  (log/info "profile-page")
-  (rum/mount
-   (p-p/profile {:context @context
-                 :quests ["a" "b" "c" "d"]})
-   (. js/document (getElementById "app"))))
+  (go
+    (let [owner (:id (:identity @context))
+          quests (<! (get-own-quests))
+          user-info (<! (get-user-info owner))]
+      (log/info "profile-page")
+      (rum/mount
+       (p-p/profile {:context @context
+                     :user-info user-info
+                     :quests quests})
+       (. js/document (getElementById "app"))))))
 
+(log/info "profile-page")
+(rum/mount
+ (p-p/profile {:context @context
+               :quests ["a" "b" "c" "d"]})
+ (. js/document (getElementById "app")))
 
 (defn browse-quests-page [params]
   (let [quest-filter (atom (new-empty-quest-filter))

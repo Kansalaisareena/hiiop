@@ -144,6 +144,17 @@
       (context "/quests" []
         :tags ["quest"]
 
+        (GET "/own" []
+             :name ::get-own-quests
+             :middleware [api-authenticated]
+             :return [Quest]
+             (fn [request]
+               (let [owner (:id (:identity request))
+                     quests (api-handlers/get-quests-for-owner owner)]
+                 (if (nil? (:errors quests))
+                   (ok quests)
+                   (bad-request quests)))))
+
         (POST "/add" []
           :name       ::add-quest
           :body       [new-quest NewQuest]
