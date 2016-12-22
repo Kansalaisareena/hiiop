@@ -296,10 +296,13 @@
 (defn readable-address [{:keys [street street-number town]}]
   (-> (filter #(not (nil? %)) [street street-number town])
       ((fn [address]
-         (let [last-dropped (drop-last address)
-               before-last (last last-dropped)
-               all-but-last-two (drop-last last-dropped)]
-           (concat all-but-last-two [(str before-last ",") (last address)]))))
+         (if (not (empty? address))
+           (let [last-dropped (drop-last address)
+                 before-last (last last-dropped)
+                 all-but-last-two (drop-last last-dropped)]
+             (log/info address)
+             (concat all-but-last-two [(str before-last ",") (last address)]))
+           [])))
       (#(clojure.string/join " " %1))))
 
 (rum/defc location-selector < address/autocomplete-mixin
