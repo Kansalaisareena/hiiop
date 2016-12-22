@@ -26,6 +26,10 @@
    :check-your-email "Tarkista sähköpostisi"
    :email-sent "Varmistusviesti lähetetty"}
 
+  :profile
+  {:past-quests "Menneet tehtäväsi"
+   :upcoming-quests "Tulevat tehtäväsi"}
+
   :activate
   {:title "Luo salasana"
    :password "Salasana"

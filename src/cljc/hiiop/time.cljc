@@ -31,6 +31,14 @@
   #?(:clj "YYYY-MM-DD'T'HH:mm:ssZ"
      :cljs "YYYY-MM-DDTHH:mm:ssZ"))
 
+(def with-weekday-format
+  #?(:clj "EEEE dd.M"
+     :cljs "dddd DD.M"))
+
+(def hour-minute-format
+  #?(:clj "HH.mm"
+     :cljs "HH.mm"))
+
 #?(:cljs (defstate locale :start :fi))
 #?(:cljs (defn switch-locale [locale]
            (swap {#'hiiop.time/locale locale})
