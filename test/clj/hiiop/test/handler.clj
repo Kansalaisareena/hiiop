@@ -336,7 +336,6 @@
                              :login-cookie login-cookie})
               :id (:id quest)}
              ))
-          (check #(is (nil? (:errors (:response %1)))))
           (check #(is (nil? (db/get-moderated-quest-by-id {:id (:id %1)}))))
           (#(db/delete-quest-by-id! {:id (:id %1)}))
           (just-do #(db/delete-user! *db* {:id (sc/string->uuid @test-user-id)})))
