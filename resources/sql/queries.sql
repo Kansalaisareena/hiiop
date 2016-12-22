@@ -172,7 +172,7 @@ VALUES
  :owner)
 RETURNING id
 
--- :name get-moderated-quest-by-id :?
+-- :name get-moderated-quest-by-id :? :1
 -- :doc get quest by id
 SELECT
   q.id as id,
