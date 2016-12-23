@@ -23,14 +23,17 @@
 
   // opux-button--spacing
   @include modifier('spacing') {
-    margin-left: .5rem;
-    margin-right: .5em
+    margin: .5rem;
   }
 
   // opux-button--highlight
   @include modifier('highlight') {
     background: $OP-orange;
     color: $OP-white;
+
+    &:disabled {
+      color: darken($OP-white, 10);
+    }
   }
 
   // opux-button--dull

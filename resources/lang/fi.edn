@@ -1,10 +1,10 @@
 {
  :missing ":fi teksti puuttuu"
- :name "HiiOP"
- :title "HiiOP – %1"
+ :name "Hiiop"
+ :title "Hiiop – %1"
 
  :header
- {:title "HiiOP"}
+ {:title "Hiiop"}
 
  :pages
  {
@@ -26,6 +26,15 @@
    :check-your-email "Tarkista sähköpostisi"
    :email-sent "Varmistusviesti lähetetty"}
 
+  :profile
+  {:past-quests "Menneet tehtäväsi"
+   :upcoming-quests "Tulevat tehtäväsi"
+   :cancel "Peruuta"
+   :delete "Poista"
+   :do-you-want-to-delete "Oletko varma, että haluat poistaa tapahtuman?"
+   :no-upcoming-quests "ei tulevia tehtäviä"
+   :my-event "Oma tapahtuma"}
+
   :activate
   {:title "Luo salasana"
    :password "Salasana"
@@ -36,6 +45,30 @@
 
   :quest
   {:title "Löydä tehtävä"
+
+   :view
+   {:signup-form-subtitle "Olet ilmoittautumassa tapahtumaan. Huomioithan että ilmoittautuminen on sitova.
+Mikäli et jostain syystä pääse osallistumaan tapahtumaan ilmoitathan siitä suoraan järjestäjälle. "
+    :participants "vapaata paikkaa"
+    :participants-name "Nimi"
+    :participants-email "Sähköposte"
+    :participants-phone "Puhelinnumero"
+    :number-of-participating-days "Kuinka monena päivänä aion osallistua"
+    :agree-to-terms-and-conditions "Olen lukenut palvelun ehdot ja hyväksyn n"}
+
+   :created
+   {:title "Tehtäväsi on luotu"
+    :public
+     "Onneksi olkoon, olet luonut julkisen vapaaehtoistehtävän! Voit nyt tarkastella luomaasi vapaaehtoistehtävää omalla profiilisivullasi. Kaikki vapaaehtoistehtävät tarkastetaan ja tämän jälkeen löydät tehtäväsi myös kaikkien vapaaehtoistehtävien listauksesta. Tähän menee suunnilleen 1-2 päivää."
+    :private
+     "Onneksi olkoon, olet luonut yksityisen vapaaehtoistehtävän! Voit nyt tarkastella luomaasi tehtävää omalla profiilisivullasi. Kaikki vapaaehtoistehtävät tarkastetaan ja tämän jälkeen löydät tehtäväsi suljettuna myös kaikkien vapaaehtoistehtävien listauksesta.
+
+Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit kutsua osallistujia ainoastaan lähettämällä heille linkin, jonka saat sähköpostiisi tapahtuman julkaisun jälkeen."
+    }
+
+   :edited
+   {:title "Tehtävääsi on muokattu"
+    :content "Tehtävä on edelleen julkinen. Tekemäsi muutokset tulevat näkyviin 1-2 päivän kuluessa."}
 
    :edit
    {:title "Ilmoita uusi tehtävä"
@@ -70,18 +103,32 @@
     :button
     {:add-organisation "Haluatko lisätä tehtävään tietoa yhteisöstäsi tai organisaatiosta"
      :reveal-end-time "Lisää päättymisaika"
-     :submit "Esikatsele ja julkaise"
+     :preview "Esikatsele ja julkaise"
+     :submit "Julkaise"
      :remove "Poista tehtävä"}
 
-    :list
-    {:title "Löydä itsellesi vapaaehtoistehtävä"
-     :not-found "Juuri näillä hakuehdoilla ei löytynyt tapahtumia. Koita valita useampia kiinnostuksen kohteita."
+    :remove
+    {:title "Oletko ihan varma, että haluat poistaa tehtävän?"
+     :confirm "Poista"
+     :cancel "Peruuta"}
+    }
 
-     :filter
-     {:category "Kiinnostuksen kohde"
-      :where "Misa?"
-      :when "Milloin?"
-      }}
+   :browse
+   {:title "Hiiop! Löydä sinulle sopiva vapaaehtoistehtävä"
+    :not-found "Juuri näillä hakuehdoilla ei löytynyt tapahtumia. Koita valita useampia kiinnostuksen kohteita."
+
+    :filter
+    {:category "Kiinnostuksen kohde"
+     :where "Missä?"
+     :when "Milloin?"
+     }
+    }
+
+   :preview
+   {:title "Tehtävän esikatselu"
+    :check "Tarkista kohteesi tiedot ja, että sinulla on oikeus käyttää lisäämääsi kuvaa."
+    :buttons {:edit "Muokkaa"
+              :publish "Julkaise tehtävä"}
     }
    }
 
@@ -108,19 +155,18 @@
   {:create  "Ilmoita tehtävä"
    :browse  "Löydä tehtävä"
    :edit    "Muokkaa tehtävää"
-   :participants "vapaata paikkaa"}
+   :signup  "Ilmoittaudu mukaan"
+   :cancel  "Peruuta"}
 
   :user
   {:login    "Kirjaudu"
    :register "Rekisteröidy"
    :logout   "Kirjaudu ulos"
    :save-password "Tallenna salasana"}
-  }
 
- :error
- {:non-empty-string "Tyhjä arvo ei käy"
-  :hashtag "Hashtag alkaa risuaidalla, eikä voi sisältää viivoja."
-  :date-needs-to-be-before "Ajan pitää olla ennen %1"
+  :profile
+  {:sign-out "Kirjaudu ulos"
+   :edit "Muokkaa"}
   }
 
  :pikaday
@@ -162,7 +208,12 @@
   }
 
  :errors
- {:picture
+ {
+  :non-empty-string "Tyhjä arvo ei käy"
+  :hashtag "Hashtag alkaa risuaidalla, eikä voi sisältää viivoja."
+  :date-needs-to-be-before "Ajan pitää olla ennen %1"
+
+  :picture
   {:type-not-supported "Kuvatyyppi %1 ei ole tuettu"}
 
   :user
@@ -175,5 +226,23 @@
   :email
   {:not-valid "Sähköposti, kuten erkki@esimerkki.fi"
    :in-use "Sähköposti on jo käytössä"}
+
+  :phone
+  {:not-valid "Puhelinnumero ei ole muotoa +358 40 1234567"}
+
+  :paticipate-days
+  {:not-valid "Voi olla numero nollasta ylöspäin"}
+
+  :number
+  {:greater-than-one "Tulee olla 1 suurempi"
+   :greater-than-zero "Tulee olla 0 suurempi"}
+
+  :agreement
+  {:please-agree "Please agree to the terms and conditions"}
+
+  :unauthorized
+  {:title "Muokkaaminen epäonnistui."
+   :content "Hups, muokkaaminen epäonnistui. Tapahtuma ei ole sinun."
+   }
   }
  }

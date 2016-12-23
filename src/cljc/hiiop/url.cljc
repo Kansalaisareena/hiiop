@@ -1,5 +1,9 @@
 (ns hiiop.url
-  (:require [clojure.string :as cs]))
+  (:require [clojure.string :as cs]
+            [taoensso.timbre :as log]
+            #?(:clj [ring.util.response :refer [redirect]])
+            [bidi.bidi :refer [path-for]]
+            [hiiop.routes.page-hierarchy :refer [hierarchy]]))
 
 (defn vector-to-map [to-map the-map]
   (if (empty? (take 2 to-map))
@@ -22,3 +26,10 @@
                entries))))
       (vector-to-map {})))
 
+(defn redirect-to [{:keys [path-key with-params]}]
+  (let [path (apply path-for hierarchy path-key with-params)]
+    #?(:cljs
+       (set! (.-location js/window)
+             path)
+       :clj
+       (redirect path))))

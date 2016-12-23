@@ -144,6 +144,17 @@
       (context "/quests" []
         :tags ["quest"]
 
+        (GET "/own" []
+             :name ::get-own-quests
+             :middleware [api-authenticated]
+             :return [Quest]
+             (fn [request]
+               (let [owner (:id (:identity request))
+                     quests (api-handlers/get-quests-for-owner owner)]
+                 (if (nil? (:errors quests))
+                   (ok quests)
+                   (bad-request quests)))))
+
         (POST "/add" []
           :name       ::add-quest
           :body       [new-quest NewQuest]
@@ -169,10 +180,23 @@
                 (ok quest)
                 (not-found)))))
 
+        (DELETE "/:id" []
+          :name        ::quest-delete
+          :path-params [id :- Long]
+          :middleware  [api-authenticated]
+          :summary     "Delete quest"
+          (fn [request]
+            (let [result (api-handlers/delete-quest
+                          {:id id
+                           :user (:identity request)})]
+              (if (nil? (:errors result))
+                (no-content)
+                (bad-request result)))))
+
         (PUT "/:id" []
           :name        ::quest-edit
           :path-params [id :- Long]
-          :body        [quest Quest]
+          :body        [quest EditQuest]
           :summary     "Edit quest"
           :return      Quest
           (fn [request]
@@ -181,7 +205,11 @@
                   :user (:identity request)})
                 (#(if (not (:errors %1))
                     (ok %1)
-                    (bad-request %1))))
+                    (cond
+                      (get-in %1 [:errors :unauthorized])
+                      (unauthorized %1)
+                      :else
+                      (bad-request %1)))))
             ))
 
         ;; (POST "/:id/join" []

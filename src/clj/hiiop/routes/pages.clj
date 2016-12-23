@@ -10,20 +10,26 @@
             [hiiop.components.quests :as quests]
             [hiiop.components.activate :as p-a]
             [hiiop.components.register :as p-r]
+            [hiiop.components.errors :as e]
             [hiiop.components.login :as p-l]
             [hiiop.config :refer [env]]
             [hiiop.routes.page-hierarchy :refer [hierarchy]]
-            [hiiop.mangling :refer [parse-natural-number same-keys-with-nils]]
+            [hiiop.url :refer [redirect-to]]
+            [hiiop.mangling :refer [parse-natural-number
+                                    same-keys-with-nils]]
             [hiiop.schema :refer [Quest
+                                  EditQuest
                                   NewQuest
                                   RegistrationInfo
                                   UserActivation
                                   QuestFilter
+                                  QuestSignup
                                   new-empty-quest
+                                  new-empty-quest-signup-info
                                   new-empty-quest-filter
                                   new-empty-registration-info
                                   new-empty-activation-info]]
-            [hiiop.api-handlers :refer [get-quest get-user]]))
+            [hiiop.api-handlers :refer [get-quest get-user get-quests-for-owner]]))
 
 (defn tr-from-req [req]
   (:tempura/tr req))
@@ -41,7 +47,7 @@
         quest-filter (atom (new-empty-quest-filter))
         errors (atom (same-keys-with-nils @quest-filter))]
     (layout/render {:context context
-                    :content (quests/list-quests {:quests ["a" "a" "a"]
+                    :content (quests/list-quests {:quests []
                                                   :quest-filter quest-filter
                                                   :context context
                                                   :schema QuestFilter})
@@ -78,10 +84,14 @@
 
 (defn profile [req]
   (let [context (create-context req)
+        owner (:id (:identity context))
+        user-info (get-user owner)
+        quests (get-quests-for-owner (:id (:identity context)))
         tr (:tr context)]
     (layout/render {:context context
                     :content (p-p/profile {:context context
-                                           :quests ["a" "b" "c" "d"]})})))
+                                           :user-info user-info
+                                           :quests (atom quests)})})))
 
 (defn activate [req]
   (let [context (create-context req)
@@ -158,17 +168,24 @@
 
 (defn edit-quest [req]
   (let [id (get-in req [:params :quest-id])
-        quest (get-quest (parse-natural-number id))]
-    (if quest
+        identity (:identity req)
+        quest (get-quest (parse-natural-number id))
+        owner? (= (:owner quest) (:id identity))
+        context (create-context req)
+        tr (:tr context)]
+    (if (and owner? quest)
       (edit-quest-with-schema
        {:request req
-        :schema Quest
+        :schema EditQuest
         :quest quest
-        :title-key :actions.quest.edit}))))
+        :title-key :actions.quest.edit})
+      (redirect-to {:path-key :index}))))
 
 (defn quest [req]
   (let [id (get-in req [:params :quest-id])
         quest (get-quest (parse-natural-number id))
+        quest-signup-info (atom (new-empty-quest-signup-info))
+        errors (atom (same-keys-with-nils @quest-signup-info))
         owner-name (:name (get-user (:owner quest)))
         context (create-context req)
         tr (:tr context)]
@@ -178,7 +195,10 @@
                       :content
                       (quest/quest {:context context
                                     :quest (atom (assoc quest
-                                                  :owner-name owner-name))})}))))
+                                                        :owner-name owner-name))
+                                    :quest-signup-info quest-signup-info
+                                    :errors errors
+                                    :schema QuestSignup})}))))
 
 (def handlers
   {:index

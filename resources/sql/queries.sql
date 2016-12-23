@@ -235,7 +235,7 @@ FROM
 WHERE
   q.id = :id
 
--- :name get-moderated-quest-by-owner :? :1
+-- :name get-moderated-quests-by-owner :? :*
 -- :doc get quest by owner
 SELECT
   q.id as id,

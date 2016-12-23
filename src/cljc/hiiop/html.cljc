@@ -1,6 +1,7 @@
 (ns hiiop.html
   (:require [rum.core :as rum]
             [taoensso.timbre :as log]
+            [clojure.string :as string]
             [schema.core :as s]
             #?(:cljs [schema.core :refer [EnumSchema]])
             [schema-tools.core :as st]
@@ -14,7 +15,7 @@
             [hiiop.time :as time]
             [hiiop.schema :as hs]
             [hiiop.mangling :as mangling])
-  #?(:clj (:import [schema.core EnumSchema])))
+  #?(:clj (:import [schema.core EnumSchema Constrained])))
 
 (rum/defc page [head body]
   [:html head body])
@@ -112,6 +113,31 @@
        [:span
         {:class (class-error-or-hide error)}
         (if (rum/react error) (tr [(rum/react error)]))])]))
+
+(rum/defc number-input-with-ticker < rum/reactive
+  [{:keys [type value schema error class context min-value max-value error-key]}]
+  (let [tr (:tr context)
+        coercer (stc/coercer schema {schema #(identity %)} error-key)
+        save-val-or-error (partial save-value-or-error coercer value error)
+        ]
+    [:div {:class "opux-input__container opux-input__container--number-tick"}
+     [:span {:class "opux-number-tick-input__control opux-icon opux-icon-minus"
+       :on-click (fn [e]
+                   (.preventDefault e)
+                   (save-val-or-error (- @value 1)))}]
+     (input
+      {:class (str "opux-input opux-input--number-ticker " class)
+       :type "number"
+       :error error
+       :value value
+       :schema schema
+       :transform-value #(if (string? %) (mangling/parse-natural-number %))
+       :context context})
+
+     [:span {:class "opux-number-tick-input__control opux-icon opux-icon-plus"
+      :on-click (fn [e]
+                  (.preventDefault e)
+                  (save-val-or-error (inc @value)))}]]))
 
 (rum/defc text < rum/reactive
   [{:keys [label value schema matcher error class context error-key]}]
@@ -270,10 +296,13 @@
 (defn readable-address [{:keys [street street-number town]}]
   (-> (filter #(not (nil? %)) [street street-number town])
       ((fn [address]
-         (let [last-dropped (drop-last address)
-               before-last (last last-dropped)
-               all-but-last-two (drop-last last-dropped)]
-           (concat all-but-last-two [(str before-last ",") (last address)]))))
+         (if (not (empty? address))
+           (let [last-dropped (drop-last address)
+                 before-last (last last-dropped)
+                 all-but-last-two (drop-last last-dropped)]
+             (log/info address)
+             (concat all-but-last-two [(str before-last ",") (last address)]))
+           [])))
       (#(clojure.string/join " " %1))))
 
 (rum/defc location-selector < address/autocomplete-mixin
@@ -314,18 +343,34 @@
               :for id}
              (tr [(choice-text-fn choice)]))]))))
 
-(rum/defc multi-selector-for-schema [{:keys [schema context value]}]
+(rum/defc multi-selector-for-schema < rum/reactive
+  [{:keys [schema context value choice-name-fn error]}]
   (let [tr (:tr context)
-        make-multi-choice (partial multi-choice tr hs/category-choice value)
-        single (cond
-                 (and (not (set? schema))
-                      (sequential? schema))
-                 (st/schema-value (first schema))
-                 :else (st/schema-value schema))
+        make-multi-choice (partial multi-choice tr choice-name-fn value)
+        choice-schema (cond
+                        (and (not (set? schema))
+                             (sequential? schema)
+                             (instance?
+                              schema.core.One
+                              (first (st/schema-value schema)))
+                             )
+                        (last (first (:schema (first (st/schema-value schema)))))
+
+                        (and (sequential? (st/schema-value schema))
+                             (instance?
+                              schema.core.EnumSchema
+                              (first (st/schema-value schema))))
+                        (last (first (first (st/schema-value schema))))
+
+                        (and (not (set? schema))
+                             (sequential? schema))
+                        (st/schema-value (first schema))
+
+                        :else (st/schema-value schema))
         all (cond
-              (or (set? single) (sequential? single))
+              (or (set? choice-schema) (sequential? choice-schema))
               (into [:div {:class "opux-fieldset opux-fieldset--multi-select"}]
-                    (mapcat identity (map make-multi-choice single))))]
+                    (mapcat identity (map make-multi-choice choice-schema))))]
     all))
 
 (rum/defc max-participants [{:keys [schema value error context] :as params}]
@@ -378,7 +423,7 @@
       (reset! value (checked-from-event e)))}])
 
 (rum/defcs file-input < dropzone-mixin
-  [state {:keys [value error]}]
+  [state {:keys [value url error]}]
   [:div {:class "dropzone picture-upload"}])
 
 (rum/defc form-section [title & content]
@@ -436,3 +481,21 @@
       [:div {:id "app" :class "opux-page-section" :dangerouslySetInnerHTML {:__html content}}]
       (into [:div {:class "script-tags"}] script-tags)
       ))))
+
+(defn wrap-paragraph [content]
+  (into [:div]
+        (map #(if (not (nil? %)) [:p %] "")
+             (string/split content #"\n"))))
+
+(defn append-if-valid [text separator]
+  (if (not (nil? text))
+    (str ", " text)
+    ""))
+
+(defn combine-text [separator first-text & args]
+  (if (nil? first-text)
+    (if args
+      (let [[new-first & rest] args]
+        (recur separator new-first rest))
+      "")
+    (str first-text (string/join (map #(append-if-valid % separator) args)))))

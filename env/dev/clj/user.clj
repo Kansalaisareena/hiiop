@@ -12,3 +12,7 @@
 (defn restart []
   (stop)
   (start))
+
+(defn reload-translations []
+  (require 'hiiop.translate :reload)
+  (restart))

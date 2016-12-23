@@ -250,8 +250,11 @@
       (dissoc :picture)
       (assoc :picture-id (str picture))
       (dissoc :organisation :organisation-description)
-      (assoc :organisation
-             {:name organisation :description organisation-description})))
+      (#(if organisation
+          (assoc %1
+                 :organisation
+                 {:name organisation :description organisation-description})
+          %1))))
 
 (def db-quest->api-quest-coercer
   (stc/coercer hs/Quest
@@ -270,6 +273,18 @@
       (log/error e)
       )))
 
+(defn delete-quest [{:keys [id user]}]
+  ;; TODO: currently only supports deleting moderated quest
+  (try
+    (let [quest (db/get-moderated-quest-by-id {:id id})
+          owner (:owner quest)]
+      (if (= (str owner) (str (:id user)))
+        (db/delete-quest-by-id! {:id id})
+        {:errors {:quest :errors.quest.not-authorised-to-delete-quest}}))
+    (catch Exception e
+      (log/error e)
+      {:errors {:quest :errors.quest.failed-to-delete-quest}})))
+
 (defn get-quest [id]
   (try
     (-> (db/get-moderated-quest-by-id {:id id})
@@ -285,17 +300,22 @@
         (api-quest->moderated-db-quest-coercer)
         (db/update-moderated-quest!)
         (#(db/get-moderated-quest-by-id {:id (:id %)}))
-        (db-quest->api-quest-coercer))
+        (#(if %1
+            (db-quest->api-quest-coercer %1)
+            {:errors {:unauthorized :errors.unauthorized.title}})))
     (catch Exception e
       (log/error e)
       {:errors {:quest "Failed to update"}})))
 
 (defn get-quests-for-owner [owner]
   (try
-    (-> (db/get-moderated-quest-by-owner {:owner owner})
-        (db-quest->api-quest-coercer))
+    ;; TODO: the profile page using this handler to get all moderated
+    ;; and unmoderated quests for the user. But we only have moderated quests for now
+    (-> (db/get-moderated-quests-by-owner {:owner owner})
+        ((partial map db-quest->api-quest-coercer)))
     (catch Exception e
-      (log/error e))))
+      (log/error e)
+      {:errors {:quests :errors.quest.unexpected-error}})))
 
 (defn join-quest [params]
   (created ""))

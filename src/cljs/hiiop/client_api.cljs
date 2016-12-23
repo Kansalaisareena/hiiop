@@ -14,6 +14,10 @@
                                   {:json-params credentials}))]
       (= (:status response) 200))))
 
+(defn logout []
+  (go
+    (<! (http/post (str base-path "/logout")))))
+
 (defn register [credentials]
   (go
     (let [response (<! (http/post
@@ -48,6 +52,11 @@
       (when (= (:status response) 200)
         (:body response)))))
 
+(defn get-own-quests []
+  (go
+    (let [response (<! (http/get (str base-path "/quests/own")))]
+      (when (= (:status response) 200)
+        (:body response)))))
 
 (defn add-quest [quest]
   (log/info "add-quest called with" quest)
@@ -56,16 +65,25 @@
                                   {:json-params quest}))
           status (:status response)
           body (:body response)]
-      body)))
+      {:success (= status 201)
+       :body body})))
+
+(defn delete-quest [id]
+  (log/info "delete-quest called with" id)
+  (go
+    (let [response (<! (http/delete
+                        (str base-path "/quests/" id)))]
+      (= (:status response) 204))))
 
 (defn edit-quest [quest]
   (log/info "edit-quest called with" quest)
   (go
-    (let [response (<! (http/put (str base-path "quests/" (:id quest))
+    (let [response (<! (http/put (str base-path "/quests/" (:id quest))
                                   {:json-params quest}))
           status (:status response)
           body (:body response)]
-      body)))
+      {:success (= status 200)
+       :body body})))
 
 (defn get-user-info [id]
   (go
@@ -73,4 +91,5 @@
                         (str "/api/v1/users/" id)))
           status (:status response)
           body (:body response)]
-      body)))
+      (when (= status 200)
+        body))))

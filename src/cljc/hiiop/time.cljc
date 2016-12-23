@@ -20,7 +20,7 @@
 
 #?(:cljs
    (defn set-server-client-diff-seconds [diff]
-     (swap! server-client-diff-seconds (fn [] diff))))
+     (reset! server-client-diff-seconds diff)))
 
 (def date-print-format
   #?(:clj "dd.MM.YYYY"
@@ -31,6 +31,14 @@
   #?(:clj "YYYY-MM-DD'T'HH:mm:ssZ"
      :cljs "YYYY-MM-DDTHH:mm:ssZ"))
 
+(def with-weekday-format
+  #?(:clj "EE dd.M"
+     :cljs "dd DD.M"))
+
+(def hour-minute-format
+  #?(:clj "HH.mm"
+     :cljs "HH.mm"))
+
 #?(:cljs (defstate locale :start :fi))
 #?(:cljs (defn switch-locale [locale]
            (swap {#'hiiop.time/locale locale})
@@ -38,7 +46,7 @@
 
 (def time-zone (atom "Europe/Helsinki"))
 (defn switch-time-zone [time-zone-param]
-  (swap! time-zone (fn [] time-zone-param))
+  (reset! time-zone time-zone-param)
   #?(:clj (time/default-time-zone @time-zone)))
 
 

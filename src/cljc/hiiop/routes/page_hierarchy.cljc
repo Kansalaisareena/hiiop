@@ -25,8 +25,9 @@
 
     (branch
      "tehtavat/" (param :quest-id)
-     (leaf "" :quest))
+     (leaf "" :quest)
 
-    (branch
-     "muokkaa/" (param :quest-id)
-     (leaf "" :edit-quest))))
+     (branch
+      "/muokkaa/"
+      (leaf "" :edit-quest)))
+    ))

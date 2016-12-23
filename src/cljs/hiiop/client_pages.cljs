@@ -11,17 +11,20 @@
             [hiiop.components.register :as p-r]
             [hiiop.components.quest-single :as quest]
             [hiiop.components.quests :as quests]
-            [hiiop.client-api :refer [get-quest get-user-info]]
+            [hiiop.client-api :refer [get-quest get-user-info get-own-quests]]
             [hiiop.context :refer [context]]
             [hiiop.mangling :refer [parse-natural-number same-keys-with-nils]]
             [hiiop.mangling :refer [same-keys-with-nils]]
             [hiiop.schema :refer [NewQuest
                                   Quest
+                                  EditQuest
                                   RegistrationInfo
                                   UserActivation
                                   QuestFilter
+                                  QuestSignup
                                   new-empty-registration-info
                                   new-empty-quest
+                                  new-empty-quest-signup-info
                                   new-empty-quest-filter
                                   new-empty-activation-info
                                   ]]
@@ -58,12 +61,16 @@
      (. js/document (getElementById "app")))))
 
 (defn profile-page [params]
-  (log/info "profile-page")
-  (rum/mount
-   (p-p/profile {:context @context
-                 :quests ["a" "b" "c" "d"]})
-   (. js/document (getElementById "app"))))
-
+  (go
+    (let [owner (:id (:identity @context))
+          quests (<! (get-own-quests))
+          user-info (<! (get-user-info owner))]
+      (log/info "profile-page")
+      (rum/mount
+       (p-p/profile {:context @context
+                     :user-info user-info
+                     :quests (atom quests)})
+       (. js/document (getElementById "app"))))))
 
 (defn browse-quests-page [params]
   (let [quest-filter (atom (new-empty-quest-filter))
@@ -91,7 +98,8 @@
   (go
     (let [id (parse-natural-number
               (get-in params [:route-params :quest-id]))
-          quest (<! (get-quest id))]
+          quest (<! (get-quest id))
+          user-info (<! (get-user-info (:owner quest)))]
       (-> quest
           (#(assoc %1
                    :categories
@@ -104,39 +112,45 @@
                        (deref)
                        (same-keys-with-nils)
                        (atom))))
+          (assoc :user user-info)
           (assoc :context @context)
-          (assoc :schema Quest)
+          (assoc :schema EditQuest)
           (#(rum/mount
              (quests/edit %1)
              (. js/document (getElementById "app"))))
           ))))
 
 (defn quest-page [params]
-  (go
-    (let [id (parse-natural-number
-              (get-in params [:route-params :quest-id]))
-          quest (<! (get-quest id))
-          user-info (<! (get-user-info (str (:owner quest))))
-          owner-name (:name user-info)]
-      (-> quest
-          (#(assoc %1
-                   :categories
-                   (into [] (map keyword (:categories %1)))
-                   :owner-name owner-name))
-          (atom)
-          ((fn [quest]
-             {:quest quest}))
-          (#(assoc %1
-                   :errors
-                   (-> (:quest %1)
-                       (deref)
-                       (same-keys-with-nils)
-                       (atom))))
-          (assoc :context @context)
-          (#(rum/mount
-             (quest/quest %1)
-             (. js/document (getElementById "app"))))
-          ))))
+  (let [quest-signup-info (atom (new-empty-quest-signup-info))
+        errors (atom (same-keys-with-nils @quest-signup-info))]
+    (go
+      (let [id (parse-natural-number
+                (get-in params [:route-params :quest-id]))
+            quest (<! (get-quest id))
+            user-info (<! (get-user-info (str (:owner quest))))
+            owner-name (:name user-info)]
+        (-> quest
+            (#(assoc %1
+                     :categories
+                     (into [] (map keyword (:categories %1)))
+                     :owner-name owner-name))
+            (atom)
+            ((fn [quest]
+               {:quest quest}))
+            (#(assoc %1
+                     :errors
+                     (-> (:quest %1)
+                         (deref)
+                         (same-keys-with-nils)
+                         (atom))))
+            (assoc :context @context
+                   :quest-signup-info quest-signup-info
+                   :errors errors
+                   :schema QuestSignup)
+            (#(rum/mount
+               (quest/quest %1)
+               (. js/document (getElementById "app"))))
+            )))))
 
 (def handlers
   {:index

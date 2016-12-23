@@ -33,7 +33,7 @@
            format (:format args)
            position (:position args)
            instance (pikaday
-                     {:field (rum/dom-node state)
+                     {:field (.querySelector (rum/dom-node state) "input")
                       :first-day (:first-day translations)
                       :i18n translations
                       :date (time/to-string @date format)

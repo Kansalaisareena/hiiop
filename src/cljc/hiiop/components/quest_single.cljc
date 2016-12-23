@@ -3,28 +3,13 @@
      (:require-macros [cljs.core.async.macros :refer [go]]))
   (:require [clojure.string :as string]
             [rum.core :as rum]
+            [hiiop.html :as html]
             [hiiop.time :as time]
+            [hiiop.components.quest-signup-form :refer [signup-form]]
             [taoensso.timbre :as log]))
 
-(rum/defc wrap-paragraph [content]
-  (into [:div]
-        (map #(if (not (nil? %)) [:p %] "")
-             (string/split content #"\n"))))
-
-(defn append-if-valid [text]
-  (if (not (nil? text))
-    (str ", " text)
-    ""))
-
-(defn combine-info [first-text & args]
-  (if (nil? first-text)
-    (if args
-      (let [[new-first & rest] args]
-        (recur new-first rest))
-      "")
-    (str first-text (string/join (map append-if-valid args)))))
-
-(rum/defc quest [{:keys [context quest]}]
+(rum/defc quest < rum/reactive
+  [{:keys [context quest quest-signup-info user errors schema]}]
   (let [{:keys [name
                 organisation
                 owner-name
@@ -40,9 +25,8 @@
                 postal-code
                 country
                 google-maps-url]} location
+        usable-owner (or owner-name (:name user))
         tr (:tr context)]
-
-    (println @quest)
 
     [:div {:class "opux-section"}
 
@@ -55,27 +39,33 @@
      [:div {:class "opux-content opux-content--medium opux-content--quest-header"}
       [:p
        [:i {:class "opux-icon opux-icon-person"}]
-       (combine-info owner-name (:name organisation))]
+       (html/combine-text ", " usable-owner (:name organisation))]
       [:p
        [:i {:class "opux-icon opux-icon-location"}]
-       (combine-info street-number street town postal-code)]
+       (html/combine-text ", " street-number street town postal-code)]
       [:p
        [:i {:class "opux-icon opux-icon-calendar"}]
        (time/to-string (time/from-string start-time) time/date-print-format)]]
 
-     [:div {:class "opux-content opux-content--medium"} (wrap-paragraph description)]
+     [:div {:class "opux-content opux-content--medium"} (html/wrap-paragraph description)]
 
      (if (not (nil? organisation))
        [:div {:class "opux-content opux-content--medium"}
         [:h3 (:name organisation)]
         (if (not (nil? (:description organisation)))
-          (wrap-paragraph (:description organisation)))])
+          (html/wrap-paragraph (:description organisation)))])
 
      [:div {:class "opux-content opux-content--medium opux-content--quest-footer"}
       (if (not-empty hashtags)
         [:p (string/join " " hashtags)])
       [:p
        [:i {:class "opux-icon opux-icon-personnel"}]
-       (str max-participants " " (tr [:pages.quest.participants]))]]
+       (str max-participants " " (tr [:pages.quest.view.participants]))]]
 
-     ]))
+     [:div {:class "opux-line"}]
+
+     (when quest-signup-info
+       (signup-form {:context context
+                     :quest-signup-info quest-signup-info
+                     :schema schema
+                     :errors errors}))]))

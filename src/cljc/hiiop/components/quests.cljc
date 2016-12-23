@@ -9,8 +9,10 @@
             [schema.coerce :as sc]
             #?(:cljs [cljs.core.async :refer [<!]])
             #?(:cljs [hiiop.client-api :as api])
+            [hiiop.url :refer [redirect-to]]
             [hiiop.time :as time]
             [hiiop.components.core :as c]
+            [hiiop.components.quest-single :as qs]
             [hiiop.html :as html]
             [hiiop.schema :as hs]))
 
@@ -79,6 +81,7 @@
         (html/file-input
          {:value (get-in cursors-and-schema [:picture-id :value])
           :error (get-in cursors-and-schema [:picture-id :error])
+          :url picture-url
           :context context
           :tr (partial tr [:page.quest.edit.picture.upload-failed])})
         ]
@@ -141,7 +144,7 @@
         :value (get-in cursors-and-schema [:hashtags :value])
         :error (get-in cursors-and-schema [:hashtags :error])
         :schema (get-in cursors-and-schema [:hashtags :schema])
-        :error-key :error.hashtag
+        :error-key :errors.hashtag
         :transform-value #(if (string? %) (str/split % #" ") %)
         :to-value #(if (sequential? %) (str/join " " %) %)
         :context context})
@@ -275,6 +278,7 @@
     {:schema (get-in cursors-and-schema [:categories :schema])
      :value (get-in cursors-and-schema [:categories :value])
      :error (get-in cursors-and-schema [:categories :error])
+     :choice-name-fn hs/category-choice
      :context context})
    )
   (html/form-section
@@ -306,44 +310,123 @@
        :for (name :pages.quest.edit.organiser-participates)}))
    ))
 
-(rum/defc edit < rum/reactive
-  [{:keys [context quest schema errors]}]
+(rum/defc confirm-remove < rum/reactive
+  [{:keys [ask-confirm
+           remove-confirmed
+           context]}]
+  (let [tr (:tr context)]
+    [:div {:class "opux-content"}
+     [:h3 {:class "opux-centered"}
+      (tr [:pages.quest.edit.remove.title])]
+     [:div {:class "opux-fieldset__item opux-fieldset__item--inline-container"}
+      (html/button
+       (tr [:pages.quest.edit.remove.cancel])
+       {:class "opux-button opux-form__button opux-fieldset__inline-item"
+        :type "button"
+        :on-click
+        (fn []
+          (reset! ask-confirm false)
+          (reset! remove-confirmed false))
+        })
+      (html/button
+       (tr [:pages.quest.edit.remove.confirm])
+       {:class "opux-button opux-form__button opux-fieldset__inline-item opux-button--highlight"
+        :type "button"
+        :on-click
+        (fn []
+          (reset! remove-confirmed true))
+        })
+      ]]
+     ))
+
+(rum/defc edit-buttons < rum/reactive
+  [{:keys [is-valid ask-remove context]}]
+  (let [tr (:tr context)]
+    [:div {:class "opux-fieldset__item opux-fieldset__item--inline-container"}
+     (html/button
+      (tr [:pages.quest.edit.button.preview])
+      {:class "opux-button opux-form__button opux-fieldset__inline-item opux-button--highlight"
+       :type "submit"
+       :active is-valid})
+     (html/button
+      (tr [:pages.quest.edit.button.remove])
+      {:class "opux-button opux-form__button opux-fieldset__inline-item"
+       :on-click
+       (fn []
+         (reset! ask-remove true))
+       })]))
+
+(defn delete-or-buttons!
+  [{:keys [ask-remove remove-confirmed quest is-valid context]}]
+  (cond
+    (and @ask-remove @remove-confirmed)
+    (do
+      (log/info "delete!")
+      #?(:cljs
+         (if (:id @quest)
+           (go
+             (let [deleted (<! (api/delete-quest (:id @quest)))]
+               (when deleted
+                 (redirect-to {:path-key :profile}))
+               ))
+           (redirect-to {:path-key :profile}))
+         )
+      []
+      )
+
+    @ask-remove
+    (confirm-remove
+     {:ask-confirm ask-remove
+      :remove-confirmed remove-confirmed
+      :context context})
+
+    :else
+    (edit-buttons
+     {:ask-remove ask-remove
+      :is-valid is-valid
+      :context context})
+    ))
+
+(rum/defcs edit-form < rum/reactive
+                       (rum/local false ::ask-remove)
+                       (rum/local false ::remove-confirmed)
+  [state {:keys [context quest schema errors view is-valid]}]
   (let [tr (:tr context)
         cursors-and-schema (c/value-and-error-cursors-and-schema {:for quest
                                                                   :schema schema
                                                                   :errors errors})
-        is-valid (atom false)
         checker (partial hs/select-schema-either schema)
-        set-valid! (fn [validity] (reset! is-valid validity))
+        set-valid! (fn [validity]
+                     (if (not (= validity @is-valid))
+                       (reset! is-valid validity)
+                       validity))
         show-end-time (atom false)
         check-and-set-validity!
         (fn [quest-value]
           (let [value-or-error (checker quest-value)]
             (cond
               (:--value value-or-error) (set-valid! true)
-              (:--error value-or-error) (set-valid! false))))]
+              (:--error value-or-error) (set-valid! false))))
+        ask-remove (::ask-remove state)
+        remove-confirmed (::remove-confirmed state)
+        buttons (delete-or-buttons!
+                 {:quest quest
+                  :ask-remove ask-remove
+                  :remove-confirmed remove-confirmed
+                  :is-valid is-valid
+                  :context context})]
     (check-and-set-validity! @quest)
-    (add-watch
-     quest
-     ::quest-validator
-     (fn [key _ old new] (check-and-set-validity! new)))
+    (add-watch quest
+               ::quest-validator
+               (fn [key _ old new] (check-and-set-validity! new)))
     [:form
      {:class "opux-form"
       :on-submit
       (fn [e]
         (.preventDefault e)
-        (when (deref is-valid)
-          #?(:cljs
-             (go
-               (let [api-call (if (:id @quest)
-                                api/edit-quest
-                                api/add-quest)
-                     api-quest (assoc @quest :picture-id (str (:picture-id @quest)))
-                     from-api (<! (api-call api-quest))]
-                 (log/info from-api)
-                 )))))
+        (reset! view "preview"))
       }
-     [:h1 (tr [:actions.quest.create])]
+     [:h1 {:class "opux-centered"} (tr [:actions.quest.create])]
      (edit-content
       {:cursors-and-schema cursors-and-schema
        :is-valid is-valid
@@ -366,6 +449,7 @@
        {:schema (get-in cursors-and-schema [:categories :schema])
         :value (get-in cursors-and-schema [:categories :value])
         :error (get-in cursors-and-schema [:categories :error])
+        :choice-name-fn hs/category-choice
         :context context})
       )
      (edit-participation-settings
@@ -377,23 +461,83 @@
        })
      (html/form-section
       ""
-      [:div {:class "opux-fieldset__item opux-fieldset__item--inline-container"}
+      buttons
+      )]))
+
+(rum/defc preview
+  [{:keys [context quest user schema errors view is-valid]}]
+  (let [tr (:tr context)]
+    [:div
+     {:class "opux-content"}
+     [:h1 {:class "opux-centered"}
+      (tr [:pages.quest.preview.title])]
+     [:div {:class "opux-fieldset__item opux-fieldset__item--inline-container"}
       (html/button
-       (tr [:pages.quest.edit.button.submit])
+       (tr [:pages.quest.preview.buttons.edit])
+       {:class "opux-button opux-form__button opux-fieldset__inline-item"
+        :on-click
+        (fn []
+          (reset! view "edit"))})
+      (html/button
+       (tr [:pages.quest.preview.buttons.publish])
        {:class "opux-button opux-form__button opux-fieldset__inline-item"
         :type "submit"
-        :active is-valid})
-      (html/button
-       (tr [:pages.quest.edit.button.remove])
-       {:class "opux-button opux-form__button opux-fieldset__inline-item"})])]))
+        :active is-valid
+        :on-click
+        (fn []
+          (when @is-valid
+            #?(:cljs
+               (go
+                 (let [api-call (if (:id @quest)
+                                  api/edit-quest
+                                  api/add-quest)
+                       api-quest (assoc @quest :picture-id (str (:picture-id @quest)))
+                       from-api (<! (api-call api-quest))]
+                   (if (:success from-api)
+                     (reset! view "success"))
+                   )))))})
+      ]
+     (qs/quest {:quest quest :context context :user user})
+     ]))
+
+(rum/defc edit-success < rum/reactive
+  [{:keys [context quest schema errors view is-valid]}]
+  (let [tr (:tr context)
+        edit (:id @quest)
+        title (if edit
+                :pages.quest.edited.title
+                :pages.quest.created.title)
+        content (if edit
+                  :pages.quest.edited.content
+                  (cond
+                    (:is-open @quest) :pages.quest.created.public
+                    :else :pages.quest.created.private))]
+    [:div {:class "opux-content"}
+     [:h1 (tr [title])]
+     [:p (tr [content])]]
+    ))
+
+(rum/defcs edit < rum/reactive
+                  (rum/local "edit" ::view)
+                  (rum/local false ::is-valid)
+  [state {:keys [context quest schema errors user] :as args}]
+  (let [view (::view state)
+        is-valid (::is-valid state)
+        locals {:view view :is-valid is-valid}]
+    (cond
+      (= @view "edit") (edit-form (conj args locals))
+      (= @view "preview") (preview (conj args locals))
+      (= @view "success") (edit-success {:quest quest
+                                         :context context})
+      )))
 
 (rum/defcs quest-categories-filter < rum/reactive
-  (rum/local false ::is-active)
+                                     (rum/local false ::is-active)
   [state {:keys [cursors-and-schema context tr]}]
   (let [is-active (::is-active state)]
     [:div {:class "opux-card-filter__field opux-card-filter__field--category"}
      [:div {:class "opux-card-filter__label"}
-      (tr [:pages.quest.list.filter.category])]
+      (tr [:pages.quest.browse.filter.category])]
      [:span {:class "opux-icon opux-icon-plus opux-card-filter--category-filter"}]
      (html/form-section
       ""
@@ -401,6 +545,7 @@
        {:schema (get-in cursors-and-schema [:categories :schema])
         :value (get-in cursors-and-schema [:categories :value])
         :error (get-in cursors-and-schema [:categories :error])
+        :choice-name-fn hs/category-choice
         :context context}))]))
 
 (rum/defc quest-filters [{:keys [tr cursors-and-schema context]}]
@@ -411,7 +556,7 @@
 
    [:div {:class "opux-card-filter__field opex-card-filter__field--datetime"}
     [:div {:class "opux-card-filter__label"}
-     (tr [:pages.quest.list.filter.where])]
+     (tr [:pages.quest.browse.filter.where])]
     (html/location-selector
      {:class "opux-input opux-input--location-selector"
       :location (get-in cursors-and-schema [:location :value])
@@ -422,7 +567,16 @@
 
    [:div {:class "opux-card-filter__field opex-card-filter__field--datetime"}
     [:div {:class "opux-card-filter__label"}
-     (tr [:pages.quest.list.filter.when])]]])
+     (tr [:pages.quest.browse.filter.when])
+     ;; (html/datepicker
+     ;;  {:date (atom (time/now))
+     ;;   :error (atom nil)
+     ;;   :schema hs/DateTime
+     ;;   :class "opux-fieldset__item opux-fieldset__item--inline-container start-time"
+     ;;   :value-format time/transit-format
+     ;;   :format time/date-print-format
+     ;;   :context context})
+     ]]])
 
 (rum/defc list-quests
   [{:keys [context quests quest-filter schema errors]}]
@@ -432,7 +586,8 @@
                                                :schema schema
                                                :errors errors})]
     [:div {:class "opux-section"}
-     [:h1 (tr [:pages.quest.list.title])]
+     [:h1 {:class "opux-centered"}
+      (tr [:pages.quest.browse.title])]
 
      (quest-filters {:cursors-and-schema cursors-and-schema
                      :tr tr
@@ -441,7 +596,7 @@
      [:div {:class "opux-card-list-container"}
       [:div
        {:class "opux-content opux-content--small opux-centered opux-card-list__subtitle"}
-       [:p (tr [:pages.quest.list.not-found])]]
+       [:p (tr [:pages.quest.browse.not-found])]]
 
       [:h2 {:class "opux-centered"}
        "Helmikuussa"]

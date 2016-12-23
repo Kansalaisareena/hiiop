@@ -7,14 +7,23 @@
             [schema.core :as s]))
 
 (defstate aws-credentials
-  :start {:access-key (:aws-access-key-id env)
-          :secret-key (:aws-secret-access-key env)})
+  :start
+  (let [keys {:access-key (:aws-access-key-id env)
+              :secret-key (:aws-secret-access-key env)}]
+    (log/info "Starting with AWS credentials" keys)
+    keys))
 
 (defstate picture-bucket
-  :start (:hiiop-pictures-bucket env))
+  :start
+  (let [bucket (:hiiop-pictures-bucket env)]
+    (log/info "Starting with picture bucket" bucket)
+    bucket))
 
 (defstate bucket-base-url
-  :start (:hiiop-pictures-bucket-base-url env))
+  :start
+  (let [base-url (:hiiop-pictures-bucket-base-url env)]
+    (log/info "Starting with picture base url" base-url)
+    base-url))
 
 (defn upload-picture-to-s3 [id picture-file]
   (-> (pm/extension-for-name (:content-type picture-file))
