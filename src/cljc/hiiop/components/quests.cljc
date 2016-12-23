@@ -13,31 +13,9 @@
             [hiiop.time :as time]
             [hiiop.components.core :as c]
             [hiiop.components.quest-single :as qs]
+            [hiiop.components.quest-card :refer [quest-card-browse]]
             [hiiop.html :as html]
             [hiiop.schema :as hs]))
-
-(rum/defc card []
-  [:div {:class "opux-card-container"}
-   [:div {:class "opux-card"}
-
-    [:div {:class "opux-card__image-container"}
-     [:a {:href "#"}
-      [:img {:class "opux-card__image"
-             :src "https://placeholdit.imgix.net/~text?txtsize=33&txt=quest%20image&w=480&h=300"}]]]
-
-    [:div {:class "opux-card__content"}
-     [:span {:class "opux-card__location opux-inline-icon opux-inline-icon-location"}
-      "Helsinki"]
-     [:span {:class "opux-card__attendance opux-inline-icon opux-inline-icon-personnel opux-inline-icon--right"}
-      23]
-
-     [:a {:class "opux-card__title" :href "#"}
-      "Konalan senioreiden iltatanhutapahtuma"]
-
-     [:span {:class "opux-card__date opux-inline-icon opux-inline-icon-calendar"}
-      "Keskiviikko 28.1"]
-     [:span {:class "opux-card__time opux-inline-icon opux-inline-icon-clock"}
-      "18.00-20.00"]]]])
 
 (defn add-organisation-to [quest]
   (reset! quest
@@ -685,11 +663,11 @@
        "Helmikuussa"]
 
       [:ul {:class "opux-card-list"}
-       (repeat 7 (card))]
+       (repeat 7 (quest-card-browse))]
 
       [:h2 {:class "opux-centered"}
        "Maaliskuussa "]
 
       [:ul {:class "opux-card-list"}
-       (repeat 8 (card))]
+       (repeat 8 (quest-card-browse))]
       ]]))
