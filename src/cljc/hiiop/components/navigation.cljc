@@ -69,5 +69,5 @@
         {:class "opux-menu__item opux-menu__item--login"}
         [:a
          {:class "opux-menu__item-link opux-menu__item-link--login"
-          :href (path-for hierarchy :user)}
+          :href (path-for hierarchy :profile)}
          [:i {:class "opux-icon-circled opux-icon-person"}]]]]]]))
