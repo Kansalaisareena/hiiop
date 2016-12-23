@@ -46,7 +46,7 @@
   :quest
   {:title "Löydä tehtävä"
 
-   :single
+   :view
    {:signup-form-subtitle "Olet ilmoittautumassa tapahtumaan. Huomioithan että ilmoittautuminen on sitova.
 Mikäli et jostain syystä pääse osallistumaan tapahtumaan ilmoitathan siitä suoraan järjestäjälle. "
     :participants "vapaata paikkaa"
@@ -106,6 +106,11 @@ Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit
      :preview "Esikatsele ja julkaise"
      :submit "Julkaise"
      :remove "Poista tehtävä"}
+
+    :remove
+    {:title "Oletko ihan varma, että haluat poistaa tehtävän?"
+     :confirm "Poista"
+     :cancel "Peruuta"}
     }
 
    :browse
@@ -126,6 +131,7 @@ Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit
               :publish "Julkaise tehtävä"}
     }
    }
+
   :ideas
   {:title "Kokemuksia vapaaehtoistyöstä"}
   }
@@ -161,12 +167,6 @@ Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit
   :profile
   {:sign-out "Kirjaudu ulos"
    :edit "Muokkaa"}
-  }
-
- :error
- {:non-empty-string "Tyhjä arvo ei käy"
-  :hashtag "Hashtag alkaa risuaidalla, eikä voi sisältää viivoja."
-  :date-needs-to-be-before "Ajan pitää olla ennen %1"
   }
 
  :pikaday
@@ -208,7 +208,12 @@ Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit
   }
 
  :errors
- {:picture
+ {
+  :non-empty-string "Tyhjä arvo ei käy"
+  :hashtag "Hashtag alkaa risuaidalla, eikä voi sisältää viivoja."
+  :date-needs-to-be-before "Ajan pitää olla ennen %1"
+
+  :picture
   {:type-not-supported "Kuvatyyppi %1 ei ole tuettu"}
 
   :user
@@ -223,14 +228,14 @@ Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit
    :in-use "Sähköposti on jo käytössä"}
 
   :phone
-  {:not-valid "Invalid phone"}
+  {:not-valid "Puhelinnumero ei ole muotoa +358 40 1234567"}
 
   :paticipate-days
-  {:not-valid "Invalid number"}
+  {:not-valid "Voi olla numero nollasta ylöspäin"}
 
   :number
-  {:not-greater-than-one "Must be greater than 0"
-   :greater-than-zero "Must be greater than 0"}
+  {:greater-than-one "Tulee olla 1 suurempi"
+   :greater-than-zero "Tulee olla 0 suurempi"}
 
   :agreement
   {:please-agree "Please agree to the terms and conditions"}
