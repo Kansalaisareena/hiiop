@@ -9,13 +9,15 @@
             [hiiop.components.login :as p-l]
             [hiiop.components.activate :as p-a]
             [hiiop.components.register :as p-r]
-            [hiiop.components.quest-single :as quest]
+            [hiiop.components.quest-single :refer [quest]]
             [hiiop.components.quests :as quests]
+            [hiiop.components.quests-browse :refer [list-quests]]
             [hiiop.client-api :refer [get-quest
                                       get-secret-quest
                                       get-user-info
                                       get-own-quests
-                                      get-quest-party]]
+                                      get-quest-party
+                                      get-moderated-quests]]
             [hiiop.context :refer [context]]
             [hiiop.mangling :refer [parse-natural-number same-keys-with-nils]]
             [hiiop.mangling :refer [same-keys-with-nils]]
@@ -77,16 +79,18 @@
        (. js/document (getElementById "app"))))))
 
 (defn browse-quests-page [params]
-  (let [quest-filter (atom (new-empty-quest-filter))
-        errors (atom (same-keys-with-nils @quest-filter))]
-    (log/info "browse-quests-page")
-    (rum/mount
-     (quests/list-quests {:quests ["a" "b" "c" "d"]
-                          :context @context
-                          :quest-filter quest-filter
-                          :errors errors
-                          :schema QuestFilter})
-     (. js/document (getElementById "app")))))
+  (go
+    (let [quests (<! (get-moderated-quests))
+          quest-filter (atom (new-empty-quest-filter))
+          errors (atom (same-keys-with-nils @quest-filter))]
+      (log/info "browse-quests-page")
+      (rum/mount
+       (list-quests {:quests quests
+                            :context @context
+                            :quest-filter quest-filter
+                            :errors errors
+                            :schema QuestFilter})
+       (. js/document (getElementById "app"))))))
 
 (defn create-quest-page [params]
   (let [quest (atom (new-empty-quest))
@@ -189,7 +193,7 @@
                    :party-member-schema NewPartyMember
                    :secret-party secret-party)
             (#(rum/mount
-               (quest/quest %1)
+               (quest %1)
                (. js/document (getElementById "app"))))
             )))))
 

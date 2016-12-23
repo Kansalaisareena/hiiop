@@ -33,7 +33,8 @@
                                         get-secret-quest
                                         get-user
                                         get-quests-for-owner
-                                        get-quest-party]]))
+                                        get-quest-party
+                                        get-moderated-quests]]))
 
 (defn tr-from-req [req]
   (:tempura/tr req))
@@ -114,9 +115,10 @@
 
 (defn browse-quests [req]
   (let [context (create-context req)
+        quests (get-moderated-quests)
         tr (:tr context)]
     (layout/render {:context context
-                    :content (quests/list-quests {:quests ["a" "a" "a"]
+                    :content (quests/list-quests {:quests quests
                                                   :context context})
                     :title (tr [:actions.quest.create])})))
 

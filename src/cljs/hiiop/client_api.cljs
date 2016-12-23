@@ -59,6 +59,12 @@
       (when (= (:status response) 200)
         (:body response)))))
 
+(defn get-moderated-quests []
+  (go
+    (let [response (<! (http/get (str base-path "/quests/moderated")))]
+      (when (= (:status response) 200)
+        (:body response)))))
+
 (defn get-own-quests []
   (go
     (let [response (<! (http/get (str base-path "/quests/own")))]
