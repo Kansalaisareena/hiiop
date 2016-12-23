@@ -635,7 +635,8 @@ INSERT INTO blog (id, topic_fi, topic_sv)
 VALUES (:id, :topic-fi, :topic-sv)
 ON CONFLICT (id) DO
   UPDATE
-    SET topic_fi = :topic-fi,
+    SET id = :id,
+        topic_fi = :topic-fi,
         topic_sv = :topic-sv
 
 -- :name delete-story! :! :1
