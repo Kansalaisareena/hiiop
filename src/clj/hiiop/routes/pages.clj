@@ -8,6 +8,7 @@
             [hiiop.components.profile :as p-p]
             [hiiop.components.quest-single :as quest]
             [hiiop.components.quests :as quests]
+            [hiiop.components.quests-browse :as p-b]
             [hiiop.components.activate :as p-a]
             [hiiop.components.register :as p-r]
             [hiiop.components.errors :as e]
@@ -49,13 +50,14 @@
 (defn index [req]
   (let [context (create-context req)
         tr (:tr context)
+        quests (get-moderated-quests)
         quest-filter (atom (new-empty-quest-filter))
         errors (atom (same-keys-with-nils @quest-filter))]
     (layout/render {:context context
-                    :content (quests/list-quests {:quests []
-                                                  :quest-filter quest-filter
-                                                  :context context
-                                                  :schema QuestFilter})
+                    :content (p-b/list-quests {:quests quests
+                                               :quest-filter quest-filter
+                                               :context context
+                                               :schema QuestFilter})
                     :title (tr [:actions.quest.create])
 
                     :scripts
@@ -118,8 +120,8 @@
         quests (get-moderated-quests)
         tr (:tr context)]
     (layout/render {:context context
-                    :content (quests/list-quests {:quests quests
-                                                  :context context})
+                    :content (p-b/list-quests {:quests quests
+                                               :context context})
                     :title (tr [:actions.quest.create])})))
 
 (defn edit-quest-with-schema [{:keys [request schema quest party title-key]}]
@@ -149,13 +151,14 @@
 (defn browse-quests [req]
   (let [context (create-context req)
         tr (:tr context)
+        quests (get-moderated-quests)
         quest-filter (atom (new-empty-quest-filter))
         errors (atom (same-keys-with-nils @quest-filter))]
     (layout/render {:context context
-                    :content (quests/list-quests {:quests ["a" "a" "a"]
-                                                  :quest-filter quest-filter
-                                                  :context context
-                                                  :schema QuestFilter})
+                    :content (p-b/list-quests {:quests quests
+                                               :quest-filter quest-filter
+                                               :context context
+                                               :schema QuestFilter})
                     :title (tr [:actions.quest.create])
                     :scripts
                     [(str
