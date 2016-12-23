@@ -251,7 +251,8 @@
       (assoc :picture-id (str picture))
       (dissoc :organisation :organisation-description)
       (#(if organisation
-          (assoc %1 :organisation
+          (assoc %1
+                 :organisation
                  {:name organisation :description organisation-description})
           %1))))
 

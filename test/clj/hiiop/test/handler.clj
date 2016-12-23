@@ -279,6 +279,36 @@
           (just-do #(db/delete-user! *db* {:id (sc/string->uuid @test-user-id)})))
       ))
 
+  (testing "/api/v1/quests/add with nil organisation"
+    (let [current-app (app)
+          user-created (create-test-user
+                        {:user-data test-user
+                         :save-id-to test-user-id
+                         :read-token-from email-token})
+          login-cookie (login-and-get-cookie
+                        {:with current-app
+                         :user-data test-user})
+          quest-with-all-data (test-quest
+                               {:use-date-string true
+                                :location-to :location
+                                :coordinates-to :coordinates
+                                :organisation-to {:in :organisation
+                                                  :name :name
+                                                  :description :description}})
+          quest-to-add (assoc quest-with-all-data :organisation {:name nil
+                                                                 :description nil})]
+      (-> (add-quest
+             {:with current-app
+              :quest quest-to-add
+              :login-cookie login-cookie})
+          (do-this pp/pprint)
+          (check #(is (> (:id %1) 0)))
+          (check #(is (nil? (:organisation %1))))
+          (do-this pp/pprint)
+          (#(db/delete-quest-by-id! {:id (:id %1)}))
+          (just-do #(db/delete-user! *db* {:id (sc/string->uuid @test-user-id)})))
+      ))
+
   (testing "PUT /api/v1/quests/:id"
     (let [current-app (app)
           user-created (create-test-user

@@ -46,8 +46,8 @@
 
 (def Organisation
   "Organisation"
-  {:name s/Str
-   (s/optional-key :description) s/Str})
+  {(s/optional-key :name) (s/maybe s/Str)
+   (s/optional-key :description) (s/maybe s/Str)})
 
 (def User
   "Registered or virtual user"
