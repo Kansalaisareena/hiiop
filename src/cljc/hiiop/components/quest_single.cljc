@@ -63,7 +63,8 @@
 
      [:div {:class "opux-line"}]
 
-     (signup-form {:context context
-                   :quest-signup-info quest-signup-info
-                   :schema schema
-                   :errors errors})]))
+     (when quest-signup-info
+       (signup-form {:context context
+                     :quest-signup-info quest-signup-info
+                     :schema schema
+                     :errors errors}))]))
