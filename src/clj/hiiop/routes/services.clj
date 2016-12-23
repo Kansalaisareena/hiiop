@@ -181,17 +181,17 @@
                 (not-found)))))
 
         (DELETE "/:id" []
-             :name        ::quest-delete
-             :path-params [id :- Long]
-             :middleware [api-authenticated]
-             :summary     "Delete quest"
-             (fn [request]
-               (let [result (api-handlers/delete-quest
-                    {:id id
-                     :user (:identity request)})]
-                   (if (nil? (:errors result))
-                      (ok)
-                      (bad-request result)))))
+          :name        ::quest-delete
+          :path-params [id :- Long]
+          :middleware  [api-authenticated]
+          :summary     "Delete quest"
+          (fn [request]
+            (let [result (api-handlers/delete-quest
+                          {:id id
+                           :user (:identity request)})]
+              (if (nil? (:errors result))
+                (no-content)
+                (bad-request result)))))
 
         (PUT "/:id" []
           :name        ::quest-edit

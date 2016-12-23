@@ -9,8 +9,7 @@
             [schema.coerce :as sc]
             #?(:cljs [cljs.core.async :refer [<!]])
             #?(:cljs [hiiop.client-api :as api])
-            [bidi.bidi :refer [path-for]]
-            [hiiop.routes.page-hierarchy :refer [hierarchy]]
+            [hiiop.url :refer [redirect-to]]
             [hiiop.time :as time]
             [hiiop.components.core :as c]
             [hiiop.components.quest-single :as qs]
@@ -145,7 +144,7 @@
         :value (get-in cursors-and-schema [:hashtags :value])
         :error (get-in cursors-and-schema [:hashtags :error])
         :schema (get-in cursors-and-schema [:hashtags :schema])
-        :error-key :error.hashtag
+        :error-key :errors.hashtag
         :transform-value #(if (string? %) (str/split % #" ") %)
         :to-value #(if (sequential? %) (str/join " " %) %)
         :context context})
@@ -311,8 +310,87 @@
        :for (name :pages.quest.edit.organiser-participates)}))
    ))
 
-(rum/defc edit-form < rum/reactive
-  [{:keys [context quest schema errors view is-valid]}]
+(rum/defc confirm-remove < rum/reactive
+  [{:keys [ask-confirm
+           remove-confirmed
+           context]}]
+  (let [tr (:tr context)]
+    [:div {:class "opux-content"}
+     [:h3 {:class "opux-centered"}
+      (tr [:pages.quest.edit.remove.title])]
+     [:div {:class "opux-fieldset__item opux-fieldset__item--inline-container"}
+      (html/button
+       (tr [:pages.quest.edit.remove.cancel])
+       {:class "opux-button opux-form__button opux-fieldset__inline-item"
+        :type "button"
+        :on-click
+        (fn []
+          (reset! ask-confirm false)
+          (reset! remove-confirmed false))
+        })
+      (html/button
+       (tr [:pages.quest.edit.remove.confirm])
+       {:class "opux-button opux-form__button opux-fieldset__inline-item opux-button--highlight"
+        :type "button"
+        :on-click
+        (fn []
+          (reset! remove-confirmed true))
+        })
+      ]]
+     ))
+
+(rum/defc edit-buttons < rum/reactive
+  [{:keys [is-valid ask-remove context]}]
+  (let [tr (:tr context)]
+    [:div {:class "opux-fieldset__item opux-fieldset__item--inline-container"}
+     (html/button
+      (tr [:pages.quest.edit.button.preview])
+      {:class "opux-button opux-form__button opux-fieldset__inline-item opux-button--highlight"
+       :type "submit"
+       :active is-valid})
+     (html/button
+      (tr [:pages.quest.edit.button.remove])
+      {:class "opux-button opux-form__button opux-fieldset__inline-item"
+       :on-click
+       (fn []
+         (reset! ask-remove true))
+       })]))
+
+(defn delete-or-buttons!
+  [{:keys [ask-remove remove-confirmed quest is-valid context]}]
+  (cond
+    (and @ask-remove @remove-confirmed)
+    (do
+      (log/info "delete!")
+      #?(:cljs
+         (if (:id @quest)
+           (go
+             (let [deleted (<! (api/delete-quest (:id @quest)))]
+               (when deleted
+                 (redirect-to {:path-key :profile}))
+               ))
+           (redirect-to {:path-key :profile}))
+         )
+      []
+      )
+
+    @ask-remove
+    (confirm-remove
+     {:ask-confirm ask-remove
+      :remove-confirmed remove-confirmed
+      :context context})
+
+    :else
+    (edit-buttons
+     {:ask-remove ask-remove
+      :is-valid is-valid
+      :context context})
+    ))
+
+(rum/defcs edit-form < rum/reactive
+                       (rum/local false ::ask-remove)
+                       (rum/local false ::remove-confirmed)
+  [state {:keys [context quest schema errors view is-valid]}]
   (let [tr (:tr context)
         cursors-and-schema (c/value-and-error-cursors-and-schema {:for quest
                                                                   :schema schema
@@ -328,12 +406,19 @@
           (let [value-or-error (checker quest-value)]
             (cond
               (:--value value-or-error) (set-valid! true)
-              (:--error value-or-error) (set-valid! false))))]
+              (:--error value-or-error) (set-valid! false))))
+        ask-remove (::ask-remove state)
+        remove-confirmed (::remove-confirmed state)
+        buttons (delete-or-buttons!
+                 {:quest quest
+                  :ask-remove ask-remove
+                  :remove-confirmed remove-confirmed
+                  :is-valid is-valid
+                  :context context})]
     (check-and-set-validity! @quest)
-    (add-watch
-     quest
-     ::quest-validator
-     (fn [key _ old new] (check-and-set-validity! new)))
+    (add-watch quest
+               ::quest-validator
+               (fn [key _ old new] (check-and-set-validity! new)))
     [:form
      {:class "opux-form"
       :on-submit
@@ -376,23 +461,11 @@
        })
      (html/form-section
       ""
-      [:div {:class "opux-fieldset__item opux-fieldset__item--inline-container"}
-      (html/button
-       (tr [:pages.quest.edit.button.preview])
-       {:class "opux-button opux-form__button opux-fieldset__inline-item"
-        :type "submit"
-        :active is-valid})
-      (html/button
-       (tr [:pages.quest.edit.button.remove])
-       {:class "opux-button opux-form__button opux-fieldset__inline-item"
-        :on-click
-        (fn []
-          #?(:cljs
-             (.go js/history -1)))
-        })])]))
+      buttons
+      )]))
 
 (rum/defc preview
-  [{:keys [context quest schema errors view is-valid]}]
+  [{:keys [context quest user schema errors view is-valid]}]
   (let [tr (:tr context)]
     [:div
      {:class "opux-content"}
@@ -424,10 +497,10 @@
                      (reset! view "success"))
                    )))))})
       ]
-     (qs/quest {:quest quest :context context})
+     (qs/quest {:quest quest :context context :user user})
      ]))
 
-(rum/defc quest-edit-success < rum/reactive
+(rum/defc edit-success < rum/reactive
   [{:keys [context quest schema errors view is-valid]}]
   (let [tr (:tr context)
         edit (:id @quest)
@@ -447,15 +520,15 @@
 (rum/defcs edit < rum/reactive
                   (rum/local "edit" ::view)
                   (rum/local false ::is-valid)
-  [state {:keys [context quest schema errors] :as args}]
+  [state {:keys [context quest schema errors user] :as args}]
   (let [view (::view state)
         is-valid (::is-valid state)
         locals {:view view :is-valid is-valid}]
     (cond
       (= @view "edit") (edit-form (conj args locals))
       (= @view "preview") (preview (conj args locals))
-      (= @view "success") (quest-edit-success {:quest quest
-                                               :context context})
+      (= @view "success") (edit-success {:quest quest
+                                         :context context})
       )))
 
 (rum/defcs quest-categories-filter < rum/reactive

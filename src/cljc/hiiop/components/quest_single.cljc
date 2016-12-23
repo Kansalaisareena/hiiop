@@ -9,7 +9,7 @@
             [taoensso.timbre :as log]))
 
 (rum/defc quest < rum/reactive
-  [{:keys [context quest quest-signup-info errors schema]}]
+  [{:keys [context quest quest-signup-info user errors schema]}]
   (let [{:keys [name
                 organisation
                 owner-name
@@ -25,6 +25,7 @@
                 postal-code
                 country
                 google-maps-url]} location
+        usable-owner (or owner-name (:name user))
         tr (:tr context)]
 
     [:div {:class "opux-section"}
@@ -38,7 +39,7 @@
      [:div {:class "opux-content opux-content--medium opux-content--quest-header"}
       [:p
        [:i {:class "opux-icon opux-icon-person"}]
-       (html/combine-text ", " owner-name (:name organisation))]
+       (html/combine-text ", " usable-owner (:name organisation))]
       [:p
        [:i {:class "opux-icon opux-icon-location"}]
        (html/combine-text ", " street-number street town postal-code)]
@@ -59,7 +60,7 @@
         [:p (string/join " " hashtags)])
       [:p
        [:i {:class "opux-icon opux-icon-personnel"}]
-       (str max-participants " " (tr [:pages.quest.participants]))]]
+       (str max-participants " " (tr [:pages.quest.view.participants]))]]
 
      [:div {:class "opux-line"}]
 

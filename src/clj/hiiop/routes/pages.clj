@@ -1,6 +1,5 @@
 (ns hiiop.routes.pages
   (:require [ring.util.http-response :as response]
-            [ring.util.response :as rup]
             [clojure.java.io :as io]
             [taoensso.timbre :as log]
             [bidi.ring :refer (make-handler)]
@@ -15,7 +14,9 @@
             [hiiop.components.login :as p-l]
             [hiiop.config :refer [env]]
             [hiiop.routes.page-hierarchy :refer [hierarchy]]
-            [hiiop.mangling :refer [parse-natural-number same-keys-with-nils]]
+            [hiiop.url :refer [redirect-to]]
+            [hiiop.mangling :refer [parse-natural-number
+                                    same-keys-with-nils]]
             [hiiop.schema :refer [Quest
                                   EditQuest
                                   NewQuest
@@ -178,7 +179,7 @@
         :schema EditQuest
         :quest quest
         :title-key :actions.quest.edit})
-      (rup/redirect "/"))))
+      (redirect-to {:path-key :index}))))
 
 (defn quest [req]
   (let [id (get-in req [:params :quest-id])

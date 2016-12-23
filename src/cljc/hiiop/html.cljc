@@ -104,7 +104,7 @@
      [:input
       {:type type
        :class class
-       :value (usable-to-value (rum/react value))
+       :default-value (usable-to-value (rum/react value))
        :on-change
        (fn [e]
          (-> (value-from-event e usable-transform)

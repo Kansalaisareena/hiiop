@@ -73,8 +73,7 @@
   (go
     (let [response (<! (http/delete
                         (str base-path "/quests/" id)))]
-      (when (= (:status response) 200)
-        (:body response)))))
+      (= (:status response) 204))))
 
 (defn edit-quest [quest]
   (log/info "edit-quest called with" quest)
@@ -92,4 +91,5 @@
                         (str "/api/v1/users/" id)))
           status (:status response)
           body (:body response)]
-      body)))
+      (when (= status 200)
+        body))))

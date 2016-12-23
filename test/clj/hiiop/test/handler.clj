@@ -155,7 +155,7 @@
                        :cookies login-cookie}))
       (do-this pp/pprint)
       (with)
-      (has-status 200)
+      (has-status 204)
       (do-this #(log/info %1))
       ))
 

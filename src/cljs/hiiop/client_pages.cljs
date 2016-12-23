@@ -98,7 +98,8 @@
   (go
     (let [id (parse-natural-number
               (get-in params [:route-params :quest-id]))
-          quest (<! (get-quest id))]
+          quest (<! (get-quest id))
+          user-info (<! (get-user-info (:owner quest)))]
       (-> quest
           (#(assoc %1
                    :categories
@@ -111,6 +112,7 @@
                        (deref)
                        (same-keys-with-nils)
                        (atom))))
+          (assoc :user user-info)
           (assoc :context @context)
           (assoc :schema EditQuest)
           (#(rum/mount
