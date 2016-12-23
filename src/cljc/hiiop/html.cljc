@@ -15,7 +15,7 @@
             [hiiop.time :as time]
             [hiiop.schema :as hs]
             [hiiop.mangling :as mangling])
-  #?(:clj (:import [schema.core EnumSchema])))
+  #?(:clj (:import [schema.core EnumSchema Constrained])))
 
 (rum/defc page [head body]
   [:html head body])
@@ -347,22 +347,30 @@
   [{:keys [schema context value choice-name-fn error]}]
   (let [tr (:tr context)
         make-multi-choice (partial multi-choice tr choice-name-fn value)
-        single (cond
-                 (and (not (set? schema))
-                      (sequential? schema)
-                      (instance? schema.core.One
-                                 (first (st/schema-value schema))))
-                 (last (first (:schema (first (st/schema-value schema)))))
+        choice-schema (cond
+                        (and (not (set? schema))
+                             (sequential? schema)
+                             (instance?
+                              schema.core.One
+                              (first (st/schema-value schema)))
+                             )
+                        (last (first (:schema (first (st/schema-value schema)))))
 
-                 (and (not (set? schema))
-                      (sequential? schema))
-                 (st/schema-value (first schema))
+                        (and (sequential? (st/schema-value schema))
+                             (instance?
+                              schema.core.EnumSchema
+                              (first (st/schema-value schema))))
+                        (last (first (first (st/schema-value schema))))
 
-                 :else (st/schema-value schema))
+                        (and (not (set? schema))
+                             (sequential? schema))
+                        (st/schema-value (first schema))
+
+                        :else (st/schema-value schema))
         all (cond
-              (or (set? single) (sequential? single))
+              (or (set? choice-schema) (sequential? choice-schema))
               (into [:div {:class "opux-fieldset opux-fieldset--multi-select"}]
-                    (mapcat identity (map make-multi-choice single))))]
+                    (mapcat identity (map make-multi-choice choice-schema))))]
     all))
 
 (rum/defc max-participants [{:keys [schema value error context] :as params}]

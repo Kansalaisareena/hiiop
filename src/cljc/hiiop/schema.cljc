@@ -97,6 +97,10 @@
    :well-being
    :environment))
 
+(def Categories
+  (-> [Category]
+      (s/constrained not-empty)))
+
 (def Hashtag #"^#[^\\-]+$")
 
 (def Coordinates
@@ -142,7 +146,7 @@
    :end-time DateTime
    :location Location
    :max-participants NPlus
-   :categories [Category]
+   :categories Categories
    (s/optional-key :owner-name) (s/maybe s/Str)
    (s/optional-key :picture-id) (s/maybe s/Str)
    (s/optional-key :picture-url) (s/maybe s/Str)
