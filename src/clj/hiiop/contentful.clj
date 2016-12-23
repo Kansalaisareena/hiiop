@@ -28,6 +28,12 @@
   the default locale one is returned."
   (into {} (for [[k v] fields] [k (get v locale (get v default-locale))])))
 
+(defn localize-fields [fields locale]
+  "Given the :fields part of a multi-locale contentful object, returns
+  a localized version. If the localization for the field is not found,
+  the default locale one is returned."
+  (into {} (for [[k v] fields] [k (get v locale (get v default-locale))])))
+
 (defn process-email [{{{emailkey :fi} :emailkey} :fields :as email-object}]
   "Render body text and store email object in redis."
   (let [fi-text (get-in email-object [:fields :leipateksti :fi])
@@ -64,6 +70,14 @@
                       :body-text (md/to-html (:leipteksti fields))
                       :picture image-url
                       :youtube-id youtube-id }))))
+
+(defn render-story [cfobject locale]
+  (let [fields (localize-fields (:fields cfobject) locale)]
+    (render-static-markup
+     (blog/blog-post {:headline (:otsikko fields)
+                      :body-text (:leipteksti fields)
+                      :picture nil
+                      :video nil}))))
 
 (defn process-story [cfobject]
   (let [id (get-in cfobject [:sys :id])

@@ -92,7 +92,6 @@
                      :file temp
                      :metadata {:content-type "text/html"}))))
 
-
 (defstate upload-picture :start upload-picture-to-s3)
 (defstate upload-story :start upload-story-to-s3)
 (defstate upload-page :start upload-page-to-s3)
