@@ -94,6 +94,14 @@ Create profiles.clj under your git root to place the secrets.
         :timezone "Europe/Helsinki"}}}
    #+END_SRC
 
+*** Dev environment authentication
+    To add http basic auth for dev environment, add the following to
+    the env:
+
+    #+BEGIN_SRC clojure
+      :http-simple-credentials {:username "dev-username" :password "dev-password"}
+    #+END_SRC
+    
 ** Migrations
    Manage migrations with the following commands (prepend =lein
    migratus=):
