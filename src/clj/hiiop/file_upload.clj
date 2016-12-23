@@ -4,7 +4,8 @@
             [taoensso.timbre :as log]
             [amazonica.aws.s3 :as s3]
             [hiiop.config :refer [env]]
-            [schema.core :as s]))
+            [schema.core :as s]
+            [clojure.java.io :refer [input-stream]]))
 
 (defstate aws-credentials
   :start
@@ -18,6 +19,10 @@
   (let [bucket (:hiiop-pictures-bucket env)]
     (log/info "Starting with picture bucket" bucket)
     bucket))
+
+(defstate blog-bucket
+  :start (:hiiop-blog-bucket env))
+
 
 (defstate bucket-base-url
   :start
@@ -34,11 +39,21 @@
                         :key key
                         :file (:tempfile picture-file)
                         :metadata
-                        {:content-type (:content-type picture-file)})
+                        {:content-type {:content-type picture-file}})
          key
          ))
       (#(str bucket-base-url "/" %1))
       )
   )
 
+(defn upload-story-to-s3 [id story-html]
+  (log/info "uploading story file: " story-html)
+  (s3/put-object aws-credentials
+                 :bucket-name blog-bucket
+                 :key id
+                 :input-stream (input-stream (.getBytes story-html))
+                 :metadata {:content-type "text/html"}))
+
+
 (defstate upload-picture :start upload-picture-to-s3)
+(defstate upload-story :start upload-story-to-s3)

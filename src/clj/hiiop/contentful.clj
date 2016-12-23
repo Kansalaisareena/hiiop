@@ -1,17 +1,27 @@
 (ns hiiop.contentful
   (:require [mount.core :refer [defstate]]
             [clj-http.client :as http]
+            [rum.core :refer [render-static-markup]]
             [hiiop.redis :refer [wcar*]]
             [cheshire.core :refer [parse-string]]
             [hiiop.config :refer [env]]
             [hiiop.translate :refer [default-locale]]
             [taoensso.carmine :as car]
             [mount.core :refer [defstate]]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [hiiop.file-upload :refer [upload-story]]
+            [hiiop.db.core :as db]
+            [hiiop.blog :as blog]))
 
 (def cf-url "https://cdn.contentful.com/")
 (defstate items-url :start (str cf-url "spaces/" (:space-id (:contentful env)) "/entries?access_token="
                                 (:cd-api-key (:contentful env)) "&locale=*"))
+
+(defn localize-fields [fields locale]
+  "Given the :fields part of a multi-locale contentful object, returns
+  a localized version. If the localization for the field is not found,
+  the default locale one is returned."
+  (into {} (for [[k v] fields] [k (get v locale (get v default-locale))])))
 
 (defn process-email [{{{emailkey :fi} :emailkey} :fields :as email-object}]
   "Store email object in redis."
@@ -22,9 +32,23 @@
   "Render page and store into aws."
   nil)
 
+(defn render-story [cfobject locale]
+  (let [fields (localize-fields (:fields cfobject) locale)]
+    (render-static-markup
+     (blog/blog-post {:headline (:otsikko fields)
+                      :body-text (:leipteksti fields)
+                      :picture nil
+                      :video nil}))))
+
 (defn process-story [cfobject]
-  "Render story and store into aws"
-  nil)
+  (let [id (get-in cfobject [:sys :id])
+        topic-fi (get-in cfobject [:fields :otsikko :fi])
+        topic-sv (get-in cfobject [:fields :otsikko :sv])]
+    (try
+      (doseq [locale [:fi :sv]]
+        (->> (render-story cfobject locale)
+             (upload-story (str (name locale) "/" id))))
+      (db/add-or-update-story! {:id id :topic-fi topic-fi :topic-sv topic-sv}))))
 
 (def handlers
   {"sahkopostiviesti" process-email
@@ -59,15 +83,10 @@
 
 (defn update-all-items []
   "Fetch all items from the contentful and do relevant processing and caching."
+  (log/info "updating all items")
   (try (-> (get-all-items)
            (refresh-items))
        (catch Exception e
          (log/info "Updating items failed: " e))))
-
-(defn localize-fields [fields locale]
-  "Given the :fields part of a multi-locale contentful object, returns
-  a localized version. If the localization for the field is not found,
-  the default locale one is returned."
-  (into {} (for [[k v] fields] [k (get v locale (get v default-locale))])))
 
 (defstate contentful-init :start (update-all-items))
