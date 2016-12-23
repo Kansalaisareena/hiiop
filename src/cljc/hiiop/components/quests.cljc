@@ -343,7 +343,7 @@
                  (log/info from-api)
                  )))))
       }
-     [:h1 (tr [:actions.quest.create])]
+     [:h1 {:class "opux-centered"} (tr [:actions.quest.create])]
      (edit-content
       {:cursors-and-schema cursors-and-schema
        :is-valid is-valid
@@ -432,7 +432,8 @@
                                                :schema schema
                                                :errors errors})]
     [:div {:class "opux-section"}
-     [:h1 (tr [:pages.quest.list.title])]
+     [:h1 {:class "opux-centered"}
+      (tr [:pages.quest.list.title])]
 
      (quest-filters {:cursors-and-schema cursors-and-schema
                      :tr tr

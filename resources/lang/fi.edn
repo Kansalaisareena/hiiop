@@ -31,7 +31,9 @@
    :upcoming-quests "Tulevat tehtäväsi"
    :cancel "Peruuta"
    :delete "Poista"
-   :do-you-want-to-delete "Oletko varma, että haluat poistaa tapahtuman?"}
+   :do-you-want-to-delete "Oletko varma, että haluat poistaa tapahtuman?"
+   :no-upcoming-quests "ei tulevia tehtäviä"
+   :my-event "Oma tapahtuma"}
 
   :activate
   {:title "Luo salasana"

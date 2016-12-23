@@ -216,3 +216,14 @@
   height: 1px;
   width: 100%;
 }
+
+@include block('opux-card-action') {
+  &:before {
+    @include opux-color-transition;
+  }
+  &:hover {
+    &:before {
+      color: $OP-orange;
+    }
+  }
+}

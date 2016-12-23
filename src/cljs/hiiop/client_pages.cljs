@@ -68,7 +68,7 @@
       (rum/mount
        (p-p/profile {:context @context
                      :user-info user-info
-                     :quests quests})
+                     :quests (atom quests)})
        (. js/document (getElementById "app"))))))
 
 (defn browse-quests-page [params]

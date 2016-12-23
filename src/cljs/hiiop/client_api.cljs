@@ -14,6 +14,10 @@
                                   {:json-params credentials}))]
       (= (:status response) 200))))
 
+(defn logout []
+  (go
+    (<! (http/post (str base-path "/logout")))))
+
 (defn register [credentials]
   (go
     (let [response (<! (http/post
@@ -74,7 +78,7 @@
 (defn edit-quest [quest]
   (log/info "edit-quest called with" quest)
   (go
-    (let [response (<! (http/put (str base-path "quests/" (:id quest))
+    (let [response (<! (http/put (str base-path "/quests/" (:id quest))
                                   {:json-params quest}))
           status (:status response)
           body (:body response)]

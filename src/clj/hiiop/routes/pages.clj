@@ -87,7 +87,7 @@
     (layout/render {:context context
                     :content (p-p/profile {:context context
                                            :user-info user-info
-                                           :quests quests})})))
+                                           :quests (atom quests)})})))
 
 (defn activate [req]
   (let [context (create-context req)
