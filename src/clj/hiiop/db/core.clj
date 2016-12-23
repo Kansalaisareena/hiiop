@@ -23,6 +23,7 @@
             PreparedStatement]))
 
 (defn conman-connect []
+  (log/info "Starting with database url" (env :database-url))
   (conman/connect! {:jdbc-url (env :database-url)}))
 
 (defn conman-disconnect [connection]
