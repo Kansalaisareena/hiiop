@@ -15,15 +15,20 @@ SELECT * FROM organization
 
 -- :name create-virtual-user! :? :1
 -- :doc creates a new user record
-INSERT INTO users
-(email)
-VALUES (:email)
+INSERT INTO
+  users (email)
+VALUES
+  (:email)
 RETURNING id
 
 -- :name update-user! :! :n
 -- :doc update an existing user record
-UPDATE users
-SET name = :name, email = :email
+UPDATE
+  users
+SET
+  name = :name,
+  email = :email,
+  phone = :phone
 WHERE id = :id
 
 -- :name get-user-by-id :? :1 :uuid
@@ -32,6 +37,7 @@ SELECT
   id,
   name,
   email,
+  phone,
   moderator,
   last_login,
   is_active
@@ -44,6 +50,7 @@ SELECT
   id,
   name,
   email,
+  phone,
   moderator,
   last_login,
   is_active
@@ -65,11 +72,11 @@ WHERE id = :id
 -- :name delete-user-by-email! :! :n
 -- :doc delete user by email
 DELETE FROM users
-where email = :email
+WHERE email = :email
 
 -- :name get-users :? :*
 -- :doc get all users
-SELECT * from users
+SELECT * FROM users
 
 -- :name get-user-id :? :1
 -- :doc get user id by email
@@ -171,6 +178,21 @@ VALUES
  :is_open,
  :owner)
 RETURNING id
+
+-- :name get-quest-limitations :? :1
+-- :doc "Quest limitations"
+SELECT
+  id,
+  start_time,
+  end_time,
+  max_participants,
+  (SELECT COUNT(user_id) FROM parties WHERE quest_id = :id) as participant_count,
+  is_open,
+  secret_party
+FROM
+  quests
+WHERE
+  id = :id
 
 -- :name get-moderated-quest-by-id :? :1
 -- :doc get quest by id
@@ -295,15 +317,6 @@ WHERE
   owner = :owner
 RETURNING id
 
--- :name get-quest-secret-party-id :? :1
--- :doc get quest secret party id by id
-SELECT
-  secret_party
-FROM
-  quests
-WHERE
-  id = :id
-
 -- :name delete-quest-by-id! :! :n
 -- :doc Delete quest by id
 DELETE FROM
@@ -389,3 +402,54 @@ UPDATE pictures
 SET url = :url
 WHERE id = :id
 RETURNING url
+
+-- :name get-party-member :? :1
+-- :doc "Get party member"
+SELECT
+  id,
+  quest_id,
+  user_id,
+  days
+FROM
+  parties
+WHERE
+  id = :id
+
+-- :name join-quest! :? :1
+-- :doc "Join an open quest"
+INSERT INTO
+  parties (quest_id, user_id, days)
+VALUES
+  (:quest_id, :user_id, :days)
+RETURNING id
+
+-- :name can-join-open-quest? :? :1
+-- :doc "Can join open quest?"
+SELECT EXISTS(
+  SELECT
+    FROM
+      quests
+    WHERE
+      id = :quest_id AND
+      is_open = true AND
+      max_participants > (SELECT
+                            COUNT(user_id)
+                          FROM
+                            parties
+                          WHERE quest_id = :quest_id))
+
+-- :name can-join-secret-quest? :? :1
+-- :doc "Can join secret quest?"
+SELECT EXISTS(
+  SELECT
+    FROM
+      quests
+    WHERE
+      id = :quest_id AND
+      is_open = false AND
+      secret_party = :secret_party AND
+      max_participants > (SELECT
+                            COUNT(user_id)
+                          FROM
+                            parties
+                          WHERE quest_id = :quest_id))

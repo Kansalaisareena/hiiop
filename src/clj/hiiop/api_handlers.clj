@@ -1,21 +1,25 @@
 (ns hiiop.api-handlers
   (:require [clojure.pprint :as pp]
-            [hiiop.config :refer [env]]
+            [taoensso.timbre :as log]
             [ring.util.http-response :refer :all]
             [mount.core :as mount]
             [buddy.auth :refer [authenticated?]]
             [buddy.hashers :as hashers]
+            [buddy.core.codecs :as codecs]
+            [buddy.core.codecs.base64 :as b64]
+            [buddy.auth.http :as http]
+            [cuerdas.core :as str]
             [compojure.api.sweet :as sweet]
             [conman.core :refer [with-transaction]]
-            [taoensso.timbre :as log]
             [schema.core :as s]
+            [schema.coerce :as sc]
             [schema-tools.core :as st]
             [schema-tools.coerce :as stc]
-            [schema.coerce :as sc]
+            [hiiop.config :refer [env]]
             [hiiop.db.core :as db]
+            [hiiop.coerce :as hc]
             [hiiop.time :as time]
             [hiiop.mail :as mail]
-            [hiiop.schema :as hs]
             [hiiop.file-upload :refer [upload-picture]]
             [hiiop.contentful :as cf]
             [hiiop.middleware :refer [wrap-simple-auth]]))
@@ -41,7 +45,7 @@
              :session (assoc session :identity user-id))
       (unauthorized))))
 
-(defn register [{:keys [email name locale]}]
+(defn register [{:keys [email name phone locale]}]
   (try
     (let [id (:id (db/create-virtual-user! {:email email}))]
       (if (nil? id)
@@ -49,7 +53,10 @@
         (let [token (db/create-password-token!
                      {:email email
                       :expires (time/add (time/now) time/an-hour)})]
-          (db/update-user! {:id id :name name :email email})
+          (db/update-user! {:id id
+                            :name name
+                            :email email
+                            :phone phone})
           (mail/send-token-email email (str (:token token)) locale)
           id)))
     (catch Exception e
@@ -98,177 +105,17 @@
       (log/error e)
       {:errors {:users :errors.user.not-found}})))
 
-(def moderated->unmoderated-db-quest-keys
-  {:name                     :unmoderated_name
-   :description              :unmoderated_description
-   :organisation             :unmoderated_organisation
-   :organisation_description :unmoderated_organisation_description
-   :hashtags                 :unmoderated_hashtags
-   :picture                  :unmoderated_picture})
-
-(defn api-quest->moderated-db-quest
-  [{:keys [hashtags
-           start-time
-           end-time
-           location
-           categories
-           picture-id
-           organisation
-           organiser-participates] :as quest-from-api}]
-  (-> quest-from-api
-      (assoc :hashtags (when hashtags (vec (distinct hashtags))))
-      (assoc :categories (vec (distinct categories)))
-      (assoc :start-time  (time/from-string start-time))
-      (assoc :end-time (time/from-string end-time))
-      (assoc :picture (when (not (= picture-id ""))
-                        (sc/string->uuid picture-id)))
-      (assoc :organisation (:name organisation))
-      (assoc :organisation-description (:description organisation))
-      (conj (:coordinates location))
-      (conj location)
-      (assoc :street-number (:street-number location))
-      (dissoc :location :coordinates :picture-id :picture-url)
-      (db/->snake_case_keywords))
-  )
-
-(defn api-quest->new-unmoderated-db-quest [])
-
-(def DBQuest
-  {:id hs/NaturalNumber
-   :name hs/NonEmptyString
-   :unmoderated_name hs/NonEmptyString
-   :description hs/NonEmptyString
-   :unmoderated_description hs/NonEmptyString
-   :organisation (s/maybe hs/NonEmptyString)
-   :unmoderated_organisation (s/maybe hs/NonEmptyString)
-   :organisation_description (s/maybe hs/NonEmptyString)
-   :unmoderated_organisation_description (s/maybe hs/NonEmptyString)
-   :start_time (s/constrained s/Any time/time? :error.not-valid-date)
-   :end_time (s/constrained s/Any time/time? :error.not-valid-date)
-   :street_number (s/maybe s/Int)
-   :street (s/maybe hs/NonEmptyString)
-   :town hs/NonEmptyString
-   :postal_code hs/NonEmptyString
-   :country hs/NonEmptyString
-   :latitude (s/maybe hs/NonEmptyString)
-   :longitude (s/maybe hs/NonEmptyString)
-   :google_maps_url (s/maybe hs/NonEmptyString)
-   :google_place_id (s/maybe hs/NonEmptyString)
-   :categories [s/Keyword]
-   :max_participants s/Num
-   :hashtags [s/Str]
-   :unmoderated_hashtags [s/Str]
-   :picture (s/maybe s/Uuid)
-   :unmoderated_picture (s/maybe s/Uuid)
-   :owner s/Uuid
-   :is_open s/Bool})
-
-(def UnmoderatedDBQuest
-  (apply
-   st/dissoc
-   (concat
-    [DBQuest]
-    (keys moderated->unmoderated-db-quest-keys))))
-
-(def ModeratedDBQuest
-  (apply
-   st/dissoc
-   (concat
-    [DBQuest]
-    (vals moderated->unmoderated-db-quest-keys))))
-
-(def NewUnmoderatedDBQuest
-  (st/dissoc UnmoderatedDBQuest
-             :id
-             :secret_party))
-
-(def NewModeratedDBQuest
-  (st/dissoc ModeratedDBQuest
-             :id
-             :secret_party))
-
-(def api-quest->moderated-db-quest-coercer
-  (stc/coercer ModeratedDBQuest
-               {ModeratedDBQuest api-quest->moderated-db-quest}))
-
-(def new-api-quest->new-moderated-db-quest-coercer
-  (stc/coercer NewModeratedDBQuest
-               {NewModeratedDBQuest api-quest->moderated-db-quest}))
-
-(def new-api-quest->new-unmoderated-db-quest-coercer
-  (stc/coercer NewUnmoderatedDBQuest
-               {NewUnmoderatedDBQuest api-quest->new-unmoderated-db-quest}))
-
-
-(def location-keys
-  [:street-number
-   :street
-   :town
-   :postal-code
-   :country
-   :longitude
-   :latitude
-   :google-place-id
-   :google-maps-url])
-
-(defn location-flat->location-structure [db-quest]
-  (let [location-data (select-keys db-quest location-keys)
-        coordinates (when
-                        (and
-                         (:latitude location-data)
-                         (:longitude location-data))
-                      {:coordinates
-                       {:latitude (:latitude location-data)
-                        :longitude (:longitude location-data)}})
-        location-data-no-lat-lon (dissoc location-data :latitude :longitude)
-        location-structure (conj location-data-no-lat-lon coordinates)
-        quest-no-location-data (apply dissoc db-quest location-keys)]
-    (conj quest-no-location-data {:location location-structure})))
-
-(defn time->string [keyword map]
-  (time/to-string (keyword map)))
-
-(defn times->strings [map]
-  (assoc map
-         :start-time (time->string :start-time map)
-         :end-time   (time->string :end-time map)))
-
-(defn string-categories->keyword-categories [db-quest]
-  (assoc db-quest :categories
-         (into [] (map keyword (:categories db-quest)))))
-
-(defn db-quest->api-quest [{:keys [organisation
-                                   organisation-description
-                                   picture] :as db-quest}]
-  (-> db-quest
-      (location-flat->location-structure)
-      (times->strings)
-      (string-categories->keyword-categories)
-      (dissoc :picture)
-      (assoc :picture-id (str picture))
-      (dissoc :organisation :organisation-description)
-      (#(if organisation
-          (assoc %1
-                 :organisation
-                 {:name organisation :description organisation-description})
-          %1))))
-
-(def db-quest->api-quest-coercer
-  (stc/coercer hs/Quest
-               {hs/Quest db-quest->api-quest}))
-
 (defn add-quest [{:keys [quest user]}]
   (try
     (-> quest
         (assoc :owner (:id user))
         (dissoc :organiser-participates)
-        (new-api-quest->new-moderated-db-quest-coercer)
+        (hc/new-api-quest->new-moderated-db-quest-coercer)
         (db/add-moderated-quest!)
         (#(db/get-moderated-quest-by-id {:id (:id %)}))
-        (db-quest->api-quest-coercer))
+        (hc/db-quest->api-quest-coercer))
     (catch Exception e
-      (log/error e)
-      )))
+      (log/error e))))
 
 (defn delete-quest [{:keys [id user]}]
   ;; TODO: currently only supports deleting moderated quest
@@ -285,7 +132,7 @@
 (defn get-quest [id]
   (try
     (-> (db/get-moderated-quest-by-id {:id id})
-        (db-quest->api-quest-coercer))
+        (hc/db-quest->api-quest-coercer))
     (catch Exception e
       (log/error e))))
 
@@ -294,11 +141,11 @@
     (-> quest
         (assoc :owner (:id user)) ;; TODO When moderating, this is different!
         (dissoc :organiser-participates)
-        (api-quest->moderated-db-quest-coercer)
+        (hc/api-quest->moderated-db-quest-coercer)
         (db/update-moderated-quest!)
         (#(db/get-moderated-quest-by-id {:id (:id %)}))
         (#(if %1
-            (db-quest->api-quest-coercer %1)
+            (hc/db-quest->api-quest-coercer %1)
             {:errors {:unauthorized :errors.unauthorized.title}})))
     (catch Exception e
       (log/error e)
@@ -309,13 +156,111 @@
     ;; TODO: the profile page using this handler to get all moderated
     ;; and unmoderated quests for the user. But we only have moderated quests for now
     (-> (db/get-moderated-quests-by-owner {:owner owner})
-        ((partial map db-quest->api-quest-coercer)))
+        ((partial map hc/db-quest->api-quest-coercer)))
     (catch Exception e
       (log/error e)
       {:errors {:quests :errors.quest.unexpected-error}})))
 
-(defn join-quest [params]
-  (created ""))
+(defn check-and-update-user-info [user-info]
+  user-info)
+
+(defn use-existing-or-create-new-user! [{:keys [email name phone agreement]}]
+  (with-transaction [db/*db*]
+    (-> (db/get-user-by-email {:email email})
+        ((fn [existing-user]
+           (cond
+             (not existing-user)
+             (let [id (:id (db/create-virtual-user! {:email email}))
+                   user  {:id id
+                          :name name
+                          :email email
+                          :phone phone}]
+               (db/update-user! user)
+               user)
+
+             :else
+             (check-and-update-user-info existing-user)))))))
+
+(defn join-open-quest! [{:keys [quest_id user_id days] :as args}]
+  (with-transaction [db/*db*]
+    (if (:exists (db/can-join-open-quest? args))
+      (db/join-quest! args)
+      {:errors {:party :errors.quest.full}})))
+
+(defn join-secret-quest! [{:keys [quest_id user_id days secret_party] :as args}]
+  (log/info "join secret quest!" quest_id user_id days secret_party)
+  (with-transaction [db/*db*]
+    (if (:exists (db/can-join-secret-quest? args))
+      (db/join-quest! args)
+      {:errors {:party [:errors.quest.full :or :errors.quest.join.secret-key.incorrect]}})))
+
+(defn party-member-or-errors [{:keys [quest-id new-member days session-user]}]
+  (cond
+    (nil? quest-id)
+    {:errors {:quest :errors.not-found}}
+
+    (and quest-id
+         (:user-id new-member)
+         (= (:user-id new-member) (:id session-user)))
+    (do
+      (hc/api-new-member->db-new-member-coercer
+       (-> (conj new-member
+                 {:quest-id quest-id})
+           (assoc :days days))))
+
+    (and (:user-id new-member)
+         (not (= (:user-id new-member) (:id session-user))))
+    {:errors {:user-id :user.not-logged-in}}
+
+    (and quest-id (:signup new-member))
+    (do
+      (-> (use-existing-or-create-new-user! (:signup new-member))
+          ((fn [user]
+             (hc/api-new-member->db-new-member-coercer
+              (-> (dissoc new-member :signup)
+                  (assoc :user-id (:id user)
+                         :quest-id quest-id
+                         :days days)))))))
+
+    :else
+    {:errors {:signup :errors.not-found
+              :user-id :errors-not-found}}))
+
+(defn join-quest [{:keys [id new-member user]}]
+  (try
+    (log/info "join-quest" id new-member user)
+    (let [quest-limits     (db/get-quest-limitations {:id id})
+          quest-id         (:id quest-limits)
+          is-open          (:is-open quest-limits)
+          has-space        (> (:max-participants quest-limits) (:participant-count quest-limits))
+          start-time       (:start-time quest-limits)
+          end-time         (:end-time quest-limits)
+          max-days         (+ (time/days-between start-time end-time) 1)
+          usable-days      (or (when (>= max-days (:days new-member))
+                                 (:days new-member))
+                               max-days)
+          party-member     (if has-space
+                             (party-member-or-errors
+                              {:quest-id quest-id
+                               :days usable-days
+                               :new-member new-member
+                               :session-user user})
+                             {:errors {:quest :errors.quest.full}})]
+
+      (if (nil? (:errors party-member))
+        (let [join-with (if is-open
+                          join-open-quest!
+                          join-secret-quest!)
+              joined (join-with party-member)]
+          (if (nil? (:errors joined))
+            (-> joined
+                (db/get-party-member)
+                (hc/db-party-member->api-party-member-coercer))
+            joined))
+        party-member))
+    (catch Exception e
+      (log/error e)
+      {:errors {:party :errors.join-failed}})))
 
 (defn get-picture [id])
 

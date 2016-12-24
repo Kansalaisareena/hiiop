@@ -139,7 +139,7 @@
 
         (GET "/:id" []
           :name        ::picture
-          :path-params [id :- String]
+          :path-params [id :- s/Uuid]
           :summary     "Get picture"
           :return      Picture
           (fn [request]
@@ -219,10 +219,33 @@
                       (bad-request %1)))))
             ))
 
-        ;; (POST "/:id/join" []
-        ;;  :name ::quest-join
-        ;;  :path-params [id :- s/Int]
-        ;;  :body [NewPartyMember]
-        ;;  :summary "Join a quest"
-        ;;  api-handlers/join-quest)
+        (POST "/:quest-id/party" []
+          :name        ::quest-join
+          :path-params [quest-id :- Long]
+          :body        [new-member NewPartyMember]
+          :summary     "Join a quest"
+          (fn [request]
+            (-> (api-handlers/join-quest
+                 {:id quest-id
+                  :new-member new-member
+                  :user (:identity request)}
+                 )
+                (#(if (not (:errors %1))
+                    (created
+                     (path-for ::quest-party-member
+                               {:quest-id quest-id
+                                :member-id (str (:id %1))})
+                     %1)
+                    (bad-request %1))))
+            ))
+
+        (GET "/:quest-id/party/:member-id" []
+          :name        ::quest-party-member
+          :path-params [quest-id :- Long
+                        member-id :- s/Uuid]
+          :return      [PartyMember]
+          :summary     "Get party member info"
+          (fn [request]
+            (bad-request {:errors {:quest "Not found"}})))
+
         ))))

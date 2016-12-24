@@ -66,5 +66,6 @@
 (def test-user
   {:name "Test user"
    :email "test@email.com"
+   :phone "+358 1234567"
    :password "password#"
    :is_active true})
