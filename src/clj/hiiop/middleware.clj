@@ -7,14 +7,20 @@
             [ring.middleware.params :refer [wrap-params]]
             [ring.middleware.defaults :refer [site-defaults wrap-defaults]]
             [ring.util.response :as response]
+            [ring.util.http-response :refer [unauthorized]]
             [buddy.auth.accessrules :refer [restrict]]
             [buddy.auth.middleware :refer [wrap-authentication]]
             [buddy.auth :refer [authenticated?]]
             [buddy.auth.backends.session :refer [session-backend]]
+            [buddy.core.codecs :as codecs]
+            [buddy.core.codecs.base64 :as b64]
+            [buddy.auth.http :as http]
             [taoensso.timbre :as log :refer [info]]
             [taoensso.tempura :as tempura]
             [taoensso.carmine.ring :refer [carmine-store]]
+            [mount.core :refer [defstate start]]
             [bidi.bidi :as bidi]
+            [cuerdas.core :as str]
             [hiiop.routes.page-hierarchy :refer [hierarchy]]
             [hiiop.env :refer [defaults]]
             [hiiop.config :refer [env]]
@@ -22,6 +28,27 @@
             [hiiop.layout :refer [*app-context* error-page]]
             [hiiop.translate :refer [supported-lang tr-opts tr-with]])
   (:import [javax.servlet ServletContext]))
+
+
+(defn check-simple-auth [auth-data request]
+  (let [pattern (re-pattern "^Basic (.+)$")
+        decoded (some->> (http/-get-header request "authorization")
+                         (re-find pattern)
+                         (second)
+                         (b64/decode)
+                         (codecs/bytes->str))]
+    (let [[username password] (str/split decoded #":" 2)]
+      (and (= username (:username auth-data))
+           (= password (:password auth-data))))))
+
+(defn wrap-simple-auth [auth-data handler]
+  (fn [request]
+    (if-not (empty? auth-data)
+      (if (check-simple-auth auth-data request)
+        (handler request)
+        (-> (unauthorized)
+            (assoc-in [:headers "WWW-Authenticate"] "Basic realm=\"hiiop\"")))
+      (handler request))))
 
 (defn wrap-context [handler]
   (fn [request]
