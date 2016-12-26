@@ -453,3 +453,20 @@ SELECT EXISTS(
                           FROM
                             parties
                           WHERE quest_id = :quest_id))
+
+-- :name get-quest-party-members :? :*
+-- :doc get quest party
+SELECT
+  p.id as participation_id,
+  u.name as name,
+  u.email as email,
+  u.phone as phone
+FROM
+  quests q,
+  parties p,
+  users u
+WHERE
+  q.id = :quest_id AND
+  p.quest_id = :quest_id AND
+  (q.owner = :user_id OR
+    (u.id = :user_id AND u.moderator = true))

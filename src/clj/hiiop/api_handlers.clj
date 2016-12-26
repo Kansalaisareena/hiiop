@@ -107,13 +107,28 @@
 
 (defn add-quest [{:keys [quest user]}]
   (try
-    (-> quest
-        (assoc :owner (:id user))
-        (dissoc :organiser-participates)
-        (hc/new-api-quest->new-moderated-db-quest-coercer)
-        (db/add-moderated-quest!)
-        (#(db/get-moderated-quest-by-id {:id (:id %)}))
-        (hc/db-quest->api-quest-coercer))
+    (let [organiser-participates (:organiser-participates quest)
+          max-days (+ (time/days-between
+                       (time/from-string (:start-time quest))
+                       (time/from-string (:end-time quest))) 1)]
+      (-> quest
+          (assoc :owner (:id user))
+          (dissoc :organiser-participates)
+          (hc/new-api-quest->new-moderated-db-quest-coercer)
+          ((fn [quest]
+             (with-transaction [db/*db*]
+               (-> quest
+                   (db/add-moderated-quest!)
+                   ((fn [q]
+                      (when organiser-participates
+                        (db/join-quest!
+                         (hc/api-party-member->db-party-member
+                          {:quest-id (:id q)
+                           :user-id (:id user)
+                           :days max-days})))
+                      q))))))
+            (#(db/get-moderated-quest-by-id {:id (:id %1)}))
+            (hc/db-quest->api-quest-coercer)))
     (catch Exception e
       (log/error e))))
 
@@ -163,6 +178,15 @@
 
 (defn check-and-update-user-info [user-info]
   user-info)
+
+(defn get-quest-party [{:keys [quest-id user]}]
+  (let [party-members (db/get-quest-party-members
+                       (db/->snake_case_keywords
+                        {:quest-id quest-id
+                         :user-id (:id user)}))]
+    (if party-members
+      party-members
+      {:errors {:party [:errrors.quest.not-found :or :errors.unauthorized]}})))
 
 (defn use-existing-or-create-new-user! [{:keys [email name phone agreement]}]
   (with-transaction [db/*db*]

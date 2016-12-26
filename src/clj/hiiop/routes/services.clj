@@ -204,6 +204,7 @@
           :name        ::quest-edit
           :path-params [id :- Long]
           :body        [quest EditQuest]
+          :middleware  [api-authenticated]
           :summary     "Edit quest"
           :return      Quest
           (fn [request]
@@ -239,11 +240,26 @@
                     (bad-request %1))))
             ))
 
+        (GET "/:quest-id/party" []
+          :name        ::quest-party
+          :path-params [quest-id :- Long]
+          :middleware  [api-authenticated]
+          :summary     "Get quest party"
+          (fn [request]
+            (-> (api-handlers/get-quest-party
+                 {:quest-id quest-id
+                  :user (:identity request)})
+                (#(if (not (:errors %1))
+                    (ok %1)
+                    (bad-request %1))))
+            ))
+
         (GET "/:quest-id/party/:member-id" []
           :name        ::quest-party-member
           :path-params [quest-id :- Long
                         member-id :- s/Uuid]
           :return      [PartyMember]
+          :middleware  [api-authenticated]
           :summary     "Get party member info"
           (fn [request]
             (bad-request {:errors {:quest "Not found"}})))
