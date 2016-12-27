@@ -85,6 +85,35 @@
       {:success (= status 200)
        :body body})))
 
+(defn get-quest-party [id]
+  (log/info "get-quest-party" id)
+  (go
+    (let [response (<! (http/get
+                        (str base-path "/quests/" id "/party")))
+          status (:status response)
+          body (:body response)]
+      (when (= status 200)
+        body))))
+
+(defn join-quest [quest-id party-member]
+  (log/info "join-quest called with" quest-id party-member)
+  (go
+    (let [response (<! (http/post
+                        (str base-path "/quests/" quest-id "/party")
+                        {:json-params party-member}))
+          status (:status response)
+          body (:body response)]
+      {:success (= status 201)
+       :body body})))
+
+
+(defn remove-party-member [{:keys [quest-id participation-id]}]
+  (log/info "remove-party-member called with" quest-id participation-id)
+  (go
+    (let [response (<! (http/delete
+                        (str base-path "/quests/" quest-id "/party/" participation-id)))]
+      (= (:status response) 204))))
+
 (defn get-user-info [id]
   (go
     (let [response (<! (http/get

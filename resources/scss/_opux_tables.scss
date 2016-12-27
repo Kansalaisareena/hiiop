@@ -1,0 +1,20 @@
+// opux-form
+@include block('opux-table') {
+  width: 100%;
+  border-collapse: collapse;
+
+  @include element('body') {
+  }
+
+  @include element('row') {
+    border-bottom: 1px solid $OP-gray;
+  }
+
+  @include element('data') {
+    padding: 0.4rem;
+  }
+
+  &:hover {
+    background-color: $OP-gray-light;
+  }
+}

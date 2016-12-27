@@ -286,6 +286,24 @@
       (log/error e)
       {:errors {:party :errors.join-failed}})))
 
+(defn remove-party-member [{:keys [participation-id quest-id user]}]
+  (try
+    (if (and participation-id
+             quest-id
+             (:id user))
+      (db/remove-member-from-party!
+       (db/->snake_case_keywords
+        {:participation-id participation-id
+         :quest-id quest-id
+         :user-id (:id user)
+         }))
+      )
+
+    (catch Exception e
+      (log/error e)
+      ))
+  )
+
 (defn get-picture [id])
 
 (defn picture-supported? [file]

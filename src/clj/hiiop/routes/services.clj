@@ -263,4 +263,21 @@
           (fn [request]
             (bad-request {:errors {:quest "Not found"}})))
 
+        (DELETE "/:quest-id/party/:participation-id" []
+          :name        ::quest-delete-party-member
+          :path-params [quest-id :- Long
+                        participation-id :- s/Uuid]
+          :middleware  [api-authenticated]
+          :summary     "Delete party member from party"
+          (fn [request]
+            (-> (api-handlers/remove-party-member
+                 {:participation-id participation-id
+                  :quest-id quest-id
+                  :user (:identity request)})
+                (#(if %1
+                    (no-content)
+                    (bad-request
+                     {:errors {:party :errors.quest.party.member.remove.failed}}))))
+            ))
+
         ))))

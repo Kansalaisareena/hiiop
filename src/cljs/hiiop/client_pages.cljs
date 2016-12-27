@@ -11,7 +11,10 @@
             [hiiop.components.register :as p-r]
             [hiiop.components.quest-single :as quest]
             [hiiop.components.quests :as quests]
-            [hiiop.client-api :refer [get-quest get-user-info get-own-quests]]
+            [hiiop.client-api :refer [get-quest
+                                      get-user-info
+                                      get-own-quests
+                                      get-quest-party]]
             [hiiop.context :refer [context]]
             [hiiop.mangling :refer [parse-natural-number same-keys-with-nils]]
             [hiiop.mangling :refer [same-keys-with-nils]]
@@ -21,10 +24,10 @@
                                   RegistrationInfo
                                   UserActivation
                                   QuestFilter
-                                  QuestSignup
+                                  NewPartyMember
                                   new-empty-registration-info
                                   new-empty-quest
-                                  new-empty-quest-signup-info
+                                  new-empty-party-member
                                   new-empty-quest-filter
                                   new-empty-activation-info
                                   ]]
@@ -99,7 +102,8 @@
     (let [id (parse-natural-number
               (get-in params [:route-params :quest-id]))
           quest (<! (get-quest id))
-          user-info (<! (get-user-info (:owner quest)))]
+          user-info (<! (get-user-info (:owner quest)))
+          party (<! (get-quest-party id))]
       (-> quest
           (#(assoc %1
                    :categories
@@ -115,14 +119,15 @@
           (assoc :user user-info)
           (assoc :context @context)
           (assoc :schema EditQuest)
+          (assoc :party (atom party))
           (#(rum/mount
              (quests/edit %1)
              (. js/document (getElementById "app"))))
           ))))
 
 (defn quest-page [params]
-  (let [quest-signup-info (atom (new-empty-quest-signup-info))
-        errors (atom (same-keys-with-nils @quest-signup-info))]
+  (let [empty-party-member (atom (new-empty-party-member))
+        errors (atom (same-keys-with-nils @empty-party-member))]
     (go
       (let [id (parse-natural-number
                 (get-in params [:route-params :quest-id]))
@@ -144,9 +149,9 @@
                          (same-keys-with-nils)
                          (atom))))
             (assoc :context @context
-                   :quest-signup-info quest-signup-info
-                   :errors errors
-                   :schema QuestSignup)
+                   :empty-party-member empty-party-member
+                   :party-member-errors errors
+                   :party-member-schema NewPartyMember)
             (#(rum/mount
                (quest/quest %1)
                (. js/document (getElementById "app"))))

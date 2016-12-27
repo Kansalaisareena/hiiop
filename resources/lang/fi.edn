@@ -23,6 +23,7 @@
   {:title "Luo tunnus"
    :name "Nimi"
    :email "Sähköposti"
+   :phone "Puhelinnumero"
    :check-your-email "Tarkista sähköpostisi"
    :email-sent "Varmistusviesti lähetetty"}
 
@@ -47,14 +48,20 @@
   {:title "Löydä tehtävä"
 
    :view
-   {:signup-form-subtitle "Olet ilmoittautumassa tapahtumaan. Huomioithan että ilmoittautuminen on sitova.
+   {:participants "vapaata paikkaa"
+    :signup
+    {:subtitle "Olet ilmoittautumassa tapahtumaan. Huomioithan että ilmoittautuminen on sitova.
 Mikäli et jostain syystä pääse osallistumaan tapahtumaan ilmoitathan siitä suoraan järjestäjälle. "
-    :participants "vapaata paikkaa"
-    :participants-name "Nimi"
-    :participants-email "Sähköposte"
-    :participants-phone "Puhelinnumero"
-    :number-of-participating-days "Kuinka monena päivänä aion osallistua"
-    :agree-to-terms-and-conditions "Olen lukenut palvelun ehdot ja hyväksyn n"}
+     :name "Nimi"
+     :email "Sähköposti"
+     :phone "Puhelinnumero"
+     :days "Kuinka monena päivänä aion osallistua"
+     :agree-to-terms-and-conditions "Olen lukenut palvelun ehdot ja hyväksyn ne"}
+    :join
+    {:success "Loistavaa, että olet mukana - kiitos ilmottautumisestasi! Saat sähköpostiisi lisätietoa tapahtumasta."
+     :fail    "Hups, ilmottautumisesi epäonnistui. Tarkista sähköpostiosoitteesi tai oletko jo aiemmin ilmoittautunut tehtävään."
+     :to-front-page "Etusivulle"}
+    }
 
    :created
    {:title "Tehtäväsi on luotu"
@@ -111,6 +118,12 @@ Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit
     {:title "Oletko ihan varma, että haluat poistaa tehtävän?"
      :confirm "Poista"
      :cancel "Peruuta"}
+
+    :party
+    {:title "Tehtävään ilmoittautuneet"
+     :confirm-remove "Poista ilmoittautuminen?"
+     :cancel-remove "Peruuta"
+     :empty "Kerro muillekin tehtävästäsi!"}
     }
 
    :browse

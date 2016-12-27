@@ -178,9 +178,6 @@
   "Quest list"
   [Quests])
 
-(defn new-empty-quest-signup-info []
-  {:name "" :email "" :phone "" :participate-days 1 :agreement false})
-
 ;(def UrlLike #"http[s]{0,1}:\/\/.*")
 
 (def Picture
@@ -209,7 +206,7 @@
 
 (def QuestSignup
   "Quest signup information"
-  {(s/optional-key :name) (s/maybe NonEmptyString)
+  {:name NonEmptyString
    :email Email
    (s/optional-key :phone) (s/maybe Phone)
    :agreement Agreement})
@@ -233,6 +230,14 @@
                  {:signup QuestSignup
                   :days (st/get-in PartyMember [:days])
                   (s/optional-key :secret-party) (s/maybe s/Uuid)}))
+
+(defn new-empty-party-member []
+  {:signup
+   {:name ""
+    :email ""
+    :phone ""
+    :agreement false}
+   :days 1})
 
 (defn message-from-constrained [^Constrained c]
   (:post-name c))

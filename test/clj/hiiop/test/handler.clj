@@ -204,6 +204,13 @@
       (parse-string true)
       (do-this #(pp/pprint %1))))
 
+(defn remove-party-member [{:keys [with quest-id participation-id login-cookie status]}]
+  (-> (json-request (str "/api/v1/quests/" quest-id "/party/" participation-id)
+                    {:type :delete
+                     :cookies login-cookie})
+      (with)
+      (has-status (or status 204))))
+
 (deftest test-api
 
   (testing "api/v1/users/register"
@@ -675,6 +682,45 @@
                                 :login-cookie login-cookie}))
           (check #(is (not (nil? %1))))
           (check #(is (= 1 (count %1))))
+          (just-do #(db/delete-quest-by-id! {:id (:id added-quest)}))
+          (just-do #(db/delete-user! {:id (sc/string->uuid @test-user-id)})))
+      ))
+
+  (testing "DELETE /api/v1/quests/:quest-id/party/:participation-id"
+    (let [current-app (app)
+          user-created (create-test-user
+                        {:user-data test-user
+                         :save-id-to test-user-id
+                         :read-token-from email-token})
+          login-cookie (login-and-get-cookie
+                        {:with current-app
+                         :user-data test-user})
+          quest-to-add (assoc
+                        (test-quest
+                        {:use-date-string true
+                         :location-to :location
+                         :coordinates-to :coordinates
+                         :organisation-to {:in :organisation
+                                           :name :name
+                                           :description :description}})
+                        :is-open false)
+          added-quest (add-quest
+                       {:with current-app
+                        :quest quest-to-add
+                        :login-cookie login-cookie
+                        :organiser-participates true})
+          ]
+      (-> added-quest
+          (#(get-party-members {:with current-app
+                                :quest-id (:id %1)
+                                :login-cookie login-cookie}))
+          (check #(is (not (nil? %1))))
+          (check #(is (= 1 (count %1))))
+          (#(remove-party-member {:with current-app
+                                  :login-cookie login-cookie
+                                  :participation-id (:participation-id (first %1))
+                                  :quest-id (:id added-quest)
+                                  }))
           (just-do #(db/delete-quest-by-id! {:id (:id added-quest)}))
           (just-do #(db/delete-user! {:id (sc/string->uuid @test-user-id)})))
       ))

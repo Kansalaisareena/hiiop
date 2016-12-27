@@ -468,5 +468,24 @@ FROM
 WHERE
   q.id = :quest_id AND
   p.quest_id = :quest_id AND
-  (q.owner = :user_id OR
+  p.user_id = u.id AND
+  ((q.owner = :user_id) OR
     (u.id = :user_id AND u.moderator = true))
+
+-- :name remove-member-from-party! :! :*
+-- :doc Remove member from party
+DELETE FROM
+  parties p
+WHERE
+  p.id = :participation_id AND
+  p.quest_id = :quest_id AND
+  ((p.user_id = :user_id) OR
+   EXISTS(
+     SELECT
+       owner
+     FROM
+       quests
+     WHERE
+       id = :quest_id AND
+       owner = :user_id
+   ))
