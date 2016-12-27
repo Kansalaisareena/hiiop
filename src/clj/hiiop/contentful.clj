@@ -9,13 +9,15 @@
             [taoensso.carmine :as car]
             [mount.core :refer [defstate]]
             [taoensso.timbre :as log]
-            [hiiop.file-upload :refer [upload-story]]
+            [hiiop.file-upload :refer [upload-story upload-page]]
             [hiiop.db.core :as db]
-            [hiiop.blog :as blog]))
+            [hiiop.blog :as blog]
+            [hiiop.static-page :as page]))
 
 (def cf-url "https://cdn.contentful.com/")
 (defstate items-url :start (str cf-url "spaces/" (:space-id (:contentful env)) "/entries?access_token="
                                 (:cd-api-key (:contentful env)) "&locale=*"))
+(def locales [:fi :sv])
 
 (defn localize-fields [fields locale]
   "Given the :fields part of a multi-locale contentful object, returns
@@ -28,9 +30,23 @@
   (wcar* (car/set (str "email:" emailkey)
                   email-object)))
 
+(defn render-page [cfobject locale]
+  (let [fields (localize-fields (:fields cfobject) locale)]
+    (render-static-markup
+     (page/static-page {:headline (:otsikko fields)
+                        :body-text (:leipateksti fields)}))))
+
 (defn process-page [cfobject]
-  "Render page and store into aws."
-  nil)
+  (let [id (get-in cfobject [:sys :id])
+        pagekey (get-in cfobject [:fields :pagekey :fi])]
+    (log/info "processing page:" pagekey)
+    (try
+      (doseq [locale locales]
+        (->> (render-page cfobject locale)
+             (upload-page (str (name locale) "/" pagekey))))
+      (catch Exception e
+        (log/info "Exception in processing page " pagekey ":" e)))))
+
 
 (defn render-story [cfobject locale]
   (let [fields (localize-fields (:fields cfobject) locale)]
@@ -45,7 +61,7 @@
         topic-fi (get-in cfobject [:fields :otsikko :fi])
         topic-sv (get-in cfobject [:fields :otsikko :sv])]
     (try
-      (doseq [locale [:fi :sv]]
+      (doseq [locale locales]
         (->> (render-story cfobject locale)
              (upload-story (str (name locale) "/" id))))
       (db/add-or-update-story! {:id id :topic-fi topic-fi :topic-sv topic-sv}))))

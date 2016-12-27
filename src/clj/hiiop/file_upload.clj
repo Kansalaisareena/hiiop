@@ -23,6 +23,8 @@
 (defstate blog-bucket
   :start (:hiiop-blog-bucket env))
 
+(defstate hiiop-bucket
+  :start (:hiiop-bucket env))
 
 (defstate bucket-base-url
   :start
@@ -47,13 +49,20 @@
   )
 
 (defn upload-story-to-s3 [id story-html]
-  (log/info "uploading story file: " story-html)
   (s3/put-object aws-credentials
                  :bucket-name blog-bucket
-                 :key id
+                 :key (str id ".html")
+                 :input-stream (input-stream (.getBytes story-html))
+                 :metadata {:content-type "text/html"}))
+
+(defn upload-page-to-s3 [pagekey story-html]
+  (s3/put-object aws-credentials
+                 :bucket-name hiiop-bucket
+                 :key (str "pages/" name ".html")
                  :input-stream (input-stream (.getBytes story-html))
                  :metadata {:content-type "text/html"}))
 
 
 (defstate upload-picture :start upload-picture-to-s3)
 (defstate upload-story :start upload-story-to-s3)
+(defstate upload-page :start upload-page-to-s3)
