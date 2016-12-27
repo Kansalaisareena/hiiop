@@ -71,13 +71,12 @@
                     (ok %1))))))
 
         (POST "/register" []
-          :body-params [email :- Email name :- s/Str]
+          :body [registration RegistrationInfo]
           :summary "Create a new user and email password token"
           (fn [request]
             (-> (api-handlers/register
-                 {:email email
-                  :name name
-                  :locale (:current-locale request)})
+                 (assoc registration
+                        :locale (:current-locale request)))
                 (#(if (:errors %1)
                     (bad-request %1)
                     (ok))))))

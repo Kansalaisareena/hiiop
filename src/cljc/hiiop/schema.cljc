@@ -51,11 +51,12 @@
 
 (def User
   "Registered or virtual user"
-  {:email Email
-   (s/optional-key :name) (s/maybe s/Str)
-   :id s/Uuid
-   (s/optional-key :organisation) (s/maybe Organisation)
+  {:id s/Uuid
+   :email Email
+   :name NonEmptyString
    (s/optional-key :phone) (s/maybe Phone)
+   ;;(s/optional-key :organisation) (s/maybe Organisation)
+   ;;(s/optional-key :phone) (s/maybe Phone)
    :moderator s/Bool
    :active s/Bool})
 
@@ -68,12 +69,13 @@
              :active))
 
 (defn new-empty-registration-info []
-  {:name "" :email ""})
+  {:name ""
+   :email ""
+   :phone nil})
 
 (def RegistrationInfo
-  "Initial registration information with only email and name"
-  {:email Email
-   :name s/Str})
+  "Initial registration"
+  NewGuestUser)
 
 (def UserActivation
   "Email, password and password token"
