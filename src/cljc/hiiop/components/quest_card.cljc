@@ -110,25 +110,48 @@
                                     :tr tr}))
        ]]]))
 
-(rum/defc quest-card-browse []
-  [:div {:class "opux-card-container"}
-   [:div {:class "opux-card"}
+(rum/defc quest-card-browse [{:keys [quest context]}]
+  (let [{:keys [name
+                location
+                id
+                start-time
+                end-time
+                picture-url
+                max-participants]} quest
+        quest-link (path-for hierarchy :quest :quest-id id)
+        town (:town location)
+        tr (:tr context)]
 
-    [:div {:class "opux-card__image-container"}
-     [:a {:href "#"}
-      [:img {:class "opux-card__image"
-             :src "https://placeholdit.imgix.net/~text?txtsize=33&txt=quest%20image&w=480&h=300"}]]]
+    [:div {:class "opux-card-container"}
+     [:div {:class "opux-card"}
 
-    [:div {:class "opux-card__content"}
-     [:span {:class "opux-card__location opux-inline-icon opux-inline-icon-location"}
-      "Helsinki"]
-     [:span {:class "opux-card__attendance opux-inline-icon opux-inline-icon-personnel opux-inline-icon--right"}
-      23]
+      [:div {:class "opux-card__image-container"}
+       [:div {:class "opux-card__status"}
+        (tr [:pages.profile.my-event])]
+       [:a {:href quest-link}
+        [:div {:class "opux-card__image"
+               :style {:background-image (str "url('" (or picture-url "https://placeholdit.imgix.net/~text?txtsize=33&txt=quest%20image&w=480&h=300") "')")}}]]]
 
-     [:a {:class "opux-card__title" :href "#"}
-      "Konalan kehitysvammaisten iltatanhutapahtuma"]
+      [:div {:class "opux-card__content"}
 
-     [:span {:class "opux-card__date opux-inline-icon opux-inline-icon-calendar"}
-      "Keskiviikko 28.1"]
-     [:span {:class "opux-card__time opux-inline-icon opux-inline-icon-clock"}
-      "18.00-20.00"]]]])
+       [:span
+        {:class "opux-card__location opux-inline-icon opux-inline-icon-location"}
+        town]
+       [:span
+        {:class "opux-card__attendance opux-inline-icon opux-inline-icon-personnel opux-inline-icon--right"}
+        max-participants]
+
+       [:a {:class "opux-card__title" :href quest-link}
+        name]
+
+       [:span {:class "opux-card__date opux-inline-icon opux-inline-icon-calendar"}
+        (time/to-string (time/from-string start-time) time/with-weekday-format)]
+       [:span {:class "opux-card__time opux-inline-icon opux-inline-icon-clock"}
+        (str
+         (time/to-string
+          (time/from-string start-time) time/hour-minute-format)
+         "-"
+         (time/to-string
+          (time/from-string end-time) time/hour-minute-format)
+         )]
+       ]]]))

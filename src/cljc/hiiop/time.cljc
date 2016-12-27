@@ -39,6 +39,10 @@
   #?(:clj "HH.mm"
      :cljs "HH.mm"))
 
+(def month-name-format
+  #?(:clj "MMMM"
+     :cljs "MMMM"))
+
 #?(:cljs (defstate locale :start :fi))
 #?(:cljs (defn switch-locale [locale]
            (swap {#'hiiop.time/locale locale})
@@ -112,6 +116,10 @@
   (if amount
     #?(:clj (time/minutes amount)
        :cljs (.duration js/moment amount "minute"))))
+
+(defn get-month [date]
+    #?(:clj (time/month date)
+       :cljs (.month date)))
 
 (def a-minute (minutes 1))
 

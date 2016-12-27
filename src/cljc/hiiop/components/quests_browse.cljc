@@ -12,7 +12,14 @@
             [hiiop.html :as html]
             [hiiop.schema :as hs]))
 
-(rum/defcs quest-categories-filter < rum/reactive
+(defn split-quests-by-months [quests]
+  (let [result (group-by #(time/month
+                           (time/from-string
+                            (:start-time %)))
+                         quests)]
+    result))
+
+  (rum/defcs quest-categories-filter < rum/reactive
   (rum/local false ::is-active)
   [state {:keys [cursors-and-schema context tr]}]
   (let [is-active (::is-active state)]
@@ -49,9 +56,23 @@
     [:div {:class "opux-card-filter__label"}
      (tr [:pages.quest.list.filter.when])]]])
 
+(rum/defc monthly-quest-list
+  [{:keys [quests context]}]
+  (let [start-time (time/from-string (:start-time (first quests)))
+        month-name (time/to-string start-time time/month-name-format)]
+    [:div
+     [:h2 {:class "opux-centered"}
+      month-name]
+
+     [:ul {:class "opux-card-list"}
+      (map #(quest-card-browse {:context context
+                                :quest %})
+           quests)]]))
+
 (rum/defc list-quests
   [{:keys [context quests quest-filter schema errors]}]
   (let [tr (:tr context)
+        quests-by-months (split-quests-by-months quests)
         cursors-and-schema
         (c/value-and-error-cursors-and-schema {:for quest-filter
                                                :schema schema
@@ -65,19 +86,8 @@
                      :context context})
 
      [:div {:class "opux-card-list-container"}
-      [:div
-       {:class "opux-content opux-content--small opux-centered opux-card-list__subtitle"}
-       [:p (tr [:pages.quest.list.not-found])]]
-
-      [:h2 {:class "opux-centered"}
-       "Helmikuussa"]
-
-      [:ul {:class "opux-card-list"}
-       (repeat 7 (quest-card-browse))]
-
-      [:h2 {:class "opux-centered"}
-       "Maaliskuussa "]
-
-      [:ul {:class "opux-card-list"}
-       (repeat 8 (quest-card-browse))]
-      ]]))
+      (map #(monthly-quest-list {:quests (quests-by-months %)
+                                 :context context})
+           (reverse (sort (keys quests-by-months))))
+      ]]
+  ))
