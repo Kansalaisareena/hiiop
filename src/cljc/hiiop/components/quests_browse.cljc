@@ -19,15 +19,83 @@
                          quests)]
     result))
 
+(defn- filter-by-categories
+  [{:keys [quests
+           quest-filter]}]
+  (if (empty? (:categories quest-filter))
+    {:quests quests :quest-filter quest-filter}
+    (let [categories (set (:categories quest-filter))]
+      {:quests (filter #(not
+                 (empty?
+                   (clojure.set/intersection
+                     (set (map keyword (:categories %)))
+                     categories)))
+                       quests)
+       :quest-filter quest-filter})))
+
+(defn- filter-by-location
+  [{:keys [quests quest-filter]}]
+  (let [location-filter (:location quest-filter)]
+    (if (empty? location-filter)
+      {:quests quests :quest-filter quest-filter}
+      {:quests (filter
+                 (fn [quest]
+                   (let [{:keys [town
+                                 country]} (:location quest)]
+                     (and
+                       (= town (:town location-filter))
+                       (= country (:country location-filter)))))
+                 quests)
+       :quest-filter quest-filter})))
+
+(defn- filter-by-start-time
+  [{:keys [quests quest-filter]}]
+  (let [start-time-filter (:start-time quest-filter)]
+    (if (= "" start-time-filter)
+      {:quests quests :quest-filter quest-filter}
+      {:quests (filter
+                 #(time/after?
+                    (time/from-string (:start-time %))
+                    (time/from-string start-time-filter))
+                 quests)
+       :quest-filter quest-filter})))
+
+(defn- filters
+  [{:keys [quests quest-filter]}]
+  (:quests ((comp filter-by-start-time
+                  filter-by-location
+                  filter-by-categories)
+            {:quests quests
+             :quest-filter quest-filter})))
+
+(rum/defc quest-category-icon < rum/reactive
+  [{:keys [category categories]}]
+  [:span
+   {:class (str "opux-icon-circled opux-icon--filter opux-icon--filter--" (name category))
+    :on-click (fn [_]
+                (reset! categories
+                        (into []
+                              (filter #(not (= category %))
+                                      @categories))))}])
+
 (rum/defcs quest-categories-filter < rum/reactive
   (rum/local false ::is-active)
-  [state {:keys [cursors-and-schema context]}]
+  [state {:keys [cursors-and-schema context categories]}]
   (let [is-active (::is-active state)
         tr (:tr context)]
-    [:div {:class "opux-card-filter__field opux-card-filter__field--category"}
+    [:div {:class (str "opux-card-filter__field opux-card-filter__field--category"
+                       (if (rum/react is-active) " is-active"))}
      [:div {:class "opux-card-filter__label"}
       (tr [:pages.quest.list.filter.category])]
-     [:span {:class "opux-icon opux-icon-plus opux-card-filter--category-filter"}]
+
+     [:span {:class "opux-icon opux-icon-plus opux-category-filter-switch"
+             :on-click #(swap! is-active not)}]
+
+     (if (not-empty (rum/react categories))
+       (map #(quest-category-icon {:category %
+                                   :categories categories})
+            (rum/react categories)))
+
      (html/form-section
        ""
        (html/multi-selector-for-schema
@@ -78,10 +146,11 @@
                         :format time/date-print-format})]]))
 
 (defn- quest-filters
-  [{:keys [tr cursors-and-schema context]}]
+  [{:keys [tr cursors-and-schema context quest-filter]}]
   [:div {:class "opux-content opux-card-filter"}
    (quest-categories-filter {:context context
-                             :cursors-and-schema cursors-and-schema})
+                             :cursors-and-schema cursors-and-schema
+                             :categories (get-in cursors-and-schema [:categories :value])})
 
    (quest-location-filter {:context context
                            :cursors-and-schema cursors-and-schema})
@@ -101,61 +170,10 @@
                                 :quest %})
            quests)]]))
 
-(defn- filter-by-categories
-  [{:keys [quests
-           quest-filter]}]
-  (if (empty? (:categories quest-filter))
-    {:quests quests :quest-filter quest-filter}
-    (let [categories (set (:categories quest-filter))]
-      {:quests (filter #(not
-                 (empty?
-                   (clojure.set/intersection
-                     (set (map keyword (:categories %)))
-                     categories)))
-                       quests)
-       :quest-filter quest-filter})))
-
-(defn- filter-by-location
-  [{:keys [quests quest-filter]}]
-  (let [location-filter (:location quest-filter)]
-    (if (empty? location-filter)
-      {:quests quests :quest-filter quest-filter}
-      {:quests (filter
-                 (fn [quest]
-                   (let [{:keys [town
-                                 country]} (:location quest)]
-                     (and
-                       (= town (:town location-filter))
-                       (= country (:country location-filter)))))
-                 quests)
-       :quest-filter quest-filter})))
-
-(defn- filter-by-start-time
-  [{:keys [quests quest-filter]}]
-  (let [start-time-filter (:start-time quest-filter)]
-    (if (= "" start-time-filter)
-      {:quests quests :quest-filter quest-filter}
-      {:quests (filter
-                 #(time/after?
-                    (time/from-string (:start-time %))
-                    (time/from-string start-time-filter))
-                 quests)
-       :quest-filter quest-filter})))
-
-(defn- filters
-  [{:keys [quests quest-filter]}]
-  ((comp
-     filter-by-start-time
-     filter-by-location
-     filter-by-categories)
-   {:quests quests
-    :quest-filter quest-filter}))
-
-(rum/defcs list-quests < rum/reactive
-  [state {:keys [context quests quest-filter schema errors filtered-quests]}]
+(rum/defc list-quests < rum/reactive
+  [{:keys [context quests quest-filter schema errors filtered-quests]}]
   (let [tr (:tr context)
-        quests-by-months (split-quests-by-months
-                           (rum/react filtered-quests))
+        quests-by-months (split-quests-by-months (rum/react filtered-quests))
         cursors-and-schema
         (c/value-and-error-cursors-and-schema {:for quest-filter
                                                :schema schema
@@ -166,10 +184,8 @@
       :quest-filter
       (fn [key _ _ new-filter]
         (reset! filtered-quests
-                (:quests
-                 (filters
-                   {:quests quests
-                    :quest-filter new-filter})))))
+                (filters {:quests quests
+                          :quest-filter new-filter}))))
 
     [:div {:class "opux-section"}
      [:h1 {:class "opux-centered"}

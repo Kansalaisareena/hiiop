@@ -54,14 +54,14 @@
       margin-bottom: -10px;
     }
 
-    &.is-active {
+    @include state('active') {
       &:before {
         transform: translateY(9px) rotate(45deg);
       }
       &:after {
         transform: translateY(-9px) rotate(-45deg);
       }
-      .opux-mobile-hamburger-dash {
+      @include block('opux-mobile-hamburger-dash') {
         opacity: 0;
       }
     }
