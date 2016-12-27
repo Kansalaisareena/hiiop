@@ -449,7 +449,8 @@
             (#(join-quest {:quest-id %1
                            :days 1
                            :signup
-                           {:email "erkki@esimerkki.fi"
+                           {:name "Erkki Esimerkki"
+                            :email "erkki@esimerkki.fi"
                             :agreement true}
                            :with current-app
                            }))
