@@ -87,6 +87,8 @@ Create profiles.clj under your git root to place the secrets.
          :webhook-password ""
          }
         }
+        :hiiop-blog-bucket "hiiop-dev-blog"
+        :hiiop-bucket "hiiop-dev"
        }
       :profiles/test
       {:env
