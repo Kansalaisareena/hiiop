@@ -32,8 +32,9 @@ $opux-icon-cross-name-collection: (eyeglasses, law, sound, globe, handicap, chil
   @include flexbox;
   padding: 0px;
   a {
-    text-decoration: none;
     color: $basic-text-colour;
+    font-weight: 300;
+    text-decoration: none;
   }
 
   // opux-logo--header

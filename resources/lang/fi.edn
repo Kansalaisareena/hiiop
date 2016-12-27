@@ -77,6 +77,16 @@ Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit
    {:title "Tehtävääsi on muokattu"
     :content "Tehtävä on edelleen julkinen. Tekemäsi muutokset tulevat näkyviin 1-2 päivän kuluessa."}
 
+   :list
+   {:title "Löydä itsellesi vapaaehtoistehtävä"
+    :not-found "Juuri näillä hakuehdoilla ei löytynyt tapahtumia. Koita valita useampia kiinnostuksen kohteita."
+
+    :filter
+    {:category "Kiinnostuksen kohde"
+     :where "Missä?"
+     :when "Milloin?"
+     }}
+
    :edit
    {:title "Ilmoita uusi tehtävä"
 

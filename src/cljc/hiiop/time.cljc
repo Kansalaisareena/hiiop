@@ -284,19 +284,23 @@
 
 (defn to-string
   ([date format]
-   #?(:clj
-      (let [formatter (if format
-                        (timef/formatter format)
-                        (timef/formatters :date-time-no-ms))]
-        (timef/unparse
-         (timef/with-zone
-           formatter
-           (time/time-zone-for-id @time-zone))
-         date))
-      :cljs (.format (.tz date @time-zone) format)))
-   ([date]
-    #?(:clj (to-string date nil)
-       :cljs (to-string date transit-format))))
+   (if (nil? date)
+     ""
+     #?(:clj
+        (let [formatter (if format
+                          (timef/formatter format)
+                          (timef/formatters :date-time-no-ms))]
+          (timef/unparse
+            (timef/with-zone
+              formatter
+              (time/time-zone-for-id @time-zone))
+            date))
+        :cljs (.format (.tz date @time-zone) format))))
+  ([date]
+   (if (nil? date)
+     ""
+     #?(:clj (to-string date nil)
+        :cljs (to-string date transit-format)))))
 
 (defn datetime->time [datetime]
   {:hours #?(:clj (time/hour datetime)

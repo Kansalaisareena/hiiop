@@ -135,18 +135,12 @@
   "Quest listing filter"
   {:categories [Category]
    :location Location
-   :start-time DateTime
-   :end-time DateTime})
+   (s/optional-key :start-time) (s/maybe DateTime)})
 
 (defn new-empty-quest-filter []
   {:categories []
    :location {}
-   :start-time (time/to-string
-                (time/tomorrow-at-noon)
-                time/transit-format)
-   :end-time (time/to-string
-              (time/time-to (time/tomorrow) 23 45)
-              time/transit-format)})
+   :start-time ""})
 
 (def Quest
   "Quest"
