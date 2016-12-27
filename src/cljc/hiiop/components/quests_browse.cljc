@@ -12,7 +12,7 @@
             [hiiop.html :as html]
             [hiiop.schema :as hs]))
 
-(defn split-quests-by-months [quests]
+(defn- split-quests-by-months [quests]
   (let [result (group-by #(time/month
                             (time/from-string
                               (:start-time %)))
@@ -36,7 +36,7 @@
           :error (get-in cursors-and-schema [:categories :error])
           :context context}))]))
 
-(rum/defc quest-location-filter
+(defn- quest-location-filter
   [{:keys [cursors-and-schema context]}]
   (let [tr (:tr context)]
     [:div {:class "opux-card-filter__field opex-card-filter__field--location"}
@@ -50,7 +50,7 @@
         :placeholder (tr [:pages.quest.edit.location.placeholder])
         :context context})]))
 
-(rum/defc quest-start-time-filter
+(defn- quest-start-time-filter
   [{:keys [context cursors-and-schema]}]
   (let [tr (:tr context)
         start-time (get-in cursors-and-schema [:start-time :value])
@@ -75,11 +75,9 @@
       (html/datepicker {:date start-time-atom
                         :position "bottom left"
                         :context context
-                        :format time/date-print-format})
-      ]]
-    ))
+                        :format time/date-print-format})]]))
 
-(rum/defc quest-filters
+(defn- quest-filters
   [{:keys [tr cursors-and-schema context]}]
   [:div {:class "opux-content opux-card-filter"}
    (quest-categories-filter {:context context
@@ -88,11 +86,9 @@
    (quest-location-filter {:context context
                            :cursors-and-schema cursors-and-schema})
    (quest-start-time-filter {:context context
-                             :cursors-and-schema cursors-and-schema})
+                             :cursors-and-schema cursors-and-schema})])
 
-])
-
-(rum/defc monthly-quest-list
+(defn- monthly-quest-list
   [{:keys [quests context]}]
   (let [start-time (time/from-string (:start-time (first quests)))
         month-name (time/to-string start-time time/month-name-format)]
@@ -105,14 +101,76 @@
                                 :quest %})
            quests)]]))
 
-(rum/defc list-quests < rum/reactive
-  [{:keys [context quests quest-filter schema errors]}]
+(defn- filter-by-categories
+  [{:keys [quests
+           quest-filter]}]
+  (if (empty? (:categories quest-filter))
+    {:quests quests :quest-filter quest-filter}
+    (let [categories (set (:categories quest-filter))]
+      {:quests (filter #(not
+                 (empty?
+                   (clojure.set/intersection
+                     (set (map keyword (:categories %)))
+                     categories)))
+                       quests)
+       :quest-filter quest-filter})))
+
+(defn- filter-by-location
+  [{:keys [quests quest-filter]}]
+  (let [location-filter (:location quest-filter)]
+    (if (empty? location-filter)
+      {:quests quests :quest-filter quest-filter}
+      {:quests (filter
+                 (fn [quest]
+                   (let [{:keys [town
+                                 country]} (:location quest)]
+                     (and
+                       (= town (:town location-filter))
+                       (= country (:country location-filter)))))
+                 quests)
+       :quest-filter quest-filter})))
+
+(defn- filter-by-start-time
+  [{:keys [quests quest-filter]}]
+  (let [start-time-filter (:start-time quest-filter)]
+    (if (= "" start-time-filter)
+      {:quests quests :quest-filter quest-filter}
+      {:quests (filter
+                 #(time/after?
+                    (time/from-string (:start-time %))
+                    (time/from-string start-time-filter))
+                 quests)
+       :quest-filter quest-filter})))
+
+(defn- filters
+  [{:keys [quests quest-filter]}]
+  ((comp
+     filter-by-start-time
+     filter-by-location
+     filter-by-categories)
+   {:quests quests
+    :quest-filter quest-filter}))
+
+(rum/defcs list-quests < rum/reactive
+  [state {:keys [context quests quest-filter schema errors filtered-quests]}]
   (let [tr (:tr context)
-        quests-by-months (split-quests-by-months quests)
+        quests-by-months (split-quests-by-months
+                           (rum/react filtered-quests))
         cursors-and-schema
         (c/value-and-error-cursors-and-schema {:for quest-filter
                                                :schema schema
                                                :errors errors})]
+
+    (add-watch
+      quest-filter
+      :quest-filter
+      (fn [key _ _ new-filter]
+        (reset! filtered-quests
+                (:quests
+                 (filters
+                   {:quests quests
+                    :quest-filter new-filter})))))
+
     [:div {:class "opux-section"}
      [:h1 {:class "opux-centered"}
       (tr [:pages.quest.list.title])]
@@ -125,8 +183,14 @@
       (str (rum/react quest-filter))]
 
      [:div {:class "opux-card-list-container"}
-      (map #(monthly-quest-list {:quests (quests-by-months %)
-                                 :context context})
-           (reverse (sort (keys quests-by-months))))
-      ]]
-    ))
+      (if (empty? (rum/react filtered-quests))
+
+        [:h1 {:class "opux-content opux-centered"}
+         (tr [:pages.quest.list.not-found])]
+
+        (map #(monthly-quest-list
+                {:quests (quests-by-months %)
+                 :context context})
+             (reverse
+               (sort
+                 (keys quests-by-months)))))]]))

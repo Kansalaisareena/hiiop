@@ -39,32 +39,32 @@
 (defn login-page [params]
   (log/info "login-page")
   (rum/mount
-   (p-l/login {:context @context})
-   (. js/document (getElementById "app"))))
+    (p-l/login {:context @context})
+    (. js/document (getElementById "app"))))
 
 (defn register-page [params]
   (let [registration-info (atom (new-empty-registration-info))
         errors (atom (same-keys-with-nils @registration-info))]
     (log/info "register-page" @registration-info (new-empty-registration-info))
     (rum/mount
-     (p-r/register {:context @context
-                    :registration-info registration-info
-                    :schema RegistrationInfo
-                    :errors errors})
-     (. js/document (getElementById "app")))))
+      (p-r/register {:context @context
+                     :registration-info registration-info
+                     :schema RegistrationInfo
+                     :errors errors})
+      (. js/document (getElementById "app")))))
 
 (defn activate-page [params]
   (let [activation-info (atom (new-empty-activation-info))
         errors (atom (same-keys-with-nils @activation-info))]
     (log/info "register-page" @activation-info (new-empty-activation-info))
     (rum/mount
-     (p-a/activate {:context @context
-                    :token (last (string/split
-                                  (.-pathname (.-location js/window)) #"/"))
-                    :activation-info activation-info
-                    :schema UserActivation
-                    :errors errors})
-     (. js/document (getElementById "app")))))
+      (p-a/activate {:context @context
+                     :token (last (string/split
+                                    (.-pathname (.-location js/window)) #"/"))
+                     :activation-info activation-info
+                     :schema UserActivation
+                     :errors errors})
+      (. js/document (getElementById "app")))))
 
 (defn profile-page [params]
   (go
@@ -73,10 +73,10 @@
           user-info (<! (get-user-info owner))]
       (log/info "profile-page")
       (rum/mount
-       (p-p/profile {:context @context
-                     :user-info user-info
-                     :quests (atom quests)})
-       (. js/document (getElementById "app"))))))
+        (p-p/profile {:context @context
+                      :user-info user-info
+                      :quests (atom quests)})
+        (. js/document (getElementById "app"))))))
 
 (defn browse-quests-page [params]
   (go
@@ -85,22 +85,23 @@
           errors (atom (same-keys-with-nils @quest-filter))]
       (log/info "browse-quests-page")
       (rum/mount
-       (list-quests {:quests quests
-                            :context @context
-                            :quest-filter quest-filter
-                            :errors errors
-                            :schema QuestFilter})
-       (. js/document (getElementById "app"))))))
+        (list-quests {:quests quests
+                      :context @context
+                      :quest-filter quest-filter
+                      :filtered-quests (atom quests)
+                      :errors errors
+                      :schema QuestFilter})
+        (. js/document (getElementById "app"))))))
 
 (defn create-quest-page [params]
   (let [quest (atom (new-empty-quest))
         errors (atom (same-keys-with-nils @quest))]
     (rum/mount
-     (quests/edit {:context @context
-                   :quest quest
-                   :errors errors
-                   :schema NewQuest})
-     (. js/document (getElementById "app")))))
+      (quests/edit {:context @context
+                    :quest quest
+                    :errors errors
+                    :schema NewQuest})
+      (. js/document (getElementById "app")))))
 
 (defn edit-quest-page [params]
   (go
@@ -126,8 +127,8 @@
           (assoc :schema EditQuest)
           (assoc :party (atom party))
           (#(rum/mount
-             (quests/edit %1)
-             (. js/document (getElementById "app"))))
+              (quests/edit %1)
+              (. js/document (getElementById "app"))))
           ))))
 
 (defn quest-page [params]
@@ -135,7 +136,7 @@
         errors (atom (same-keys-with-nils @empty-party-member))]
     (go
       (let [id (parse-natural-number
-                (get-in params [:route-params :quest-id]))
+                 (get-in params [:route-params :quest-id]))
             quest (<! (get-quest id))
             user-info (<! (get-user-info (str (:owner quest))))
             owner-name (:name user-info)]
@@ -193,8 +194,8 @@
                    :party-member-schema NewPartyMember
                    :secret-party secret-party)
             (#(rum/mount
-               (quest %1)
-               (. js/document (getElementById "app"))))
+                (quest %1)
+                (. js/document (getElementById "app"))))
             )))))
 
 (def handlers

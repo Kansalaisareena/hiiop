@@ -56,6 +56,7 @@
     (layout/render {:context context
                     :content (p-b/list-quests {:quests quests
                                                :quest-filter quest-filter
+                                               :filtered-quests (atom quests)
                                                :context context
                                                :schema QuestFilter})
                     :title (tr [:actions.quest.create])
@@ -140,12 +141,12 @@
                                   :errors errors})
                     :scripts
                     [(str
-                      "https://maps.googleapis.com/maps/api/js?"
-                      "key=AIzaSyDfXn9JTGue0fbkI3gqIqe7_WUn0M-dt-8"
-                      "&libraries=places"
-                      "&language=" "fi" ;; to normalize the google data
-                      "&region=FI"
-                      )]
+                       "https://maps.googleapis.com/maps/api/js?"
+                       "key=AIzaSyDfXn9JTGue0fbkI3gqIqe7_WUn0M-dt-8"
+                       "&libraries=places"
+                       "&language=" "fi" ;; to normalize the google data
+                       "&region=FI"
+                       )]
                     })))
 
 (defn browse-quests [req]
@@ -157,25 +158,26 @@
     (layout/render {:context context
                     :content (p-b/list-quests {:quests quests
                                                :quest-filter quest-filter
+                                               :filtered-quests (atom quests)
                                                :context context
                                                :schema QuestFilter})
                     :title (tr [:actions.quest.create])
                     :scripts
                     [(str
-                      "https://maps.googleapis.com/maps/api/js?"
-                      "key=AIzaSyDfXn9JTGue0fbkI3gqIqe7_WUn0M-dt-8"
-                      "&libraries=places"
-                      "&language=" "fi" ;; to normalize the google data
-                      "&region=FI"
-                      )]
+                       "https://maps.googleapis.com/maps/api/js?"
+                       "key=AIzaSyDfXn9JTGue0fbkI3gqIqe7_WUn0M-dt-8"
+                       "&libraries=places"
+                       "&language=" "fi" ;; to normalize the google data
+                       "&region=FI"
+                       )]
                     })))
 
 (defn create-quest [req]
   (edit-quest-with-schema
-   {:request req
-    :schema NewQuest
-    :quest (new-empty-quest)
-    :title-key :actions.quest.create}))
+    {:request req
+     :schema NewQuest
+     :quest (new-empty-quest)
+     :title-key :actions.quest.create}))
 
 (defn edit-quest [req]
   (let [id (get-in req [:params :quest-id])

@@ -134,7 +134,7 @@
 (def QuestFilter
   "Quest listing filter"
   {:categories [Category]
-   :location Location
+   (s/optional-key :location) (s/maybe Location)
    (s/optional-key :start-time) (s/maybe DateTime)})
 
 (defn new-empty-quest-filter []
