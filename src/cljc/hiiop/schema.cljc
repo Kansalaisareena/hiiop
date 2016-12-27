@@ -139,7 +139,7 @@
 
 (defn new-empty-quest-filter []
   {:categories []
-   :location {}
+   :location nil
    :start-time ""})
 
 (def Quest

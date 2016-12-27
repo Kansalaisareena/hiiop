@@ -192,9 +192,7 @@
    [:input
     {:type "text"
      :class "opux-input opux-input--date-picker"
-     :default-value (if (nil? @date)
-                      ""
-                      (time/to-string @date format))}]])
+     :default-value (time/to-string @date format)}]])
 
 (rum/defc timepicker < rum/reactive
   [{:keys [time class time-print-format context]}]

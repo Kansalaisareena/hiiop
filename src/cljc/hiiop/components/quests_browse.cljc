@@ -176,6 +176,7 @@
       (tr [:pages.quest.list.title])]
 
      (quest-filters {:cursors-and-schema cursors-and-schema
+                     :quest-filter quest-filter
                      :tr tr
                      :context context})
 
