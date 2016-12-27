@@ -227,6 +227,40 @@ WHERE
   q.name IS NOT NULL AND
   q.is_rejected = FALSE;
 
+-- :name get-moderated-secret-quest :? :1
+-- :doc get quest by id
+SELECT
+  q.id as id,
+  q.name as name,
+  q.description as description,
+  q.organisation as organisation,
+  q.organisation_description as organisation_description,
+  q.start_time as start_time,
+  q.end_time as end_time,
+  q.street_number as street_number,
+  q.street as street,
+  q.postal_code as postal_code,
+  q.town as town,
+  q.country as country,
+  q.latitude as latitude,
+  q.longitude as longitude,
+  q.google_maps_url as google_maps_url,
+  q.google_place_id as google_place_id,
+  q.categories as categories,
+  q.max_participants as max_participants,
+  q.hashtags as hashtags,
+  q.picture as picture,
+  (SELECT url FROM pictures WHERE id = q.picture) as picture_url,
+  q.is_open as is_open,
+  q.owner as owner
+FROM
+  quests q
+WHERE
+  q.id = :id AND
+  q.secret_party = :secret_party AND
+  q.name IS NOT NULL AND
+  q.is_rejected = FALSE;
+
 -- :name get-unmoderated-quest-by-id :? :1
 -- :doc get quest by id
 SELECT

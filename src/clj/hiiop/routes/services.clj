@@ -239,6 +239,20 @@
                     (bad-request %1))))
             ))
 
+        (GET "/:id/secret/:secret-party" []
+          :name        ::secret-quest
+          :path-params [id :- Long
+                        secret-party :- s/Uuid]
+          :summary     "Get secret quest"
+          :return      Quest
+          (fn [request]
+            (let [quest (api-handlers/get-secret-quest
+                         {:id id
+                          :secret-party secret-party})]
+              (if quest
+                (ok quest)
+                (not-found)))))
+
         (GET "/:quest-id/party" []
           :name        ::quest-party
           :path-params [quest-id :- Long]

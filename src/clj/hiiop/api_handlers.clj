@@ -151,6 +151,14 @@
     (catch Exception e
       (log/error e))))
 
+(defn get-secret-quest [{:keys [id secret-party]}]
+  (try
+    (-> (db/get-moderated-secret-quest
+         (db/->snake_case_keywords
+          {:id id
+           :secret-party (sc/string->uuid secret-party)}))
+        (hc/db-quest->api-quest-coercer))))
+
 (defn edit-quest [{:keys [quest user]}]
   (try
     (-> quest

@@ -19,15 +19,17 @@
    (leaf "luo-tehtava" :create-quest)
 
    ;; Quests
+   (leaf "tehtavat" :browse-quests)
+
    (branch
-    "tehtavat/"
-    (leaf "" :browse-quests))
+    "tehtavat/" (param :quest-id)
+    (leaf "" :quest)
 
     (branch
-     "tehtavat/" (param :quest-id)
-     (leaf "" :quest)
+     "/salainen/" (param :secret-party)
+     (leaf "" :secret-quest))
 
-     (branch
-      "/muokkaa/"
-      (leaf "" :edit-quest)))
-    ))
+    (branch
+     "/muokkaa/"
+     (leaf "" :edit-quest)))
+   ))

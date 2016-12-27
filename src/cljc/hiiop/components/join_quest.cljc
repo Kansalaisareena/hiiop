@@ -168,7 +168,7 @@
                         (rum/local false ::is-valid)
                         (rum/local false ::signup-valid)
                         (rum/local {:view "join"} ::view)
-  [state {:keys [quest-id context party-member schema errors]}]
+  [state {:keys [quest-id context party-member schema errors secret-party]}]
   (let [tr (:tr context)
         view-state (::view state)
         view (:view @view-state)
@@ -193,6 +193,13 @@
 
               (:--error value-or-error) (set-valid! false)
               :else (set-valid! false))))]
+
+    (when secret-party
+      (do
+        (-> @party-member
+            (assoc :secret-party secret-party)
+            (#(reset! party-member %1))
+            (check-and-set-valid!))))
 
     (when (not use-signup)
       (do

@@ -9,7 +9,7 @@
             [taoensso.timbre :as log]))
 
 (rum/defc quest < rum/reactive
-  [{:keys [context quest user empty-party-member party-member-errors party-member-schema]}]
+  [{:keys [context quest user empty-party-member party-member-errors party-member-schema secret-party]}]
   (let [{:keys [name
                 organisation
                 owner-name
@@ -64,9 +64,19 @@
 
      [:div {:class "opux-line"}]
 
-     (when empty-party-member
+     (cond
+       (and (:is-open @quest) empty-party-member)
        (join-quest {:context context
                     :quest-id (:id @quest)
                     :party-member empty-party-member
                     :schema party-member-schema
-                    :errors party-member-errors}))]))
+                    :errors party-member-errors})
+
+       (and (not (:is-open @quest)) secret-party)
+       (join-quest {:context context
+                    :quest-id (:id @quest)
+                    :party-member empty-party-member
+                    :schema party-member-schema
+                    :errors party-member-errors
+                    :secret-party secret-party}))
+       ]))

@@ -52,6 +52,13 @@
       (when (= (:status response) 200)
         (:body response)))))
 
+(defn get-secret-quest [{:keys [id secret-party]}]
+  (go
+    (let [response (<! (http/get
+                        (str base-path "/quests/" id "/secret/" secret-party)))]
+      (when (= (:status response) 200)
+        (:body response)))))
+
 (defn get-own-quests []
   (go
     (let [response (<! (http/get (str base-path "/quests/own")))]

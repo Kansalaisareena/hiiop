@@ -12,6 +12,7 @@
             [hiiop.components.quest-single :as quest]
             [hiiop.components.quests :as quests]
             [hiiop.client-api :refer [get-quest
+                                      get-secret-quest
                                       get-user-info
                                       get-own-quests
                                       get-quest-party]]
@@ -157,6 +158,41 @@
                (. js/document (getElementById "app"))))
             )))))
 
+(defn secret-quest-page [params]
+  (let [empty-party-member (atom (new-empty-party-member))
+        errors (atom (same-keys-with-nils @empty-party-member))]
+    (go
+      (let [id (parse-natural-number
+                (get-in params [:route-params :quest-id]))
+            secret-party (get-in params [:route-params :secret-party])
+            quest (<! (get-secret-quest {:id id
+                                         :secret-party secret-party}))
+            user-info (<! (get-user-info (str (:owner quest))))
+            owner-name (:name user-info)]
+        (-> quest
+            (#(assoc %1
+                     :categories
+                     (into [] (map keyword (:categories %1)))
+                     :owner-name owner-name))
+            (atom)
+            ((fn [quest]
+               {:quest quest}))
+            (#(assoc %1
+                     :errors
+                     (-> (:quest %1)
+                         (deref)
+                         (same-keys-with-nils)
+                         (atom))))
+            (assoc :context @context
+                   :empty-party-member empty-party-member
+                   :party-member-errors errors
+                   :party-member-schema NewPartyMember
+                   :secret-party secret-party)
+            (#(rum/mount
+               (quest/quest %1)
+               (. js/document (getElementById "app"))))
+            )))))
+
 (def handlers
   {:index
    browse-quests-page
@@ -170,6 +206,8 @@
    activate-page
    :quest
    quest-page
+   :secret-quest
+   secret-quest-page
    :browse-quests
    browse-quests-page
    :create-quest

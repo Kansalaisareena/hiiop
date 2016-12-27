@@ -30,6 +30,7 @@
                                   new-empty-registration-info
                                   new-empty-activation-info]]
             [hiiop.api-handlers :refer [get-quest
+                                        get-secret-quest
                                         get-user
                                         get-quests-for-owner
                                         get-quest-party]]))
@@ -191,9 +192,34 @@
       (redirect-to {:path-key :index}))))
 
 (defn quest [req]
+
   (let [id (get-in req [:params :quest-id])
         quest (get-quest (parse-natural-number id))
         empty-party-member (atom (new-empty-party-member))
+        errors (atom (same-keys-with-nils @empty-party-member))
+        owner-name (:name (get-user (:owner quest)))
+        context (create-context req)
+        tr (:tr context)]
+    (if quest
+      (layout/render {:title (tr [:actions.quest.create])
+                      :context context
+                      :content
+                      (quest/quest {:context context
+                                    :quest (atom (assoc quest
+                                                        :owner-name owner-name))
+                                    :empty-party-member empty-party-member
+                                    :party-member-errors errors
+                                    :party-member-schema NewPartyMember})}))))
+
+(defn secret-quest [req]
+  (let [id (get-in req [:params :quest-id])
+        secret-party (get-in req [:params :secret-party])
+        quest (get-secret-quest
+               {:id (parse-natural-number id)
+                :secret-party secret-party})
+        empty-party-member (atom
+                            (-> (new-empty-party-member)
+                                (assoc :secret-party secret-party)))
         errors (atom (same-keys-with-nils @empty-party-member))
         owner-name (:name (get-user (:owner quest)))
         context (create-context req)
@@ -222,6 +248,8 @@
    (authenticated profile)
    :quest
    quest
+   :secret-quest
+   secret-quest
    :browse-quests
    browse-quests
    :create-quest
