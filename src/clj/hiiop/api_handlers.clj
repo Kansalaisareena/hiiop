@@ -56,7 +56,8 @@
           (db/update-user! {:id id
                             :name name
                             :email email
-                            :phone phone})
+                            :phone phone
+                            :locale (clojure.core/name locale)})
           (mail/send-token-email email (str (:token token)) locale)
           id)))
     (catch Exception e

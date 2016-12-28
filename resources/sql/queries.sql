@@ -28,7 +28,8 @@ UPDATE
 SET
   name = :name,
   email = :email,
-  phone = :phone
+  phone = :phone,
+  locale = :locale
 WHERE id = :id
 
 -- :name get-user-by-id :? :1 :uuid
