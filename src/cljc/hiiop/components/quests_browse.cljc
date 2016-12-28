@@ -107,7 +107,7 @@
 (defn- quest-location-filter
   [{:keys [cursors-and-schema context]}]
   (let [tr (:tr context)]
-    [:div {:class "opux-card-filter__field opex-card-filter__field--location"}
+    [:div {:class "opux-card-filter__field opux-card-filter__field--location"}
      [:div {:class "opux-card-filter__label"}
       (tr [:pages.quest.list.filter.where])]
      (html/location-selector
@@ -137,13 +137,13 @@
                     new-start-time
                     time/transit-format)))))
 
-    [:div {:class "opux-card-filter__field opex-card-filter__field--datetime"}
+    [:div {:class "opux-card-filter__field opux-card-filter__field--datetime"}
      [:div {:class "opux-card-filter__label"}
-      (tr [:pages.quest.list.filter.when])
+      (tr [:pages.quest.list.filter.when])]
       (html/datepicker {:date start-time-atom
                         :position "bottom left"
                         :context context
-                        :format time/date-print-format})]]))
+                        :format time/date-print-format})]))
 
 (defn- quest-filters
   [{:keys [tr cursors-and-schema context quest-filter]}]
@@ -195,9 +195,6 @@
                      :quest-filter quest-filter
                      :tr tr
                      :context context})
-
-     [:div {:class "opux-content"}
-      (str (rum/react quest-filter))]
 
      [:div {:class "opux-card-list-container"}
       (if (empty? (rum/react filtered-quests))

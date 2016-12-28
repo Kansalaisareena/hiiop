@@ -79,10 +79,17 @@
   // opux-card-filter__field
   @include element('field') {
 
+    // opux-card-filter__field--location
+    @include modifier('location') {
+      box-sizing: border-box;
+      padding-right: 1.5rem;
+    }
+
     // opux-card-filter__field--category
     @include modifier('category') {
       position: relative;
 
+      // opux-card-filter opux-form-section
       @include block('opux-form-section') {
         @include box-shadow(5px, 5px, 15px, rgba(122, 122, 122, 0.5));
         background: $OP-white;

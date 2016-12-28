@@ -1,13 +1,14 @@
 @include block('opux-input') {
+  @include box-shadow(1px, 1px, 2px, $OP-gray-medium, true);
   @include opux-color-transition;
   background: none;
-  border: 1px solid $OP-gray;
-  box-shadow: none;
+  border: 1px solid $OP-gray-medium;
+  box-sizing: border-box;
   color: $basic-text-colour;
   font-size: 1rem;
   font-weight: 200;
   outline: none;
-  padding: 0.5rem;
+  padding: .75rem .5rem;
   width: 100%;
 
   &:focus,
@@ -44,7 +45,10 @@
 
     // opux-input--select--time
     @include modifier('time') {
+      height: 48px;
+      line-height: 48px;
       max-width: 220px;
+      padding-top: 12px;
     }
   }
 
@@ -83,21 +87,22 @@
 
     // opux-input__container--date-picker
     @include modifier('date-picker') {
-      padding-right: 4rem;
+      padding-right: 4.5rem;
       &:before {
-        border: 1px solid $OP-gray;
+        border: 1px solid $OP-gray-medium;
+        border-radius: 2px;
         box-sizing: border-box;
         content: "\e048";
         display: block;
-        font-size: 1.5rem;
-        height: 40px;
-        line-height: 42px;
+        font-size: 1.8rem;
+        height: 50px;
+        line-height: 48px;
         padding: 0px;
         position: absolute;
         right: 20px;
         text-align: center;
-        top: 1px;
-        width: 40px;
+        top: 0px;
+        width: 50px;
       }
     }
 

@@ -197,9 +197,18 @@
   @include flexbox;
   @include flex-direction(row);
 
+  // opux-card-filter__label
+  @include element('label') {
+    clear: both;
+    width: 100%;
+    padding-bottom: .5rem;
+  }
+
+  // opux-card-filter__field
   @include element('field') {
     @include flex(1);
 
+    // opux-card-filter--category
     @include modifier('category') {
       @include flex(2);
     }
