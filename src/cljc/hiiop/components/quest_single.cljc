@@ -62,7 +62,8 @@
        [:i {:class "opux-icon opux-icon-personnel"}]
        (str max-participants " " (tr [:pages.quest.view.participants]))]]
 
-     [:div {:class "opux-line"}]
+     [:div {:class "opux-content"}
+      [:div {:class "opux-line"}]]
 
      (cond
        (and (:is-open @quest) empty-party-member)

@@ -492,6 +492,8 @@
        :errors errors
        :tr tr
        })
+     [:div {:class "opux-line opux-content"}]
+
      (edit-time-place
       {:cursors-and-schema cursors-and-schema
        :is-valid is-valid
@@ -500,6 +502,8 @@
        :errors errors
        :tr tr
        })
+     [:div {:class "opux-line opux-content"}]
+
      (html/form-section
       (tr [:pages.quest.edit.subtitles.related-to])
       (html/multi-selector-for-schema
@@ -509,6 +513,8 @@
         :choice-name-fn hs/category-choice
         :context context})
       )
+     [:div {:class "opux-line opux-content"}]
+
      (edit-participation-settings
       {:cursors-and-schema cursors-and-schema
        :is-valid is-valid
@@ -520,6 +526,8 @@
        (edit-party {:quest @quest
                     :party party
                     :context context}))
+     [:div {:class "opux-line opux-content"}]
+
      (html/form-section
       ""
       buttons

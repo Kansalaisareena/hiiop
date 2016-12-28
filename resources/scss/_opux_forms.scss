@@ -7,11 +7,9 @@
 @include block('opux-form-section') {
   @include flex-direction(column);
   @include flexbox;
-  border-bottom: 1px solid $OP-gray;
   margin-bottom: 2rem;
   margin-left: -1rem;
   margin-right: -1rem;
-  padding-bottom: 2rem;
 
   // opux-form__fieldset
   @include element('fieldset') {
