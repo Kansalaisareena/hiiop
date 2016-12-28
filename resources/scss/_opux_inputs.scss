@@ -110,8 +110,8 @@
     @include modifier('number-tick') {
       position: relative;
       box-sizing: border-box;
-      padding-left: 50px;
-      padding-right: 50px;
+      padding-left: 55px;
+      padding-right: 55px;
       max-width: 200px;
 
       .opux-number-tick-input__control {
@@ -120,12 +120,13 @@
           background: $OP-orange;
           border-radius: 2px;
           border: 1px solid $OP-orange;
+          box-sizing: border-box;
           color: $OP-white;
           cursor: pointer;
-          height: 41px;
-          line-height: 41px;
+          height: 51px;
+          line-height: 49px;
           text-align: center;
-          width: 41px;
+          width: 51px;
         }
         &.opux-icon-minus {
           left: 0px;

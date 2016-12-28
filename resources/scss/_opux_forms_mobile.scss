@@ -16,6 +16,10 @@
     @include element('inline-item') {
       display: block;
       width: 100%;
+
+      &.opux-form__button {
+        display: inline-block;
+      }
     }
   }
 }

@@ -45,8 +45,8 @@
     background-color: $OP-gray-light;
     background-size: cover;
     display: block;
-    height: 1px;
-    padding-bottom: 50%;
+    height: 550px;
+    margin-top: -40px;
   }
 
   @include modifier('quest-header') {
@@ -219,7 +219,7 @@
 }
 
 @include block('opux-line') {
-  margin: 2rem 0;
+  margin: 2rem auto;
   border-bottom: 1px solid $OP-gray;
   height: 1px;
   width: 100%;

@@ -24,6 +24,8 @@
 }
 
 @include viewports(small) {
+
+  // opux-input
   @include block('opux-input') {
     // opux-input__label
     @include element('label') {
@@ -37,6 +39,18 @@
 }
 
 @include viewports(tiny) {
-  @include flex(0, 0, calc(50%));
+
+  // opux-input
+  @include block('opux-input') {
+
+    // opux-input__label
+    @include element('label') {
+
+      // opux-input__label--multi-select
+      @include modifier('multi-select') {
+        @include flex(0, 0, calc(50%));
+      }
+    }
+  }
 }
 
