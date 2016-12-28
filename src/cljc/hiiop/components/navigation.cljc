@@ -106,3 +106,4 @@
           :target "_blank"
           :href "/images/privacy.pdf"}
       (tr [:footer.privacy])]]]])
+
