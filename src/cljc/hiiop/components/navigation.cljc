@@ -37,37 +37,38 @@
          {:class "opux-menu__item-link opux-menu__item-link--main"
           :href (path-for hierarchy :create-quest)}
          (tr [:actions.quest.create])]]]
-      [:ul
-       {:class "opux-menu opux-menu--languages"}
-       [:li
-        {:class "opux-menu__item opux-menu__item--languages"}
-        [:a
-         {:href "?lang=fi"
-          :class (str
-                  "opux-menu__item-link opux-menu__item-link--languages "
-                  (when (= current-locale :fi) "opux-menu__item-link opux-menu__item-link--languages is-active"))}
-         "fi"]
-        ]
-       [:li
-        {:class "opux-menu__item opux-menu__item--languages"}
-        [:a
-         {:href "?lang=sv"
-          :class (str
-                  "opux-menu__item-link opux-menu__item-link--languages "
-                  (when (= current-locale :sv) "opux-menu__item-link opux-menu__item-link--languages is-active"))}
-         "sv"]]]
-      [:ul
-       {:class "opux-menu opux-menu--login"}
-       [:li
-        {:class "opux-menu__item opux-menu__item--login"}
-        [:a
-         {:class "opux-menu__item-link opux-menu__item-link--login"
-          :href (path-for hierarchy :login)}
-         (tr [:actions.user.login])
-         ]]
-       [:li
-        {:class "opux-menu__item opux-menu__item--login"}
-        [:a
-         {:class "opux-menu__item-link opux-menu__item-link--login"
-          :href (path-for hierarchy :profile)}
-         [:i {:class "opux-icon-circled opux-icon-person"}]]]]]]))
+      [:div {:class "opux-menu--right"}
+       [:ul
+        {:class "opux-menu opux-menu--languages"}
+        [:li
+         {:class "opux-menu__item opux-menu__item--languages"}
+         [:a
+          {:href "?lang=fi"
+           :class (str
+                    "opux-menu__item-link opux-menu__item-link--languages "
+                    (when (= current-locale :fi) "opux-menu__item-link opux-menu__item-link--languages is-active"))}
+          "fi"]
+         ]
+        [:li
+         {:class "opux-menu__item opux-menu__item--languages"}
+         [:a
+          {:href "?lang=sv"
+           :class (str
+                    "opux-menu__item-link opux-menu__item-link--languages "
+                    (when (= current-locale :sv) "opux-menu__item-link opux-menu__item-link--languages is-active"))}
+          "sv"]]]
+       [:ul
+        {:class "opux-menu opux-menu--login"}
+        [:li
+         {:class "opux-menu__item opux-menu__item--login"}
+         [:a
+          {:class "opux-menu__item-link opux-menu__item-link--login"
+           :href (path-for hierarchy :login)}
+          (tr [:actions.user.login])
+          ]]
+        [:li
+         {:class "opux-menu__item opux-menu__item--login"}
+         [:a
+          {:class "opux-menu__item-link opux-menu__item-link--login"
+           :href (path-for hierarchy :profile)}
+          [:i {:class "opux-icon-circled opux-icon-person"}]]]]]]]))

@@ -159,7 +159,7 @@
                    :party-member-errors errors
                    :party-member-schema NewPartyMember)
             (#(rum/mount
-               (quest/quest %1)
+               (quest %1)
                (. js/document (getElementById "app"))))
             )))))
 
