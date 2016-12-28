@@ -9,7 +9,7 @@
             [hiiop.components.login :as p-l]
             [hiiop.components.activate :as p-a]
             [hiiop.components.register :as p-r]
-            [hiiop.components.quest-single :refer [quest]]
+            [hiiop.components.quest-single :as quest-single]
             [hiiop.components.quests :as quests]
             [hiiop.components.quests-browse :refer [list-quests]]
             [hiiop.client-api :refer [get-quest
@@ -159,7 +159,7 @@
                    :party-member-errors errors
                    :party-member-schema NewPartyMember)
             (#(rum/mount
-               (quest %1)
+               (quest-single/quest %1)
                (. js/document (getElementById "app"))))
             )))))
 
@@ -194,7 +194,7 @@
                    :party-member-schema NewPartyMember
                    :secret-party secret-party)
             (#(rum/mount
-                (quest %1)
+                (quest-single/quest %1)
                 (. js/document (getElementById "app"))))
             )))))
 
