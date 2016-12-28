@@ -6,43 +6,48 @@
   @include flex-direction(row);
   @include flexbox;
 
-  // opux-nav--header
   @include modifier('header') {
+    display: block;
+    float: left;
+    width: 100%;
   }
 }
 
 @include block('opux-menu') {
-  @include flex-direction(row);
-  @include flexbox;
-  @include justify-content(center);
-  list-style: none;
   height: $header-height;
+  list-style: none;
   margin: 0px;
   padding: 0px;
+  float: left;
 
   // opux-menu--main
   @include modifier('main') {
-    @include flex-direction(row)
-    @include flex(12);
-    @include align-items(flex-start)
+    display: block;
+    float: left;
   }
+
+  @include modifier('right') {
+    display: block;
+    float: right;
+  }
+
   // opux-menu--languages
   @include modifier('languages') {
-    @include flex(2);
   }
+
   // opux-menu--login
   @include modifier('login') {
-    @include flex(2);
   }
 
   // opux-menu__item
   @include element('item') {
-    @include flexbox;
+    display: block;
+    float: left;
 
     // opux-menu__item--languages
     @include modifier('languages') {
-      @include flex(1);
       text-align: center;
+      float: left;
       &:first-child {
         position: relative;
         &:after {
@@ -76,10 +81,9 @@
 
     // opux-menu__item-link--main
     @include modifier('main') {
-      @include flex-direction(column);
-      @include flexbox;
-      @include justify-content(center);
+      float: left;
       height: $header-height;
+      line-height: $header-height;
       padding: 0 1rem;
       text-align: center;
       width: 100%;
@@ -87,11 +91,10 @@
 
     // opux-menu__item-link--languages
     @include modifier('languages') {
-      @include flex(1);
-      @include flex-direction(column);
-      @include flexbox;
-      @include justify-content(center);
+      display: block;
       height: $header-height;
+      line-height: $header-height;
+      padding: 0 .5rem;
       text-transform: uppercase;
 
       // opux-menu__item-link--languages--is-active

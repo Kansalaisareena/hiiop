@@ -104,11 +104,18 @@
   @include block('opux-menu') {
     display: block;
     height: auto;
+    width: 100%;
+
+    // opux-menu--right
+    @include modifier('right') {
+      width: 100%;
+    }
 
     // opux-menu__item
     @include element('item') {
       display: block;
       height: auto;
+      width: 100%;
 
       // opux-menu__item--main
       @include modifier('main') {
@@ -120,12 +127,14 @@
       // opux-menu__item--login
       @include modifier('login') {
         display: inline-block;
+        float: none;
         width: auto;
       }
 
       // opux-menu__item--languages
       @include modifier('languages') {
         display: inline-block;
+        float: none;
         width: auto;
       }
     }
@@ -140,6 +149,7 @@
       box-sizing: border-box;
       display: block;
       height: auto;
+      line-height: 1.5;
       padding: 1rem;
       text-align: right;
       width: 100%;
