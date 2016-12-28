@@ -228,7 +228,8 @@
             (-> (api-handlers/join-quest
                  {:id quest-id
                   :new-member new-member
-                  :user (:identity request)}
+                  :user (:identity request)
+                  :locale (:current-locale request)}
                  )
                 (#(if (not (:errors %1))
                     (created

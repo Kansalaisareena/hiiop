@@ -197,7 +197,7 @@
       party-members
       {:errors {:party [:errrors.quest.not-found :or :errors.unauthorized]}})))
 
-(defn use-existing-or-create-new-user! [{:keys [email name phone agreement]}]
+(defn use-existing-or-create-new-user! [{:keys [email name phone locale agreement]}]
   (with-transaction [db/*db*]
     (-> (db/get-user-by-email {:email email})
         ((fn [existing-user]
@@ -207,7 +207,8 @@
                    user  {:id id
                           :name name
                           :email email
-                          :phone phone}]
+                          :phone phone
+                          :locale (clojure.core/name locale)}]
                (db/update-user! user)
                user)
 
@@ -227,7 +228,7 @@
       (db/join-quest! args)
       {:errors {:party [:errors.quest.full :or :errors.quest.join.secret-key.incorrect]}})))
 
-(defn party-member-or-errors [{:keys [quest-id new-member days session-user]}]
+(defn party-member-or-errors [{:keys [quest-id new-member days session-user locale]}]
   (cond
     (nil? quest-id)
     {:errors {:quest :errors.not-found}}
@@ -247,7 +248,8 @@
 
     (and quest-id (:signup new-member))
     (do
-      (-> (use-existing-or-create-new-user! (:signup new-member))
+      (-> (use-existing-or-create-new-user!
+           (assoc (:signup new-member) :locale locale))
           ((fn [user]
              (hc/api-new-member->db-new-member-coercer
               (-> (dissoc new-member :signup)
@@ -259,7 +261,7 @@
     {:errors {:signup :errors.not-found
               :user-id :errors-not-found}}))
 
-(defn join-quest [{:keys [id new-member user]}]
+(defn join-quest [{:keys [id new-member user locale]}]
   (try
     (log/info "join-quest" id new-member user)
     (let [quest-limits     (db/get-quest-limitations {:id id})
@@ -277,7 +279,8 @@
                               {:quest-id quest-id
                                :days usable-days
                                :new-member new-member
-                               :session-user user})
+                               :session-user user
+                               :locale locale})
                              {:errors {:quest :errors.quest.full}})]
 
       (if (nil? (:errors party-member))
