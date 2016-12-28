@@ -8,18 +8,11 @@
             [bidi.bidi :refer [path-for]]
             [hiiop.contentful :as cf]
             [hiiop.emails :as emails]
-            [hiiop.routes.page-hierarchy :refer [hierarchy]]
+            [hiiop.url :refer [url-to]]
             [hiiop.redis :refer [wcar*]]
             [hiiop.config :refer [env]]))
 
-
-(defstate url-to :start
-  (fn [leaf-name & args]
-    (str (:site-base-url env)
-         (apply path-for
-                hierarchy
-                leaf-name
-                args))))
+(defstate url-to' :start (partial url-to (:site-base-url env)))
 
 (defstate email-sending-config :start
   (let [email-config {:host    (:smtp-server env)
@@ -57,7 +50,7 @@
                  :subject (content :otsikko)
                  :template emails/simple-mail
                  :template-params
-                 {:button-url (url-to :activate :token (str token))
+                 {:button-url (url-to' :activate :token (str token))
                   :title (content :otsikko)
                   :body-text (content :leipateksti)
                   :button-text (content :ekanappiteksti)}}))))
@@ -69,7 +62,7 @@
                  :subject (content :otsikko)
                  :template emails/simple-mail
                  :template-params
-                 {:button-url (url-to :index)
+                 {:button-url (url-to' :index)
                   :title (content :otsikko)
                   :body-text (content :leipateksti)
                   :button-text (content :ekanappiteksti)}}))))
@@ -81,7 +74,7 @@
                  :subject (content :otsikko)
                  :template emails/simple-mail
                  :template-params
-                 {:button-url (url-to :quest :quest-id quest-id)
+                 {:button-url (url-to' :quest :quest-id quest-id)
                   :title (content :otsikko)
                   :body-text (content :leipateksti)
                   :button-text (content :ekanappiteksti)}}))))
@@ -93,7 +86,7 @@
                  :subject (content :otsikko)
                  :template emails/simple-mail
                  :template-params
-                 {:button-url (url-to :quest :quest-id quest-id)
+                 {:button-url (url-to' :quest :quest-id quest-id)
                   :title (content :otsikko)
                   :body-text (content :leipateksti)
                   :button-text (content :ekanappiteksti)}}))))
@@ -105,7 +98,7 @@
                  :subject (content :otsikko)
                  :template emails/simple-mail
                  :template-params
-                 {:button-url (url-to :quest :quest-id quest-id)
+                 {:button-url (url-to' :quest :quest-id quest-id)
                   :title (content :otsikko)
                   :body-text (content :leipateksti)
                   :button-text (content :ekanappiteksti)}}))))
@@ -117,7 +110,7 @@
                  :subject (content :otsikko)
                  :template emails/simple-mail
                  :template-params
-                 {:button-url (url-to :quest :quest-id quest-id)
+                 {:button-url (url-to' :quest :quest-id quest-id)
                   :title (content :otsikko)
                   :body-text (content :leipateksti)
                   :button-text (content :ekanappiteksti)
@@ -130,7 +123,7 @@
                  :subject (content :otsikko)
                  :template emails/simple-mail
                  :template-params
-                 {:button-url (url-to :quest :quest-id quest-id)
+                 {:button-url (url-to' :quest :quest-id quest-id)
                   :title (content :otsikko)
                   :body-text (content :leipateksti)
                   :button-text (content :ekanappiteksti)}}))))
@@ -142,7 +135,7 @@
                  :subject (content :otsikko)
                  :template emails/simple-mail
                  :template-params
-                 {:button-url (url-to :quest :quest-id quest-id)
+                 {:button-url (url-to' :quest :quest-id quest-id)
                   :title (content :otsikko)
                   :body-text (content :leipateksti)
                   :button-text (content :ekanappiteksti)}}))))
@@ -154,7 +147,7 @@
                  :subject (content :otsikko)
                  :template emails/simple-mail
                  :template-params
-                 {:button-url (url-to :quest :quest-id quest-id)
+                 {:button-url (url-to' :quest :quest-id quest-id)
                   :title (content :otsikko)
                   :body-text (content :leipateksti)
                   :button-text (content :ekanappiteksti)}}))))

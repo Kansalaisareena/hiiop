@@ -33,3 +33,11 @@
              path)
        :clj
        (redirect path))))
+
+(defn url-to [base-url leaf-name & args]
+  (str base-url
+       (apply path-for
+              hierarchy
+              leaf-name
+              args)))
+
