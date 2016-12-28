@@ -199,6 +199,7 @@
                      :context context})
 
      [:div {:class "opux-card-list-container"}
+      [:div {:class "opux-content"}
       (if (empty? (rum/react filtered-quests))
 
         [:h1 {:class "opux-content opux-centered"}
@@ -209,4 +210,4 @@
                  :context context})
              (reverse
                (sort
-                 (keys quests-by-months)))))]]))
+                 (keys quests-by-months)))))]]]))
