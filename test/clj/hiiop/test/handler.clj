@@ -75,7 +75,7 @@
     (-> (mount/except [#'hiiop.core/http-server
                        #'hiiop.core/repl-server
                        #'hiiop.contentful/contentful-init])
-        (mount/swap {#'hiiop.mail/send-token-email receive-email})
+        (mount/swap {#'hiiop.mail/send-activation-token-email receive-email})
         mount/start)
     (f)
     (db/delete-user! *db* {:id (sc/string->uuid @test-user-id)})))

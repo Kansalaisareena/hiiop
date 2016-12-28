@@ -58,7 +58,7 @@
                             :email email
                             :phone phone
                             :locale (clojure.core/name locale)})
-          (mail/send-token-email email (str (:token token)) locale)
+          (mail/send-activation-token-email email (str (:token token)) locale)
           id)))
     (catch Exception e
       (log/error e)
