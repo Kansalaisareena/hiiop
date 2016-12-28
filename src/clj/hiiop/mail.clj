@@ -110,7 +110,7 @@
                   :body-text (content :leipateksti)
                   :button-text (content :ekanappiteksti)}}))))
 
-(defn send-quest-declined [email quest-id locale]
+(defn send-quest-declined [email quest-id message locale]
   (let [content (mail-content "quest-declined" locale)]
     (send-mail
      (make-mail {:to email
@@ -120,7 +120,8 @@
                  {:button-url (url-to :quest :quest-id quest-id)
                   :title (content :otsikko)
                   :body-text (content :leipateksti)
-                  :button-text (content :ekanappiteksti)}}))))
+                  :button-text (content :ekanappiteksti)
+                  :message message}}))))
 
 (defn send-quest-accepted [email quest-id locale]
   (let [content (mail-content "quest-accepted" locale)]
