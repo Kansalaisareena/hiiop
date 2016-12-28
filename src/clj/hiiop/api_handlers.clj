@@ -185,6 +185,16 @@
       (log/error e)
       {:errors {:quests :errors.quest.unexpected-error}})))
 
+(defn get-moderated-quests []
+  ;; TODO: currently there is no conditions for moderated quests in the queries
+  ;; since all quests are moderated by default.
+  (try
+    (-> (db/get-all-moderated-quests)
+        ((partial map hc/db-quest->api-quest-coercer)))
+    (catch Exception e
+      (log/error e)
+      {:errors {:qusts :error.quest.unexpected-error}})))
+
 (defn check-and-update-user-info [user-info]
   user-info)
 

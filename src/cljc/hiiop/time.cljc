@@ -39,6 +39,10 @@
   #?(:clj "HH.mm"
      :cljs "HH.mm"))
 
+(def month-name-format
+  #?(:clj "MMMM"
+     :cljs "MMMM"))
+
 #?(:cljs (defstate locale :start :fi))
 #?(:cljs (defn switch-locale [locale]
            (swap {#'hiiop.time/locale locale})
@@ -112,6 +116,10 @@
   (if amount
     #?(:clj (time/minutes amount)
        :cljs (.duration js/moment amount "minute"))))
+
+(defn get-month [date]
+    #?(:clj (time/month date)
+       :cljs (.month date)))
 
 (def a-minute (minutes 1))
 
@@ -276,19 +284,23 @@
 
 (defn to-string
   ([date format]
-   #?(:clj
-      (let [formatter (if format
-                        (timef/formatter format)
-                        (timef/formatters :date-time-no-ms))]
-        (timef/unparse
-         (timef/with-zone
-           formatter
-           (time/time-zone-for-id @time-zone))
-         date))
-      :cljs (.format (.tz date @time-zone) format)))
-   ([date]
-    #?(:clj (to-string date nil)
-       :cljs (to-string date transit-format))))
+   (if (nil? date)
+     ""
+     #?(:clj
+        (let [formatter (if format
+                          (timef/formatter format)
+                          (timef/formatters :date-time-no-ms))]
+          (timef/unparse
+            (timef/with-zone
+              formatter
+              (time/time-zone-for-id @time-zone))
+            date))
+        :cljs (.format (.tz date @time-zone) format))))
+  ([date]
+   (if (nil? date)
+     ""
+     #?(:clj (to-string date nil)
+        :cljs (to-string date transit-format)))))
 
 (defn datetime->time [datetime]
   {:hours #?(:clj (time/hour datetime)

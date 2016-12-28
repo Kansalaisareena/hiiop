@@ -16,11 +16,22 @@ $opux-icon-cross-name-collection: (eyeglasses, law, sound, globe, handicap, chil
 }
 
 @include opux-multi-select-icon-generate('.opux-icon--multi-select');
+@include opux-multi-select-icon-generate('.opux-icon--filter');
 
 @include block('opux-icon') {
   // opux-icon--multi-select
   @include modifier('multi-select') {
     padding-bottom: .5rem;
+    &:before {
+      font-weight: 200;
+      font-size: 3rem;
+    }
+  }
+
+  // opux-icon--filter
+  @include modifier('filter') {
+    padding-bottom: 0;
+    margin: .2rem;
     &:before {
       font-weight: 200;
       font-size: 3rem;
@@ -32,8 +43,9 @@ $opux-icon-cross-name-collection: (eyeglasses, law, sound, globe, handicap, chil
   @include flexbox;
   padding: 0px;
   a {
-    text-decoration: none;
     color: $basic-text-colour;
+    font-weight: 300;
+    text-decoration: none;
   }
 
   // opux-logo--header
@@ -69,6 +81,23 @@ $opux-icon-cross-name-collection: (eyeglasses, law, sound, globe, handicap, chil
       left: auto;
       right: .5rem;
     }
+  }
+}
+
+@include block('opux-category-filter-switch') {
+  box-sizing: border-box;
+  cursor: pointer;
+  display: inline-block;
+  margin: .2rem;
+  transition: transform .2s ease;
+  &:before {
+    border-radius: 50%;
+    border: 2px dotted $OP-gray;
+    box-sizing: border-box;
+    height: 54px;
+    line-height: 52px;
+    text-align: center;
+    width: 54px;
   }
 }
 

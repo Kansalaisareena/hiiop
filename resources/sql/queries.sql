@@ -292,6 +292,34 @@ FROM
 WHERE
   q.id = :id
 
+-- :name get-all-moderated-quests :? :*
+-- :doc get all moderated quests
+SELECT
+q.id as id,
+q.name as name,
+q.description as description,
+q.organisation as organisation,
+q.organisation_description as organisation_description,
+q.start_time as start_time,
+q.end_time as end_time,
+q.street_number as street_number,
+q.street as street,
+q.postal_code as postal_code,
+q.town as town,
+q.country as country,
+q.latitude as latitude,
+q.longitude as longitude,
+q.google_maps_url as google_maps_url,
+q.google_place_id as google_place_id,
+q.categories as categories,
+q.max_participants as max_participants,
+q.hashtags as hashtags,
+(SELECT url FROM pictures WHERE id = q.picture) as picture_url,
+q.is_open as is_open,
+q.owner as owner
+FROM
+quests q
+
 -- :name get-moderated-quests-by-owner :? :*
 -- :doc get quest by owner
 SELECT

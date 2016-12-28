@@ -13,31 +13,9 @@
             [hiiop.time :as time]
             [hiiop.components.core :as c]
             [hiiop.components.quest-single :as qs]
+            [hiiop.components.quest-card :refer [quest-card-browse]]
             [hiiop.html :as html]
             [hiiop.schema :as hs]))
-
-(rum/defc card []
-  [:div {:class "opux-card-container"}
-   [:div {:class "opux-card"}
-
-    [:div {:class "opux-card__image-container"}
-     [:a {:href "#"}
-      [:img {:class "opux-card__image"
-             :src "https://placeholdit.imgix.net/~text?txtsize=33&txt=quest%20image&w=480&h=300"}]]]
-
-    [:div {:class "opux-card__content"}
-     [:span {:class "opux-card__location opux-inline-icon opux-inline-icon-location"}
-      "Helsinki"]
-     [:span {:class "opux-card__attendance opux-inline-icon opux-inline-icon-personnel opux-inline-icon--right"}
-      23]
-
-     [:a {:class "opux-card__title" :href "#"}
-      "Konalan senioreiden iltatanhutapahtuma"]
-
-     [:span {:class "opux-card__date opux-inline-icon opux-inline-icon-calendar"}
-      "Keskiviikko 28.1"]
-     [:span {:class "opux-card__time opux-inline-icon opux-inline-icon-clock"}
-      "18.00-20.00"]]]])
 
 (defn add-organisation-to [quest]
   (reset! quest
@@ -613,83 +591,3 @@
       (= @view "success") (edit-success {:quest quest
                                          :context context})
       )))
-
-(rum/defcs quest-categories-filter < rum/reactive
-                                     (rum/local false ::is-active)
-  [state {:keys [cursors-and-schema context tr]}]
-  (let [is-active (::is-active state)]
-    [:div {:class "opux-card-filter__field opux-card-filter__field--category"}
-     [:div {:class "opux-card-filter__label"}
-      (tr [:pages.quest.browse.filter.category])]
-     [:span {:class "opux-icon opux-icon-plus opux-card-filter--category-filter"}]
-     (html/form-section
-      ""
-      (html/multi-selector-for-schema
-       {:schema (get-in cursors-and-schema [:categories :schema])
-        :value (get-in cursors-and-schema [:categories :value])
-        :error (get-in cursors-and-schema [:categories :error])
-        :choice-name-fn hs/category-choice
-        :context context}))]))
-
-(rum/defc quest-filters [{:keys [tr cursors-and-schema context]}]
-  [:div {:class "opux-content opux-card-filter"}
-   (quest-categories-filter {:context context
-                             :tr tr
-                             :cursors-and-schema cursors-and-schema})
-
-   [:div {:class "opux-card-filter__field opex-card-filter__field--datetime"}
-    [:div {:class "opux-card-filter__label"}
-     (tr [:pages.quest.browse.filter.where])]
-    (html/location-selector
-     {:class "opux-input opux-input--location-selector"
-      :location (get-in cursors-and-schema [:location :value])
-      :error (get-in cursors-and-schema [:location :error])
-      :schema (get-in cursors-and-schema [:location :schema])
-      :placeholder (tr [:pages.quest.edit.location.placeholder])
-      :context context})]
-
-   [:div {:class "opux-card-filter__field opex-card-filter__field--datetime"}
-    [:div {:class "opux-card-filter__label"}
-     (tr [:pages.quest.browse.filter.when])
-     ;; (html/datepicker
-     ;;  {:date (atom (time/now))
-     ;;   :error (atom nil)
-     ;;   :schema hs/DateTime
-     ;;   :class "opux-fieldset__item opux-fieldset__item--inline-container start-time"
-     ;;   :value-format time/transit-format
-     ;;   :format time/date-print-format
-     ;;   :context context})
-     ]]])
-
-(rum/defc list-quests
-  [{:keys [context quests quest-filter schema errors]}]
-  (let [tr (:tr context)
-        cursors-and-schema
-        (c/value-and-error-cursors-and-schema {:for quest-filter
-                                               :schema schema
-                                               :errors errors})]
-    [:div {:class "opux-section"}
-     [:h1 {:class "opux-centered"}
-      (tr [:pages.quest.browse.title])]
-
-     (quest-filters {:cursors-and-schema cursors-and-schema
-                     :tr tr
-                     :context context})
-
-     [:div {:class "opux-card-list-container"}
-      [:div
-       {:class "opux-content opux-content--small opux-centered opux-card-list__subtitle"}
-       [:p (tr [:pages.quest.browse.not-found])]]
-
-      [:h2 {:class "opux-centered"}
-       "Helmikuussa"]
-
-      [:ul {:class "opux-card-list"}
-       (repeat 7 (card))]
-
-      [:h2 {:class "opux-centered"}
-       "Maaliskuussa "]
-
-      [:ul {:class "opux-card-list"}
-       (repeat 8 (card))]
-      ]]))

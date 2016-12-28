@@ -161,6 +161,16 @@
                    (ok quests)
                    (bad-request quests)))))
 
+        (GET
+         "/moderated" []
+         :name ::get-moderated-quests
+         :return [Quest]
+         (fn [quest]
+           (let [quests (api-handlers/get-moderated-quests)]
+             (if (nil? (:errors quests))
+               (ok quests)
+               (bad-request quests)))))
+
         (POST "/add" []
           :name       ::add-quest
           :body       [new-quest NewQuest]

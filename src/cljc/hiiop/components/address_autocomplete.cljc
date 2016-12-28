@@ -49,22 +49,30 @@
      (let [args (first (:rum/args state))
            location (:location args)
            set-location-to! (partial set-location! location)
+           search-type (or (:search-type args) "address")
            Autocomplete #?(:cljs
                            (.. js/google -maps -places -Autocomplete)
                            :clj
                            nil)
+           dom-element (rum/dom-node state)
            instance #?(:cljs
-                           (Autocomplete.
-                            (rum/dom-node state)
-                            (clj->js {:types ["address"]}))
-                           :clj nil)
+                       (Autocomplete.
+                         dom-element
+                         (clj->js {:types [search-type]}))
+                       :clj nil)
            place-changed
            (fn []
              #?(:cljs
                 (let [js-place (.getPlace instance)
                       cljs-place (js->clj js-place :keywordize-keys true)
                       details (get-location-details cljs-place)]
-                  (set-location-to! details))))]
+                  (set-location-to! details))))
+           on-change
+           (fn [e]
+             #?(:cljs
+                (if (= "" (.-value (.-target e)))
+                    (set-location-to! nil))))]
        #?(:cljs (.addListener instance "place_changed" place-changed))
+       #?(:cljs (.addEventListener dom-element "change" on-change))
        (assoc state
               ::instance instance)))})
