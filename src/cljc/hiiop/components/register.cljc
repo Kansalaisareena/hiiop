@@ -78,6 +78,19 @@
           :error (get-in cursors-and-schema [:email :error])
           :error-key :errors.email.not-valid})]
 
+       [:div {:class "opux-fieldset__item"}
+        (html/label
+         (tr [:pages.register.phone])
+         {:class "opux-input__label phone-label"})
+        (html/input
+         {:schema (get-in cursors-and-schema [:phone :schema])
+          :value (get-in cursors-and-schema [:phone :value])
+          :type "text"
+          :context context
+          :class "opux-input opux-input--text email"
+          :error (get-in cursors-and-schema [:phone :error])
+          :error-key :errors.phone.not-valid})]
+
        (html/button
         (tr [:actions.user.register])
         {:class "opux-button"

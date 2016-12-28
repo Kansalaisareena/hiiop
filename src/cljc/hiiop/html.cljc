@@ -92,8 +92,9 @@
      text]))
 
 (rum/defc input < rum/reactive
-  [{:keys [type value schema matcher error class to-value transform-value context error-key]}]
+  [{:keys [type value schema matcher error class to-value transform-value context error-key value-key]}]
   (let [tr (:tr context)
+        usable-value-key (or value-key :default-value)
         usable-matcher (if (not matcher) {schema #(identity %)} matcher)
         usable-transform (if (not transform-value) #(identity %) transform-value)
         usable-to-value (if (not to-value) identity to-value)
@@ -102,13 +103,16 @@
     [:div
      {:class "opux-input-container"}
      [:input
-      {:type type
-       :class class
-       :default-value (usable-to-value (rum/react value))
-       :on-change
-       (fn [e]
-         (-> (value-from-event e usable-transform)
-             (save-val-or-error)))}]
+      (assoc
+       {:type type
+        :class class
+        :on-change
+        (fn [e]
+          (-> (value-from-event e usable-transform)
+              (save-val-or-error)))
+        }
+       usable-value-key (usable-to-value (rum/react value)))
+       ]
      (when (rum/react error)
        [:span
         {:class (class-error-or-hide error)}
@@ -132,7 +136,8 @@
        :value value
        :schema schema
        :transform-value #(if (string? %) (mangling/parse-natural-number %))
-       :context context})
+       :context context
+       :value-key :value})
 
      [:span {:class "opux-number-tick-input__control opux-icon opux-icon-plus"
       :on-click (fn [e]
@@ -300,7 +305,6 @@
            (let [last-dropped (drop-last address)
                  before-last (last last-dropped)
                  all-but-last-two (drop-last last-dropped)]
-             (log/info address)
              (concat all-but-last-two [(str before-last ",") (last address)]))
            [])))
       (#(clojure.string/join " " %1))))

@@ -15,15 +15,21 @@ SELECT * FROM organization
 
 -- :name create-virtual-user! :? :1
 -- :doc creates a new user record
-INSERT INTO users
-(email)
-VALUES (:email)
+INSERT INTO
+  users (email)
+VALUES
+  (:email)
 RETURNING id
 
 -- :name update-user! :! :n
 -- :doc update an existing user record
-UPDATE users
-SET name = :name, email = :email
+UPDATE
+  users
+SET
+  name = :name,
+  email = :email,
+  phone = :phone,
+  locale = :locale
 WHERE id = :id
 
 -- :name get-user-by-id :? :1 :uuid
@@ -32,6 +38,7 @@ SELECT
   id,
   name,
   email,
+  phone,
   moderator,
   last_login,
   is_active
@@ -44,6 +51,7 @@ SELECT
   id,
   name,
   email,
+  phone,
   moderator,
   last_login,
   is_active
@@ -65,11 +73,11 @@ WHERE id = :id
 -- :name delete-user-by-email! :! :n
 -- :doc delete user by email
 DELETE FROM users
-where email = :email
+WHERE email = :email
 
 -- :name get-users :? :*
 -- :doc get all users
-SELECT * from users
+SELECT * FROM users
 
 -- :name get-user-id :? :1
 -- :doc get user id by email
@@ -172,6 +180,21 @@ VALUES
  :owner)
 RETURNING id
 
+-- :name get-quest-limitations :? :1
+-- :doc "Quest limitations"
+SELECT
+  id,
+  start_time,
+  end_time,
+  max_participants,
+  (SELECT COUNT(user_id) FROM parties WHERE quest_id = :id) as participant_count,
+  is_open,
+  secret_party
+FROM
+  quests
+WHERE
+  id = :id
+
 -- :name get-moderated-quest-by-id :? :1
 -- :doc get quest by id
 SELECT
@@ -202,6 +225,40 @@ FROM
   quests q
 WHERE
   q.id = :id AND
+  q.name IS NOT NULL AND
+  q.is_rejected = FALSE;
+
+-- :name get-moderated-secret-quest :? :1
+-- :doc get quest by id
+SELECT
+  q.id as id,
+  q.name as name,
+  q.description as description,
+  q.organisation as organisation,
+  q.organisation_description as organisation_description,
+  q.start_time as start_time,
+  q.end_time as end_time,
+  q.street_number as street_number,
+  q.street as street,
+  q.postal_code as postal_code,
+  q.town as town,
+  q.country as country,
+  q.latitude as latitude,
+  q.longitude as longitude,
+  q.google_maps_url as google_maps_url,
+  q.google_place_id as google_place_id,
+  q.categories as categories,
+  q.max_participants as max_participants,
+  q.hashtags as hashtags,
+  q.picture as picture,
+  (SELECT url FROM pictures WHERE id = q.picture) as picture_url,
+  q.is_open as is_open,
+  q.owner as owner
+FROM
+  quests q
+WHERE
+  q.id = :id AND
+  q.secret_party = :secret_party AND
   q.name IS NOT NULL AND
   q.is_rejected = FALSE;
 
@@ -295,15 +352,6 @@ WHERE
   owner = :owner
 RETURNING id
 
--- :name get-quest-secret-party-id :? :1
--- :doc get quest secret party id by id
-SELECT
-  secret_party
-FROM
-  quests
-WHERE
-  id = :id
-
 -- :name delete-quest-by-id! :! :n
 -- :doc Delete quest by id
 DELETE FROM
@@ -389,3 +437,90 @@ UPDATE pictures
 SET url = :url
 WHERE id = :id
 RETURNING url
+
+-- :name get-party-member :? :1
+-- :doc "Get party member"
+SELECT
+  id,
+  quest_id,
+  user_id,
+  days
+FROM
+  parties
+WHERE
+  id = :id
+
+-- :name join-quest! :? :1
+-- :doc "Join an open quest"
+INSERT INTO
+  parties (quest_id, user_id, days)
+VALUES
+  (:quest_id, :user_id, :days)
+RETURNING id
+
+-- :name can-join-open-quest? :? :1
+-- :doc "Can join open quest?"
+SELECT EXISTS(
+  SELECT
+    FROM
+      quests
+    WHERE
+      id = :quest_id AND
+      is_open = true AND
+      max_participants > (SELECT
+                            COUNT(user_id)
+                          FROM
+                            parties
+                          WHERE quest_id = :quest_id))
+
+-- :name can-join-secret-quest? :? :1
+-- :doc "Can join secret quest?"
+SELECT EXISTS(
+  SELECT
+    FROM
+      quests
+    WHERE
+      id = :quest_id AND
+      is_open = false AND
+      secret_party = :secret_party AND
+      max_participants > (SELECT
+                            COUNT(user_id)
+                          FROM
+                            parties
+                          WHERE quest_id = :quest_id))
+
+-- :name get-quest-party-members :? :*
+-- :doc get quest party
+SELECT
+  p.id as participation_id,
+  u.name as name,
+  u.email as email,
+  u.phone as phone
+FROM
+  quests q,
+  parties p,
+  users u
+WHERE
+  q.id = :quest_id AND
+  p.quest_id = :quest_id AND
+  p.user_id = u.id AND
+  ((q.owner = :user_id) OR
+    (u.id = :user_id AND u.moderator = true))
+
+-- :name remove-member-from-party! :! :*
+-- :doc Remove member from party
+DELETE FROM
+  parties p
+WHERE
+  p.id = :participation_id AND
+  p.quest_id = :quest_id AND
+  ((p.user_id = :user_id) OR
+   EXISTS(
+     SELECT
+       owner
+     FROM
+       quests
+     WHERE
+       id = :quest_id AND
+       owner = :user_id
+   ))

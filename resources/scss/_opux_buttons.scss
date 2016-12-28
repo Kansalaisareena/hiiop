@@ -40,6 +40,12 @@
   @include modifier('dull') {
     background: $OP-gray-light;
   }
+
+  @include modifier('icon') {
+    background: transparent;
+    border: 0;
+    font-size: 18px;
+  }
 }
 
 @include block('opux-card-action') {

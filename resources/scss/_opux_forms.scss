@@ -21,6 +21,10 @@
     padding: 0 1rem;
     width: 100%;
   }
+
+  @include modifier('no-border') {
+    border: 0;
+  }
 }
 
 @include block('opux-fieldset') {

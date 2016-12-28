@@ -32,15 +32,12 @@
       23]
 
      [:a {:class "opux-card__title" :href "#"}
-      "Konalan kehitysvammaisten iltatanhutapahtuma"]
+      "Konalan senioreiden iltatanhutapahtuma"]
 
      [:span {:class "opux-card__date opux-inline-icon opux-inline-icon-calendar"}
       "Keskiviikko 28.1"]
      [:span {:class "opux-card__time opux-inline-icon opux-inline-icon-clock"}
       "18.00-20.00"]]]])
-
-(rum/defc display [quest]
-  [:li quest])
 
 (defn add-organisation-to [quest]
   (reset! quest
@@ -283,11 +280,11 @@
    )
   (html/form-section
    (tr [:pages.quest.edit.subtitles.participation])
-    (html/max-participants
-     {:schema (get-in cursors-and-schema [:max-participants :schema])
-      :value (get-in cursors-and-schema [:max-participants :value])
-      :error (get-in cursors-and-schema [:max-participants :error])
-      :context context})
+   (html/max-participants
+    {:schema (get-in cursors-and-schema [:max-participants :schema])
+     :value (get-in cursors-and-schema [:max-participants :value])
+     :error (get-in cursors-and-schema [:max-participants :error])
+     :context context})
    (html/radio-binary
     {:class "is-open opux-fieldset__item"
      :schema (get-in cursors-and-schema [:is-open :schema])
@@ -297,17 +294,18 @@
     {:pages.quest.edit.open true
      :pages.quest.edit.closed false})
    (when (get-in cursors-and-schema [:organiser-participates :value])
-     (html/checkbox-binary
-      {:class "organiser-participates opux-fieldset__item"
-       :id (name :pages.quest.edit.organiser-participates)
-       :schema (get-in cursors-and-schema [:organiser-participates :schema])
-       :value (get-in cursors-and-schema [:organiser-participates :value])
-       :error (get-in cursors-and-schema [:organiser-participates :error])
-       })
-     (html/label
-      (tr [:pages.quest.edit.organiser-participates])
-      {:class "opux-input__label opux-input__label--checkbox"
-       :for (name :pages.quest.edit.organiser-participates)}))
+     [:div {:class "opux-fieldset__item"}
+      (html/checkbox-binary
+       {:class "organiser-participates opux-fieldset__item"
+        :id (name :pages.quest.edit.organiser-participates)
+        :schema (get-in cursors-and-schema [:organiser-participates :schema])
+        :value (get-in cursors-and-schema [:organiser-participates :value])
+        :error (get-in cursors-and-schema [:organiser-participates :error])
+        })
+      (html/label
+       (tr [:pages.quest.edit.organiser-participates])
+       {:class "opux-input__label opux-input__label--checkbox"
+        :for (name :pages.quest.edit.organiser-participates)})])
    ))
 
 (rum/defc confirm-remove < rum/reactive
@@ -361,7 +359,6 @@
   (cond
     (and @ask-remove @remove-confirmed)
     (do
-      (log/info "delete!")
       #?(:cljs
          (if (:id @quest)
            (go
@@ -387,10 +384,92 @@
       :context context})
     ))
 
+(rum/defc party-member-confirm-remove
+  [{:keys [party context processing confirm participation-id quest-id]}]
+  (let [tr (:tr context)]
+    [:div
+     [:button
+      {:class "opux-button--icon"
+       :type "button"
+       :on-click
+       (fn [e]
+         #?(:cljs
+            (go
+              (let [removed (<! (api/remove-party-member
+                                {:quest-id quest-id
+                                 :participation-id participation-id}))]
+                (when removed
+                  (do
+                    (reset! party (<! (api/get-quest-party quest-id)))
+                    (reset! processing true))))
+              )
+            ))
+       }
+      (tr [:pages.quest.edit.party.confirm-remove])]
+     [:button
+      {:class "opux-button--icon"
+       :type "button"
+       :on-click
+       (fn []
+         (reset! confirm false))
+       }
+      (tr [:pages.quest.edit.party.cancel-remove])
+      ]
+     ]
+    )
+  )
+
+(rum/defcs edit-party-member < rum/reactive
+                             < (rum/local false ::confirm)
+  [state {:keys [quest party context processing]} {:keys [participation-id name email phone days]}]
+  (log/info quest @party)
+  (let [tr (:tr context)
+        confirm (::confirm state)]
+    [:tr {:class "opux-table__row"}
+     [:td {:class "opux-table__data opux-table__data--name"} name]
+     [:td {:class "opux-table__data opux-table__data--email"} email]
+     [:td {:class "opux-table__data opux-table__data--phone"} phone]
+     [:td {:class "opux-table__data opux-table__data--phone"} days]
+     [:td {:class "opux-table__data opux-table__data--actions"}
+      (if (rum/react confirm)
+        (party-member-confirm-remove
+         {:context context
+          :party party
+          :confirm confirm
+          :quest-id (:id quest)
+          :participation-id participation-id
+          :processing processing})
+        [:button
+         {:class "opux-button--icon opux-icon opux-icon-trashcan"
+          :type "button"
+          :on-click
+          (fn [e]
+            (reset! confirm true)
+            )}]
+        )]]))
+
+(rum/defcs edit-party < rum/reactive
+                        (rum/local false ::processing)
+  [state {:keys [quest party context]}]
+  (let [tr (:tr context)
+        processing (::processing state)
+        edit-member (partial edit-party-member {:context context
+                                                :quest quest
+                                                :party party
+                                                :processing processing})]
+    [:div {:class "opux-form-section opux-form-section--no-border"}
+     [:h2 {:class "opux-centered"}
+      (tr [:pages.quest.edit.party.title])]
+     (if (not-empty (rum/react party))
+       [:table
+        {:class "opux-table opux-centered"}
+        (into [:tbody {:class "opux-table__body"}] (map edit-member @party))]
+       [:p {:class "opux-content opux-centered"} (tr [:pages.quest.edit.party.empty])])]))
+
 (rum/defcs edit-form < rum/reactive
                        (rum/local false ::ask-remove)
                        (rum/local false ::remove-confirmed)
-  [state {:keys [context quest schema errors view is-valid]}]
+  [state {:keys [context quest schema party errors view is-valid]}]
   (let [tr (:tr context)
         cursors-and-schema (c/value-and-error-cursors-and-schema {:for quest
                                                                   :schema schema
@@ -459,6 +538,10 @@
        :quest quest
        :tr tr
        })
+     (when (:id (rum/react quest))
+       (edit-party {:quest @quest
+                    :party party
+                    :context context}))
      (html/form-section
       ""
       buttons
@@ -520,7 +603,7 @@
 (rum/defcs edit < rum/reactive
                   (rum/local "edit" ::view)
                   (rum/local false ::is-valid)
-  [state {:keys [context quest schema errors user] :as args}]
+  [state {:keys [context quest party schema errors user] :as args}]
   (let [view (::view state)
         is-valid (::is-valid state)
         locals {:view view :is-valid is-valid}]

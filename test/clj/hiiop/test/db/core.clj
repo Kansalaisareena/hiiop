@@ -34,6 +34,7 @@
          :id
          :name
          :email
+         :phone
          :moderator
          :last-login
          :is-active))))

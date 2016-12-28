@@ -13,7 +13,7 @@
    #?(:clj [clj-time.coerce :as timec])
    #?(:clj [clj-time.format :as timef])
    [hiiop.mangling :as mangle])
-  #?(:clj (:import [org.joda.time MutableDateTime DateTime])))
+  #?(:clj (:import [org.joda.time MutableDateTime DateTime Days])))
 
 #?(:cljs
    (def server-client-diff-seconds (atom 0)))
@@ -260,6 +260,11 @@
   (if (and a b)
     #?(:clj (time/after? a b)
        :cljs (.isAfter a b))))
+
+(defn days-between [a b]
+  (if (and a b)
+    #?(:clj (.getDays (Days/daysBetween (.toLocalDate a) (.toLocalDate b)))
+       :cljs (.diff a b "days"))))
 
 (defn from-string
   ([string]

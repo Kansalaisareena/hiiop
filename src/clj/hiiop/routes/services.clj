@@ -71,13 +71,12 @@
                     (ok %1))))))
 
         (POST "/register" []
-          :body-params [email :- Email name :- s/Str]
+          :body [registration RegistrationInfo]
           :summary "Create a new user and email password token"
           (fn [request]
             (-> (api-handlers/register
-                 {:email email
-                  :name name
-                  :locale (:current-locale request)})
+                 (assoc registration
+                        :locale (:current-locale request)))
                 (#(if (:errors %1)
                     (bad-request %1)
                     (ok))))))
@@ -139,7 +138,7 @@
 
         (GET "/:id" []
           :name        ::picture
-          :path-params [id :- String]
+          :path-params [id :- s/Uuid]
           :summary     "Get picture"
           :return      Picture
           (fn [request]
@@ -204,6 +203,7 @@
           :name        ::quest-edit
           :path-params [id :- Long]
           :body        [quest EditQuest]
+          :middleware  [api-authenticated]
           :summary     "Edit quest"
           :return      Quest
           (fn [request]
@@ -219,10 +219,80 @@
                       (bad-request %1)))))
             ))
 
-        ;; (POST "/:id/join" []
-        ;;  :name ::quest-join
-        ;;  :path-params [id :- s/Int]
-        ;;  :body [NewPartyMember]
-        ;;  :summary "Join a quest"
-        ;;  api-handlers/join-quest)
+        (POST "/:quest-id/party" []
+          :name        ::quest-join
+          :path-params [quest-id :- Long]
+          :body        [new-member NewPartyMember]
+          :summary     "Join a quest"
+          (fn [request]
+            (-> (api-handlers/join-quest
+                 {:id quest-id
+                  :new-member new-member
+                  :user (:identity request)
+                  :locale (:current-locale request)}
+                 )
+                (#(if (not (:errors %1))
+                    (created
+                     (path-for ::quest-party-member
+                               {:quest-id quest-id
+                                :member-id (str (:id %1))})
+                     %1)
+                    (bad-request %1))))
+            ))
+
+        (GET "/:id/secret/:secret-party" []
+          :name        ::secret-quest
+          :path-params [id :- Long
+                        secret-party :- s/Uuid]
+          :summary     "Get secret quest"
+          :return      Quest
+          (fn [request]
+            (let [quest (api-handlers/get-secret-quest
+                         {:id id
+                          :secret-party secret-party})]
+              (if quest
+                (ok quest)
+                (not-found)))))
+
+        (GET "/:quest-id/party" []
+          :name        ::quest-party
+          :path-params [quest-id :- Long]
+          :middleware  [api-authenticated]
+          :summary     "Get quest party"
+          (fn [request]
+            (-> (api-handlers/get-quest-party
+                 {:quest-id quest-id
+                  :user (:identity request)})
+                (#(if (not (:errors %1))
+                    (ok %1)
+                    (bad-request %1))))
+            ))
+
+        (GET "/:quest-id/party/:member-id" []
+          :name        ::quest-party-member
+          :path-params [quest-id :- Long
+                        member-id :- s/Uuid]
+          :return      [PartyMember]
+          :middleware  [api-authenticated]
+          :summary     "Get party member info"
+          (fn [request]
+            (bad-request {:errors {:quest "Not found"}})))
+
+        (DELETE "/:quest-id/party/:participation-id" []
+          :name        ::quest-delete-party-member
+          :path-params [quest-id :- Long
+                        participation-id :- s/Uuid]
+          :middleware  [api-authenticated]
+          :summary     "Delete party member from party"
+          (fn [request]
+            (-> (api-handlers/remove-party-member
+                 {:participation-id participation-id
+                  :quest-id quest-id
+                  :user (:identity request)})
+                (#(if %1
+                    (no-content)
+                    (bad-request
+                     {:errors {:party :errors.quest.party.member.remove.failed}}))))
+            ))
+
         ))))

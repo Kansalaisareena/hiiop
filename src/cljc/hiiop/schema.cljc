@@ -51,20 +51,31 @@
 
 (def User
   "Registered or virtual user"
-  {:email Email
-   :name s/Str
-   :id s/Uuid
-   (s/optional-key :organisation) Organisation
-   :is-moderator? s/Bool
-   :is-active s/Bool})
+  {:id s/Uuid
+   :email Email
+   :name NonEmptyString
+   (s/optional-key :phone) (s/maybe Phone)
+   ;;(s/optional-key :organisation) (s/maybe Organisation)
+   ;;(s/optional-key :phone) (s/maybe Phone)
+   :moderator s/Bool
+   :active s/Bool})
+
+(def NewGuestUser
+  "New guest"
+  (st/dissoc User
+             :id
+             :organisation
+             :moderator
+             :active))
 
 (defn new-empty-registration-info []
-  {:name "" :email ""})
+  {:name ""
+   :email ""
+   :phone nil})
 
 (def RegistrationInfo
-  "Initial registration information with only email and name"
-  {:email Email
-   :name s/Str})
+  "Initial registration"
+  NewGuestUser)
 
 (def UserActivation
   "Email, password and password token"
@@ -167,17 +178,6 @@
   "Quest list"
   [Quests])
 
-(def QuestSignup
-  "Quest signup information"
-  {:name s/Str
-   :email Email
-   :phone Phone
-   :participate-days NPlus
-   :agreement Agreement})
-
-(defn new-empty-quest-signup-info []
-  {:name "" :email "" :phone "" :participate-days 1 :agreement false})
-
 ;(def UrlLike #"http[s]{0,1}:\/\/.*")
 
 (def Picture
@@ -204,10 +204,40 @@
    :is-open true
    :organiser-participates true})
 
+(def QuestSignup
+  "Quest signup information"
+  {:name NonEmptyString
+   :email Email
+   (s/optional-key :phone) (s/maybe Phone)
+   :agreement Agreement})
+
+
+(def PartyMember
+  "Party member"
+  {:id s/Uuid
+   :quest-id s/Int
+   :user-id s/Uuid
+   :days NPlus})
+
 (def NewPartyMember
   "New party member"
-  {:user-id s/Uuid
-   :days NPlus})
+  (s/conditional #(not (nil? (:user-id %1)))
+                 {(s/optional-key :quest-id) s/Int
+                  :user-id s/Uuid
+                  :days (st/get-in PartyMember [:days])
+                  (s/optional-key :secret-party) (s/maybe s/Uuid)}
+                 #(not (nil? (:signup %1)))
+                 {:signup QuestSignup
+                  :days (st/get-in PartyMember [:days])
+                  (s/optional-key :secret-party) (s/maybe s/Uuid)}))
+
+(defn new-empty-party-member []
+  {:signup
+   {:name ""
+    :email ""
+    :phone ""
+    :agreement false}
+   :days 1})
 
 (defn message-from-constrained [^Constrained c]
   (:post-name c))

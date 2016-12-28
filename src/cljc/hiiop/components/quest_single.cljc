@@ -5,11 +5,11 @@
             [rum.core :as rum]
             [hiiop.html :as html]
             [hiiop.time :as time]
-            [hiiop.components.quest-signup-form :refer [signup-form]]
+            [hiiop.components.join-quest :refer [join-quest]]
             [taoensso.timbre :as log]))
 
 (rum/defc quest < rum/reactive
-  [{:keys [context quest quest-signup-info user errors schema]}]
+  [{:keys [context quest user empty-party-member party-member-errors party-member-schema secret-party]}]
   (let [{:keys [name
                 organisation
                 owner-name
@@ -64,8 +64,19 @@
 
      [:div {:class "opux-line"}]
 
-     (when quest-signup-info
-       (signup-form {:context context
-                     :quest-signup-info quest-signup-info
-                     :schema schema
-                     :errors errors}))]))
+     (cond
+       (and (:is-open @quest) empty-party-member)
+       (join-quest {:context context
+                    :quest-id (:id @quest)
+                    :party-member empty-party-member
+                    :schema party-member-schema
+                    :errors party-member-errors})
+
+       (and (not (:is-open @quest)) secret-party)
+       (join-quest {:context context
+                    :quest-id (:id @quest)
+                    :party-member empty-party-member
+                    :schema party-member-schema
+                    :errors party-member-errors
+                    :secret-party secret-party}))
+       ]))

@@ -23,13 +23,17 @@
                                   RegistrationInfo
                                   UserActivation
                                   QuestFilter
-                                  QuestSignup
+                                  NewPartyMember
                                   new-empty-quest
-                                  new-empty-quest-signup-info
+                                  new-empty-party-member
                                   new-empty-quest-filter
                                   new-empty-registration-info
                                   new-empty-activation-info]]
-            [hiiop.api-handlers :refer [get-quest get-user get-quests-for-owner]]))
+            [hiiop.api-handlers :refer [get-quest
+                                        get-secret-quest
+                                        get-user
+                                        get-quests-for-owner
+                                        get-quest-party]]))
 
 (defn tr-from-req [req]
   (:tempura/tr req))
@@ -116,16 +120,18 @@
                                                   :context context})
                     :title (tr [:actions.quest.create])})))
 
-(defn edit-quest-with-schema [{:keys [request schema quest title-key]}]
+(defn edit-quest-with-schema [{:keys [request schema quest party title-key]}]
   (let [context (create-context request)
         tr (:tr context)
         quest-atom (atom quest)
+        party-atom (atom party)
         errors (atom (same-keys-with-nils @quest-atom))]
     (layout/render {:title (tr [])
                     :context context
                     :content
                     (quests/edit {:context context
                                   :quest quest-atom
+                                  :party party-atom
                                   :schema schema
                                   :errors errors})
                     :scripts
@@ -171,6 +177,9 @@
         identity (:identity req)
         quest (get-quest (parse-natural-number id))
         owner? (= (:owner quest) (:id identity))
+        party (vec (get-quest-party
+                    {:quest-id (:id id)
+                     :user identity}))
         context (create-context req)
         tr (:tr context)]
     (if (and owner? quest)
@@ -178,14 +187,16 @@
        {:request req
         :schema EditQuest
         :quest quest
-        :title-key :actions.quest.edit})
+        :title-key :actions.quest.edit
+        :party party})
       (redirect-to {:path-key :index}))))
 
 (defn quest [req]
+
   (let [id (get-in req [:params :quest-id])
         quest (get-quest (parse-natural-number id))
-        quest-signup-info (atom (new-empty-quest-signup-info))
-        errors (atom (same-keys-with-nils @quest-signup-info))
+        empty-party-member (atom (new-empty-party-member))
+        errors (atom (same-keys-with-nils @empty-party-member))
         owner-name (:name (get-user (:owner quest)))
         context (create-context req)
         tr (:tr context)]
@@ -196,9 +207,33 @@
                       (quest/quest {:context context
                                     :quest (atom (assoc quest
                                                         :owner-name owner-name))
-                                    :quest-signup-info quest-signup-info
-                                    :errors errors
-                                    :schema QuestSignup})}))))
+                                    :empty-party-member empty-party-member
+                                    :party-member-errors errors
+                                    :party-member-schema NewPartyMember})}))))
+
+(defn secret-quest [req]
+  (let [id (get-in req [:params :quest-id])
+        secret-party (get-in req [:params :secret-party])
+        quest (get-secret-quest
+               {:id (parse-natural-number id)
+                :secret-party secret-party})
+        empty-party-member (atom
+                            (-> (new-empty-party-member)
+                                (assoc :secret-party secret-party)))
+        errors (atom (same-keys-with-nils @empty-party-member))
+        owner-name (:name (get-user (:owner quest)))
+        context (create-context req)
+        tr (:tr context)]
+    (if quest
+      (layout/render {:title (tr [:actions.quest.create])
+                      :context context
+                      :content
+                      (quest/quest {:context context
+                                    :quest (atom (assoc quest
+                                                        :owner-name owner-name))
+                                    :empty-party-member empty-party-member
+                                    :party-member-errors errors
+                                    :party-member-schema NewPartyMember})}))))
 
 (def handlers
   {:index
@@ -213,6 +248,8 @@
    (authenticated profile)
    :quest
    quest
+   :secret-quest
+   secret-quest
    :browse-quests
    browse-quests
    :create-quest

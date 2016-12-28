@@ -15,7 +15,9 @@
   (reduce conj (map (fn [key] {key nil}) (keys map-value))))
 
 (defn parse-natural-number [number-string]
-  (#?(:clj Long/parseLong
-      :cljs #(js/parseInt % 10)) number-string))
+  (try
+    (#?(:clj Long/parseLong
+        :cljs #(js/parseInt % 10)) number-string)
+    (catch #?(:clj Exception :cljs js/Error) e)))
 
 (def ->keys-camelCase (partial transform-keys ->camelCaseString))
