@@ -32,7 +32,7 @@
       23]
 
      [:a {:class "opux-card__title" :href "#"}
-      "Konalan kehitysvammaisten iltatanhutapahtuma"]
+      "Konalan senioreiden iltatanhutapahtuma"]
 
      [:span {:class "opux-card__date opux-inline-icon opux-inline-icon-calendar"}
       "Keskiviikko 28.1"]
