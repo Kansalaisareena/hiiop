@@ -116,7 +116,8 @@
         :error (get-in cursors-and-schema [:location :error])
         :schema (get-in cursors-and-schema [:location :schema])
         :placeholder (tr [:pages.quest.edit.location.placeholder])
-        :context context})]))
+        :context context
+        :search-type "geocode"})]))
 
 (defn- quest-start-time-filter
   [{:keys [context cursors-and-schema]}]

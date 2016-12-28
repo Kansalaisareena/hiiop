@@ -49,6 +49,7 @@
      (let [args (first (:rum/args state))
            location (:location args)
            set-location-to! (partial set-location! location)
+           search-type (or (:search-type args) "address")
            Autocomplete #?(:cljs
                            (.. js/google -maps -places -Autocomplete)
                            :clj
@@ -57,7 +58,7 @@
            instance #?(:cljs
                        (Autocomplete.
                          dom-element
-                         (clj->js {:types ["address"]}))
+                         (clj->js {:types [search-type]}))
                        :clj nil)
            place-changed
            (fn []
