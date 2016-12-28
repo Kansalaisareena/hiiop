@@ -102,6 +102,7 @@
          {:schema (get-in cursors-and-schema [:categories :schema])
           :value (get-in cursors-and-schema [:categories :value])
           :error (get-in cursors-and-schema [:categories :error])
+          :choice-name-fn hs/category-choice
           :context context}))]))
 
 (defn- quest-location-filter
