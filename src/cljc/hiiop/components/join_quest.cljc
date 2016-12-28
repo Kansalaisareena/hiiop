@@ -173,7 +173,7 @@
         view-state (::view state)
         view (:view @view-state)
         message (:message @view-state)
-        use-signup (empty? (get-in context [:identity :id]))
+        use-signup (nil? (get-in context [:identity :id]))
         signup-valid (::signup-valid state)
         checker (partial hs/select-schema-either schema)
         is-valid (::is-valid state)
