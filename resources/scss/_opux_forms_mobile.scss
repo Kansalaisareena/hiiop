@@ -1,0 +1,21 @@
+@include viewports(tiny small) {
+
+  @include block('opux-fieldset') {
+
+    // opux-fieldset__item
+    @include element('item') {
+
+      // opux-fieldset__item--inline-container
+      @include modifier('inline-container') {
+        display: block;
+        width: 100%;
+      }
+    }
+
+    // opux-fieldset__inline-item
+    @include element('inline-item') {
+      display: block;
+      width: 100%;
+    }
+  }
+}
