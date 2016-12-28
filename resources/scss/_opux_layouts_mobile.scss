@@ -13,3 +13,20 @@
     }
   }
 }
+
+@include viewports(small) {
+
+  // opux-card-container
+  @include block('opux-card-container') {
+    @include flex(0, 0, calc(100% * (1/2) - 1rem));
+  }
+}
+
+
+@include viewports(tiny) {
+
+  // opux-card-container
+  @include block('opux-card-container') {
+    @include flex(0, 0, calc(100% - 1rem));
+  }
+}

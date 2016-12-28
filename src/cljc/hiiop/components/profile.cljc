@@ -58,27 +58,28 @@
         (tr [:actions.profile.edit])]]]
 
      [:div {:class "opux-card-list-container"}
+      [:div {:class "opux-content"}
 
-      [:h2 {:class "opux-centered"}
-       (tr [:pages.profile.upcoming-quests])]
+       [:h2 {:class "opux-centered"}
+        (tr [:pages.profile.upcoming-quests])]
 
-      (if (not-empty upcoming-quests)
-        [:ul {:class "opux-card-list opux-card-list--centered"}
-         (map #(quest-card-profile {:quest %
-                                    :context context
-                                    :quests quests})
-              upcoming-quests)]
-        [:h3 {:class "opux-centered"}
-         (tr [:pages.profile.no-upcoming-quests])]
-        )
+       (if (not-empty upcoming-quests)
+         [:ul {:class "opux-card-list opux-card-list--centered"}
+          (map #(quest-card-profile {:quest %
+                                     :context context
+                                     :quests quests})
+               upcoming-quests)]
+         [:h3 {:class "opux-centered"}
+          (tr [:pages.profile.no-upcoming-quests])]
+         )
 
-      (if (not-empty past-quests)
-        [:h2 {:class "opux-centered"}
-         (tr [:pages.profile.past-quests])])
-      (if (not-empty past-quests)
-        [:ul {:class "opux-card-list"}
-         (map #(quest-card-profile {:quest %
-                                    :context context
-                                    :quests quests})
-              past-quests)])
-      ]]))
+       (if (not-empty past-quests)
+         [:h2 {:class "opux-centered"}
+          (tr [:pages.profile.past-quests])])
+       (if (not-empty past-quests)
+         [:ul {:class "opux-card-list"}
+          (map #(quest-card-profile {:quest %
+                                     :context context
+                                     :quests quests})
+               past-quests)])
+       ]]]))
