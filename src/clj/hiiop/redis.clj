@@ -25,3 +25,16 @@
          (wcar* (car/set ~key (car/serialize result#)))
          result#)
        cached-result#)))
+
+(defmacro redef-with-cache [fun key]
+  "Redefine an arity 0 function to be cached with the given key."
+  `(let [old-fun# ~fun]
+     (defn ~fun []
+       (get-in-cache-or ~key (old-fun#)))))
+
+(defmacro redef-invalidate-cache [fun key]
+  "Redefine function so that it deletes with key from redis on call."
+  `(let [old-fun# ~fun]
+     (defn ~fun [& args#]
+       (wcar* (car/del ~key))
+       (apply old-fun# args#))))
