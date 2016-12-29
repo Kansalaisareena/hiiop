@@ -59,11 +59,24 @@
         category-filter (atom (new-empty-category-filter))
         schema QuestCategoryFilter]
     (layout/render {:context context
+<<<<<<< a95303664a2159678501136a8b9816cc3a27e547
                     :content (index-page/index-page {:context context
                                                      :schema schema
                                                      :category-filter category-filter})
                     :title (tr [:pages.index.title])
                     :scripts ["//assets.juicer.io/embed.js"]})))
+=======
+                    :content (p-b/list-quests {:quests quests
+                                               :quest-filter quest-filter
+                                               :filtered-quests (atom quests)
+                                               :context context
+                                               :schema QuestFilter})
+                    :title (tr [:actions.quest.create])
+
+                    :scripts
+                    [google-maps-url]
+                    })))
+>>>>>>> Google maps URL
 
 (defn login [req]
   (let [context (create-context req)
