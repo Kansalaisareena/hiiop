@@ -298,16 +298,6 @@
      (if (rum/react error)
        [:span {:class "error"} (rum/react error)])]))
 
-(defn readable-address [{:keys [street street-number town]}]
-  (-> (filter #(not (nil? %)) [street street-number town])
-      ((fn [address]
-         (if (not (empty? address))
-           (let [last-dropped (drop-last address)
-                 before-last (last last-dropped)
-                 all-but-last-two (drop-last last-dropped)]
-             (concat all-but-last-two [(str before-last ",") (last address)]))
-           [])))
-      (#(clojure.string/join " " %1))))
 
 (rum/defc location-selector < address/autocomplete-mixin
   [{:keys [location class placeholder]}]
@@ -315,7 +305,7 @@
    {:type "text"
     :class (str "autocomplete " class)
     :placeholder placeholder
-    :default-value (readable-address @location)}])
+    :default-value (mangling/readable-address @location)}])
 
 (defn multi-choice [tr choice-text-fn selected choice]
   (let [id (str "multi-choice-" (name choice))

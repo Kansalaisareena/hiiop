@@ -21,3 +21,14 @@
     (catch #?(:clj Exception :cljs js/Error) e)))
 
 (def ->keys-camelCase (partial transform-keys ->camelCaseString))
+
+(defn readable-address [{:keys [street street-number town]}]
+  (-> (filter #(not (nil? %)) [street street-number town])
+      ((fn [address]
+         (if (not (empty? address))
+           (let [last-dropped (drop-last address)
+                 before-last (last last-dropped)
+                 all-but-last-two (drop-last last-dropped)]
+             (concat all-but-last-two [(str before-last ",") (last address)]))
+           [])))
+      (#(clojure.string/join " " %1))))

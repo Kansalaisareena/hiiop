@@ -271,6 +271,15 @@
     {:errors {:signup :errors.not-found
               :user-id :errors-not-found}}))
 
+(defn- send-join-email [{:keys [user quest]}]
+  (try
+    (mail/send-join-quest-email
+     {:email (:email user)
+      :quest (hc/db-quest->api-quest-coercer quest)
+      :locale (keyword (:locale user))})
+    (catch Exception e
+      (log/error e))))
+
 (defn join-quest [{:keys [id new-member user locale]}]
   (try
     (log/info "join-quest" id new-member user)
@@ -302,11 +311,8 @@
             (do
               (log/info "joined" party-member)
               (-> (db/get-user-by-id {:id (:user_id party-member)})
-                  ((fn [user]
-                     (mail/send-join-quest-email
-                      {:email (:email user)
-                       :quest quest
-                       :locale (keyword (:locale user))})))
+                  (#(send-join-email {:user %1
+                                      :quest quest}))
                   ((fn [_] joined))
                   (db/get-party-member)
                   (hc/db-party-member->api-party-member-coercer)))
