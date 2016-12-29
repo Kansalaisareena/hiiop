@@ -165,7 +165,7 @@
                     :scripts
                     [(str
                        "https://maps.googleapis.com/maps/api/js?"
-                       "key=AIzaSyDfXn9JTGue0fbkI3gqIqe7_WUn0M-dt-8"
+                       "key=AIzaSyDtGq2TOTrSNAKVFyjAIeGFw317iliTrbc"
                        "&libraries=places"
                        "&language=" "fi" ;; to normalize the google data
                        "&region=FI"

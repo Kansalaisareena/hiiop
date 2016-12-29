@@ -51,7 +51,7 @@ deployment:
     branch: production
     commands:
       - lein uberjar
-      - aws --region eu-central-1 s3 sync resources/public/ s3://tiedostot.hiiop100.fi --delete
+      - aws s3 sync resources/public/ s3://hiiop-prod --delete
       - heroku git:remote --app hiiop
       - heroku maintenance:on --app hiiop
       - DATABASE_URL="$(heroku config:get "DATABASE_URL" --app hiiop)?sslmode=require" lein migratus migrate
