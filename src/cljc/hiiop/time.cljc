@@ -321,3 +321,17 @@
 (defn time? [time]
   #?(:clj  (instance? org.joda.time.DateTime time)
      :cljs (.isMoment js/moment time)))
+
+(defn duration-to-print-str [start-time end-time]
+  (str (to-string
+        start-time
+        print-format) " - "
+       (if (> (days-between
+               start-time
+               end-time) 0)
+         (to-string
+          end-time
+          print-format)
+         (to-string
+          end-time
+          time-print-format))))
