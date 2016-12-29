@@ -185,7 +185,8 @@
                    [binaryage/devtools           "0.8.2"]
                    [com.cemerick/piggieback      "0.2.2-SNAPSHOT"]
                    [doo                          "0.1.7"]
-                   [figwheel-sidecar             "0.5.8"]]
+                   [figwheel-sidecar             "0.5.8"]
+                   [criterium                    "0.4.4"]]
                   :plugins
                   [[com.jakemccrary/lein-test-refresh  "0.18.0"]
                    [lein-doo                           "0.1.7"]

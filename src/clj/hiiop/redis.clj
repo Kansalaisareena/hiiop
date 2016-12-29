@@ -17,3 +17,11 @@
 (defmacro wcar*
   [& body]
   `(car/wcar (conj {:pool {}} redis-connection-options) ~@body))
+
+(defmacro get-in-cache-or [key expr]
+  `(let [cached-result# (wcar* (car/get ~key))]
+     (if-not cached-result#
+       (let [result# ~expr]
+         (wcar* (car/set ~key (car/serialize result#)))
+         result#)
+       cached-result#)))
