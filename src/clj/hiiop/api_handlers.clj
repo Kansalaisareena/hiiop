@@ -274,24 +274,24 @@
 (defn join-quest [{:keys [id new-member user locale]}]
   (try
     (log/info "join-quest" id new-member user)
-    (let [quest-limits     (db/get-quest-limitations {:id id})
-          quest-id         (:id quest-limits)
-          is-open          (:is-open quest-limits)
-          has-space        (> (:max-participants quest-limits) (:participant-count quest-limits))
-          start-time       (:start-time quest-limits)
-          end-time         (:end-time quest-limits)
-          max-days         (+ (time/days-between start-time end-time) 1)
-          usable-days      (or (when (>= max-days (:days new-member))
-                                 (:days new-member))
-                               max-days)
-          party-member     (if has-space
-                             (party-member-or-errors
-                              {:quest-id quest-id
-                               :days usable-days
-                               :new-member new-member
-                               :session-user user
-                               :locale locale})
-                             {:errors {:quest :errors.quest.full}})]
+    (let [quest        (db/get-moderated-quest-by-id {:id id})
+          quest-id     (:id quest)
+          is-open      (:is-open quest)
+          has-space    (> (:max-participants quest) (:participant-count quest))
+          start-time   (:start-time quest)
+          end-time     (:end-time quest)
+          max-days     (+ (time/days-between start-time end-time) 1)
+          usable-days  (or (when (>= max-days (:days new-member))
+                             (:days new-member))
+                           max-days)
+          party-member (if has-space
+                         (party-member-or-errors
+                          {:quest-id quest-id
+                           :days usable-days
+                           :new-member new-member
+                           :session-user user
+                           :locale locale})
+                         {:errors {:quest :errors.quest.full}})]
 
       (if (nil? (:errors party-member))
         (let [join-with (if is-open
@@ -299,9 +299,17 @@
                           join-secret-quest!)
               joined (join-with party-member)]
           (if (nil? (:errors joined))
-            (-> joined
-                (db/get-party-member)
-                (hc/db-party-member->api-party-member-coercer))
+            (do
+              (log/info "joined" party-member)
+              (-> (db/get-user-by-id {:id (:user_id party-member)})
+                  ((fn [user]
+                     (mail/send-join-quest-email
+                      {:email (:email user)
+                       :quest quest
+                       :locale (keyword (:locale user))})))
+                  ((fn [_] joined))
+                  (db/get-party-member)
+                  (hc/db-party-member->api-party-member-coercer)))
             joined))
         party-member))
     (catch Exception e

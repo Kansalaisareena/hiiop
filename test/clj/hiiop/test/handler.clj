@@ -169,7 +169,8 @@
 (defn add-quest [{:keys [login-cookie with quest organiser-participates]}]
   (-> quest
       (dissoc :picture
-              :owner)
+              :owner
+              :participant-count)
       (assoc :organiser-participates (or organiser-participates false))
       (generate-string)
       (#(json-request "/api/v1/quests/add"
@@ -184,7 +185,7 @@
       ))
 
 (defn edit-quest [{:keys [login-cookie with quest]}]
-  (-> (generate-string quest)
+  (-> (generate-string (dissoc quest :participant-count))
       (#(json-request (str "/api/v1/quests/" (:id quest))
                       {:type :put
                        :body-string %1
@@ -546,6 +547,42 @@
           (#(assoc %1 :id (schema.coerce/string->uuid (:id %1))))
           (#(assoc %1 :user-id (schema.coerce/string->uuid (:user-id %1))))
           (check #(s/validate hs/PartyMember %1))
+          (just-do #(db/delete-quest-by-id! {:id (:id added-quest)}))
+          (just-do #(db/delete-user! {:id (sc/string->uuid @test-user-id)})))
+      ))
+
+  (testing "POST /api/v1/quests/:id/join with existing user"
+    (let [current-app (app)
+          user-created (create-test-user
+                        {:user-data test-user
+                         :save-id-to test-user-id
+                         :read-token-from activation-token})
+          login-cookie (login-and-get-cookie
+                        {:with current-app
+                         :user-data test-user})
+          quest-to-add (test-quest
+                        {:use-date-string true
+                         :location-to :location
+                         :coordinates-to :coordinates
+                         :organisation-to {:in :organisation
+                                           :name :name
+                                           :description :description}})
+          added-quest (add-quest
+                       {:with current-app
+                        :quest quest-to-add
+                        :login-cookie login-cookie})]
+      (-> added-quest
+          (:id)
+          (#(join-quest {:quest-id %1
+                         :days 1
+                         :user-id @test-user-id
+                         :with current-app
+                         :login-cookie login-cookie
+                         }))
+          (check #(is (not (nil? %1))))
+          (check (fn [_] (is (not (nil? @join-quest-args)))))
+          (check (fn [_] (is (not (nil? (:quest (first @join-quest-args)))))))
+          (check (fn [_] (is (= "test@email.com" (:email (first @join-quest-args))))))
           (just-do #(db/delete-quest-by-id! {:id (:id added-quest)}))
           (just-do #(db/delete-user! {:id (sc/string->uuid @test-user-id)})))
       ))

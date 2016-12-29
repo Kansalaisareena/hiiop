@@ -91,11 +91,12 @@
                   :body-text (content :leipateksti)
                   :button-text (content :ekanappiteksti)}}))))
 
-(defn send-join-quest [email quest-id locale]
-  (let [content (mail-content "join-quest" locale)]
+(defn send-join-quest [{:keys [email quest locale]}]
+  (let [quest-id (:id quest)
+        content (mail-content "join-quest" locale)]
     (send-mail
      (make-mail {:to email
-                 :subject (content :otsikko)
+                 :subject (str (content :otsikko) " " (quest :name))
                  :template emails/simple-mail
                  :template-params
                  {:button-url (url-to' :quest :quest-id quest-id)
