@@ -11,7 +11,8 @@
    [clj-time.coerce :as timec]
    [clj-time.jdbc]
    [hiiop.config :refer [env]]
-   [hiiop.time :as time])
+   [hiiop.time :as time]
+   [hiiop.redis :refer [redef-with-cache redef-invalidate-cache]])
   (:import org.postgresql.util.PGobject
            java.sql.Array
            clojure.lang.IPersistentMap
@@ -115,3 +116,9 @@
       (hashers/check ; prevent timing attack by checking against "dummy_password"
        "wrong_password"
        "bcrypt+blake2b-512$76eb37a62f605eeb7b172c4ba39fa231$12$4ae537eb38a908819b08c495fb78e3afc7e12e336be0e1a2"))))
+
+(redef-with-cache get-all-moderated-quests :all-moderated-quests)
+(redef-invalidate-cache add-moderated-quest! :all-moderated-quests)
+(redef-invalidate-cache update-moderated-quest! :all-moderated-quests)
+(redef-invalidate-cache delete-quest-by-id! :all-moderated-quests)
+(redef-invalidate-cache join-quest! :all-moderated-quests)
