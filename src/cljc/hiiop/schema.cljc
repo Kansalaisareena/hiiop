@@ -165,15 +165,18 @@
    (s/optional-key :hashtags) [Hashtag]
    :is-open s/Bool
    :owner s/Uuid
-   (s/optional-key :organisation) (s/maybe Organisation)})
+   (s/optional-key :organisation) (s/maybe Organisation)
+   (s/optional-key :participant-count) (s/maybe NaturalNumber)})
 
-(def EditQuest Quest)
+(def EditQuest
+  (st/dissoc Quest :participant-count))
 
 (def NewQuest
   (-> EditQuest
       (st/assoc :organiser-participates s/Bool)
       (st/dissoc :id
-                 :owner)))
+                 :owner
+                 :participant-count)))
 
 (def Quests
   "Quest list"

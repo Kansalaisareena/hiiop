@@ -41,7 +41,8 @@ SELECT
   phone,
   moderator,
   last_login,
-  is_active
+  is_active,
+  locale
 FROM users
 WHERE id = :id
 
@@ -220,6 +221,7 @@ SELECT
   q.picture as picture,
   (SELECT url FROM pictures WHERE id = q.picture) as picture_url,
   q.is_open as is_open,
+  (SELECT COUNT(user_id) FROM parties WHERE quest_id = :id) as participant_count,
   q.owner as owner
 FROM
   quests q
