@@ -15,30 +15,25 @@
                                   button2-url]}]
   (let [start-time (time/from-string (:start-time quest))
         end-time (time/from-string (:end-time quest))
-        split (filter not-empty (clojure.string/split-lines body-text))
-        wat (log/info "waat" (vec split))
-        body (map #(identity [:p (clojure.string/trim %1)]) split)]
+        to-p (fn [part] [:p part])
+        description-split (filter not-empty (clojure.string/split-lines (:description quest)))
+        description (-> (:description quest)
+                        (mangling/split-and-trim-lines)
+                        (#(map to-p %1)))
+        body (-> body-text
+                 (mangling/split-and-trim-lines)
+                 (#(map to-p %1)))]
     [:html
      [:body
       [:h1 title]
       [:dl
        [:dt (tr [:email.quest.time])]
        [:dd {:class "time"}
-        (str (time/to-string
-              start-time
-              time/print-format) " - "
-             (if (> (time/days-between
-                     start-time
-                     end-time) 0)
-               (time/to-string
-                (time/from-string (:end-time quest))
-                time/print-format)
-               (time/to-string
-                (time/from-string (:end-time quest))
-                time/time-print-format)))]
+        (time/duration-to-print-str start-time end-time)]
        [:dt (tr [:email.quest.place])]
        [:dd {:class "place"}
         (mangling/readable-address (:location quest))]]
+      (into [:div {:class "description"}] description)
       (into [:div {:class "body-text"}] body)
       (when message
         [:p {:class "message"} message])

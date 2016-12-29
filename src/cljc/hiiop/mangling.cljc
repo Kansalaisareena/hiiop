@@ -1,7 +1,8 @@
 (ns hiiop.mangling
   (:require [taoensso.timbre :as log]
             [camel-snake-kebab.core :refer [->camelCaseString]]
-            [camel-snake-kebab.extras :refer [transform-keys]]))
+            [camel-snake-kebab.extras :refer [transform-keys]]
+            [clojure.string :as cs]))
 
 (defn to-value-and-error [map-value key]
   {key {:value (key map-value) :error nil}})
@@ -32,3 +33,6 @@
              (concat all-but-last-two [(str before-last ",") (last address)]))
            [])))
       (#(clojure.string/join " " %1))))
+
+(defn split-and-trim-lines [string]
+  (filter not-empty (map cs/trim (cs/split-lines string))))
