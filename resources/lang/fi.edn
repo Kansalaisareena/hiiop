@@ -262,6 +262,11 @@ Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit
   :dict-max-files-exceeded         "Et voi lisätä enempää kuvia"
   }
 
+ :email
+ {:quest
+  {:time "Aika"
+   :place "Paikka"}}
+
  :errors
  {
   :non-empty-string "Tyhjä arvo ei käy"

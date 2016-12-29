@@ -6,6 +6,7 @@
             [taoensso.timbre :as log]
             [mount.core :refer [defstate]]
             [bidi.bidi :refer [path-for]]
+            [hiiop.translate :as ht]
             [hiiop.contentful :as cf]
             [hiiop.emails :as emails]
             [hiiop.url :refer [url-to]]
@@ -92,16 +93,20 @@
                   :button-text (content :ekanappiteksti)}}))))
 
 (defn send-join-quest [{:keys [email quest locale]}]
-  (let [quest-id (:id quest)
+  (let [tr (ht/tr-with [locale])
+        quest-id (:id quest)
         content (mail-content "join-quest" locale)]
     (send-mail
      (make-mail {:to email
                  :subject (str (content :otsikko) " " (quest :name))
-                 :template emails/simple-mail
+                 :template emails/quest-details-mail
                  :template-params
                  {:button-url (url-to' :quest :quest-id quest-id)
                   :title (content :otsikko)
-                  :body-text (content :leipateksti)
+                  :tr tr
+                  :quest quest
+                  :body-text
+                  (content :leipateksti)
                   :button-text (content :ekanappiteksti)}}))))
 
 (defn send-quest-declined [email quest-id message locale]
