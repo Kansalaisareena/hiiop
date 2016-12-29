@@ -95,14 +95,15 @@
 (defn send-join-quest [{:keys [email quest locale]}]
   (let [tr (ht/tr-with [locale])
         quest-id (:id quest)
-        content (mail-content "join-quest" locale)]
+        content (mail-content "join-quest" locale)
+        title (str (content :otsikko) " " (quest :name))]
     (send-mail
      (make-mail {:to email
-                 :subject (str (content :otsikko) " " (quest :name))
+                 :subject title
                  :template emails/quest-details-mail
                  :template-params
                  {:button-url (url-to' :quest :quest-id quest-id)
-                  :title (content :otsikko)
+                  :title title
                   :tr tr
                   :quest quest
                   :body-text
