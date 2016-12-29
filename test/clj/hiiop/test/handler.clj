@@ -44,11 +44,6 @@
       )))
 
 (def test-user-id (atom nil))
-(def email-token (atom nil))
-
-(defn receive-email [email token locale]
-  (log/info "receive email token: " token)
-  (reset! email-token token))
 
 (defn session-cookie-string [set-cookie]
   (log/info "set-cookie" set-cookie)
@@ -69,13 +64,69 @@
            :password (:password user-data)
            :token    @read-token-from})))))
 
+(defn receive-token-log-and-update [this message]
+  (fn [email token locale]
+    (log/info message locale token)
+    (reset! this token)))
+
+(defn receive-log-and-put-args-to [this log-message]
+  (fn [& args]
+    (log/info log-message args)
+    (reset! this (vec args))))
+
+(def activation-token (atom nil))
+(def password-reset-token (atom nil))
+(def new-quest-args (atom nil))
+(def edit-quest-args (atom nil))
+(def join-quest-args (atom nil))
+(def declined-quest-args (atom nil))
+(def accepted-quest-args (atom nil))
+(def accepted-private-quest-args (atom nil))
+(def deleted-quest-args (atom nil))
+
 (use-fixtures
   :once
   (fn [f]
     (-> (mount/except [#'hiiop.core/http-server
                        #'hiiop.core/repl-server
                        #'hiiop.contentful/contentful-init])
-        (mount/swap {#'hiiop.mail/send-activation-token-email receive-email})
+        (mount/swap
+         {#'hiiop.mail/send-activation-token-email
+          (receive-token-log-and-update
+           activation-token "received activation token")
+
+          #'hiiop.mail/send-password-reset-token-email
+          (receive-token-log-and-update
+           password-reset-token "received password-token")
+
+          #'hiiop.mail/send-new-quest-email
+          (receive-log-and-put-args-to
+           new-quest-args "received new quest")
+
+          #'hiiop.mail/send-edit-quest-email
+          (receive-log-and-put-args-to
+           edit-quest-args "receive edit quest")
+
+          #'hiiop.mail/send-join-quest-email
+          (receive-log-and-put-args-to
+           join-quest-args "receive join quest")
+
+          #'hiiop.mail/send-quest-declined-email
+          (receive-log-and-put-args-to
+           declined-quest-args "receive decline quest")
+
+          #'hiiop.mail/send-quest-accepted-email
+          (receive-log-and-put-args-to
+           accepted-quest-args "received accepted quest")
+
+          #'hiiop.mail/send-private-quest-accepted-email
+          (receive-log-and-put-args-to
+           accepted-private-quest-args "received private quest")
+
+          #'hiiop.mail/send-quest-deleted-email
+          (receive-log-and-put-args-to
+           deleted-quest-args "received delete quest")
+          })
         mount/start)
     (f)
     (db/delete-user! *db* {:id (sc/string->uuid @test-user-id)})))
@@ -280,7 +331,7 @@
                      "/api/v1/users/validate-token"
                      {:type :post
                       :body-string
-                      (generate-string {:token @email-token})})
+                      (generate-string {:token @activation-token})})
             response (app-with-session request)
             body (slurp (:body response))
             body-map (parse-string body true)]
@@ -309,7 +360,7 @@
           user-created (create-test-user
                         {:user-data test-user
                          :save-id-to test-user-id
-                         :read-token-from email-token})
+                         :read-token-from activation-token})
           login-cookie (login-and-get-cookie
                         {:with current-app
                          :user-data test-user})
@@ -336,7 +387,7 @@
           user-created (create-test-user
                         {:user-data test-user
                          :save-id-to test-user-id
-                         :read-token-from email-token})
+                         :read-token-from activation-token})
           login-cookie (login-and-get-cookie
                         {:with current-app
                          :user-data test-user})
@@ -366,7 +417,7 @@
           user-created (create-test-user
                         {:user-data test-user
                          :save-id-to test-user-id
-                         :read-token-from email-token})
+                         :read-token-from activation-token})
           login-cookie (login-and-get-cookie
                         {:with current-app
                          :user-data test-user})
@@ -397,7 +448,7 @@
           user-created (create-test-user
                         {:user-data test-user
                          :save-id-to test-user-id
-                         :read-token-from email-token})
+                         :read-token-from activation-token})
           login-cookie (login-and-get-cookie
                         {:with current-app
                          :user-data test-user})
@@ -429,7 +480,7 @@
             user-created (create-test-user
                           {:user-data test-user
                            :save-id-to test-user-id
-                           :read-token-from email-token})
+                           :read-token-from activation-token})
             login-cookie (login-and-get-cookie
                           {:with current-app
                            :user-data test-user})
@@ -468,7 +519,7 @@
           user-created (create-test-user
                         {:user-data test-user
                          :save-id-to test-user-id
-                         :read-token-from email-token})
+                         :read-token-from activation-token})
           login-cookie (login-and-get-cookie
                         {:with current-app
                          :user-data test-user})
@@ -504,7 +555,7 @@
           user-created (create-test-user
                           {:user-data test-user
                            :save-id-to test-user-id
-                           :read-token-from email-token})
+                           :read-token-from activation-token})
             login-cookie (login-and-get-cookie
                           {:with current-app
                            :user-data test-user})
@@ -543,7 +594,7 @@
           user-created (create-test-user
                           {:user-data test-user
                            :save-id-to test-user-id
-                           :read-token-from email-token})
+                           :read-token-from activation-token})
             login-cookie (login-and-get-cookie
                           {:with current-app
                            :user-data test-user})
@@ -584,7 +635,7 @@
           user-created (create-test-user
                         {:user-data test-user
                          :save-id-to test-user-id
-                         :read-token-from email-token})
+                         :read-token-from activation-token})
           login-cookie (login-and-get-cookie
                         {:with current-app
                          :user-data test-user})
@@ -621,7 +672,7 @@
           user-created (create-test-user
                         {:user-data test-user
                          :save-id-to test-user-id
-                         :read-token-from email-token})
+                         :read-token-from activation-token})
           login-cookie (login-and-get-cookie
                         {:with current-app
                          :user-data test-user})
@@ -658,7 +709,7 @@
           user-created (create-test-user
                         {:user-data test-user
                          :save-id-to test-user-id
-                         :read-token-from email-token})
+                         :read-token-from activation-token})
           login-cookie (login-and-get-cookie
                         {:with current-app
                          :user-data test-user})
@@ -692,7 +743,7 @@
           user-created (create-test-user
                         {:user-data test-user
                          :save-id-to test-user-id
-                         :read-token-from email-token})
+                         :read-token-from activation-token})
           login-cookie (login-and-get-cookie
                         {:with current-app
                          :user-data test-user})
