@@ -13,7 +13,7 @@
             [hiiop.components.register :as p-r]
             [hiiop.components.errors :as e]
             [hiiop.components.login :as p-l]
-            [hiiop.config :refer [env]]
+            [hiiop.config :refer [env google-maps-url]]
             [hiiop.routes.page-hierarchy :refer [hierarchy]]
             [hiiop.url :refer [redirect-to]]
             [hiiop.mangling :refer [parse-natural-number
@@ -62,13 +62,7 @@
                     :title (tr [:actions.quest.create])
 
                     :scripts
-                    [(str
-                      "https://maps.googleapis.com/maps/api/js?"
-                      "key=AIzaSyDfXn9JTGue0fbkI3gqIqe7_WUn0M-dt-8"
-                      "&libraries=places"
-                      "&language=" "fi" ;; to normalize the google data
-                      "&region=FI"
-                      )]
+                    [google-maps-url]
                     })))
 
 (defn login [req]
@@ -140,13 +134,7 @@
                                   :schema schema
                                   :errors errors})
                     :scripts
-                    [(str
-                       "https://maps.googleapis.com/maps/api/js?"
-                       "key=AIzaSyDfXn9JTGue0fbkI3gqIqe7_WUn0M-dt-8"
-                       "&libraries=places"
-                       "&language=" "fi" ;; to normalize the google data
-                       "&region=FI"
-                       )]
+                    [google-maps-url]
                     })))
 
 (defn browse-quests [req]
@@ -163,13 +151,7 @@
                                                :schema QuestFilter})
                     :title (tr [:actions.quest.create])
                     :scripts
-                    [(str
-                       "https://maps.googleapis.com/maps/api/js?"
-                       "key=AIzaSyDtGq2TOTrSNAKVFyjAIeGFw317iliTrbc"
-                       "&libraries=places"
-                       "&language=" "fi" ;; to normalize the google data
-                       "&region=FI"
-                       )]
+                    [google-maps-url]
                     })))
 
 (defn create-quest [req]

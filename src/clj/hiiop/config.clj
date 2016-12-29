@@ -22,3 +22,11 @@
   (if dev
     ""
     (str asset-base-url "/" git-ref)))
+
+(def google-maps-url
+  (str
+   "https://maps.googleapis.com/maps/api/js?"
+   "key=AIzaSyDtGq2TOTrSNAKVFyjAIeGFw317iliTrbc"
+   "&libraries=places"
+   "&language=" "fi" ;; to normalize the google data
+   "&region=FI"))
