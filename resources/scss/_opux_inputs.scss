@@ -60,6 +60,8 @@
         background: $OP-orange;
       }
     }
+
+    // opux-input--checkbox--multi-select
     @include modifier('multi-select') {
       &:checked + label {
         color: $OP-orange !important;

@@ -1,7 +1,6 @@
 @include viewports(tiny small) {
 
   @include block('opux-fieldset') {
-
     // opux-fieldset__item
     @include element('item') {
 
@@ -19,6 +18,98 @@
 
       &.opux-form__button {
         display: inline-block;
+      }
+    }
+  }
+
+  // opux-card-filter
+  @include block('opux-card-filter') {
+    @include flex-wrap(wrap);
+
+    // opux-card-filter__field
+    @include element('field') {
+      margin-bottom: 1rem;
+
+      @include modifier('category') {
+        @include block('opux-form-section') {
+          width: 100%;
+        }
+      }
+    }
+  }
+}
+
+@include viewports(small) {
+  @include block('opux-card-filter') {
+
+    // opux-card-filter__field
+    @include element('field') {
+      @include flex(0, 0, 50%);
+
+      // opux-card-filder__field--category
+      @include modifier('category') {
+        @include flex(0, 0, 100%);
+
+        @include block('opux-form-section') {
+          width: 100%;
+        }
+      }
+    }
+  }
+}
+
+@include viewports(tiny) {
+  // opux-card-filter
+  @include block('opux-card-filter') {
+
+    // opux-card-filter__field
+    @include element('field') {
+      @include flex(0, 0, 100%);
+
+      // opux-card-filter__field--category
+      @include modifier('category') {
+        @include block('opux-form-section') {
+          background: $OP-gray-light;
+          border: 0;
+          box-shadow: none;
+          display: none;
+          margin-left: -2.5rem;
+          padding-bottom: 2rem;
+          position: relative;
+          top: 13px;
+          width: calc(100% + 3.9rem);
+          &:before {
+            background: $OP-gray-light;
+            border: none;
+            left: 3rem;
+          }
+          .opux-input__label--multi-select {
+            display: block;
+            float: left;
+            font-size: .6rem;
+            padding-bottom: 0px;
+            width: 50%;
+          }
+          .opux-icon--multi-select {
+            text-align: center;
+            width: 100%;
+            &:before {
+              font-size: 2rem;
+              text-align: center;
+              width: 100%;
+            }
+          }
+          @include element('fieldset') {
+            padding: 0px;
+          }
+        }
+
+        // opux-card-filter__field--category.is-active
+        @include state('active') {
+          @include block('opux-form-section') {
+            display: block;
+          }
+        }
       }
     }
   }
