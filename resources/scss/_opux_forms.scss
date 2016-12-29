@@ -96,15 +96,19 @@
         @include box-shadow(5px, 5px, 15px, rgba(122, 122, 122, 0.5));
         background: $OP-white;
         border: 1px solid $OP-gray-medium;
-        left: 0px;
+        box-sizing: border-box;
+        left: .5rem;
         position: absolute;
         top: 100px;
-        width: 600px;
+        width: 700px;
         z-index: 99;
         padding-bottom: 0px;
         opacity: 0;
         transform: scaleY(0) scaleX(0);
         transition: transform .2s ease, opacity .2s ease;
+        .opux-form-section__fieldset {
+          max-width: 100%;
+        }
         &:before {
           background: $OP-white;
           border-color: $OP-gray-medium;
@@ -113,7 +117,7 @@
           content: "";
           display: block;
           height: 25px;
-          left: 35px;
+          left: 1.5rem;
           position: absolute;
           top: -13px;
           transform: rotate(-45deg);
@@ -133,6 +137,29 @@
           opacity: 1;
         }
       }
+    }
+  }
+}
+
+@include block('opux-card-filter') {
+  width: 100%;
+  @include flexbox;
+  @include flex-direction(row);
+
+  // opux-card-filter__label
+  @include element('label') {
+    clear: both;
+    width: 100%;
+    padding-bottom: .5rem;
+  }
+
+  // opux-card-filter__field
+  @include element('field') {
+    @include flex(1);
+
+    // opux-card-filter--category
+    @include modifier('category') {
+      @include flex(2);
     }
   }
 }

@@ -92,7 +92,7 @@ $opux-icon-cross-name-collection: (eyeglasses, law, sound, globe, handicap, chil
   transition: transform .2s ease;
   &:before {
     border-radius: 50%;
-    border: 2px dotted $OP-gray;
+    border: 2px dashed $OP-gray;
     box-sizing: border-box;
     height: 54px;
     line-height: 52px;
