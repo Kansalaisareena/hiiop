@@ -16,6 +16,68 @@
             [hiiop.test.data :refer [test-quest test-user]]
             [schema-tools.core :as st]))
 
+(def activation-token (atom nil))
+(def password-reset-token (atom nil))
+(def new-quest-args (atom nil))
+(def edit-quest-args (atom nil))
+(def join-quest-args (atom nil))
+(def declined-quest-args (atom nil))
+(def accepted-quest-args (atom nil))
+(def accepted-private-quest-args (atom nil))
+(def deleted-quest-args (atom nil))
+
+(defn receive-token-log-and-update [this message]
+  (fn [email token locale]
+    (log/info message locale token)
+    (reset! this token)))
+
+(defn receive-log-and-put-args-to [this log-message]
+  (fn [& args]
+    (log/info log-message args)
+    (reset! this (vec args))))
+
+(-> (mount/except [#'hiiop.core/http-server
+                   #'hiiop.core/repl-server
+                   #'hiiop.contentful/contentful-init])
+    (mount/swap
+     {#'hiiop.mail/send-activation-token-email
+      (receive-token-log-and-update
+       activation-token "received activation token")
+
+      #'hiiop.mail/send-password-reset-token-email
+      (receive-token-log-and-update
+       password-reset-token "received password-token")
+
+      #'hiiop.mail/send-new-quest-email
+      (receive-log-and-put-args-to
+       new-quest-args "received new quest")
+
+      #'hiiop.mail/send-edit-quest-email
+      (receive-log-and-put-args-to
+       edit-quest-args "receive edit quest")
+
+      #'hiiop.mail/send-join-quest-email
+      (receive-log-and-put-args-to
+       join-quest-args "receive join quest")
+
+      #'hiiop.mail/send-quest-declined-email
+      (receive-log-and-put-args-to
+       declined-quest-args "receive decline quest")
+
+      #'hiiop.mail/send-quest-accepted-email
+      (receive-log-and-put-args-to
+       accepted-quest-args "received accepted quest")
+
+      #'hiiop.mail/send-private-quest-accepted-email
+      (receive-log-and-put-args-to
+       accepted-private-quest-args "received private quest")
+
+      #'hiiop.mail/send-quest-deleted-email
+      (receive-log-and-put-args-to
+       deleted-quest-args "received delete quest")
+      })
+    mount/start)
+
 (defn log-it [in id]
   (log/info id in)
   in)
@@ -64,70 +126,9 @@
            :password (:password user-data)
            :token    @read-token-from})))))
 
-(defn receive-token-log-and-update [this message]
-  (fn [email token locale]
-    (log/info message locale token)
-    (reset! this token)))
-
-(defn receive-log-and-put-args-to [this log-message]
-  (fn [& args]
-    (log/info log-message args)
-    (reset! this (vec args))))
-
-(def activation-token (atom nil))
-(def password-reset-token (atom nil))
-(def new-quest-args (atom nil))
-(def edit-quest-args (atom nil))
-(def join-quest-args (atom nil))
-(def declined-quest-args (atom nil))
-(def accepted-quest-args (atom nil))
-(def accepted-private-quest-args (atom nil))
-(def deleted-quest-args (atom nil))
-
 (use-fixtures
   :once
   (fn [f]
-    (-> (mount/except [#'hiiop.core/http-server
-                       #'hiiop.core/repl-server
-                       #'hiiop.contentful/contentful-init])
-        (mount/swap
-         {#'hiiop.mail/send-activation-token-email
-          (receive-token-log-and-update
-           activation-token "received activation token")
-
-          #'hiiop.mail/send-password-reset-token-email
-          (receive-token-log-and-update
-           password-reset-token "received password-token")
-
-          #'hiiop.mail/send-new-quest-email
-          (receive-log-and-put-args-to
-           new-quest-args "received new quest")
-
-          #'hiiop.mail/send-edit-quest-email
-          (receive-log-and-put-args-to
-           edit-quest-args "receive edit quest")
-
-          #'hiiop.mail/send-join-quest-email
-          (receive-log-and-put-args-to
-           join-quest-args "receive join quest")
-
-          #'hiiop.mail/send-quest-declined-email
-          (receive-log-and-put-args-to
-           declined-quest-args "receive decline quest")
-
-          #'hiiop.mail/send-quest-accepted-email
-          (receive-log-and-put-args-to
-           accepted-quest-args "received accepted quest")
-
-          #'hiiop.mail/send-private-quest-accepted-email
-          (receive-log-and-put-args-to
-           accepted-private-quest-args "received private quest")
-
-          #'hiiop.mail/send-quest-deleted-email
-          (receive-log-and-put-args-to
-           deleted-quest-args "received delete quest")
-          })
-        mount/start)
     (f)
     (db/delete-user! *db* {:id (sc/string->uuid @test-user-id)})))
 
@@ -262,6 +263,17 @@
                      :cookies login-cookie})
       (with)
       (has-status (or status 204))))
+
+(defn get-moderated-quests [{:keys [with]}]
+  (-> (json-request (str "/api/v1/quests/moderated")
+                    {:type :get})
+      (with)
+      (has-status 200)
+      (:body)
+      (check #(is (not (= %1 nil))))
+      (#(when %1 (slurp %1)))
+      (parse-string true)
+      (do-this #(pp/pprint %1))))
 
 (deftest test-api
 
@@ -812,6 +824,37 @@
                                   }))
           (just-do #(db/delete-quest-by-id! {:id (:id added-quest)}))
           (just-do #(db/delete-user! {:id (sc/string->uuid @test-user-id)})))
+      ))
+
+  (testing "/api/v1/quests/moderated should be updated after /api/v1/quests/add and /api/v1/quests/:id/moderate"
+    (let [current-app (app)
+          user-created (create-test-user
+                        {:user-data test-user
+                         :save-id-to test-user-id
+                         :read-token-from activation-token})
+          login-cookie (login-and-get-cookie
+                        {:with current-app
+                         :user-data test-user})
+          quest-to-add (test-quest
+                               {:use-date-string true
+                                :location-to :location
+                                :coordinates-to :coordinates
+                                :organisation-to {:in :organisation
+                                                  :name :name
+                                                  :description :description}})
+          moderated-quests (get-moderated-quests {:with current-app})]
+      (-> moderated-quests
+          (check #(is (empty %1)))
+          ((fn [_]
+            (add-quest
+             {:with current-app
+              :quest quest-to-add
+              :login-cookie login-cookie})))
+          (do-this pp/pprint)
+          ((fn [_] (get-moderated-quests {:with current-app})))
+          (check #(is (not-empty %1)))
+          (#(db/delete-quest-by-id! {:id (:id %1)}))
+          (just-do #(db/delete-user! *db* {:id (sc/string->uuid @test-user-id)})))
       ))
 
   )

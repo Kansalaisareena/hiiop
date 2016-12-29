@@ -119,6 +119,7 @@
 
 (redef-with-cache get-all-moderated-quests :all-moderated-quests)
 (redef-invalidate-cache add-moderated-quest! :all-moderated-quests)
+(redef-invalidate-cache add-unmoderated-quest! :all-moderated-quests)
 (redef-invalidate-cache update-moderated-quest! :all-moderated-quests)
 (redef-invalidate-cache delete-quest-by-id! :all-moderated-quests)
 (redef-invalidate-cache join-quest! :all-moderated-quests)
