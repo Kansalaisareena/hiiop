@@ -12,4 +12,30 @@
   :quests
   {:title "Eventer"}
   }
+
+ :pikaday
+ {:previous-month "Edellinen"
+  :next-month     "Seuraava"
+  :months         ["tammikuu"
+                   "helmikuu"
+                   "maaliskuu"
+                   "huhtikuu"
+                   "toukokuu"
+                   "kesäkuu"
+                   "heinäkuu"
+                   "elokuu"
+                   "syyskuu"
+                   "lokakuu"
+                   "marraskuu"
+                   "joulukuu"],
+  :weekdays       ["sunnuntai"
+                   "maanantai"
+                   "tiistai"
+                   "keskiviikko"
+                   "torstai"
+                   "perjantai"
+                   "lauantai"],
+  :weekdays-short ["su" "ma" "ti" "ke" "to" "pe" "la"]
+  :first-day      1
+  }
  }

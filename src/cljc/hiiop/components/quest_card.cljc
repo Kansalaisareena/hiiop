@@ -126,8 +126,6 @@
      [:div {:class "opux-card"}
 
       [:div {:class "opux-card__image-container"}
-       [:div {:class "opux-card__status"}
-        (tr [:pages.profile.my-event])]
        [:a {:href quest-link}
         [:div {:class "opux-card__image"
                :style {:background-image (str "url('" (or picture-url "https://placeholdit.imgix.net/~text?txtsize=33&txt=quest%20image&w=480&h=300") "')")}}]]]
