@@ -117,9 +117,17 @@
        "wrong_password"
        "bcrypt+blake2b-512$76eb37a62f605eeb7b172c4ba39fa231$12$4ae537eb38a908819b08c495fb78e3afc7e12e336be0e1a2"))))
 
+(defn get-all-quests-by-owner [{:keys [owner]}]
+  (let [moderated (get-moderated-quests-by-owner {:owner owner})
+        unmoderated (get-unmoderated-quests-by-owner {:owner owner})]
+    (concat moderated unmoderated)))
+
 (redef-with-cache get-all-moderated-quests :all-moderated-quests)
 (redef-invalidate-cache add-moderated-quest! :all-moderated-quests)
 (redef-invalidate-cache add-unmoderated-quest! :all-moderated-quests)
-(redef-invalidate-cache update-moderated-quest! :all-moderated-quests)
+(redef-invalidate-cache update-quest! :all-moderated-quests)
 (redef-invalidate-cache delete-quest-by-id! :all-moderated-quests)
 (redef-invalidate-cache join-quest! :all-moderated-quests)
+(redef-invalidate-cache moderate-accept-quest! :all-moderated-quests)
+
+
