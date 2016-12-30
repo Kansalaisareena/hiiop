@@ -45,8 +45,6 @@
   }
 
   @include block('opux-banner') {
-    padding-bottom: 60%;
-
     @include element('content') {
       padding-left: 1.5rem;
       padding-right: 1.5rem;
@@ -54,18 +52,18 @@
 
     // opux-banner__title
     @include element('title') {
-      font-size: 2rem;
+      font-size: 3rem;
       padding-bottom: 1rem;
     }
     // opux-banner__body-text
     @include element('body-text') {
-      font-size: 1rem;
+      font-size: 1.5rem;
       padding-bottom: 1rem;
     }
 
     // opux-banner__subtitle
     @include element('subtitle') {
-      font-size: 1.3rem;
+      font-size: 2.3rem;
       padding-bottom: 1rem;
     }
   }
@@ -80,8 +78,8 @@
   }
 
   @include block('opux-banner') {
-    padding-bottom: 70%;
 
+    // opux-banner__content
     @include element('content') {
       padding-left: .5rem;
       padding-right: .5rem;
@@ -89,18 +87,18 @@
 
     // opux-banner__title
     @include element('title') {
-      font-size: 1.2rem;
-      padding-bottom: .5rem;
+      font-size: 2rem;
+      padding-bottom: 1.5rem;
     }
     // opux-banner__body-text
     @include element('body-text') {
-      font-size: .7rem;
-      padding-bottom: .5rem;
+      font-size: 1.3rem;
+      padding-bottom: 1.5rem;
     }
 
     // opux-banner__subtitle
     @include element('subtitle') {
-      font-size: 1rem;
+      font-size: 1.7rem;
       padding-bottom: .5rem;
     }
   }

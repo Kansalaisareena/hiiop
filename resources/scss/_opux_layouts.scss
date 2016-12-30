@@ -210,13 +210,16 @@
 }
 
 @include block('opux-banner') {
-  height: 1px;
   margin-left: -1rem;
   margin-right: -1rem;
   margin-top: -40px;
-  padding-bottom: 50%;
   position: relative;
   width: calc(100% + 2rem);
+  padding-top: 5rem;
+  padding-bottom: 5rem;
+  background-image: url('/images/banner.jpg');
+  background-repeat: no-repeat;
+  background-size: cover;
 
   // opux-banner__content
   @include element('content') {
@@ -225,18 +228,12 @@
     @include flex-direction(row);
     @include flex-wrap(wrap);
     @include flexbox;
-    background-image: url('/images/banner.jpg');
-    background-repeat: no-repeat;
-    background-size: cover;
     bottom: 0px;
     box-sizing: border-box;
     color: $OP-white;
-    font-weight: 400;
     left: 0px;
-    padding: 0 2rem;
-    position: absolute;
     right: 0px;
-    text-shadow: 1px 1px 15px $OP-dark-gray;
+    text-shadow: 1px 1px 15px $OP-gray-medium;
     top: 0px;
   }
 
@@ -244,14 +241,16 @@
   @include element('title') {
     @include flex(0, 0, 100%);
     font-size: 4rem;
-    padding-bottom: 1rem;
+    padding-bottom: 2rem;
   }
 
   // opux-banner__body-text
   @include element('body-text') {
     @include flex(0, 0, 100%);
     font-size: 1.8rem;
-    padding-bottom: 1rem;
+    max-width: $screen-large;
+    margin: 0 auto;
+    padding-bottom: 2rem;
   }
 
   // opux-banner__subtitle
