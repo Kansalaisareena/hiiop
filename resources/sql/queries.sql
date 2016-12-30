@@ -387,7 +387,38 @@ where id = :id AND
       EXISTS (SELECT FROM users u
               WHERE u.id = :user-id AND u.moderator = true)
 
--- :name moderated-quests-by-owner :? :*
+-- :name get-unmoderated-quests-by-owner :? :*
+-- :doc get all unmoderated quests by owner
+SELECT
+  q.id as id,
+  q.unmoderated_name as name,
+  q.unmoderated_description as description,
+  q.unmoderated_organisation as organisation,
+  q.unmoderated_organisation_description as organisation_description,
+  q.start_time as start_time,
+  q.end_time as end_time,
+  q.street_number as street_number,
+  q.street as street,
+  q.postal_code as postal_code,
+  q.town as town,
+  q.country as country,
+  q.latitude as latitude,
+  q.longitude as longitude,
+  q.google_maps_url as google_maps_url,
+  q.google_place_id as google_place_id,
+  q.categories as categories,
+  q.max_participants as max_participants,
+  q.unmoderated_hashtags as hashtags,
+  q.unmoderated_picture as picture
+  (SELECT url FROM pictures WHERE id = q.picture) as picture_url,
+  q.is_open as is_open,
+  q.owner as owner
+FROM
+  quests q
+WHERE
+  q.owner = :owner AND q.name IS NOT NULL
+
+-- :name get-moderated-quests-by-owner :? :*
 -- :doc get quest by owner
 SELECT
   q.id as id,
@@ -409,6 +440,7 @@ SELECT
   q.categories as categories,
   q.max_participants as max_participants,
   q.hashtags as hashtags,
+  q.picture as picture
   (SELECT url FROM pictures WHERE id = q.picture) as picture_url,
   q.is_open as is_open,
   q.owner as owner
