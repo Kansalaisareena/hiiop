@@ -249,6 +249,7 @@
         (do-this #(pp/pprint %1)))))
 
 (defn get-party-members [{:keys [with quest-id login-cookie status]}]
+<<<<<<< a93a28fe21a623c6c3be6ff002a46c6df3974b8f
   (let [url (str "/api/v1/quests/" quest-id "/party")]
     (-> (json-request url
          {:type :get
@@ -268,6 +269,25 @@
           :cookies login-cookie})
         (with)
         (has-status (or status 204) url))))
+=======
+  (-> (json-request (str "/api/v1/quests/" quest-id "/party")
+                    {:type :get
+                     :cookies login-cookie})
+      (with)
+      (has-status (or status 200))
+      (:body)
+      (check #(is (not (= %1 nil))))
+      (#(when %1 (slurp %1)))
+      (parse-string true)
+      (do-this #(pp/pprint %1))))
+
+(defn remove-party-member [{:keys [with quest-id member-id login-cookie status]}]
+  (-> (json-request (str "/api/v1/quests/" quest-id "/party/" member-id)
+                    {:type :delete
+                     :cookies login-cookie})
+      (with)
+      (has-status (or status 204))))
+>>>>>>> Do the quest parting
 
 (defn get-moderated-quests [{:keys [with]}]
   (let [url (str "/api/v1/quests/moderated")]

@@ -12,7 +12,11 @@
             [hiiop.components.register :as p-r]
             [hiiop.components.quest-single :as quest-single]
             [hiiop.components.quests :as quests]
+<<<<<<< a93a28fe21a623c6c3be6ff002a46c6df3974b8f
             [hiiop.components.quests-browse :as quest-browse]
+=======
+            [hiiop.components.quests-browse :refer [list-quests]]
+>>>>>>> Do the quest parting
             [hiiop.components.part-party :refer [part-party]]
             [hiiop.client-api :refer [get-quest
                                       get-secret-quest
