@@ -99,7 +99,7 @@
   :sassc
   [{:src "resources/scss/screen.scss"
     :output-to "resources/public/css/screen.css"
-    :style "nested"
+    :style "compressed"
     :import-path "resources/scss"}]
 
   :auto
@@ -160,9 +160,8 @@
              :minify-assets
              {:assets
               {~(str "resources/public/"
-                     (apply str (clojure.string/trim
-                                 (:out (clojure.java.shell/sh
-                                        "git" "rev-parse" "--verify" "HEAD"))))
+                     (apply str (:out (clojure.java.shell/sh
+                                        "git" "rev-parse" "--verify" "HEAD")))
                      "/css/screen.css")
                "resources/public/css"
                }
