@@ -9,7 +9,29 @@
  :pages
  {
   :index
-  {:title :name}
+  {:title :name
+   :banner
+   {:header "Vapaaehtoistoiminnan koti"
+    :content "Itsenäisyyden juhlavuoden kunniaksi haluamme innostaa jokaista tekemään yhdessä hyvää ja lähtemään mukaan vapaaehtoistoimintaan. Anna sinäkin aikaasi ja löydä oma tapasi toimia vapaaehtoisena."
+    :subtitle "#hiiop"}
+
+   :category-selector
+   {:title "Tehdään yhdessä 100 vuotta vapaaehtoistyötä Suomen hyväksi!"
+    :subtitle "Hiiop on vapaaehtoistoiminnan kohtaamispaikka. Täältä löydät itsellesi sopivan tehtävän tai voit kutsua apukäsiä järjestämääsi toimintaan. Kutsumme kaikki mukaan rakentamaan yhdessä hyvää huomista – sadan vuoden edestä."
+    :search "Näytä tehtävät"}
+
+   :index-links
+   {:browse-quests-text "Ryhdy vapaaehtoiseksi ja löydä itsellesi mieluinen tekemisen kohde."
+    :browse-quests "Löydä tehtävä"
+    :create-quest-text "Järjestä itse vapaaehtoistempaus ja kutsu kaverisi mukaan."
+    :create-quest "Ilmoita tehtävä"
+    :read-stories-text "Tutustu kokemuksiin vapaaehtoistoiminnasta."
+    :read-stories "Lue tarinoita"}
+
+   :social-feed
+   {:title "Jaettu ilo on paras ilo"}
+   }
+
 
   :login
   {:title "Kirjaudu"

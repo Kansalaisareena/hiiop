@@ -7,12 +7,13 @@
             [schema.core :as schema]
             [hiiop.components.profile :as p-p]
             [hiiop.components.login :as p-l]
+            [hiiop.components.index :as p-i]
             [hiiop.components.activate :as p-a]
             [hiiop.components.register :as p-r]
             [hiiop.components.quest-single :as quest-single]
             [hiiop.components.quests :as quests]
-            [hiiop.components.quests-browse :refer [list-quests]]
             [hiiop.components.part-party :refer [part-party]]
+            [hiiop.components.quests-browse :as quest-browse]
             [hiiop.client-api :refer [get-quest
                                       get-secret-quest
                                       get-user-info
@@ -29,11 +30,13 @@
                                   RegistrationInfo
                                   UserActivation
                                   QuestFilter
+                                  QuestCategoryFilter
                                   NewPartyMember
                                   new-empty-registration-info
                                   new-empty-quest
                                   new-empty-party-member
                                   new-empty-quest-filter
+                                  new-empty-category-filter
                                   new-empty-activation-info
                                   ]]
             [clojure.string :as string]))
@@ -68,6 +71,15 @@
                      :errors errors})
       (. js/document (getElementById "app")))))
 
+(defn index-page []
+  (log/info "index-page")
+  (rum/mount
+    (p-i/index-page {:context @context
+                     :category-filter (atom
+                                        (new-empty-category-filter))
+                     :schema QuestCategoryFilter})
+    (. js/document (getElementById "app"))))
+
 (defn profile-page [params]
   (go
     (let [owner (:id (:identity @context))
@@ -84,13 +96,29 @@
   (go
     (let [quests (<! (get-moderated-quests))
           quest-filter (atom (new-empty-quest-filter))
-          errors (atom (same-keys-with-nils @quest-filter))]
+          errors (atom (same-keys-with-nils @quest-filter))
+          filtered-quests (atom quests)
+          category-queries (-> (.-location js/window)
+                               (.-hash)
+                               (clojure.string/replace #"[#\?\&]" "")
+                               (clojure.string/split #"categories\[]\=")
+                               (rest)
+                               (#(map keyword %1))
+                               (#(into [] %1)))]
       (log/info "browse-quests-page")
+
+      ;; Filter quests categories from url hash
+      (when (not-empty category-queries)
+        (swap! quest-filter assoc :categories category-queries)
+        (reset! filtered-quests
+                (quest-browse/filters {:quests quests
+                                       :quest-filter quest-filter})))
+
       (rum/mount
-        (list-quests {:quests quests
-                      :context @context
+        (quest-browse/list-quests {:quests quests
+                                   :context @context
                       :quest-filter quest-filter
-                      :filtered-quests (atom quests)
+                      :filtered-quests filtered-quests
                       :errors errors
                       :schema QuestFilter})
         (. js/document (getElementById "app"))))))
@@ -217,7 +245,7 @@
 
 (def handlers
   {:index
-   browse-quests-page
+   index-page
    :login
    login-page
    :profile

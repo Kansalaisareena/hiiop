@@ -142,6 +142,13 @@
    :location nil
    :start-time ""})
 
+(def QuestCategoryFilter
+  "Home page category filter"
+  {:categories [Category]})
+
+(defn new-empty-category-filter []
+  {:categories []})
+
 (def Quest
   "Quest"
   {:id NaturalNumber

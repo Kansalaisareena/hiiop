@@ -1,4 +1,5 @@
 @include viewports(tiny small) {
+  // opux-page-section
   @include block('opux-page-section') {
 
     // opux-page-section--header
@@ -12,6 +13,28 @@
       z-index: 999;
     }
   }
+
+  // opux-index-links
+  @include block('opux-index-links') {
+    display: block;
+
+    // opux-index-links__item
+    @include element('item') {
+      margin-top: 2px;
+      width: 100%;
+
+      // opux-index-links__item--browse-quests
+      @include modifier('browse-quests') {
+        border: 0;
+      }
+
+      // opux-index-links__item--browse-quests
+      @include modifier('browse-quests') {
+        border: 0;
+      }
+    }
+
+  }
 }
 
 @include viewports(small) {
@@ -19,6 +42,32 @@
   // opux-card-container
   @include block('opux-card-container') {
     @include flex(0, 0, calc(100% * (1/2) - 1rem));
+  }
+
+  @include block('opux-banner') {
+    padding-bottom: 60%;
+
+    @include element('content') {
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+    }
+
+    // opux-banner__title
+    @include element('title') {
+      font-size: 2rem;
+      padding-bottom: 1rem;
+    }
+    // opux-banner__body-text
+    @include element('body-text') {
+      font-size: 1rem;
+      padding-bottom: 1rem;
+    }
+
+    // opux-banner__subtitle
+    @include element('subtitle') {
+      font-size: 1.3rem;
+      padding-bottom: 1rem;
+    }
   }
 }
 
@@ -28,5 +77,31 @@
   // opux-card-container
   @include block('opux-card-container') {
     @include flex(0, 0, calc(100% - 1rem));
+  }
+
+  @include block('opux-banner') {
+    padding-bottom: 70%;
+
+    @include element('content') {
+      padding-left: .5rem;
+      padding-right: .5rem;
+    }
+
+    // opux-banner__title
+    @include element('title') {
+      font-size: 1.2rem;
+      padding-bottom: .5rem;
+    }
+    // opux-banner__body-text
+    @include element('body-text') {
+      font-size: .7rem;
+      padding-bottom: .5rem;
+    }
+
+    // opux-banner__subtitle
+    @include element('subtitle') {
+      font-size: 1rem;
+      padding-bottom: .5rem;
+    }
   }
 }
