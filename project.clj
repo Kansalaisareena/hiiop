@@ -157,15 +157,24 @@
                  :closure-warnings
                  {:externs-validation :off :non-standard-jsdoc :off}}}}}
 
-             :minify-assets
-             {:assets
-              {~(str "resources/public/"
-                     (apply str (:out (clojure.java.shell/sh
-                                        "git" "rev-parse" "--verify" "HEAD")))
-                     "/css/screen.css")
-               "resources/public/css"
-               }
-              }
+             ;; :minify-assets
+             ;; {:assets
+             ;;  {~(str "resources/public/"
+             ;;         (apply str (clojure.string/trim
+             ;;                     (:out (clojure.java.shell/sh
+             ;;                            "git" "rev-parse" "--verify" "HEAD"))))
+             ;;         "/css/screen.css")
+             ;;   "resources/public/css"
+             ;;   }
+             ;;  }
+
+             :resource {:resource-paths ["resources/public/css"]
+                        :target-path
+                        ~(str "resources/public/"
+                              (apply str (clojure.string/trim
+                                           (:out (clojure.java.shell/sh
+                                                   "git" "rev-parse" "--verify" "HEAD"))))
+                              "/css/")}
 
              :aot :all
              :uberjar-name "hiiop.jar"
