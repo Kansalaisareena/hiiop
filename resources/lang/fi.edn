@@ -130,7 +130,6 @@ Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit
      :time-place "2/4 Missä ja milloin vapaaehtoistoiminta järjestetään?"
      :related-to "3/4 Mihin vapaaehtoistehtävä liittyy?"
      :participation "Osallistuminen"
-
      :info
      {:content "Kerro, mitä haluat saada aikaan yhteisvoimin. Ole innostava! Mitä päivän aikana tapahtuu? Miten vapaaehtoiset voivat osallistua ja auttaa? Millaisia voimia ja kykyjä tarvitset mukaan?"
       :related-to "Valitse yksi tai useampi aihealue, jotka kuvaavat parhaiten vapaaehtoistehtävääsi."
@@ -150,11 +149,11 @@ Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit
     :organisation
     {:name "Järjestävä yhteisö tai järjestö"
      :description "Kerro yhteisösi toiminnasta"}
-
+    
     :start-date "Päivämäärä"
     :end-date "Lisää päättymispäivämäärä"
     :start-time "Kellonaika"
-    :end-time "Kellonaika"
+    :end-time ""
     :location {:label "Paikka"
                :placeholder "Anna sijainti"}
     :address "Osoite"
