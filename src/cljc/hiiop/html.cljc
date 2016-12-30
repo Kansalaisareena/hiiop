@@ -486,9 +486,9 @@
       [:a {:class "opux-footer__social-link opux-icon-social opux-icon-social--fb"
            :href "https://www.facebook.com/Hiiop/"}]
       [:a {:class "opux-footer__social-link opux-icon-social opux-icon-social--twitter"
-           :href "https://twitter.com/OP_Ryhma"}]
+           :href "https://twitter.com/Hiiop100"}]
       [:a {:class "opux-footer__social-link opux-icon-social opux-icon-social--instagram"
-           :href "https://www.instagram.com/op_ryhma"}]]]]
+           :href "https://www.instagram.com/hiiop100/"}]]]]
 
    [:div {:class "opux-copyright opux-centered"}
     (tr [:footer.copyright])]])
