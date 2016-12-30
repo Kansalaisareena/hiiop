@@ -90,6 +90,10 @@
   (stc/coercer hs/Quest
                {hs/Quest db-quest->api-quest}))
 
+(def db-unmoderated-quest->api-quest-coercer
+  (stc/coercer hs/Quest
+               {hs/Quest db-quest->api-quest}))
+
 (defn api-quest->new-unmoderated-db-quest [])
 
 (def api-quest->moderated-db-quest-coercer
