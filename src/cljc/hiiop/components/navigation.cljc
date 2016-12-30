@@ -3,7 +3,7 @@
             [bidi.bidi :refer [path-for]]))
 
 (rum/defcs top-navigation < (rum/local false ::is-active)
-  [state {:keys [hierarchy tr current-locale]}]
+  [state {:keys [hierarchy tr current-locale identity]}]
   (let [is-active (::is-active state)]
     [:div
      [:div {:class "opux-mobile-hamburger"}
@@ -57,15 +57,14 @@
                     "opux-menu__item-link opux-menu__item-link--languages "
                     (when (= current-locale :sv) "opux-menu__item-link opux-menu__item-link--languages is-active"))}
           "sv"]]]
-       [:ul
-        {:class "opux-menu opux-menu--login"}
-        [:li
-         {:class "opux-menu__item opux-menu__item--login"}
-         [:a
-          {:class "opux-menu__item-link opux-menu__item-link--login"
-           :href (path-for hierarchy :login)}
-          (tr [:actions.user.login])
-          ]]
+       [:ul {:class "opux-menu opux-menu--login"}
+
+        (if (nil? identity)
+          [:li {:class "opux-menu__item opux-menu__item--login"}
+           [:a {:class "opux-menu__item-link opux-menu__item-link--login"
+                :href (path-for hierarchy :login)}
+            (tr [:actions.user.login])]])
+
         [:li
          {:class "opux-menu__item opux-menu__item--login"}
          [:a

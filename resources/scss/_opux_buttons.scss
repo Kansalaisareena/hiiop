@@ -29,7 +29,7 @@
 
   // opux-button--highlight
   @include modifier('highlight') {
-    background: $OP-orange;
+    background: $OP-orange !important;
     color: $OP-white;
 
     &:disabled {
@@ -43,6 +43,12 @@
     color: $OP-white;
   }
 
+  @include modifier('small') {
+    min-width: 0;
+    height: 35px;
+    line-height: 35px;
+  }
+
   // opux-button--dull
   @include modifier('dull') {
     background: $OP-gray-light;
@@ -52,6 +58,17 @@
     background: transparent;
     border: 0;
     font-size: 18px;
+  }
+
+  @include modifier('underline') {
+    padding: 0px .5rem;
+    text-decoration: underline;
+    color: $basic-text-colour;
+    border: 0;
+    &:hover {
+      color: $OP-orange;
+      background: none;
+    }
   }
 }
 

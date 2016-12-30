@@ -50,6 +50,7 @@
 
   @include modifier('quest-image-header') {
     background-color: $OP-gray-light;
+    background-position: center;
     background-size: cover;
     display: block;
     height: 550px;
