@@ -6,6 +6,7 @@
             [hiiop.html :as html]
             [hiiop.time :as time]
             [hiiop.components.join-quest :refer [join-quest]]
+            [hiiop.components.quest-card :refer [get-quest-image]]
             [taoensso.timbre :as log]))
 
 (rum/defc quest < rum/reactive
@@ -35,7 +36,9 @@
     [:div {:class "opux-section"}
 
      [:div {:class "opux-content opux-content--quest-image-header"
-            :style {:background-image (str "url('" picture-url "')")}}]
+            :style {:background-image (str "url('"
+                                           (get-quest-image @quest)
+                                           "')")}}]
 
      [:div {:class "opux-content opux-content--medium"}
       [:h1 name]]
