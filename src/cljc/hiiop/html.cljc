@@ -459,8 +459,8 @@
    [:div {:id "top-navigation"}
     (navigation/top-navigation context)]])
 
-(rum/defc body-content [header content scripts]
-  [:body header content scripts])
+(rum/defc body-content [header content footer scripts]
+  [:body header content footer scripts])
 
 (rum/defc head-content [{:keys [title asset-path]}]
   [:head
@@ -475,6 +475,24 @@
   [:script
    {:src url :type "text/javascript"}])
 
+(rum/defc footer [{:keys [hierarchy tr asset-path] :as context}]
+  [:footer {:class "opux-footer opux-content"}
+   [:div {:class "opux-footer__column opux-footer__column--left"}
+    "SUOMI FINLAND 100"]
+
+   [:div {:class "opux-footer__column opux-footer__column--right"}
+    [:span {:class "opux-op-logo"}]]
+
+   [:div {:class "opux-footer__column"}
+    (navigation/footer-navigation context)]
+
+   [:div {:class "opux-footer__column"}
+    (tr [:footer.follow-us])]
+
+   [:div {:class "opux-copyright opux-centered"}
+    (tr [:footer.copyright])]
+   ])
+
 (defn app-structure
   [{:keys [context title content csrf-token servlet-context scripts]}]
   (let [tr (:tr context)
@@ -484,8 +502,9 @@
     (page
      (head-content {:title (tr [:title] [title]) :asset-path asset-path})
      (body-content
-      (header context)
-      [:div {:id "app" :class "opux-page-section" :dangerouslySetInnerHTML {:__html content}}]
+       (header context)
+       [:div {:id "app" :class "opux-page-section" :dangerouslySetInnerHTML {:__html content}}]
+       (footer context)
       (into [:div {:class "script-tags"}] script-tags)
       ))))
 

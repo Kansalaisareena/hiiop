@@ -107,4 +107,5 @@
                          :category-filter category-filter
                          :schema          schema})
      (index-links {:context context})
-     (social-feed {:context context})]))
+     (social-feed {:context context})
+     ]))

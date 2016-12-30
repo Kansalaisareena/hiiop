@@ -72,3 +72,33 @@
           {:class "opux-menu__item-link opux-menu__item-link--login"
            :href (path-for hierarchy :profile)}
           [:i {:class "opux-icon-circled opux-icon-person"}]]]]]]]))
+
+(rum/defc footer-navigation
+  [{:keys [hierarchy tr current-locale]}]
+  [:nav {:class "opux-nav opux-nav--footer"}
+   [:ul {:class "opux-menu opux-menu--footer"}
+
+    [:li {:class "opux-menu__item"}
+     [:a {:class "opux-menu__item-link opux-menu__item-link--footer"
+       :href "#"}
+      (tr [:footer.rules-and-guidelines])]]
+
+    [:li {:class "opux-menu__item"}
+     [:a {:class "opux-menu__item-link opux-menu__item-link--footer"
+          :href "#"}
+      (tr [:footer.frequently-asked-questions])]]
+
+    [:li {:class "opux-menu__item"}
+     [:a {:class "opux-menu__item-link opux-menu__item-link--footer"
+          :href "#"}
+      (tr [:footer.contact])]]
+
+    [:li {:class "opux-menu__item"}
+     [:a {:class "opux-menu__item-link opux-menu__item-link--footer"
+          :href "#"}
+      (tr [:footer.terms-of-service])]]
+
+    [:li {:class "opux-menu__item"}
+     [:a {:class "opux-menu__item-link opux-menu__item-link--footer"
+          :href "#"}
+      (tr [:footer.privacy])]]]])
