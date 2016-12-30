@@ -11,6 +11,10 @@
     float: left;
     width: 100%;
   }
+
+  @include modifier('footer') {
+    display: block;
+  }
 }
 
 @include block('opux-menu') {
@@ -43,6 +47,7 @@
   // opux-menu--footer
   @include modifier('footer') {
     width: 100%;
+    height: auto;
   }
 
   // opux-menu__item
