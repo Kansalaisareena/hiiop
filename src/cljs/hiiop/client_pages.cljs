@@ -98,7 +98,7 @@
           quest-filter (atom (new-empty-quest-filter))
           errors (atom (same-keys-with-nils @quest-filter))
           filtered-quests (atom quests)
-          category-queries (-> (.-location js/window)
+          category-queries (-> js/location
                                (.-hash)
                                (clojure.string/replace #"[#\?\&]" "")
                                (clojure.string/split #"categories\[]\=")
@@ -112,7 +112,7 @@
         (swap! quest-filter assoc :categories category-queries)
         (reset! filtered-quests
                 (quest-browse/filters {:quests quests
-                                       :quest-filter quest-filter})))
+                                       :quest-filter @quest-filter})))
 
       (rum/mount
         (quest-browse/list-quests {:quests quests
