@@ -2,7 +2,7 @@
   box-sizing: border-box;
   margin: 0px;
   min-height: 100%;
-  padding-bottom: 18rem;
+  padding-bottom: 348px;
   padding-top: $header-height;
   position: relative;
   width: 100%;
@@ -334,7 +334,7 @@
 }
 
 @include block('opux-footer-container') {
-  border-top: 1px solid $OP-dark-gray;
+  border-top: 1px solid $OP-gray-light;
   bottom: .7rem;
   left: 0px;
   position: absolute;
