@@ -211,7 +211,7 @@
 
 (def PartyMember
   "Party member"
-  {:id s/Uuid
+  {:member-id s/Uuid
    :quest-id s/Int
    :user-id s/Uuid
    :days NPlus})

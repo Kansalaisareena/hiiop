@@ -146,6 +146,7 @@
       {:errors {:quest :errors.quest.failed-to-delete-quest}})))
 
 (defn get-quest [id]
+  (log/info "quest" id)
   (try
     (-> (db/get-moderated-quest-by-id {:id id})
         (hc/db-quest->api-quest-coercer))
@@ -225,6 +226,13 @@
 
 (defn check-and-update-user-info [user-info]
   user-info)
+
+(defn get-party-member [{:keys [member-id]}]
+  (try
+    (-> (db/get-party-member {:id member-id})
+        (hc/db-party-member->api-party-member-coercer))
+    (catch Exception e
+      (log/error e))))
 
 (defn get-quest-party [{:keys [quest-id user]}]
   (let [party-members (db/get-quest-party-members
@@ -350,23 +358,13 @@
       (log/error e)
       {:errors {:party :errors.join-failed}})))
 
-(defn remove-party-member [{:keys [participation-id quest-id user]}]
+(defn remove-party-member [{:keys [member-id]}]
   (try
-    (if (and participation-id
-             quest-id
-             (:id user))
-      (db/remove-member-from-party!
-       (db/->snake_case_keywords
-        {:participation-id participation-id
-         :quest-id quest-id
-         :user-id (:id user)
-         }))
-      )
-
-    (catch Exception e
-      (log/error e)
-      ))
-  )
+    (db/remove-member-from-party!
+     (db/->snake_case_keywords
+      {:member-id member-id}))
+  (catch Exception e
+    (log/error e))))
 
 (defn get-picture [id])
 

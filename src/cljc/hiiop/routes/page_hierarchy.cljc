@@ -26,6 +26,10 @@
     (leaf "" :quest)
 
     (branch
+     "/peruuta/" (param :member-id)
+     (leaf "" :part-quest-party))
+
+    (branch
      "/salainen/" (param :secret-party)
      (leaf "" :secret-quest))
 
