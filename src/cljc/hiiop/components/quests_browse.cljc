@@ -181,8 +181,7 @@
                                                :schema schema
                                                :errors errors})]
 
-    (add-watch
-      quest-filter
+    (add-watch quest-filter
       :quest-filter
       (fn [key _ _ new-filter]
         (reset! filtered-quests
@@ -199,7 +198,6 @@
                        (#(clojure.string/join "&categories[]=" %1))
                        (#(str "#?categories[]=" %1))))
              (aset js/location "hash" "")))))
-
 
     [:div {:class "opux-section"}
      [:h1 {:class "opux-centered"}

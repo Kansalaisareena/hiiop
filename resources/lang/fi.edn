@@ -6,6 +6,15 @@
  :header
  {:title "Hiiop"}
 
+ :footer
+ {:rules-and-guidelines "Säännöt ja ohjeet"
+  :frequently-asked-questions "Usein kysytyt kysymykset"
+  :contact "Ota yhteyttä"
+  :terms-of-service "Käyttäjäehdot"
+  :privacy "Henkilötietojen käsittely"
+  :follow-us "Seuraa meitä"
+  :copyright "© OP Ryhmä"}
+
  :pages
  {
   :index

@@ -323,6 +323,39 @@
   }
 }
 
+@include block('opux-footer') {
+  @include align-items(flex-start);
+  @include flex-direction(row);
+  @include flex-wrap(wrap);
+  @include justify-content(center);
+  @include flex(1);
+  @include flexbox;
+  color: $OP-gray-medium;
+  line-height: 1.8;
+  padding: 3rem 0;
+
+  // opux-footer__column
+  @include element('column') {
+    @include flex(0, 0, 25%);
+
+    // opux-footer__column--left
+    @include modifier('left') {
+      @include order(0);
+    }
+
+    // opux-footer__column--right
+    @include modifier('right') {
+      @include order(2);
+    }
+  }
+}
+
+@include block('opux-copyright') {
+  @include order(5);
+  padding-top: 2rem;
+  text-align: center;
+  width: 100%;
+}
 
 @include block('opux-social-feed') {
   background: $OP-gray-light;
