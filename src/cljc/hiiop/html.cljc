@@ -494,7 +494,7 @@
      (tr [:footer.follow-us])
      [:div {:class "opux-section"}
       [:a {:class "opux-footer__social-link opux-icon-social opux-icon-social--fb"
-           :href "https://www.facebook.com/OP.fi/"}]
+           :href "https://www.facebook.com/Hiiop/"}]
       [:a {:class "opux-footer__social-link opux-icon-social opux-icon-social--twitter"
            :href "https://twitter.com/OP_Ryhma"}]
       [:a {:class "opux-footer__social-link opux-icon-social opux-icon-social--instagram"
