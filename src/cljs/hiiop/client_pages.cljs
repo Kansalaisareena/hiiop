@@ -15,7 +15,6 @@
             [hiiop.components.quests-browse :as quest-browse]
             [hiiop.components.part-party :refer [part-party]]
             [hiiop.components.quests-browse :as quest-browse]
-            [hiiop.components.part-party :refer [part-party]]
             [hiiop.client-api :refer [get-quest
                                       get-secret-quest
                                       get-user-info
