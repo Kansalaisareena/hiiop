@@ -84,20 +84,22 @@
     ;;    :href "#"}
     ;;   (tr [:footer.rules-and-guidelines])]]
 
-    ;; [:li {:class "opux-menu__item"}
-    ;;  [:a {:class "opux-menu__item-link opux-menu__item-link--footer"
-    ;;       :href "#"}
-    ;;   (tr [:footer.frequently-asked-questions])]]
+    [:li {:class "opux-menu__item"}
+     [:a {:class "opux-menu__item-link opux-menu__item-link--footer"
+          :target "_blank"
+          :href "/images/faq.pdf"}
+      (tr [:footer.frequently-asked-questions])]]
 
     ;; [:li {:class "opux-menu__item"}
     ;;  [:a {:class "opux-menu__item-link opux-menu__item-link--footer"
     ;;       :href "#"}
     ;;   (tr [:footer.contact])]]
 
-    ;; [:li {:class "opux-menu__item"}
-    ;;  [:a {:class "opux-menu__item-link opux-menu__item-link--footer"
-    ;;       :href "#"}
-    ;;   (tr [:footer.terms-of-service])]]
+    [:li {:class "opux-menu__item"}
+     [:a {:class "opux-menu__item-link opux-menu__item-link--footer"
+          :target "_blank"
+          :href "/images/terms-of-service.pdf"}
+      (tr [:footer.terms-of-service])]]
 
     [:li {:class "opux-menu__item"}
      [:a {:class "opux-menu__item-link opux-menu__item-link--footer"
