@@ -82,7 +82,7 @@
 
   :quest
   {:title "Löydä tehtävä"
-
+    
    :view
    {:participants "vapaata paikkaa"
     :signup
