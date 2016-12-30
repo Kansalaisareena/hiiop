@@ -163,7 +163,7 @@
 (defn edit-quest [{:keys [quest user]}]
   (try
     (-> quest
-        (assoc :owner (:id user)) ;; TODO When moderating, this is different!
+       ( assoc :owner (:id user)) ;; TODO When moderating, this is different!
         (dissoc :organiser-participates)
         (hc/api-quest->moderated-db-quest-coercer)
         (db/update-moderated-quest!)
@@ -186,14 +186,33 @@
       {:errors {:quests :errors.quest.unexpected-error}})))
 
 (defn get-moderated-quests []
-  ;; TODO: currently there is no conditions for moderated quests in the queries
-  ;; since all quests are moderated by default.
   (try
     (-> (db/get-all-moderated-quests)
         ((partial map hc/db-quest->api-quest-coercer)))
     (catch Exception e
       (log/error e)
-      {:errors {:qusts :error.quest.unexpected-error}})))
+      {:errors {:quests :error.quest.unexpected-error}})))
+
+(defn get-unmoderated-quests []
+  (try
+    (-> (db/get-all-unmoderated-quests)
+        ((partial map hc/db-quest->api-quest-coercer)))
+    (catch Exception e
+      (log/error e)
+      {:errors {:quests :error.quest.unexpected-error}})))
+
+(defn moderate-accept-quest [{:keys [quest-id]}]
+  (let [email {:email (db/get-quest-owner-email {:id quest-id})}
+        ]
+    (db/moderate-accept-quest {:id quest-id}))
+  ;; TODO: send email with acceptance message
+  )
+
+(defn moderate-reject-quest [{:keys [quest-id message]}]
+  (let [email {:email (db/get-quest-owner-email {:id quest-id})}]
+      (db/moderate-reject-quest! {:id quest-id}))
+  ;; TODO: send mail with rejection message
+  )
 
 (defn check-and-update-user-info [user-info]
   user-info)
