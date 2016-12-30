@@ -52,11 +52,11 @@
 
   :register
   {:title "Luo tunnus"
+   :register-subtitle "Kirjautuneena käyttäjänä voit ilmoittaa ja muokata tapahtumia. Näet myös kaikki vapaaehtoistehtävät, joihin olet osallistunut Hiiop100.fi -sivuston kautta."
    :name "Nimi"
    :email "Sähköposti"
    :phone "Puhelinnumero"
    :check-your-email "Tarkista sähköpostisi"
-   :register-subtitle "Kirjautuneena käyttäjänä voit ilmoittaa ja muokata tapahtumia. Näet myös kaikki vapaaehtoistehtävät, joihin olet osallistunut Hiiop100.fi -sivuston kautta."
    :email-sent "Varmistusviesti lähetetty"}
 
   :profile
