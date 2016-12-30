@@ -70,7 +70,7 @@
                 (generate-quest-search-link (:categories new-filter)))))
 
     [:div {:class "opux-section"}
-     [:div {:class "opux-content"}
+     [:div {:class "opux-content opux-centered"}
       [:h1 (tr [:pages.index.category-selector.title])]
       [:h3 (tr [:pages.index.category-selector.subtitle])]]
 
@@ -93,9 +93,10 @@
   (let [tr (:tr context)]
     [:div {:class "opux-section opux-social-feed"}
      [:h1 (tr [:pages.index.social-feed.title])]
-     [:ul {:class        "juicer-feed"
-           :data-feed-id "dev-a2309a66-47f2-4145-9bef-85039c38e52b"
-           :data-per     12}]]))
+     [:div {:class "opux-content"}
+      [:ul {:class        "juicer-feed"
+            :data-feed-id "dev-a2309a66-47f2-4145-9bef-85039c38e52b"
+            :data-per     12}]]]))
 
 (rum/defc index-page
   [{:keys [context category-filter schema]}]
