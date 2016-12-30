@@ -38,25 +38,27 @@
           :href (path-for hierarchy :create-quest)}
          (tr [:actions.quest.create])]]]
       [:div {:class "opux-menu--right"}
-       [:ul
-        {:class "opux-menu opux-menu--languages"}
-        [:li
-         {:class "opux-menu__item opux-menu__item--languages"}
-         [:a
-          {:href "?lang=fi"
-           :class (str
-                    "opux-menu__item-link opux-menu__item-link--languages "
-                    (when (= current-locale :fi) "opux-menu__item-link opux-menu__item-link--languages is-active"))}
-          "fi"]
-         ]
-        [:li
-         {:class "opux-menu__item opux-menu__item--languages"}
-         [:a
-          {:href "?lang=sv"
-           :class (str
-                    "opux-menu__item-link opux-menu__item-link--languages "
-                    (when (= current-locale :sv) "opux-menu__item-link opux-menu__item-link--languages is-active"))}
-          "sv"]]]
+
+       ;; [:ul
+       ;;  {:class "opux-menu opux-menu--languages"}
+       ;;  [:li
+       ;;   {:class "opux-menu__item opux-menu__item--languages"}
+       ;;   [:a
+       ;;    {:href "?lang=fi"
+       ;;     :class (str
+       ;;              "opux-menu__item-link opux-menu__item-link--languages "
+       ;;              (when (= current-locale :fi) "opux-menu__item-link opux-menu__item-link--languages is-active"))}
+       ;;    "fi"]
+       ;;   ]
+       ;;  [:li
+       ;;   {:class "opux-menu__item opux-menu__item--languages"}
+       ;;   [:a
+       ;;    {:href "?lang=sv"
+       ;;     :class (str
+       ;;              "opux-menu__item-link opux-menu__item-link--languages "
+       ;;              (when (= current-locale :sv) "opux-menu__item-link opux-menu__item-link--languages is-active"))}
+       ;;    "sv"]]]
+
        [:ul {:class "opux-menu opux-menu--login"}
 
         (if (nil? identity)
