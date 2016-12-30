@@ -1,4 +1,15 @@
+@include block('opux-wrapper') {
+  box-sizing: border-box;
+  margin: 0px;
+  min-height: 100%;
+  padding-bottom: 18rem;
+  padding-top: $header-height;
+  position: relative;
+  width: 100%;
+}
+
 @include block('opux-page-section') {
+  @include flex(1);
   @include flex-direction(row);
   @include flexbox;
   box-sizing: border-box;
@@ -8,7 +19,7 @@
 
   // opux-page-section--header
   @include modifier('header') {
-    @include box-shadow(-5px, 0px, 12px, rgba(122, 122, 122, 0.5))
+    @include box-shadow(-5px, 0px, 5px, rgba(122, 122, 122, 0.5))
     background: $OP-white;
     box-sizing: border-box;
     font-size: 20px;
@@ -42,7 +53,6 @@
     background-size: cover;
     display: block;
     height: 550px;
-    margin-top: -40px;
   }
 
   @include modifier('quest-header') {
@@ -59,7 +69,7 @@
 
 @include block('opux-card-list-container') {
   background: $OP-gray-light;
-  margin: 3rem -1rem 3rem -1rem;
+  margin: 3rem -1rem 0 -1rem;
   min-width: 100%;
   padding: 1.5rem 1rem;
 }
@@ -216,7 +226,6 @@
   background-size: cover;
   margin-left: -1rem;
   margin-right: -1rem;
-  margin-top: -40px;
   padding-bottom: 5rem;
   padding-top: 5rem;
   position: relative;
@@ -323,12 +332,20 @@
   }
 }
 
+@include block('opux-footer-container') {
+  border-top: 1px solid $OP-dark-gray;
+  bottom: .7rem;
+  left: 0px;
+  position: absolute;
+  width: 100%;
+  background: $OP-white;
+}
+
 @include block('opux-footer') {
   @include align-items(flex-start);
   @include flex-direction(row);
   @include flex-wrap(wrap);
   @include justify-content(center);
-  @include flex(1);
   @include flexbox;
   color: $OP-gray-medium;
   line-height: 1.8;
@@ -337,22 +354,37 @@
   // opux-footer__column
   @include element('column') {
     @include flex(0, 0, 25%);
+    overflow: hidden;
 
     // opux-footer__column--left
     @include modifier('left') {
+      @include flex(0, 0, 30%);
       @include order(0);
+      text-align: center;
+
+      @include block('opux-suomi-100') {
+        margin-top: .5rem;
+        display: inline-block;
+      }
     }
 
     // opux-footer__column--right
     @include modifier('right') {
+      @include flex(0, 0, 20%);
       @include order(2);
+      text-align: center;
+
+      @include block('opux-op-logo') {
+        display: inline-block;
+        margin-top: .3rem;
+      }
     }
   }
 }
 
 @include block('opux-copyright') {
   @include order(5);
-  padding-top: 2rem;
+  padding: 1.5rem 0;
   text-align: center;
   width: 100%;
 }

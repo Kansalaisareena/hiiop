@@ -95,7 +95,7 @@
      [:h1 (tr [:pages.index.social-feed.title])]
      [:div {:class "opux-content"}
       [:ul {:class        "juicer-feed"
-            :data-feed-id "dev-a2309a66-47f2-4145-9bef-85039c38e52b"
+            :data-feed-id "hiiop-9a6ea220-feaa-4128-9711-a874fa79cf74"
             :data-per     12}]]]))
 
 (rum/defc index-page

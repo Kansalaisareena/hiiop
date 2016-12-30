@@ -450,7 +450,10 @@
     (navigation/top-navigation context)]])
 
 (rum/defc body-content [header content footer scripts]
-  [:body header content footer scripts])
+  [:body
+   [:div {:class "opux-wrapper"}
+    header content footer scripts
+    ]])
 
 (rum/defc head-content [{:keys [title asset-path]}]
   [:head
@@ -466,22 +469,29 @@
    {:src url :type "text/javascript"}])
 
 (rum/defc footer [{:keys [hierarchy tr asset-path] :as context}]
-  [:footer {:class "opux-footer opux-content"}
-   [:div {:class "opux-footer__column opux-footer__column--left"}
-    "SUOMI FINLAND 100"]
+  [:footer {:class "opux-footer-container opux-section"}
+   [:div {:class "opux-footer opux-content"}
+    [:div {:class "opux-footer__column opux-footer__column--left"}
+     [:span {:class "opux-suomi-100"}]]
 
-   [:div {:class "opux-footer__column opux-footer__column--right"}
-    [:span {:class "opux-op-logo"}]]
+    [:div {:class "opux-footer__column opux-footer__column--right"}
+     [:span {:class "opux-op-logo"}]]
 
-   [:div {:class "opux-footer__column"}
-    (navigation/footer-navigation context)]
+    [:div {:class "opux-footer__column"}
+     (navigation/footer-navigation context)]
 
-   [:div {:class "opux-footer__column"}
-    (tr [:footer.follow-us])]
+    [:div {:class "opux-footer__column"}
+     (tr [:footer.follow-us])
+     [:div {:class "opux-section"}
+      [:a {:class "opux-footer__social-link opux-icon-social opux-icon-social--fb"
+           :href "https://www.facebook.com/OP.fi/"}]
+      [:a {:class "opux-footer__social-link opux-icon-social opux-icon-social--twitter"
+           :href "https://twitter.com/OP_Ryhma"}]
+      [:a {:class "opux-footer__social-link opux-icon-social opux-icon-social--instagram"
+           :href "https://www.instagram.com/op_ryhma"}]]]]
 
    [:div {:class "opux-copyright opux-centered"}
-    (tr [:footer.copyright])]
-   ])
+    (tr [:footer.copyright])]])
 
 (defn app-structure
   [{:keys [context title content csrf-token servlet-context scripts]}]
@@ -490,13 +500,13 @@
         default-script (str asset-path "/js/app.js")
         script-tags (vec (map script-tag (conj scripts default-script)))]
     (page
-     (head-content {:title (tr [:title] [title]) :asset-path asset-path})
-     (body-content
-       (header context)
-       [:div {:id "app" :class "opux-page-section" :dangerouslySetInnerHTML {:__html content}}]
-       (footer context)
-      (into [:div {:class "script-tags"}] script-tags)
-      ))))
+      (head-content {:title (tr [:title] [title]) :asset-path asset-path})
+      (body-content
+        (header context)
+        [:div {:id "app" :class "opux-page-section" :dangerouslySetInnerHTML {:__html content}}]
+        (footer context)
+        (into [:div {:class "script-tags"}] script-tags)
+        ))))
 
 (defn wrap-paragraph [content]
   (into [:div]

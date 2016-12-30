@@ -112,7 +112,7 @@ $opux-icon-cross-name-collection: (eyeglasses, law, sound, globe, handicap, chil
   }
 }
 
-@include block("opux-op-logo") {
+@include block('opux-op-logo') {
   background-size: contain;
   background: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2050%2050%22%3E%3Ccircle%20cx%3D%2225%22%20cy%3D%2225%22%20r%3D%2225%22%20fill%3D%22%23ff6a10%22%2F%3E%3Cpath%20fill%3D%22none%22%20stroke-width%3D%225%22%20stroke%3D%22%23fff%22%20d%3D%22M8%2025a8.5%208.5%200%201%200%2017%200%208.5%208.5%200%201%200-17%200m17%200a8.5%208.5%200%201%200%2017%200%208.5%208.5%200%201%200-17%200m0-19.5v39%22%2F%3E%3C%2Fsvg%3E) no-repeat;
   display: block;
@@ -136,5 +136,47 @@ $opux-icon-cross-name-collection: (eyeglasses, law, sound, globe, handicap, chil
     position: absolute;
     top: 0;
     width: 70px;
+  }
+}
+
+@include block('opux-icon-social') {
+  background: url(/images/sharebadges_sprite.png) no-repeat;
+  display: inline-block;
+  height: 30px;
+  margin-right: .2rem;
+  width: 30px;
+
+  // opux-icon-social--fb
+  @include modifier('fb') {
+    background-position: 0 -90px;
+    //background-position: 0 0;
+
+    // opux-icon-social--fb.is-disabled
+    @include state('disabled') {
+      background-position: 0 -90px !important;
+    }
+  }
+
+  // opux-icon-social--twitter
+  @include modifier('twitter') {
+    background-position: -30px -90px;
+    //background-position: -30px -30px;
+    //background-position: -60px 0;
+
+    // opux-icon-social--twitter.is-disabled
+    @incude state('disabled') {
+      background-position: -60px -90px!important;
+    }
+  }
+
+  // opux-icon-social--instagram
+  @include modifier('instagram') {
+    background-position: -90px -90px;
+    //background-position: -90px -30px;
+
+    // opux-icon-social--instagram.is-disabled
+    @incude state('disabled') {
+      background-position: -90px -90px !important;
+    }
   }
 }

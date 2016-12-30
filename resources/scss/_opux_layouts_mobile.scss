@@ -33,7 +33,6 @@
         border: 0;
       }
     }
-
   }
 }
 
@@ -67,6 +66,7 @@
       padding-bottom: 1rem;
     }
   }
+
 }
 
 
@@ -100,6 +100,17 @@
     @include element('subtitle') {
       font-size: 1.7rem;
       padding-bottom: .5rem;
+    }
+  }
+
+  @include block('opux-footer') {
+    display: block;
+
+    @include element('column') {
+      display: block;
+      padding: 1rem 0;
+      text-align: center;
+      width: 100%;
     }
   }
 }

@@ -146,19 +146,41 @@
 
     // opux-menu__item-link
     @include element('item-link') {
-      box-sizing: border-box;
-      display: block;
-      height: auto;
-      line-height: 1.5;
-      padding: 1rem;
-      text-align: right;
-      width: 100%;
+      // opux-menu__item-link--main
+      @include modifier('main') {
+        box-sizing: border-box;
+        display: block;
+        height: auto;
+        line-height: 1.5;
+        padding: 1rem;
+        text-align: right;
+        width: 100%;
+      }
 
+      // opux-menu__item-link--login
       @include modifier('login') {
+        box-sizing: border-box;
+        display: block;
+        height: auto;
+        line-height: 1.5;
+        padding: 1rem;
+        text-align: right;
+        width: 100%;
         .opux-icon-circled.opux-icon-person:before {
           font-size: 2rem;
           margin-left: -1.5rem;
         }
+      }
+
+      // opux-menu__item-link--languages
+      @include modifier('languages') {
+        box-sizing: border-box;
+        display: block;
+        height: auto;
+        line-height: 1.5;
+        padding: 1rem;
+        text-align: right;
+        width: 100%;
       }
     }
   }
