@@ -321,6 +321,55 @@ q.is_open as is_open,
 q.owner as owner
 FROM
 quests q
+WHERE
+q.name IS NOT NULL
+
+-- :name get-all-unmoderated-quests :? :*
+-- :doc get unmoderated quests
+SELECT
+q.id as id,
+q.unmoderated_name as unmoderated_name,
+q.unmoderated_description as unmoderated_description,
+q.unmoderated_organisation as unmoderated_organisation,
+q.unmoderated_organisation_description as unmoderated_organisation_description,
+q.start_time as start_time,
+q.end_time as end_time,
+q.street_number as street_number,
+q.street as street,
+q.postal_code as postal_code,
+q.town as town,
+q.country as country,
+q.latitude as latitude,
+q.longitude as longitude,
+q.google_maps_url as google_maps_url,
+q.google_place_id as google_place_id,
+q.categories as categories,
+q.max_participants as max_participants,
+q.unmoderated_hashtags as unmoderated_hashtags,
+(SELECT url FROM pictures WHERE id = q.unmoderated_picture) as picture_url,
+q.is_open as is_open,
+q.owner as owner
+FROM
+quests q
+where q.unmoderated_name IS NOT NULL
+
+-- :name moderate-accept-quest!
+-- :doc accept unmoderated changes to a quest
+UPDATE quests
+SET
+  description = unmoderated_description,
+  name = unmoderated_name,
+  organisation = unmoderated_organisation,
+  organisation = unmoderated_organisation_description,
+  hashtags = unmoderated_hashtags,
+  picture = unmoderated_picture,
+WHERE id = :id
+
+-- :name moderate-reject-quest!
+-- :doc reject unmoderated changes to a quest
+UPDATE quests
+SET is_rejected = true
+where id = :id
 
 -- :name get-moderated-quests-by-owner :? :*
 -- :doc get quest by owner
@@ -350,7 +399,13 @@ SELECT
 FROM
   quests q
 WHERE
-  q.owner = :owner;
+  q.owner = :owner AND q.name IS NOT NULL
+
+-- :name get-quest-owner-email :? :1
+-- :doc get email address of quest owner
+SELECT u.email
+FROM quests q, users u
+WHERE u.id = q.owner
 
 -- :name update-moderated-quest! :? :1
 -- :doc "Update moderated quest"
