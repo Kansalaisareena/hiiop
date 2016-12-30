@@ -2,6 +2,7 @@
   (:require [ring.util.http-response :as response]
             [clojure.java.io :as io]
             [taoensso.timbre :as log]
+            [schema.coerce :as sc]
             [bidi.ring :refer (make-handler)]
             [hiiop.middleware :refer [authenticated]]
             [hiiop.layout :as layout]
@@ -14,6 +15,7 @@
             [hiiop.components.register :as p-r]
             [hiiop.components.errors :as e]
             [hiiop.components.login :as p-l]
+            [hiiop.components.part-party :refer [part-party]]
             [hiiop.config :refer [env google-maps-url]]
             [hiiop.routes.page-hierarchy :refer [hierarchy]]
             [hiiop.url :refer [redirect-to]]
@@ -38,7 +40,8 @@
                                         get-user
                                         get-quests-for-owner
                                         get-quest-party
-                                        get-moderated-quests]]))
+                                        get-moderated-quests
+                                        get-party-member]]))
 
 (defn tr-from-req [req]
   (:tempura/tr req))
@@ -180,7 +183,6 @@
       (redirect-to {:path-key :index}))))
 
 (defn quest [req]
-
   (let [id (get-in req [:params :quest-id])
         quest (get-quest (parse-natural-number id))
         empty-party-member (atom (new-empty-party-member))
@@ -223,6 +225,25 @@
                                     :party-member-errors errors
                                     :party-member-schema NewPartyMember})}))))
 
+(defn part-quest-party [req]
+  (let [context (create-context req)
+        tr (:tr context)
+        quest-id (parse-natural-number
+                  (get-in req [:params :quest-id]))
+        quest (get-quest quest-id)
+        member-id (get-in req [:params :member-id])
+        party-member (get-party-member {:member-id (sc/string->uuid member-id)})]
+    (if party-member
+      (layout/render {:title (tr [:pages.quest.part.title])
+                      :context context
+                      :content
+                      (part-party {:quest quest
+                                   :party-member party-member
+                                   :context context})})
+      (redirect-to {:path-key :quest
+                    :with-params [:quest-id quest-id]})
+      )))
+
 (def handlers
   {:index
    index
@@ -238,6 +259,8 @@
    quest
    :secret-quest
    secret-quest
+   :part-quest-party
+   part-quest-party
    :browse-quests
    browse-quests
    :create-quest

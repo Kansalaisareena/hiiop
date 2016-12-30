@@ -331,23 +331,24 @@
           :name        ::quest-party-member
           :path-params [quest-id :- Long
                         member-id :- s/Uuid]
-          :return      [PartyMember]
-          :middleware  [api-authenticated]
+          :return      PartyMember
           :summary     "Get party member info"
           (fn [request]
-            (bad-request {:errors {:quest "Not found"}})))
+            (-> (api-handlers/get-party-member {:member-id member-id})
+                (#(if %1
+                    (ok %1)
+                    (bad-request {:errors {:quest "Not found"}}))))
+            ))
 
-        (DELETE "/:quest-id/party/:participation-id" []
+        (DELETE "/:quest-id/party/:member-id" []
           :name        ::quest-delete-party-member
           :path-params [quest-id :- Long
-                        participation-id :- s/Uuid]
-          :middleware  [api-authenticated]
+                        member-id :- s/Uuid]
           :summary     "Delete party member from party"
           (fn [request]
+            (log/info "delete member" member-id)
             (-> (api-handlers/remove-party-member
-                 {:participation-id participation-id
-                  :quest-id quest-id
-                  :user (:identity request)})
+                 {:member-id member-id})
                 (#(if %1
                     (no-content)
                     (bad-request

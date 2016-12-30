@@ -363,7 +363,7 @@
     ))
 
 (rum/defc party-member-confirm-remove
-  [{:keys [party context processing confirm participation-id quest-id]}]
+  [{:keys [party context processing confirm member-id quest-id]}]
   (let [tr (:tr context)]
     [:div
      [:span
@@ -375,7 +375,7 @@
             (go
               (let [removed (<! (api/remove-party-member
                                 {:quest-id quest-id
-                                 :participation-id participation-id}))]
+                                 :member-id member-id}))]
                 (when removed
                   (do
                     (reset! party (<! (api/get-quest-party quest-id)))
@@ -399,7 +399,7 @@
 
 (rum/defcs edit-party-member < rum/reactive
                              < (rum/local false ::confirm)
-  [state {:keys [quest party context processing]} {:keys [participation-id name email phone days]}]
+  [state {:keys [quest party context processing]} {:keys [member-id name email phone days]}]
   (log/info quest @party)
   (let [tr (:tr context)
         confirm (::confirm state)]
@@ -415,7 +415,7 @@
           :party party
           :confirm confirm
           :quest-id (:id quest)
-          :participation-id participation-id
+          :member-id member-id
           :processing processing})
         [:button
          {:class "opux-button--icon opux-icon opux-icon-trashcan"

@@ -79,7 +79,7 @@
 
   :quest
   {:title "Löydä tehtävä"
-    
+
    :view
    {:participants "vapaata paikkaa"
     :signup
@@ -127,6 +127,7 @@ Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit
      :time-place "2/4 Missä ja milloin vapaaehtoistoiminta järjestetään?"
      :related-to "3/4 Mihin vapaaehtoistehtävä liittyy?"
      :participation "Osallistuminen"
+
      :info
      {:content "Kerro, mitä haluat saada aikaan yhteisvoimin. Ole innostava! Mitä päivän aikana tapahtuu? Miten vapaaehtoiset voivat osallistua ja auttaa? Millaisia voimia ja kykyjä tarvitset mukaan?"
       :related-to "Valitse yksi tai useampi aihealue, jotka kuvaavat parhaiten vapaaehtoistehtävääsi."
@@ -144,7 +145,7 @@ Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit
     :organisation
     {:name "Järjestävä yhteisö tai järjestö"
      :description "Kerro yhteisösi toiminnasta"}
-    
+
     :start-date "Päivämäärä"
     :end-date "Lisää päättymispäivämäärä"
     :start-time "Kellonaika"
@@ -174,7 +175,7 @@ Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit
     {:title "Oletko varma, että haluat poistaa tehtävän? Jos vapaaehtoistehtävä on jo julkinen, siihen ilmoittautuneet vapaaehtoiset saavat automaattisesti viestin peruutuksesta."
      :confirm "Poista tehtävä"
      :cancel "Peruuta"}
-     
+
     :cancel
     {:confirmation "Oletko varma, että haluat poistaa tehtävän? Jos vapaaehtoistehtävä on jo julkinen, siihen ilmoittautuneet vapaaehtoiset saavat automaattisesti viestin peruutuksesta."}
     :party
@@ -194,6 +195,14 @@ Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit
      :when "Milloin?"
      }
     }
+
+   :part
+   {:title "Peru ilmoittautuminen"
+    :text "Oletko varma, että haluat perua ilmoittautumisen tehtävään %1?"
+    :confirm "Peru ilmoittautuminen"
+    :success "Peruminen onnistui!"
+    :to-quest "Takaisin tehtävään"}
+
 
    :preview
    {:title "Vapaaehtoistehtävän esikatselu"
@@ -234,6 +243,8 @@ Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit
    :register "Rekisteröidy"
    :logout   "Kirjaudu ulos"
    :save-password "Tallenna salasana"}
+
+  :cancel "Peruuta"
 
   :profile
   {:sign-out "Kirjaudu ulos"

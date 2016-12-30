@@ -257,8 +257,8 @@
       (parse-string true)
       (do-this #(pp/pprint %1))))
 
-(defn remove-party-member [{:keys [with quest-id participation-id login-cookie status]}]
-  (-> (json-request (str "/api/v1/quests/" quest-id "/party/" participation-id)
+(defn remove-party-member [{:keys [with quest-id member-id login-cookie status]}]
+  (-> (json-request (str "/api/v1/quests/" quest-id "/party/" member-id)
                     {:type :delete
                      :cookies login-cookie})
       (with)
@@ -519,7 +519,7 @@
                            :with current-app
                            }))
             (check #(is (not (nil? %1))))
-            (#(assoc %1 :id (schema.coerce/string->uuid (:id %1))))
+            (#(assoc %1 :member-id (schema.coerce/string->uuid (:member-id %1))))
             (#(assoc %1 :user-id (schema.coerce/string->uuid (:user-id %1))))
             (check #(s/validate hs/PartyMember %1))
             (just-do #(db/delete-quest-by-id! {:id (:id added-quest)}))
@@ -556,7 +556,7 @@
                          :login-cookie login-cookie
                          }))
           (check #(is (not (nil? %1))))
-          (#(assoc %1 :id (schema.coerce/string->uuid (:id %1))))
+          (#(assoc %1 :member-id (schema.coerce/string->uuid (:member-id %1))))
           (#(assoc %1 :user-id (schema.coerce/string->uuid (:user-id %1))))
           (check #(s/validate hs/PartyMember %1))
           (just-do #(db/delete-quest-by-id! {:id (:id added-quest)}))
@@ -709,7 +709,7 @@
                          :secret-party secret-party
                          })
             (check #(is (not (nil? %1))))
-            (#(assoc %1 :id (schema.coerce/string->uuid (:id %1))))
+            (#(assoc %1 :member-id (schema.coerce/string->uuid (:member-id %1))))
             (#(assoc %1 :user-id (schema.coerce/string->uuid (:user-id %1))))
             (check #(s/validate hs/PartyMember %1))
             (just-do #(db/delete-quest-by-id! {:id (:id added-quest)}))
@@ -787,7 +787,7 @@
           (just-do #(db/delete-user! {:id (sc/string->uuid @test-user-id)})))
       ))
 
-  (testing "DELETE /api/v1/quests/:quest-id/party/:participation-id"
+  (testing "DELETE /api/v1/quests/:quest-id/party/:member-id"
     (let [current-app (app)
           user-created (create-test-user
                         {:user-data test-user
@@ -819,7 +819,7 @@
           (check #(is (= 1 (count %1))))
           (#(remove-party-member {:with current-app
                                   :login-cookie login-cookie
-                                  :participation-id (:participation-id (first %1))
+                                  :member-id (:member-id (first %1))
                                   :quest-id (:id added-quest)
                                   }))
           (just-do #(db/delete-quest-by-id! {:id (:id added-quest)}))
