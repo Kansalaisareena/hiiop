@@ -115,7 +115,12 @@
       box-sizing: border-box;
       padding-left: 55px;
       padding-right: 55px;
+      margin: 0 auto;
       max-width: 200px;
+
+      input {
+        text-align: center;
+      }
 
       .opux-number-tick-input__control {
         position: absolute;

@@ -366,8 +366,8 @@
   [{:keys [party context processing confirm member-id quest-id]}]
   (let [tr (:tr context)]
     [:div
-     [:button
-      {:class "opux-button--icon"
+     [:span
+      {:class "opux-button opux-button--underline opux-button--small"
        :type "button"
        :on-click
        (fn [e]
@@ -384,8 +384,8 @@
             ))
        }
       (tr [:pages.quest.edit.party.confirm-remove])]
-     [:button
-      {:class "opux-button--icon"
+     [:span
+      {:class "opux-button opux-button--underline opux-button--small"
        :type "button"
        :on-click
        (fn []
@@ -440,7 +440,7 @@
       (tr [:pages.quest.edit.party.title])]
      (if (not-empty (rum/react party))
        [:table
-        {:class "opux-table opux-centered"}
+        {:class "opux-table opux-centered opux-content"}
         (into [:tbody {:class "opux-table__body"}] (map edit-member @party))]
        [:p {:class "opux-content opux-centered"} (tr [:pages.quest.edit.party.empty])])]))
 
@@ -526,7 +526,6 @@
        (edit-party {:quest @quest
                     :party party
                     :context context}))
-     [:div {:class "opux-line opux-content"}]
 
      (html/form-section
       ""

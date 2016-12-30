@@ -95,7 +95,7 @@
     ))
 
 (rum/defc join-quest-form
-  [{:keys [context party-member schema errors quest-id view-state is-valid signup-valid]}]
+  [{:keys [context party-member schema errors quest-id view-state is-valid signup-valid days-between]}]
   (let [tr (:tr context)
         cursors-and-schema
         (c/value-and-error-cursors-and-schema {:for party-member
@@ -133,19 +133,20 @@
          :error (get-in cursors-and-schema [:signup :error])
          :is-valid signup-valid}))
 
-     [:div {:class "opux-fieldset__item"}
-      (html/label
-       (tr [:pages.quest.view.signup.days])
-       {:class "opux-input__label"
-        :error (get-in cursors-and-schema [:days :error])})
-      (html/number-input-with-ticker
-       {:class "opux-input opux-input--text"
-        :error (get-in cursors-and-schema [:days :error])
-        :value (get-in cursors-and-schema [:days :value])
-        :type "number"
-        :schema hs/NPlus
-        :transform-value #(if (string? %) (mangling/parse-natural-number %))
-        :context context})]
+     (if (> days-between 1)
+       [:div {:class "opux-fieldset__item opux-centered"}
+        (html/label
+          (tr [:pages.quest.view.signup.days])
+          {:class "opux-input__label"
+           :error (get-in cursors-and-schema [:days :error])})
+        (html/number-input-with-ticker
+          {:class "opux-input opux-input--text opux-input--text--centered centered"
+           :error (get-in cursors-and-schema [:days :error])
+           :value (get-in cursors-and-schema [:days :value])
+           :type "number"
+           :schema hs/NPlus
+           :transform-value #(if (string? %) (mangling/parse-natural-number %))
+           :context context})])
 
      [:div {:class "opux-fieldset__item opux-fieldset__item--inline-container"}
       (html/button
@@ -168,7 +169,7 @@
                         (rum/local false ::is-valid)
                         (rum/local false ::signup-valid)
                         (rum/local {:view "join"} ::view)
-  [state {:keys [quest-id context party-member schema errors secret-party]}]
+  [state {:keys [quest-id context party-member schema errors secret-party days-between]}]
   (let [tr (:tr context)
         view-state (::view state)
         view (:view @view-state)
@@ -222,6 +223,7 @@
        {:context context
         :party-member party-member
         :quest-id quest-id
+        :days-between days-between
         :view-state view-state
         :schema schema
         :errors errors

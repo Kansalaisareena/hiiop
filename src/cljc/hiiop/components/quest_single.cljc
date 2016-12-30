@@ -18,6 +18,7 @@
                 hashtags
                 max-participants
                 start-time
+                end-time
                 description]} @quest
         {:keys [street-number
                 street
@@ -26,7 +27,10 @@
                 country
                 google-maps-url]} location
         usable-owner (or owner-name (:name user))
-        tr (:tr context)]
+        tr (:tr context)
+        days-between (time/days-between
+                       (time/from-string start-time)
+                       (time/from-string end-time))]
 
     [:div {:class "opux-section"}
 
@@ -71,6 +75,7 @@
                     :quest-id (:id @quest)
                     :party-member empty-party-member
                     :schema party-member-schema
+                    :days-between days-between
                     :errors party-member-errors})
 
        (and (not (:is-open @quest)) secret-party)
@@ -78,6 +83,7 @@
                     :quest-id (:id @quest)
                     :party-member empty-party-member
                     :schema party-member-schema
+                    :days-between days-between
                     :errors party-member-errors
                     :secret-party secret-party}))
        ]))
