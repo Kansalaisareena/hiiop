@@ -210,16 +210,17 @@
 }
 
 @include block('opux-banner') {
+  background-image: url('/images/banner.jpg');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
   margin-left: -1rem;
   margin-right: -1rem;
   margin-top: -40px;
+  padding-bottom: 5rem;
+  padding-top: 5rem;
   position: relative;
   width: calc(100% + 2rem);
-  padding-top: 5rem;
-  padding-bottom: 5rem;
-  background-image: url('/images/banner.jpg');
-  background-repeat: no-repeat;
-  background-size: cover;
 
   // opux-banner__content
   @include element('content') {
@@ -271,6 +272,7 @@
   // opux-index-links__item
   @include element('item') {
     @include flex(1);
+    background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
     box-sizing: border-box;
@@ -326,6 +328,8 @@
   background: $OP-gray-light;
   margin-left: -1rem;
   width: calc(100% + 2rem);
+  padding-top: 2rem;
+  padding-bottom: 2rem;
 
   .referral {
     display: none !important;
