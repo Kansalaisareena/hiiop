@@ -79,7 +79,7 @@
 
   :quest
   {:title "Löydä tehtävä"
-
+    
    :view
    {:participants "vapaata paikkaa"
     :signup
@@ -132,6 +132,8 @@ Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit
     :description "Kerro tehtävän sisällöstä"
     :picture "Lisää kuva"
     :hashtags "Aihetunnisteet eli hashtagit"
+
+    :info{:picture "Onhan sinulla on oikeudet kuvasi käyttöön? Kuvan käyttöön tarvitset aina kuvaajan nimen. Kuvan tulee olla vähintään 1100 pikseliä leveä ja 500 pikseliä korkea."}
 
     :organisation
     {:name "Järjestävä yhteisö tai järjestö"
@@ -207,7 +209,7 @@ Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit
  :actions
  {
   :quest
-  {:create  "Ilmoita tehtävä"
+  {:create  "Ilmoita vapaaehtoistehtävä"
    :browse  "Löydä tehtävä"
    :edit    "Muokkaa tehtävää"
    :signup  "Ilmoittaudu mukaan"
