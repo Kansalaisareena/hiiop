@@ -6,15 +6,6 @@
  :header
  {:title "Hiiop"}
 
- :footer
- {:rules-and-guidelines "Säännöt ja ohjeet"
-  :frequently-asked-questions "Usein kysytyt kysymykset"
-  :contact "Ota yhteyttä"
-  :terms-of-service "Käyttäjäehdot"
-  :privacy "Henkilötietojen käsittely"
-  :follow-us "Seuraa meitä"
-  :copyright "© OP Ryhmä"}
-
  :pages
  {
   :index
@@ -52,7 +43,6 @@
 
   :register
   {:title "Luo tunnus"
-   :register-subtitle "Kirjautuneena käyttäjänä voit ilmoittaa ja muokata tapahtumia. Näet myös kaikki vapaaehtoistehtävät, joihin olet osallistunut Hiiop100.fi -sivuston kautta."
    :name "Nimi"
    :email "Sähköposti"
    :phone "Puhelinnumero"

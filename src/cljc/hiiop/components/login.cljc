@@ -33,6 +33,10 @@
            ))}
      [:div {:class "opux-form-section"}
       [:h2 (tr [:pages.login.title])]
+
+      [:div {:class "opux-content opux-content--small opux-centered"}
+       (tr [:pages.login.login-subtitle])]
+
       [:div {:class "opux-fieldset opux-form-section__fieldset"}
 
        [:div {:class "opux-fieldset__item"}
