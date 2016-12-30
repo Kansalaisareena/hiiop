@@ -79,7 +79,7 @@
         {:class "opux-input__label opux-input__label--checkbox"
          :for (name :pages.login.remember-me)})
 
-       [:input
+       [:button
         {:class "opux-button opux-button--highlight"
-         :type "submit"
-         :value (tr [:actions.user.login])}]]]]))
+         :type "submit"}
+         (tr [:actions.user.login])]]]]))
