@@ -468,6 +468,7 @@
    [:meta {:charset "UTF-8"}]
    [:meta {:name "viewport"
            :content "width=device-width,initial-scale=1.0,minimum-scale=1.0"}]
+   [:link {:href "//assets.juicer.io/embed.css" :rel "stylesheet" :type "text/css"}]
    [:link {:href (str asset-path "/css/screen.css") :rel "stylesheet" :type "text/css"}]])
 
 (defn script-tag [url]
@@ -495,7 +496,7 @@
 
 (defn append-if-valid [text separator]
   (if (not (nil? text))
-    (str ", " text)
+    (str separator text)
     ""))
 
 (defn combine-text [separator first-text & args]

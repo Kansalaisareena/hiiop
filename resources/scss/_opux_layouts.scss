@@ -33,10 +33,6 @@
   padding: 1rem;
   width: 100%;
 
-  @include modifier('medium') {
-    max-width: 900px;
-  }
-
   @include modifier('small') {
     max-width: 620px;
   }
@@ -210,5 +206,141 @@
     &:before {
       color: $OP-orange;
     }
+  }
+}
+
+@include block('opux-banner') {
+  height: 1px;
+  margin-left: -1rem;
+  margin-right: -1rem;
+  margin-top: -40px;
+  padding-bottom: 50%;
+  position: relative;
+  width: calc(100% + 2rem);
+
+  // opux-banner__content
+  @include element('content') {
+    @include align-content(center);
+    @include align-items(center);
+    @include flex-direction(row);
+    @include flex-wrap(wrap);
+    @include flexbox;
+    background-image: url('/images/banner.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    bottom: 0px;
+    box-sizing: border-box;
+    color: $OP-white;
+    font-weight: 400;
+    left: 0px;
+    padding: 0 2rem;
+    position: absolute;
+    right: 0px;
+    text-shadow: 1px 1px 15px $OP-dark-gray;
+    top: 0px;
+  }
+
+  // opux-banner__title
+  @include element('title') {
+    @include flex(0, 0, 100%);
+    font-size: 4rem;
+    padding-bottom: 1rem;
+  }
+
+  // opux-banner__body-text
+  @include element('body-text') {
+    @include flex(0, 0, 100%);
+    font-size: 1.8rem;
+    padding-bottom: 1rem;
+  }
+
+  // opux-banner__subtitle
+  @include element('subtitle') {
+    @include flex(0, 0, 100%);
+    font-size: 2.4rem;
+  }
+}
+
+@include block('opux-index-links') {
+  @include flex-direction(row);
+  @include flexbox;
+  width: calc(100% + 2rem);
+  margin-left: -1rem;
+  margin-right: -1rem;
+  padding: 2rem 0 0 0;
+
+  // opux-index-links__item
+  @include element('item') {
+    @include flex(1);
+    background-repeat: no-repeat;
+    background-size: cover;
+    box-sizing: border-box;
+    color: $OP-white;
+    font-weight: 400;
+    padding: 3rem .5rem 7rem 1rem;
+    position: relative;
+    text-align: center;
+    text-shadow: 0px 0px 8px $OP-dark-gray;
+
+    p {
+      font-size: 1.3rem;
+      margin-left: auto;
+      margin-right: auto;
+      max-width: 300px;
+      padding: 0 1rem;
+    }
+
+    // opux-index-links__item--browse-quests
+    @include modifier('browse-quests') {
+      background-image: url('/images/equality.jpg');
+      border-right: 2px solid $OP-white;
+    }
+
+    // opux-index-links__item--create-quest
+    @include modifier('create-quest') {
+      background-image: url('/images/well-being.jpg');
+    }
+
+    // opux-index-links__item--read-stories
+    @include modifier('read-stories') {
+      background-image: url('/images/stories.jpg');
+      border-left: 2px solid $OP-white;
+    }
+
+    // opux-index-links__item opux-button
+    @include block('opux-button') {
+      bottom: 3rem;
+      box-sizing: border-box;
+      font-size: 1.3rem;
+      left: 50%;
+      margin-left: -130px;
+      min-width: auto;
+      padding: 0px;
+      position: absolute;
+      width: 260px;
+    }
+  }
+}
+
+
+@include block('opux-social-feed') {
+  background: $OP-gray-light;
+  margin-left: -1rem;
+  width: calc(100% + 2rem);
+
+  .referral {
+    display: none !important;
+  }
+
+  .j-stacker-wrapper {
+    width: 100%;
+    margin: 0px !important;
+    .j-stacker {
+      width: 100%;
+    }
+  }
+
+  a.j-paginate.juicer-button {
+    display: none;
   }
 }

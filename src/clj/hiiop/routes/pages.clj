@@ -8,6 +8,7 @@
             [hiiop.components.profile :as p-p]
             [hiiop.components.quest-single :as quest]
             [hiiop.components.quests :as quests]
+            [hiiop.components.index :as index-page]
             [hiiop.components.quests-browse :as p-b]
             [hiiop.components.activate :as p-a]
             [hiiop.components.register :as p-r]
@@ -24,10 +25,12 @@
                                   RegistrationInfo
                                   UserActivation
                                   QuestFilter
+                                  QuestCategoryFilter
                                   NewPartyMember
                                   new-empty-quest
                                   new-empty-party-member
                                   new-empty-quest-filter
+                                  new-empty-category-filter
                                   new-empty-registration-info
                                   new-empty-activation-info]]
             [hiiop.api-handlers :refer [get-quest
@@ -50,26 +53,14 @@
 (defn index [req]
   (let [context (create-context req)
         tr (:tr context)
-        quests (get-moderated-quests)
-        quest-filter (atom (new-empty-quest-filter))
-        errors (atom (same-keys-with-nils @quest-filter))]
+        category-filter (atom (new-empty-category-filter))
+        schema QuestCategoryFilter]
     (layout/render {:context context
-                    :content (p-b/list-quests {:quests quests
-                                               :quest-filter quest-filter
-                                               :filtered-quests (atom quests)
-                                               :context context
-                                               :schema QuestFilter})
-                    :title (tr [:actions.quest.create])
-
-                    :scripts
-                    [(str
-                      "https://maps.googleapis.com/maps/api/js?"
-                      "key=AIzaSyDfXn9JTGue0fbkI3gqIqe7_WUn0M-dt-8"
-                      "&libraries=places"
-                      "&language=" "fi" ;; to normalize the google data
-                      "&region=FI"
-                      )]
-                    })))
+                    :content (index-page/index-page {:context context
+                                                     :schema schema
+                                                     :category-filter category-filter})
+                    :title (tr [:pages.index.title])
+                    :scripts ["//assets.juicer.io/embed.js"]})))
 
 (defn login [req]
   (let [context (create-context req)
@@ -116,15 +107,6 @@
                                             :errors errors})
                     :title (tr [:pages.activate.title])})))
 
-(defn browse-quests [req]
-  (let [context (create-context req)
-        quests (get-moderated-quests)
-        tr (:tr context)]
-    (layout/render {:context context
-                    :content (p-b/list-quests {:quests quests
-                                               :context context})
-                    :title (tr [:actions.quest.create])})))
-
 (defn edit-quest-with-schema [{:keys [request schema quest party title-key]}]
   (let [context (create-context request)
         tr (:tr context)
@@ -154,11 +136,22 @@
         tr (:tr context)
         quests (get-moderated-quests)
         quest-filter (atom (new-empty-quest-filter))
-        errors (atom (same-keys-with-nils @quest-filter))]
+        errors (atom (same-keys-with-nils @quest-filter))
+        ;;category-queries (into [] (map keyword (:categories (:params req))))
+        filtered-quests (atom quests)]
+
+    ;; (if (not-empty category-queries)
+    ;;   (swap! quest-filter assoc :categories category-queries))
+
+    ;; (reset!
+    ;;   filtered-quests
+    ;;   (p-b/filters {:quests quests
+    ;;                 :quest-filter @quest-filter}))
+
     (layout/render {:context context
                     :content (p-b/list-quests {:quests quests
                                                :quest-filter quest-filter
-                                               :filtered-quests (atom quests)
+                                               :filtered-quests filtered-quests
                                                :context context
                                                :schema QuestFilter})
                     :title (tr [:actions.quest.create])

@@ -60,7 +60,7 @@
                  quests)
        :quest-filter quest-filter})))
 
-(defn- filters
+(defn filters
   [{:keys [quests quest-filter]}]
   (:quests ((comp filter-by-start-time
                   filter-by-location

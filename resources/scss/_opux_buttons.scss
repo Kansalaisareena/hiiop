@@ -37,6 +37,12 @@
     }
   }
 
+  // opux-button--white
+  @include modifier('white') {
+    border-color: $OP-white;
+    color: $OP-white;
+  }
+
   // opux-button--dull
   @include modifier('dull') {
     background: $OP-gray-light;
