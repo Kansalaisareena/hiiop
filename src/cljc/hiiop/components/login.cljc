@@ -80,6 +80,6 @@
          :for (name :pages.login.remember-me)})
 
        [:input
-        {:class "opux-button"
+        {:class "opux-button opux-button--highlight"
          :type "submit"
          :value (tr [:actions.user.login])}]]]]))
