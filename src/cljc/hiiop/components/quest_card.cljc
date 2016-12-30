@@ -9,6 +9,14 @@
             #?(:cljs [cljs.core.async :refer [<!]])
             #?(:cljs [hiiop.client-api :as api])))
 
+(defn get-quest-image [quest]
+  (let [{:keys [picture-url categories]} quest]
+    (if (nil? picture-url)
+      (str "/images/category/"
+          (name (first categories))
+          ".jpg")
+      picture-url)))
+
 (rum/defcs quest-card-action-delete < rum/reactive
   (rum/local false ::processing)
   [state {:keys [quest card-state tr quests]}]
@@ -68,7 +76,9 @@
         (tr [:pages.profile.my-event])]
        [:a {:href quest-link}
         [:div {:class "opux-card__image"
-               :style {:background-image (str "url('" (or picture-url "https://placeholdit.imgix.net/~text?txtsize=33&txt=quest%20image&w=480&h=300") "')")}}]]]
+               :style {:background-image (str "url('"
+                                              (get-quest-image quest)
+                                              "')")}}]]]
 
       [:div {:class "opux-card__content"}
 
@@ -128,7 +138,9 @@
       [:div {:class "opux-card__image-container"}
        [:a {:href quest-link}
         [:div {:class "opux-card__image"
-               :style {:background-image (str "url('" (or picture-url "https://placeholdit.imgix.net/~text?txtsize=33&txt=quest%20image&w=480&h=300") "')")}}]]]
+               :style {:background-image (str "url('"
+                                              (get-quest-image quest)
+                                              "')")}}]]]
 
       [:div {:class "opux-card__content"}
 
