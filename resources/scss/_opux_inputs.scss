@@ -40,9 +40,12 @@
 
   // opux-input--select
   @include modifier('select') {
-    font-size: 1rem;
+    -webkit-appearance: none;
     font-family: $font-family;
+    font-size: 1rem;
     font-weight: 200;
+    padding-right: 0px;
+    padding-top: 0px;
 
     // opux-input--select--time
     @include modifier('time') {
