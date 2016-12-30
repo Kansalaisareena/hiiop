@@ -1,25 +1,30 @@
 @include block('opux-button') {
   @include opux-color-transition;
   background: none;
-  border-radius: 24px;
+  border-radius: 25px;
   border: 1px solid $OP-gray-medium;
   box-sizing: border-box;
   color: $OP-gray;
   cursor: pointer;
+  min-width: 180px;
   display: inline-block;
   height: 50px;
   line-height: 48px;
-  min-width: 240px;
   outline: 0;
-  padding: 0 20px;
+  padding: 0 18px;
   text-align: center;
   &:hover {
-    background: $OP-orange;
     border-color: $OP-orange;
-    color: $OP-white;
   }
   &:disabled {
-    color: lighten($OP-gray, 30);
+    background: $OP-gray-light;
+    border-color: darken($OP-gray-light, 10);
+    color: darken($OP-gray-light, 20);
+    &:hover {
+      background: $OP-gray-light;
+      border-color: darken($OP-gray-light, 10);
+      color: darken($OP-gray-light, 20);
+    }
   }
 
   // opux-button--spacing
@@ -29,11 +34,12 @@
 
   // opux-button--highlight
   @include modifier('highlight') {
-    background: $OP-orange !important;
+    background: $OP-orange;
+    border-color: $OP-orange;
     color: $OP-white;
-
-    &:disabled {
-      color: darken($OP-white, 10);
+    &:hover {
+      background: lighten($OP-orange, 8);
+      border-color: lighten($OP-orange, 8);
     }
   }
 
@@ -52,6 +58,11 @@
   // opux-button--dull
   @include modifier('dull') {
     background: $OP-gray-light;
+    border-color: $OP-gray-medium;
+    &:hover {
+      background: lighten($OP-gray-light, 2);
+      border-color: $OP-orange;
+    }
   }
 
   @include modifier('icon') {

@@ -97,7 +97,7 @@
 
        (html/button
         (tr [:actions.user.register])
-        {:class "opux-button"
+        {:class "opux-button opux-button--highlight"
          :type "submit"
          :active local-is-valid}
         )]]]))

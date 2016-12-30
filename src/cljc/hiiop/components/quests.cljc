@@ -127,7 +127,7 @@
      (if (not (rum/react organisation-enabled))
        (html/button
         (tr [:pages.quest.edit.button.add-organisation])
-        {:class "opux-button opux-button--organisation"
+        {:class "opux-button"
          :on-click
          (fn [e]
            (enable-organisation organisation-enabled)
@@ -297,7 +297,7 @@
      [:div {:class "opux-fieldset__item opux-fieldset__item--inline-container"}
       (html/button
        (tr [:pages.quest.edit.remove.cancel])
-       {:class "opux-button opux-form__button opux-fieldset__inline-item"
+       {:class "opux-button opux-button--dull opux-form__button opux-fieldset__inline-item"
         :type "button"
         :on-click
         (fn []
@@ -326,7 +326,7 @@
        :active is-valid})
      (html/button
       (tr [:pages.quest.edit.button.remove])
-      {:class "opux-button opux-form__button opux-fieldset__inline-item"
+      {:class "opux-button opux-button--dull opux-form__button opux-fieldset__inline-item"
        :on-click
        (fn []
          (reset! ask-remove true))
@@ -548,7 +548,7 @@
           (reset! view "edit"))})
       (html/button
        (tr [:pages.quest.preview.buttons.publish])
-       {:class "opux-button opux-form__button opux-fieldset__inline-item"
+       {:class "opux-button opux-button--highlight opux-form__button opux-fieldset__inline-item"
         :type "submit"
         :active is-valid
         :on-click
