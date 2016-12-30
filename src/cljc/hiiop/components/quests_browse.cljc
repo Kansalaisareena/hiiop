@@ -187,7 +187,17 @@
       (fn [key _ _ new-filter]
         (reset! filtered-quests
                 (filters {:quests quests
-                          :quest-filter new-filter}))))
+                          :quest-filter new-filter}))
+        ;; Update window location hash
+        #?(:cljs
+           (if (not-empty (:categories new-filter))
+             (aset js/location "hash"
+                   (-> new-filter
+                       (:categories)
+                       (#(map name %1))
+                       (#(clojure.string/join "&categories[]=" %1))
+                       (#(str "#?categories[]=" %1))))))))
+
 
     [:div {:class "opux-section"}
      [:h1 {:class "opux-centered"}
