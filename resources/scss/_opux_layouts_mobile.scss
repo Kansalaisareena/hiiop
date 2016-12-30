@@ -14,14 +14,11 @@
     }
   }
 
-<<<<<<< 0b8d76be62c2b73122faf2c7910c2e17103b5e59
   @include block('opux-banner') {
     width: calc(100% + 2rem);
     margin-left: -1rem;
   }
 
-=======
->>>>>>> add index page and quest search filter through url hash
   // opux-index-links
   @include block('opux-index-links') {
     display: block;
