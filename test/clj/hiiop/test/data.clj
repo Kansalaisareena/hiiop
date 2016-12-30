@@ -56,7 +56,8 @@
           :hashtags ["#a" "#b" "#c" "#d"]
           :picture nil
           :owner nil
-          :is-open true}
+          :is-open true
+          :participant-count 0}
          (add-location
           {:location-to location-to
            :coordinates-to coordinates-to })
