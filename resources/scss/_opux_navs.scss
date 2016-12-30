@@ -84,6 +84,9 @@
   @include element('item-link') {
     color: $basic-text-colour;
     text-decoration: none;
+    &:hover {
+      color: $OP-orange;
+    }
 
     // opux-menu__item-link--main
     @include modifier('main') {
