@@ -51,6 +51,8 @@
 
      [:div {:class "opux-form-section"}
       [:h2 (tr [:pages.register.title])]
+      [:div {:class "opux-content opux-centered"}
+       (tr [:pages.register.register-subtitle])]
       [:div {:class "opux-fieldset opux-form-section__fieldset"}
 
        [:div {:class "opux-fieldset__item"}
