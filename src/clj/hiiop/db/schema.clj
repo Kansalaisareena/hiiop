@@ -42,14 +42,7 @@
    :owner s/Uuid
    :is_open s/Bool})
 
-(def UnmoderatedDBQuest
-  (apply
-   st/dissoc
-   (concat
-    [DBQuest]
-    (keys moderated->unmoderated-db-quest-keys))))
-
-(def ModeratedDBQuest
+(def DBQuestSansUnmoderatedKeys
   (apply
    st/dissoc
    (concat
@@ -57,12 +50,7 @@
     (vals moderated->unmoderated-db-quest-keys))))
 
 (def NewUnmoderatedDBQuest
-  (st/dissoc UnmoderatedDBQuest
-             :id
-             :secret_party))
-
-(def NewModeratedDBQuest
-  (st/dissoc ModeratedDBQuest
+  (st/dissoc DBQuestSansUnmoderatedKeys
              :id
              :secret_party))
 

@@ -8,7 +8,7 @@
             [hiiop.time :as time]
             [taoensso.timbre :as log]))
 
-(defn api-quest->moderated-db-quest
+(defn api-quest->db-quest
   [{:keys [hashtags
            start-time
            end-time
@@ -90,23 +90,13 @@
   (stc/coercer hs/Quest
                {hs/Quest db-quest->api-quest}))
 
-(def db-unmoderated-quest->api-quest-coercer
-  (stc/coercer hs/Quest
-               {hs/Quest db-quest->api-quest}))
-
-(defn api-quest->new-unmoderated-db-quest [])
-
-(def api-quest->moderated-db-quest-coercer
-  (stc/coercer dbs/ModeratedDBQuest
-               {dbs/ModeratedDBQuest api-quest->moderated-db-quest}))
-
-(def new-api-quest->new-moderated-db-quest-coercer
-  (stc/coercer dbs/NewModeratedDBQuest
-               {dbs/NewModeratedDBQuest api-quest->moderated-db-quest}))
-
-(def new-api-quest->new-unmoderated-db-quest-coercer
+(def new-api-quest->new-db-quest-coercer
   (stc/coercer dbs/NewUnmoderatedDBQuest
-               {dbs/NewUnmoderatedDBQuest api-quest->new-unmoderated-db-quest}))
+               {dbs/NewUnmoderatedDBQuest api-quest->db-quest}))
+
+(def api-quest->db-quest-coercer
+  (stc/coercer dbs/DBQuestSansUnmoderatedKeys
+               {dbs/DBQuestSansUnmoderatedKeys api-quest->db-quest}))
 
 (defn api-party-member->db-party-member
   [{:keys [user-id quest-id days] :as args}]

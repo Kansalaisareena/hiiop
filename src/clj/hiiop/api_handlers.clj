@@ -115,11 +115,11 @@
       (-> quest
           (assoc :owner (:id user))
           (dissoc :organiser-participates)
-          (hc/new-api-quest->new-moderated-db-quest-coercer)
+          (hc/new-api-quest->new-db-quest-coercer)
           ((fn [quest]
              (with-transaction [db/*db*]
                (-> quest
-                   (db/add-moderated-quest!)
+                   (db/add-unmoderated-quest!)
                    ((fn [q]
                       (when organiser-participates
                         (db/join-quest!
@@ -128,8 +128,9 @@
                            :user-id (:id user)
                            :days max-days})))
                       q))))))
-            (#(db/get-moderated-quest-by-id {:id (:id %1)}))
-            (hc/db-quest->api-quest-coercer)))
+          (#(db/get-unmoderated-quest-by-id {:id (:id %1)
+                                             :owner (:id user)}))
+          (hc/db-quest->api-quest-coercer)))
     (catch Exception e
       (log/error e))))
 
@@ -172,9 +173,9 @@
   (log/info user)
   (try
     (-> quest
-        (assoc :owner (:id user)) ;; TODO When moderating, this is different!
+        (assoc :owner (:id user))
         (dissoc :organiser-participates)
-        (hc/api-quest->moderated-db-quest-coercer)
+        (hc/api-quest->db-quest-coercer)
         (db/update-quest!)
         (#(db/get-unmoderated-quest-by-id {:id (:id %) :owner (:id user)}))
         (#(if %1
@@ -208,21 +209,47 @@
       (log/error e)
       {:errors {:quests :error.quest.unexpected-error}})))
 
+(defn- send-quest-accepted-email [{:keys [quest user] :as args}]
+  (log/info "------------send-quest-accepted-email" quest user)
+  (try
+    (let [quest-accepted-email
+          (if (:is-open quest)
+            mail/send-quest-accepted-email
+            mail/send-private-quest-accepted-email)]
+      (assoc args
+             :email
+             (quest-accepted-email {:quest quest :user user})))
+    (catch Exception e
+      (log/error e)
+      (assoc args :email false))))
+
 (defn moderate-accept-quest [{:keys [quest-id user-id]}]
-  (let [email {:email (db/get-quest-owner-email {:id quest-id})}
-        ]
-    (try (db/moderate-accept-quest! {:id quest-id :user-id user-id})
-         (catch Exception e
-           (log/error e)
-           {:errors {:quests :errors.unauthorized}})))
-  ;; TODO: send email with acceptance message
-  )
+  (log/info "-------------moderate accept quest" quest-id user-id)
+  (try
+    (-> (db/moderate-accept-quest!
+         (db/->snake_case_keywords {:id quest-id
+                                    :user-id user-id}))
+        (vec)
+        (#(assoc {} :accepted-quest %1))
+        ((fn [lol]
+           (pp/pprint lol)
+           lol))
+        (assoc :user (db/get-quest-owner {:id quest-id}))
+        (assoc :quest (db/get-moderated-quest-by-id {:id quest-id}))
+        (send-quest-accepted-email)
+        (:accept-quest))
+    (catch Exception e
+      (log/error e)
+      {:errors {:quests :errors.unauthorized}})))
 
 (defn moderate-reject-quest [{:keys [quest-id message]}]
-  (let [email {:email (db/get-quest-owner-email {:id quest-id})}]
-      (db/moderate-reject-quest! {:id quest-id}))
-  ;; TODO: send mail with rejection message
-  )
+  (try
+    (-> (db/moderate-reject-quest! {:id quest-id})
+        (#(assoc {} :reject-quest %1))
+        (assoc :owner (db/get-quest-owner {:id quest-id}))
+        (:reject-quest))
+    (catch Exception e
+      (log/error e))))
 
 (defn check-and-update-user-info [user-info]
   user-info)
