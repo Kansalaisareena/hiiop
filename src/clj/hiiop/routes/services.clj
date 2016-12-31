@@ -263,7 +263,7 @@
                (-> (api-handlers/moderate-accept-quest {:quest-id quest-id
                                                         :user-id (get-in request [:identity :id])})
                    (#(if-not (:errors %)
-                       (ok)
+                       (ok %)
                        (unauthorized))))))
 
         (POST "/:quest-id/moderate-reject" []

@@ -229,15 +229,15 @@
     (-> (db/moderate-accept-quest!
          (db/->snake_case_keywords {:id quest-id
                                     :user-id user-id}))
-        (vec)
         (#(assoc {} :accepted-quest %1))
-        ((fn [lol]
-           (pp/pprint lol)
-           lol))
         (assoc :user (db/get-quest-owner {:id quest-id}))
         (assoc :quest (db/get-moderated-quest-by-id {:id quest-id}))
         (send-quest-accepted-email)
-        (:accept-quest))
+        ((fn [lol]
+          (log/info "__________________LOLOLOLOLLOLOLOLO")
+          (log/info lol)
+          lol))
+        (#(assoc {} :accepted-quest (:accepted-quest %1))))
     (catch Exception e
       (log/error e)
       {:errors {:quests :errors.unauthorized}})))

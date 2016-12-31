@@ -284,8 +284,7 @@
       (:body)
       (check #(is (not (nil? %1))))
       (#(when %1 (slurp %1)))
-      (parse-string true)
-      (do-this #(pp/pprint %1))))
+      (parse-string true)))
 
 
 (deftest test-api
@@ -475,8 +474,7 @@
                         {:user-data test-user
                          :save-id-to test-user-id
                          :read-token-from activation-token})
-          made-moderator (db/make-moderator! {:id @test-user-id})
-          wat (log/info "-------------------------- mod " (vec made-moderator))
+          made-moderator (db/make-moderator! {:id (sc/string->uuid @test-user-id)})
           login-cookie (login-and-get-cookie
                         {:with current-app
                          :user-data test-user})
