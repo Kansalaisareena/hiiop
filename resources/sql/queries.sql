@@ -227,8 +227,7 @@ FROM
   quests q
 WHERE
   q.id = :id AND
-  q.name IS NOT NULL AND
-  q.is_rejected = FALSE;
+  q.name IS NOT NULL;
 
 -- :name get-moderated-secret-quest :? :1
 -- :doc get quest by id
@@ -261,17 +260,16 @@ FROM
 WHERE
   q.id = :id AND
   q.secret_party = :secret_party AND
-  q.name IS NOT NULL AND
-  q.is_rejected = FALSE;
+  q.name IS NOT NULL
 
 -- :name get-unmoderated-quest-by-id :? :1
 -- :doc get quest by id
 SELECT
   q.id as id,
-  q.unmoderated_name as unmoderated_name,
-  q.unmoderated_description as unmoderated_description,
-  q.unmoderated_organisation as unmoderated_organisation,
-  q.unmoderated_organisation_description as unmoderated_organisation_description,
+  q.unmoderated_name as name,
+  q.unmoderated_description as description,
+  q.unmoderated_organisation as organisation,
+  q.unmoderated_organisation_description as organisation_description,
   q.start_time as start_time,
   q.end_time as end_time,
   q.street_number as street_number,
@@ -285,14 +283,19 @@ SELECT
   q.google_place_id as google_place_id,
   q.categories as categories,
   q.max_participants as max_participants,
-  q.unmoderated_hashtags as unmoderated_hashtags,
-  (SELECT url FROM pictures WHERE id = q.unmoderated_picture) as unmoderated_picture_url,
+  q.unmoderated_hashtags as hashtags,
+  q.unmoderated_picture as picture,
+  (SELECT url FROM pictures WHERE id = q.unmoderated_picture) as picture_url,
   q.is_open as is_open,
   q.owner as owner
 FROM
   quests q
 WHERE
-  q.id = :id
+  q.id = :id AND
+  (q.owner = :owner OR
+   EXISTS (SELECT FROM users u
+           WHERE u.id = :owner AND
+                 u.moderator = true))
 
 -- :name get-all-moderated-quests :? :*
 -- :doc get all moderated quests
@@ -321,6 +324,99 @@ q.is_open as is_open,
 q.owner as owner
 FROM
 quests q
+WHERE
+q.name IS NOT NULL
+
+-- :name get-all-unmoderated-quests :? :*
+-- :doc get unmoderated quests
+SELECT
+q.id as id,
+q.unmoderated_name as unmoderated_name,
+q.unmoderated_description as unmoderated_description,
+q.unmoderated_organisation as unmoderated_organisation,
+q.unmoderated_organisation_description as unmoderated_organisation_description,
+q.start_time as start_time,
+q.end_time as end_time,
+q.street_number as street_number,
+q.street as street,
+q.postal_code as postal_code,
+q.town as town,
+q.country as country,
+q.latitude as latitude,
+q.longitude as longitude,
+q.google_maps_url as google_maps_url,
+q.google_place_id as google_place_id,
+q.categories as categories,
+q.max_participants as max_participants,
+q.unmoderated_hashtags as unmoderated_hashtags,
+(SELECT url FROM pictures WHERE id = q.unmoderated_picture) as picture_url,
+q.is_open as is_open,
+q.owner as owner
+FROM
+quests q
+where q.unmoderated_name IS NOT NULL AND
+      is_rejected = false AND
+      EXISTS (SELECT FROM users u
+              WHERE u.id = :user-id AND u.moderator = true)
+
+-- :name moderate-accept-quest! :! :n
+-- :doc accept unmoderated changes to a quest
+UPDATE quests
+SET
+  description = unmoderated_description,
+  name = unmoderated_name,
+  unmoderated_name = null,
+  organisation = unmoderated_organisation,
+  unmoderated_organisation = null,
+  organisation_description = unmoderated_organisation_description,
+  unmoderated_organisation_description = null,
+  hashtags = unmoderated_hashtags,
+  unmoderated_hashtags = null,
+  picture = unmoderated_picture,
+  unmoderated_picture = null,
+  is_rejected = false
+WHERE id = :id AND
+      EXISTS (SELECT FROM users u
+              WHERE u.id = :user-id AND u.moderator = true)
+
+-- :name moderate-reject-quest! :! :n
+-- :doc reject unmoderated changes to a quest
+UPDATE quests
+SET is_rejected = true
+where id = :id AND
+      EXISTS (SELECT FROM users u
+              WHERE u.id = :user-id AND u.moderator = true)
+
+-- :name get-unmoderated-quests-by-owner :? :*
+-- :doc get all unmoderated quests by owner
+SELECT
+  q.id as id,
+  q.unmoderated_name as name,
+  q.unmoderated_description as description,
+  q.unmoderated_organisation as organisation,
+  q.unmoderated_organisation_description as organisation_description,
+  q.start_time as start_time,
+  q.end_time as end_time,
+  q.street_number as street_number,
+  q.street as street,
+  q.postal_code as postal_code,
+  q.town as town,
+  q.country as country,
+  q.latitude as latitude,
+  q.longitude as longitude,
+  q.google_maps_url as google_maps_url,
+  q.google_place_id as google_place_id,
+  q.categories as categories,
+  q.max_participants as max_participants,
+  q.unmoderated_hashtags as hashtags,
+  q.unmoderated_picture as picture,
+  (SELECT url FROM pictures WHERE id = q.picture) as picture_url,
+  q.is_open as is_open,
+  q.owner as owner
+FROM
+  quests q
+WHERE
+  q.owner = :owner AND q.name IS NOT NULL
 
 -- :name get-moderated-quests-by-owner :? :*
 -- :doc get quest by owner
@@ -344,23 +440,30 @@ SELECT
   q.categories as categories,
   q.max_participants as max_participants,
   q.hashtags as hashtags,
+  q.picture as picture,
   (SELECT url FROM pictures WHERE id = q.picture) as picture_url,
   q.is_open as is_open,
   q.owner as owner
 FROM
   quests q
 WHERE
-  q.owner = :owner;
+  q.owner = :owner AND q.name IS NOT NULL
 
--- :name update-moderated-quest! :? :1
--- :doc "Update moderated quest"
+-- :name get-quest-owner-email :? :1
+-- :doc get email address of quest owner
+SELECT u.email
+FROM quests q, users u
+WHERE u.id = q.owner
+
+-- :name update-quest! :? :1
+-- :doc "Update a quest"
 UPDATE
   quests
 SET
-  name = :name,
-  description = :description,
-  organisation = :organisation,
-  organisation_description = :organisation_description,
+  unmoderated_name = :name,
+  unmoderated_description = :description,
+  unmoderated_organisation = :organisation,
+  unmoderated_organisation_description = :organisation_description,
   start_time = :start_time,
   end_time = :end_time,
   street_number = :street_number,
@@ -374,13 +477,15 @@ SET
   google_place_id = :google_place_id,
   categories = :categories,
   max_participants = :max_participants,
-  hashtags = :hashtags,
-  picture = :picture,
-  is_open = :is_open
+  unmoderated_hashtags = :hashtags,
+  unmoderated_picture = :picture,
+  is_open = :is_open,
+  is_rejected = false
 WHERE
-  id = :id AND
-  owner = :owner
-RETURNING id
+  owner = :owner OR
+  EXISTS (SELECT FROM users u
+          WHERE u.id = :owner AND u.moderator = true)
+RETURNING ID
 
 -- :name delete-quest-by-id! :! :n
 -- :doc Delete quest by id
@@ -554,3 +659,9 @@ WHERE
        id = :quest_id AND
        owner = :user_id
    ))
+
+-- :name make-moderator! :! :*
+-- :doc Make a user a moderator
+UPDATE users
+SET moderator = true
+WHERE id = :id

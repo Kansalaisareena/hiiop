@@ -152,6 +152,13 @@
     (catch Exception e
       (log/error e))))
 
+(defn get-unmoderated-quest [id user-id]
+  (try
+    (-> (db/get-unmoderated-quest-by-id {:id id})
+        (hc/db-quest->api-quest-coercer))
+    (catch Exception e
+      (log/error e))))
+
 (defn get-secret-quest [{:keys [id secret-party]}]
   (try
     (-> (db/get-moderated-secret-quest
@@ -161,13 +168,14 @@
         (hc/db-quest->api-quest-coercer))))
 
 (defn edit-quest [{:keys [quest user]}]
+  (log/info user)
   (try
     (-> quest
         (assoc :owner (:id user)) ;; TODO When moderating, this is different!
         (dissoc :organiser-participates)
         (hc/api-quest->moderated-db-quest-coercer)
-        (db/update-moderated-quest!)
-        (#(db/get-moderated-quest-by-id {:id (:id %)}))
+        (db/update-quest!)
+        (#(db/get-unmoderated-quest-by-id {:id (:id %) :owner (:id user)}))
         (#(if %1
             (hc/db-quest->api-quest-coercer %1)
             {:errors {:unauthorized :errors.unauthorized.title}})))
@@ -177,23 +185,43 @@
 
 (defn get-quests-for-owner [owner]
   (try
-    ;; TODO: the profile page using this handler to get all moderated
-    ;; and unmoderated quests for the user. But we only have moderated quests for now
-    (-> (db/get-moderated-quests-by-owner {:owner owner})
+    (-> (db/get-all-quests-by-owner {:owner owner})
         ((partial map hc/db-quest->api-quest-coercer)))
     (catch Exception e
       (log/error e)
       {:errors {:quests :errors.quest.unexpected-error}})))
 
 (defn get-moderated-quests []
-  ;; TODO: currently there is no conditions for moderated quests in the queries
-  ;; since all quests are moderated by default.
   (try
     (-> (db/get-all-moderated-quests)
         ((partial map hc/db-quest->api-quest-coercer)))
     (catch Exception e
       (log/error e)
-      {:errors {:qusts :error.quest.unexpected-error}})))
+      {:errors {:quests :error.quest.unexpected-error}})))
+
+(defn get-unmoderated-quests [{:keys [user-id]}]
+  (try
+    (-> (db/get-all-unmoderated-quests {:user-id user-id})
+        ((partial map hc/db-quest->api-quest-coercer)))
+    (catch Exception e
+      (log/error e)
+      {:errors {:quests :error.quest.unexpected-error}})))
+
+(defn moderate-accept-quest [{:keys [quest-id user-id]}]
+  (let [email {:email (db/get-quest-owner-email {:id quest-id})}
+        ]
+    (try (db/moderate-accept-quest! {:id quest-id :user-id user-id})
+         (catch Exception e
+           (log/error e)
+           {:errors {:quests :errors.unauthorized}})))
+  ;; TODO: send email with acceptance message
+  )
+
+(defn moderate-reject-quest [{:keys [quest-id message]}]
+  (let [email {:email (db/get-quest-owner-email {:id quest-id})}]
+      (db/moderate-reject-quest! {:id quest-id}))
+  ;; TODO: send mail with rejection message
+  )
 
 (defn check-and-update-user-info [user-info]
   user-info)

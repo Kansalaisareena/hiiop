@@ -171,6 +171,17 @@
                (ok quests)
                (bad-request quests)))))
 
+        (GET "/unmoderated" []
+             :name ::get-unmoderated-quests
+             :middleware [api-authenticated]
+             :summary "Get all unmoderated quests"
+             :return [Quest]
+             (fn [request]
+               (let [quests (api-handlers/get-unmoderated-quests {:id (:id request)})]
+                 (if (nil? (:errors quests))
+                   (ok quests)
+                   (bad-request quests)))))
+
         (POST "/add" []
           :name       ::add-quest
           :body       [new-quest NewQuest]
@@ -195,6 +206,18 @@
               (if quest
                 (ok quest)
                 (not-found)))))
+
+        (GET "/moderated/:id" []
+          :name        ::moderated-quest
+          :path-params [id :- Long]
+          :middleware  [api-authenticated]
+          :summary     "Get quest"
+          :return      Quest
+          (fn [request]
+            (let [quest (api-handlers/get-quest id (:id request))]
+              (if quest
+                (ok quest)
+                (unauthorized)))))
 
         (DELETE "/:id" []
           :name        ::quest-delete
@@ -228,6 +251,32 @@
                       :else
                       (bad-request %1)))))
             ))
+
+        (POST "/:quest-id/moderate-accept" []
+             :name        ::quest-moderate-accept
+             :path-params [quest-id :- Long]
+             :summary     "Accept quest"
+             :middleware  [api-authenticated]
+             :return      Quest
+             (fn [request]
+               (-> (api-handlers/moderate-accept-quest {:quest-id quest-id
+                                                        :user-id (:id request)})
+                   (#(if-not (:errors %)
+                       (ok)
+                       (unauthorized))))))
+
+        (POST "/:quest-id/moderate-reject" []
+             :name        ::quest-moderate-reject
+             :path-params [quest-id :- Long]
+             :summary     "Reject quest"
+             :middleware  [api-authenticated]
+             :return      Quest
+             (fn [request]
+               (-> (api-handlers/moderate-reject-quest {:quest-id quest-id
+                                                        :user-id (:id request)})
+                   (#(if-not (:errors %)
+                       (ok)
+                       (unauthorized))))))
 
         (POST "/:quest-id/party" []
           :name        ::quest-join
