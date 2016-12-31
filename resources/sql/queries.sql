@@ -576,7 +576,7 @@ RETURNING url
 -- :name get-party-member :? :1
 -- :doc "Get party member"
 SELECT
-  id,
+  id as member_id,
   quest_id,
   user_id,
   days
@@ -627,7 +627,7 @@ SELECT EXISTS(
 -- :name get-quest-party-members :? :*
 -- :doc get quest party
 SELECT
-  p.id as participation_id,
+  p.id as member_id,
   u.name as name,
   u.email as email,
   u.phone as phone
@@ -647,18 +647,7 @@ WHERE
 DELETE FROM
   parties p
 WHERE
-  p.id = :participation_id AND
-  p.quest_id = :quest_id AND
-  ((p.user_id = :user_id) OR
-   EXISTS(
-     SELECT
-       owner
-     FROM
-       quests
-     WHERE
-       id = :quest_id AND
-       owner = :user_id
-   ))
+  p.id = :member_id
 
 -- :name make-moderator! :! :*
 -- :doc Make a user a moderator

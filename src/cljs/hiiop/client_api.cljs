@@ -119,13 +119,16 @@
       {:success (= status 201)
        :body body})))
 
-
-(defn remove-party-member [{:keys [quest-id participation-id]}]
-  (log/info "remove-party-member called with" quest-id participation-id)
+(defn remove-party-member [{:keys [quest-id member-id]}]
+  (log/info "remove-party-member called with" quest-id member-id)
   (go
     (let [response (<! (http/delete
-                        (str base-path "/quests/" quest-id "/party/" participation-id)))]
-      (= (:status response) 204))))
+                        (str base-path
+                             "/quests/" quest-id
+                             "/party/" member-id)))]
+      (log/info "status" (= (:status response) 204))
+      (when (= (:status response) 204)
+        true))))
 
 (defn get-user-info [id]
   (go
@@ -135,3 +138,16 @@
           body (:body response)]
       (when (= status 200)
         body))))
+
+(defn get-party-member [{:keys [quest-id member-id]}]
+  (go
+    (let [response (<! (http/get
+                        (str base-path
+                             "/quests/" quest-id
+                             "/party/" member-id)
+                        ))
+          status (:status response)
+          body (:body response)]
+      (when (= status 200)
+        body))))
+

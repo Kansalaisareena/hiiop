@@ -12,12 +12,14 @@
             [hiiop.components.quest-single :as quest-single]
             [hiiop.components.quests :as quests]
             [hiiop.components.quests-browse :refer [list-quests]]
+            [hiiop.components.part-party :refer [part-party]]
             [hiiop.client-api :refer [get-quest
                                       get-secret-quest
                                       get-user-info
                                       get-own-quests
                                       get-quest-party
-                                      get-moderated-quests]]
+                                      get-moderated-quests
+                                      get-party-member]]
             [hiiop.context :refer [context]]
             [hiiop.mangling :refer [parse-natural-number same-keys-with-nils]]
             [hiiop.mangling :refer [same-keys-with-nils]]
@@ -198,6 +200,21 @@
                 (. js/document (getElementById "app"))))
             )))))
 
+(defn part-quest-party-page [params]
+  (go
+    (let [member-id (get-in params [:route-params :member-id])
+          quest-id (get-in params [:route-params :quest-id])
+          quest (<! (get-quest quest-id))
+          party-member (<! (get-party-member {:quest-id quest-id
+                                              :member-id member-id}))]
+      (-> (assoc {} :context @context)
+          (assoc :quest quest)
+          (assoc :party-member party-member)
+          (#(rum/mount
+             (part-party %1)
+             (. js/document (getElementById "app")))))
+      )))
+
 (def handlers
   {:index
    browse-quests-page
@@ -213,6 +230,8 @@
    quest-page
    :secret-quest
    secret-quest-page
+   :part-quest-party
+   part-quest-party-page
    :browse-quests
    browse-quests-page
    :create-quest
