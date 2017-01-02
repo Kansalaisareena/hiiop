@@ -33,8 +33,8 @@
      :cljs "YYYY-MM-DDTHH:mm:ssZ"))
 
 (def with-weekday-format
-  #?(:clj "EE dd.M"
-     :cljs "dd DD.M"))
+  #?(:clj "EE dd.M."
+     :cljs "dd DD.M."))
 
 (def hour-minute-format
   #?(:clj "HH.mm"

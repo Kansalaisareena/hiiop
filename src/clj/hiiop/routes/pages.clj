@@ -6,6 +6,7 @@
             [bidi.ring :refer (make-handler)]
             [hiiop.middleware :refer [authenticated]]
             [hiiop.layout :as layout]
+            [hiiop.components.moderate :as p-m]
             [hiiop.components.profile :as p-p]
             [hiiop.components.quest-single :as quest]
             [hiiop.components.quests :as quests]
@@ -41,7 +42,8 @@
                                         get-quests-for-owner
                                         get-quest-party
                                         get-moderated-quests
-                                        get-party-member]]))
+                                        get-party-member]]
+            [hiiop.db.core :as db]))
 
 (defn tr-from-req [req]
   (:tempura/tr req))
@@ -238,6 +240,23 @@
                     :with-params [:quest-id quest-id]})
       )))
 
+(defn moderate [req]
+  (let [context (create-context req)
+        tr (:tr context)
+        id (:id (:identity context))
+        user (db/get-user-by-id {:id (sc/string->uuid id)})
+        is-moderator (:moderator user)
+        unmoderated-quests (db/get-all-unmoderated-quests {:user_id id})
+        moderated-quests (db/get-all-moderated-quests)]
+    (if is-moderator
+      (layout/render {:title (tr [:pages.moderate.title])
+                     :context context
+                     :content
+                      (p-m/moderate-page {:context context
+                                          :unmoderated-quests (atom unmoderated-quests)
+                                          :moderated-quests (atom moderated-quests)})})
+      (redirect-to {:path-key :index}))))
+
 (def handlers
   {:index
    index
@@ -260,7 +279,9 @@
    :create-quest
    (authenticated create-quest)
    :edit-quest
-   (authenticated edit-quest)})
+   (authenticated edit-quest)
+   :moderate
+   (authenticated moderate)})
 
 (def ring-handler
   (do
