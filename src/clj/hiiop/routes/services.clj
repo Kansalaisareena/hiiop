@@ -259,7 +259,6 @@
              :middleware  [api-authenticated]
              :return      Quest
              (fn [request]
-               (log/info "-------------------moderate accept")
                (-> (api-handlers/moderate-accept-quest {:quest-id quest-id
                                                         :user-id (get-in request [:identity :id])})
                    (#(if-not (:errors %)
@@ -269,15 +268,18 @@
         (POST "/:quest-id/moderate-reject" []
              :name        ::quest-moderate-reject
              :path-params [quest-id :- Long]
+             :body        [moderation Moderation]
              :summary     "Reject quest"
              :middleware  [api-authenticated]
              :return      Quest
              (fn [request]
                (-> (api-handlers/moderate-reject-quest {:quest-id quest-id
-                                                        :user-id (:id request)})
-                   (#(if-not (:errors %)
-                       (ok)
-                       (unauthorized))))))
+                                                        :user-id (get-in request [:identity :id])
+                                                        :message (:message moderation)})
+                   (#(if (not (:errors %1))
+                       (ok %1)
+                       (unauthorized))))
+               ))
 
         (POST "/:quest-id/party" []
           :name        ::quest-join

@@ -110,17 +110,22 @@
                   (content :leipateksti)
                   :button-text (content :ekanappiteksti)}}))))
 
-(defn send-quest-declined [email quest-id message locale]
-  (let [content (mail-content "quest-declined" locale)]
+(defn send-quest-declined [{:keys [email quest message locale]}]
+  (let [tr (ht/tr-with [locale])
+        quest-id (:id quest)
+        content (mail-content "quest-declined" locale)
+        title (str (content :otsikko) " " (quest :name))]
     (send-mail
      (make-mail {:to email
-                 :subject (content :otsikko)
-                 :template emails/simple-mail
+                 :subject title
+                 :template emails/quest-details-mail
                  :template-params
-                 {:button-url (url-to' :quest :quest-id quest-id)
-                  :title (content :otsikko)
+                 {:tr tr
+                  :title title
+                  :quest quest
                   :body-text (content :leipateksti)
                   :button-text (content :ekanappiteksti)
+                  :button-url (url-to' :quest :quest-id quest-id)
                   :message message}}))))
 
 (defn send-quest-accepted [email quest locale]

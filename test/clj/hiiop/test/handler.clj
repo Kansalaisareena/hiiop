@@ -295,6 +295,19 @@
         (parse-string true)
         (do-this pp/pprint))))
 
+(defn reject-quest [{:keys [with login-cookie quest-id message]}]
+  (let [url (str "/api/v1/quests/" quest-id "/moderate-reject")]
+    (-> (json-request url
+                      {:type :post
+                       :body-string (generate-string {:message message})
+                       :cookies login-cookie})
+        (with)
+        (has-status 200 url)
+        (:body)
+        (check #(is (not (nil? %1))))
+        (#(when %1 (slurp %1)))
+        (parse-string true)
+        (do-this pp/pprint))))
 
 (defn get-moderated-quests [{:keys [with]}]
   (let [url (str "/api/v1/quests/moderated")]
@@ -921,5 +934,40 @@
           (just-do #(db/delete-user! *db* {:id (sc/string->uuid @test-user-id)})))
       ))
 
+    (testing "/api/v1/quests/moderated should not be updated after /api/v1/quests/add and /api/v1/quests/:id/moderate"
+    (let [current-app (app)
+          user-created (create-test-user
+                        {:user-data test-user
+                         :save-id-to test-user-id
+                         :read-token-from activation-token})
+          made-moderator (db/make-moderator! {:id @test-user-id})
+          login-cookie (login-and-get-cookie
+                        {:with current-app
+                         :user-data test-user})
+          quest-to-add (test-quest
+                        {:use-date-string true
+                         :location-to :location
+                         :coordinates-to :coordinates
+                         :organisation-to {:in :organisation
+                                           :name :name
+                                           :description :description}})
+          moderated-quests (get-moderated-quests {:with current-app})]
+      (-> moderated-quests
+          (check #(is (empty %1)))
+          ((fn [_]
+            (add-quest
+             {:with current-app
+              :quest quest-to-add
+              :login-cookie login-cookie})))
+          (do-this pp/pprint)
+          (#(reject-quest {:with current-app
+                           :quest-id (:id %1)
+                           :login-cookie login-cookie
+                           :message "REJECTED!"}))
+          ((fn [_] (get-moderated-quests {:with current-app})))
+          (check #(is (empty %1)))
+          (#(db/delete-quest-by-id! {:id (:id %1)}))
+          (just-do #(db/delete-user! *db* {:id (sc/string->uuid @test-user-id)})))
+      ))
   )
 

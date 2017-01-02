@@ -215,7 +215,6 @@
    (s/optional-key :phone) (s/maybe Phone)
    :agreement Agreement})
 
-
 (def PartyMember
   "Party member"
   {:member-id s/Uuid
@@ -242,6 +241,9 @@
     :phone ""
     :agreement false}
    :days 1})
+
+(def Moderation
+  {(s/optional-key :message) (s/maybe s/Str)})
 
 (defn message-from-constrained [^Constrained c]
   (:post-name c))

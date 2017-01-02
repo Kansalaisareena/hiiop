@@ -210,7 +210,6 @@
       {:errors {:quests :error.quest.unexpected-error}})))
 
 (defn- send-quest-accepted-email [{:keys [quest user] :as args}]
-  (log/info "------------send-quest-accepted-email" quest user)
   (try
     (let [quest-accepted-email
           (if (:is-open quest)
@@ -230,22 +229,45 @@
                                     :user-id user-id}))
         (#(assoc {} :accepted-quest %1))
         (assoc :user (db/get-quest-owner {:id quest-id}))
-        (assoc :quest (db/get-moderated-quest-by-id {:id quest-id}))
+        (assoc :quest
+               (hc/db-quest->api-quest-coercer
+                (db/get-moderated-quest-by-id {:id quest-id})))
         (send-quest-accepted-email)
-        (:quest)
-        (hc/db-quest->api-quest-coercer))
+        (:quest))
     (catch Exception e
       (log/error e)
       {:errors {:quests :errors.unauthorized}})))
 
-(defn moderate-reject-quest [{:keys [quest-id message]}]
+(defn- send-quest-rejected-email [{:keys [quest user message] :as args}]
   (try
-    (-> (db/moderate-reject-quest! {:id quest-id})
+    (assoc args
+           :email
+           (mail/send-quest-declined-email {:quest quest
+                                            :user user
+                                            :message message}))
+    (catch Exception e
+      (log/error e)
+      (assoc args :email false))))
+
+(defn moderate-reject-quest [{:keys [quest-id message user-id]}]
+  (try
+    (-> (db/moderate-reject-quest!
+         (db/->snake_case_keywords {:id quest-id
+                                    :user-id user-id}))
         (#(assoc {} :reject-quest %1))
         (assoc :owner (db/get-quest-owner {:id quest-id}))
-        (:reject-quest))
+        (assoc :quest
+               (hc/db-quest->api-quest-coercer
+                (db/get-unmoderated-quest-by-id
+                 {:id quest-id
+                  :owner user-id})))
+        (assoc :message message)
+        (send-quest-rejected-email)
+        (:quest))
     (catch Exception e
-      (log/error e))))
+      (log/error e)
+      {:errors {:moderation :errors.moderation.failed}}
+      )))
 
 (defn check-and-update-user-info [user-info]
   user-info)
