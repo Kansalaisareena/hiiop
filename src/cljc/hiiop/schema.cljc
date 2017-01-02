@@ -166,7 +166,8 @@
    :is-open s/Bool
    :owner s/Uuid
    (s/optional-key :organisation) (s/maybe Organisation)
-   (s/optional-key :participant-count) (s/maybe NaturalNumber)})
+   (s/optional-key :participant-count) (s/maybe NaturalNumber)
+   (s/optional-key :moderated) (s/maybe s/Bool)})
 
 (def EditQuest
   (st/dissoc Quest :participant-count))

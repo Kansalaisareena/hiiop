@@ -373,9 +373,10 @@ SELECT
   q.max_participants as max_participants,
   q.unmoderated_hashtags as hashtags,
   q.unmoderated_picture as picture,
-  (SELECT url FROM pictures WHERE id = q.picture) as picture_url,
+  (SELECT url FROM pictures WHERE id = q.unmoderated_picture) as picture_url,
   q.is_open as is_open,
-  q.owner as owner
+  q.owner as owner,
+  FALSE as moderated
 FROM
   quests q
 WHERE
@@ -406,7 +407,8 @@ SELECT
   q.picture as picture,
   (SELECT url FROM pictures WHERE id = q.picture) as picture_url,
   q.is_open as is_open,
-  q.owner as owner
+  q.owner as owner,
+  TRUE as moderated
 FROM
   quests q
 WHERE

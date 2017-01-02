@@ -54,7 +54,7 @@
     ))
 
 (rum/defcs quest-card-profile < rum/reactive
-  (rum/local "default" ::card-state)
+                               (rum/local "default" ::card-state)
   [state {:keys [quest context quests]}]
   (let [card-state (::card-state state)
         {:keys [name
@@ -69,6 +69,7 @@
         is-own-quest (= (str (:id (:identity context)))
                         (str (:owner quest)))
         is-open (:is-open quest)
+        moderated (:moderated quest)
         tr (:tr context)]
 
     [:div {:class "opux-card-container"}
@@ -79,7 +80,7 @@
         (if is-own-quest
           (str (tr [:pages.profile.my-event])
                " | "
-               (if (not is-open)
+               (if (not moderated)
                  (tr [:pages.profile.pending-approval])
                  (tr [:pages.profile.published]))))]
        [:a {:href quest-link}
@@ -112,25 +113,24 @@
           )]
 
        (if is-own-quest
-         [:div {:class "opux-card__actions"}
-          [:span
-           {:class "opux-card-action opux-icon-circled opux-icon-trashcan"
-            :on-click (fn [e]
-                        (if (not (= @card-state "delete"))
-                          (reset! card-state "delete")))}]
+         (when moderated
+           [:div {:class "opux-card__actions"}
+            [:span
+             {:class "opux-card-action opux-icon-circled opux-icon-trashcan"
+              :on-click (fn [e]
+                          (if (not (= @card-state "delete"))
+                            (reset! card-state "delete")))}]
 
-          (if is-open
-            [:span {:class "opux-card-action opux-icon-circled opux-icon-personnel"}])
+            [:span {:class "opux-card-action opux-icon-circled opux-icon-personnel"}]
 
-          [:a {:class "opux-card-action opux-icon-circled opux-icon-edit"
-               :href (path-for hierarchy :edit-quest :quest-id (:id quest))}]
+           [:a {:class "opux-card-action opux-icon-circled opux-icon-edit"
+                :href (path-for hierarchy :edit-quest :quest-id (:id quest))}]
 
-          (if (= @card-state "delete")
-            (quest-card-action-delete {:quest quest
-                                       :card-state card-state
-                                       :quests quests
-                                       :tr tr}))]
-
+           (if (= @card-state "delete")
+             (quest-card-action-delete {:quest quest
+                                        :card-state card-state
+                                        :quests quests
+                                        :tr tr}))])
          [:div {:class "opux-card__actions"}
           [:span {:class "opux-button"}
            (tr [:pages.profile.cancel-enrollment])]])]]]))

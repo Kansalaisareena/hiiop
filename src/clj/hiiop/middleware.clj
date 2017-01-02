@@ -71,9 +71,15 @@
       (handler req)
       (catch Throwable t
         (log/error t)
-        (error-page {:status 500
-                     :title "Something very bad has happened!"
-                     :message "We've dispatched a team of highly trained gnomes to take care of the problem."})))))
+        (let [tr (:tempura/tr req)]
+          (log/info tr)
+          (error-page
+           {:status 500
+            :tr (or tr #(log/info %))
+            :title (if tr
+                     (tr [:errors.general])
+                     "Hiiop - Jotain hassua sattui. Selvitämme.")
+            :message "Hups! Jotain hassua sattui. Otamme selvää."}))))))
 
 
 (defn auth-error [request response]
