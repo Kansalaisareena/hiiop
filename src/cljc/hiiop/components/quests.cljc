@@ -281,7 +281,7 @@
         :error (get-in cursors-and-schema [:organiser-participates :error])
         })
       (html/label
-       (tr [:pages.quest.edit.organiser-participates])
+       (tr [:pages.quest.edit.organiser-will-participate])
        {:class "opux-input__label opux-input__label--checkbox"
         :for (name :pages.quest.edit.organiser-participates)})])
    ))

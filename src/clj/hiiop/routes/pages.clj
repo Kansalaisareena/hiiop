@@ -92,9 +92,10 @@
         tr (:tr context)]
     (layout/render {:title (str (tr [:pages.profile.title]) " " (:name user-info))
                     :context context
-                    :content (p-p/profile {:context context
-                                           :user-info user-info
-                                           :quests (atom quests)})})))
+                    :content
+                    (p-p/profile {:context context
+                                  :user-info user-info
+                                  :quests (atom quests)})})))
 
 (defn activate [req]
   (let [context (create-context req)
