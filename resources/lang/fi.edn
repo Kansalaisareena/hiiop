@@ -82,7 +82,6 @@
 
   :quest
   {:title "Löydä tehtävä"
-    
    :view
    {:participants "vapaata paikkaa"
     :signup
@@ -152,7 +151,7 @@ Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit
     :start-date "Päivämäärä"
     :end-date "Lisää päättymispäivämäärä"
     :start-time "Kellonaika"
-    :end-time ""
+    :end-time "Kellonaika"
     :location {:label "Paikka"
                :placeholder "Anna sijainti"}
     :address "Osoite"
