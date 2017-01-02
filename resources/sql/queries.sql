@@ -148,6 +148,15 @@ FROM
 WHERE
   id = :id
 
+-- :name get-quest-secret-party :? :1
+-- :doc "Secret party!"
+SELECT
+  secret_party
+FROM
+  quests
+WHERE
+  id = :id
+
 -- :name get-moderated-quest-by-id :? :1
 -- :doc get quest by id
 SELECT
@@ -179,6 +188,7 @@ FROM
   quests q
 WHERE
   q.id = :id AND
+  q.is_rejected = false AND
   q.name IS NOT NULL;
 
 -- :name get-moderated-secret-quest :? :1
@@ -252,28 +262,28 @@ WHERE
 -- :name get-all-moderated-quests :? :*
 -- :doc get all moderated quests
 SELECT
-q.id as id,
-q.name as name,
-q.description as description,
-q.organisation as organisation,
-q.organisation_description as organisation_description,
-q.start_time as start_time,
-q.end_time as end_time,
-q.street_number as street_number,
-q.street as street,
-q.postal_code as postal_code,
-q.town as town,
-q.country as country,
-q.latitude as latitude,
-q.longitude as longitude,
-q.google_maps_url as google_maps_url,
-q.google_place_id as google_place_id,
-q.categories as categories,
-q.max_participants as max_participants,
-q.hashtags as hashtags,
-(SELECT url FROM pictures WHERE id = q.picture) as picture_url,
-q.is_open as is_open,
-q.owner as owner
+  q.id as id,
+  q.name as name,
+  q.description as description,
+  q.organisation as organisation,
+  q.organisation_description as organisation_description,
+  q.start_time as start_time,
+  q.end_time as end_time,
+  q.street_number as street_number,
+  q.street as street,
+  q.postal_code as postal_code,
+  q.town as town,
+  q.country as country,
+  q.latitude as latitude,
+  q.longitude as longitude,
+  q.google_maps_url as google_maps_url,
+  q.google_place_id as google_place_id,
+  q.categories as categories,
+  q.max_participants as max_participants,
+  q.hashtags as hashtags,
+  (SELECT url FROM pictures WHERE id = q.picture) as picture_url,
+  q.is_open as is_open,
+  q.owner as owner
 FROM
 quests q
 WHERE
@@ -282,31 +292,31 @@ q.name IS NOT NULL
 -- :name get-all-unmoderated-quests :? :*
 -- :doc get unmoderated quests
 SELECT
-q.id as id,
-q.unmoderated_name as unmoderated_name,
-q.unmoderated_description as unmoderated_description,
-q.unmoderated_organisation as unmoderated_organisation,
-q.unmoderated_organisation_description as unmoderated_organisation_description,
-q.start_time as start_time,
-q.end_time as end_time,
-q.street_number as street_number,
-q.street as street,
-q.postal_code as postal_code,
-q.town as town,
-q.country as country,
-q.latitude as latitude,
-q.longitude as longitude,
-q.google_maps_url as google_maps_url,
-q.google_place_id as google_place_id,
-q.categories as categories,
-q.max_participants as max_participants,
-q.unmoderated_hashtags as unmoderated_hashtags,
-(SELECT url FROM pictures WHERE id = q.unmoderated_picture) as picture_url,
-q.is_open as is_open,
-q.owner as owner
+  q.id as id,
+  q.unmoderated_name as unmoderated_name,
+  q.unmoderated_description as unmoderated_description,
+  q.unmoderated_organisation as unmoderated_organisation,
+  q.unmoderated_organisation_description as unmoderated_organisation_description,
+  q.start_time as start_time,
+  q.end_time as end_time,
+  q.street_number as street_number,
+  q.street as street,
+  q.postal_code as postal_code,
+  q.town as town,
+  q.country as country,
+  q.latitude as latitude,
+  q.longitude as longitude,
+  q.google_maps_url as google_maps_url,
+  q.google_place_id as google_place_id,
+  q.categories as categories,
+  q.max_participants as max_participants,
+  q.unmoderated_hashtags as unmoderated_hashtags,
+  (SELECT url FROM pictures WHERE id = q.unmoderated_picture) as picture_url,
+  q.is_open as is_open,
+  q.owner as owner
 FROM
-quests q
-where q.unmoderated_name IS NOT NULL AND
+  quests q
+WHERE q.unmoderated_name IS NOT NULL AND
       is_rejected = false AND
       EXISTS (SELECT FROM users u
               WHERE u.id = :user_id AND u.moderator = true)
@@ -405,11 +415,11 @@ WHERE
 -- :name get-quest-owner :? :1
 -- :doc get quest owner
 SELECT
-  u.id,
-  u.name,
-  u.email,
-  u.phone,
-  u.locale
+  u.id as id,
+  u.name as name,
+  u.email as email,
+  u.phone as phone,
+  u.locale as locale
 FROM
   quests q,
   users u

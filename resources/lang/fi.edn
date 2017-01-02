@@ -256,18 +256,18 @@ Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit
  :pikaday
  {:previous-month "Edellinen"
   :next-month     "Seuraava"
-  :months ["Tammikuussa"
-           "Helmikuussa"
-           "Maaliskuussa"
-           "Huhtikuussa"
-           "Toukokuussa"
-           "Kesäkuussa"
-           "Heinäkuussa"
-           "Elokuussa"
-           "Syyskuussa"
-           "Lokakuussa"
-           "Marraskuussa"
-           "Joulukuussa"],
+  :months         ["Tammikuussa"
+                   "Helmikuussa"
+                   "Maaliskuussa"
+                   "Huhtikuussa"
+                   "Toukokuussa"
+                   "Kesäkuussa"
+                   "Heinäkuussa"
+                   "Elokuussa"
+                   "Syyskuussa"
+                   "Lokakuussa"
+                   "Marraskuussa"
+                   "Joulukuussa"],
   :weekdays       ["sunnuntai"
                    "maanantai"
                    "tiistai"
@@ -290,6 +290,11 @@ Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit
   :dict-remove-file                "Poista kuva"
   :dict-max-files-exceeded         "Et voi lisätä enempää kuvia"
   }
+
+ :email
+ {:quest
+  {:time "Aika"
+   :place "Paikka"}}
 
  :errors
  {

@@ -177,7 +177,8 @@
              :summary "Get all unmoderated quests"
              :return [Quest]
              (fn [request]
-               (let [quests (api-handlers/get-unmoderated-quests {:id (:id request)})]
+               (let [quests (api-handlers/get-unmoderated-quests
+                             {:user-id (get-in request [:identity :id])})]
                  (if (nil? (:errors quests))
                    (ok quests)
                    (bad-request quests)))))
@@ -261,9 +262,10 @@
              (fn [request]
                (-> (api-handlers/moderate-accept-quest {:quest-id quest-id
                                                         :user-id (get-in request [:identity :id])})
-                   (#(if-not (:errors %)
-                       (ok %)
-                       (unauthorized))))))
+                   (#(if (not (:errors %1))
+                       (ok %1)
+                       (unauthorized))))
+               ))
 
         (POST "/:quest-id/moderate-reject" []
              :name        ::quest-moderate-reject
@@ -273,9 +275,10 @@
              :middleware  [api-authenticated]
              :return      Quest
              (fn [request]
-               (-> (api-handlers/moderate-reject-quest {:quest-id quest-id
-                                                        :user-id (get-in request [:identity :id])
-                                                        :message (:message moderation)})
+               (-> (api-handlers/moderate-reject-quest
+                    {:quest-id quest-id
+                     :user-id (get-in request [:identity :id])
+                     :message (:message moderation)})
                    (#(if (not (:errors %1))
                        (ok %1)
                        (unauthorized))))

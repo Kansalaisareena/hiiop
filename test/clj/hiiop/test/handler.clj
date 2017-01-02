@@ -969,5 +969,40 @@
           (#(db/delete-quest-by-id! {:id (:id %1)}))
           (just-do #(db/delete-user! *db* {:id (sc/string->uuid @test-user-id)})))
       ))
+
+  (testing "/api/v1/quests/moderated should not be updated after /api/v1/quests/add and /api/v1/quests/:id/moderate"
+    (let [current-app (app)
+          user-created (create-test-user
+                        {:user-data test-user
+                         :save-id-to test-user-id
+                         :read-token-from activation-token})
+          made-moderator (db/make-moderator! {:id @test-user-id})
+          login-cookie (login-and-get-cookie
+                        {:with current-app
+                         :user-data test-user})
+          quest-to-add (test-quest
+                        {:use-date-string true
+                         :location-to :location
+                         :coordinates-to :coordinates
+                         :organisation-to {:in :organisation
+                                           :name :name
+                                           :description :description}})
+          moderated-quests (get-moderated-quests {:with current-app})
+          reject-email-reset (reset! declined-quest-args nil)]
+      (-> moderated-quests
+          (check #(is (empty %1)))
+          ((fn [_]
+            (add-quest
+             {:with current-app
+              :quest quest-to-add
+              :login-cookie login-cookie})))
+          (#(reject-quest {:with current-app
+                           :quest-id (:id %1)
+                           :login-cookie login-cookie
+                           :message "REJECTED!"}))
+          (check (fn [_] (is (not-empty @declined-quest-args))))
+          (#(db/delete-quest-by-id! {:id (:id %1)}))
+          (just-do #(db/delete-user! *db* {:id (sc/string->uuid @test-user-id)})))
+      ))
   )
 
