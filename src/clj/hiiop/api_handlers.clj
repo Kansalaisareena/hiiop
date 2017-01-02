@@ -366,14 +366,17 @@
     {:errors {:signup :errors.not-found
               :user-id :errors-not-found}}))
 
-(defn- send-join-email [{:keys [user quest]}]
+(defn- send-join-email [{:keys [user quest member] :as args}]
   (try
-    (mail/send-join-quest-email
-     {:email (:email user)
-      :quest (hc/db-quest->api-quest-coercer quest)
-      :locale (keyword (:locale user))})
+    (assoc args :email
+           (mail/send-join-quest-email
+            {:email (:email user)
+             :quest (hc/db-quest->api-quest-coercer quest)
+             :locale (keyword (:locale user))
+             :member-id (:member-id member)}))
     (catch Exception e
-      (log/error e))))
+      (log/error e)
+      (assoc args :email false))))
 
 (defn join-quest [{:keys [id new-member user locale]}]
   (try
@@ -404,12 +407,15 @@
               joined (join-with party-member)]
           (if (nil? (:errors joined))
             (do
-              (log/info "joined" party-member)
+              (log/info joined)
               (-> (db/get-user-by-id {:id (:user_id party-member)})
-                  (#(send-join-email {:user %1
-                                      :quest quest}))
-                  ((fn [_] joined))
-                  (db/get-party-member)
+                  (#(assoc {} :user %1))
+                  (assoc :member (db/get-party-member joined))
+                  (#(send-join-email
+                     {:user (:user %1)
+                      :quest quest
+                      :member (:member %1)}))
+                  (:member)
                   (hc/db-party-member->api-party-member-coercer)))
             joined))
         party-member))
