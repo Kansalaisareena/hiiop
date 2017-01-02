@@ -171,16 +171,18 @@
                (ok quests)
                (bad-request quests)))))
 
-        (GET "/unmoderated" []
-             :name ::get-unmoderated-quests
-             :middleware [api-authenticated]
-             :summary "Get all unmoderated quests"
-             :return [Quest]
-             (fn [request]
-               (let [quests (api-handlers/get-unmoderated-quests {:id (:id request)})]
-                 (if (nil? (:errors quests))
-                   (ok quests)
-                   (bad-request quests)))))
+        (GET
+          "/unmoderated" []
+          :name ::get-unmoderated-quests
+          :middleware [api-authenticated]
+          :summary "Get all unmoderated quests"
+          :return [Quest]
+          (fn [request]
+            (let [response (api-handlers/get-unmoderated-quests
+                             {:user-id (:id (:identity request))})]
+              (if (nil? (:errors response))
+                (ok response)
+                (bad-request response)))))
 
         (POST "/add" []
           :name       ::add-quest
@@ -271,12 +273,12 @@
              :path-params [quest-id :- Long]
              :summary     "Reject quest"
              :middleware  [api-authenticated]
-             :return      Quest
              (fn [request]
-               (-> (api-handlers/moderate-reject-quest {:quest-id quest-id
-                                                        :user-id (:id request)})
+               (-> (api-handlers/moderate-reject-quest
+                     {:quest-id quest-id
+                      :user-id (:id (:identity request))})
                    (#(if-not (:errors %)
-                       (ok)
+                       (ok %)
                        (unauthorized))))))
 
         (POST "/:quest-id/party" []

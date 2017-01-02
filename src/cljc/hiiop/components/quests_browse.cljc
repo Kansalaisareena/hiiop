@@ -218,6 +218,5 @@
         (map #(monthly-quest-list
                 {:quests (quests-by-months %)
                  :context context})
-             (reverse
                (sort
-                 (keys quests-by-months)))))]]]))
+                 (keys quests-by-months))))]]]))

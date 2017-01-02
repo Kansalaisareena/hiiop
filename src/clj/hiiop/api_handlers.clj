@@ -203,7 +203,7 @@
 
 (defn get-unmoderated-quests [{:keys [user-id]}]
   (try
-    (-> (db/get-all-unmoderated-quests {:user-id user-id})
+    (-> (db/get-all-unmoderated-quests {:user_id user-id})
         ((partial map hc/db-quest->api-quest-coercer)))
     (catch Exception e
       (log/error e)
@@ -238,12 +238,16 @@
       (log/error e)
       {:errors {:quests :errors.unauthorized}})))
 
-(defn moderate-reject-quest [{:keys [quest-id message]}]
+(defn moderate-reject-quest [{:keys [quest-id message user-id]}]
   (try
-    (-> (db/moderate-reject-quest! {:id quest-id})
+    (-> (db/moderate-reject-quest! {:id quest-id
+                                    :user_id user-id})
         (#(assoc {} :reject-quest %1))
         (assoc :owner (db/get-quest-owner {:id quest-id}))
-        (:reject-quest))
+        ((fn [lol]
+           (log/info "--------------------JOJOJOJOJOJOJOJOJ")
+           (println lol)
+           lol)))
     (catch Exception e
       (log/error e))))
 

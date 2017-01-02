@@ -111,6 +111,12 @@
             (time/from-string end-time) time/hour-minute-format)
           )]
 
+       (if (= @card-state "delete")
+         (quest-card-action-delete {:quest quest
+                                    :card-state card-state
+                                    :quests quests
+                                    :tr tr}))
+
        (if is-own-quest
          [:div {:class "opux-card__actions"}
           [:span
@@ -123,13 +129,7 @@
             [:span {:class "opux-card-action opux-icon-circled opux-icon-personnel"}])
 
           [:a {:class "opux-card-action opux-icon-circled opux-icon-edit"
-               :href (path-for hierarchy :edit-quest :quest-id (:id quest))}]
-
-          (if (= @card-state "delete")
-            (quest-card-action-delete {:quest quest
-                                       :card-state card-state
-                                       :quests quests
-                                       :tr tr}))]
+               :href (path-for hierarchy :edit-quest :quest-id (:id quest))}]]
 
          [:div {:class "opux-card__actions"}
           [:span {:class "opux-button"}
@@ -179,4 +179,60 @@
           (time/to-string
             (time/from-string end-time) time/hour-minute-format)
           )]
+       ]]]))
+
+(rum/defc quest-card-moderate [{:keys [quest context is-moderated on-click-fn]}]
+  (let [{:keys [name
+                location
+                id
+                start-time
+                end-time
+                picture-url
+                max-participants]} quest
+        quest-link (path-for hierarchy :quest :quest-id id)
+        town (:town location)
+        tr (:tr context)]
+
+    [:div {:class "opux-card-container"}
+     [:div {:class "opux-card"}
+
+      [:div {:class "opux-card__image-container"}
+       (if is-moderated
+         [:a {:href quest-link}
+          [:div {:class "opux-card__image"
+                 :style {:background-image (str "url('" (get-quest-image quest) "')")}}]]
+
+         [:div {:class "opux-card__image"
+                :style {:background-image (str "url('" (get-quest-image quest) "')")}
+                :on-click on-click-fn}])]
+
+      [:div {:class "opux-card__content"}
+
+       [:span
+        {:class "opux-card__location opux-inline-icon opux-inline-icon-location"}
+        town]
+       [:span
+        {:class "opux-card__attendance opux-inline-icon opux-inline-icon-personnel opux-inline-icon--right"}
+        max-participants]
+
+       (if is-moderated
+         [:a {:class "opux-card__title" :href quest-link} name]
+         [:div {:class "opux-card__title"
+                :on-click on-click-fn}
+          name])
+
+       [:span {:class "opux-card__date opux-inline-icon opux-inline-icon-calendar"}
+        #?(:cljs
+           (time/to-string (time/from-string start-time) time/with-weekday-format)
+           :clj
+           (time/to-string start-time time/with-weekday-format)
+           )]
+
+       (if (not (nil? end-time))
+         [:span {:class "opux-card__time opux-inline-icon opux-inline-icon-clock"}
+          #?(:cljs
+             (time/to-string (time/from-string end-time) time/with-weekday-format)
+             :clj
+             (time/to-string end-time time/with-weekday-format)
+             )])
        ]]]))
