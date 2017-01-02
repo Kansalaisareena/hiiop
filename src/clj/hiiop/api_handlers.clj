@@ -224,7 +224,6 @@
       (assoc args :email false))))
 
 (defn moderate-accept-quest [{:keys [quest-id user-id]}]
-  (log/info "-------------moderate accept quest" quest-id user-id)
   (try
     (-> (db/moderate-accept-quest!
          (db/->snake_case_keywords {:id quest-id
@@ -233,7 +232,8 @@
         (assoc :user (db/get-quest-owner {:id quest-id}))
         (assoc :quest (db/get-moderated-quest-by-id {:id quest-id}))
         (send-quest-accepted-email)
-        (:accepted-quest))
+        (:quest)
+        (hc/db-quest->api-quest-coercer))
     (catch Exception e
       (log/error e)
       {:errors {:quests :errors.unauthorized}})))

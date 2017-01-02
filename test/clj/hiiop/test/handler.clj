@@ -82,8 +82,8 @@
   (log/info id in)
   in)
 
-(defn has-status [response status]
-  (is (= status (:status response)))
+(defn has-status [response status url]
+  (is (= status (:status response)) url)
   response)
 
 (defn do-this [to with]
@@ -168,49 +168,51 @@
       (session-cookie-string)))
 
 (defn add-quest [{:keys [login-cookie with quest organiser-participates]}]
-  (-> quest
-      (dissoc :picture
-              :owner
-              :participant-count)
-      (assoc :organiser-participates (or organiser-participates false))
-      (generate-string)
-      (#(json-request "/api/v1/quests/add"
-                      {:type :post
-                       :body-string %1
-                       :cookies login-cookie}))
-      (with)
-      (has-status 201)
-      (:body)
-      (slurp)
-      (parse-string true)
-      ))
+  (let [url "/api/v1/quests/add"]
+    (-> quest
+        (dissoc :picture
+                :owner
+                :participant-count)
+        (assoc :organiser-participates (or organiser-participates false))
+        (generate-string)
+        (#(json-request url
+                        {:type :post
+                         :body-string %1
+                         :cookies login-cookie}))
+        (with)
+        (has-status 201 url)
+        (:body)
+        (slurp)
+        (parse-string true)
+        )))
 
 (defn edit-quest [{:keys [login-cookie with quest]}]
-  (-> (generate-string (dissoc quest :participant-count))
-      (#(json-request (str "/api/v1/quests/" (:id quest))
-                      {:type :put
-                       :body-string %1
-                       :cookies login-cookie}))
-      (do-this pp/pprint)
-      (with)
-      (has-status 200)
-      (do-this #(log/info %1))
-      (:body)
-      (slurp)
-      (parse-string true)
-      ))
+  (let [url (str "/api/v1/quests/" (:id quest))]
+    (-> (generate-string (dissoc quest :participant-count))
+        (#(json-request url
+           {:type :put
+            :body-string %1
+            :cookies login-cookie}))
+        (with)
+        (has-status 200 url)
+        (do-this #(log/info %1))
+        (:body)
+        (slurp)
+        (parse-string true)
+        )))
 
 (defn delete-quest [{:keys [login-cookie with quest]}]
-  (-> (generate-string quest)
-      (#(json-request (str "/api/v1/quests/" (:id quest))
-                      {:type :delete
-                       :body-string %1
-                       :cookies login-cookie}))
-      (do-this pp/pprint)
-      (with)
-      (has-status 204)
-      (do-this #(log/info %1))
-      ))
+  (let [url (str "/api/v1/quests/" (:id quest))]
+        (-> (generate-string quest)
+            (#(json-request url
+                            {:type :delete
+                             :body-string %1
+                             :cookies login-cookie}))
+            (do-this pp/pprint)
+        (with)
+        (has-status 204 url)
+        (do-this #(log/info %1))
+        )))
 
 (defn join-quest [{:keys [login-cookie
                           user-id
@@ -221,70 +223,77 @@
                           with
                           status]}]
 
-  (-> (if user-id
-        {:user-id user-id
-         :days days}
-        {:signup signup
-         :days days})
-      (#(if secret-party
-          (assoc %1 :secret-party secret-party)
-          %1))
-      (generate-string)
-      (#(identity {:type :post
-                   :body-string %1}))
-      (#(if login-cookie
-          (assoc %1 :cookies login-cookie)
-          %1))
-      (#(json-request (str "/api/v1/quests/" quest-id "/party")
-                      %1))
-      (with)
-      (has-status (or status 201))
-      (:body)
-      (check #(is (not (= %1 nil))))
-      (#(when %1 (slurp %1)))
-      (parse-string true)
-      (do-this #(pp/pprint %1))))
+  (let [url (str "/api/v1/quests/" quest-id "/party")]
+    (-> (if user-id
+          {:user-id user-id
+           :days days}
+          {:signup signup
+           :days days})
+        (#(if secret-party
+            (assoc %1 :secret-party secret-party)
+            %1))
+        (generate-string)
+        (#(identity {:type :post
+                     :body-string %1}))
+        (#(if login-cookie
+            (assoc %1 :cookies login-cookie)
+            %1))
+        (#(json-request url
+                        %1))
+        (with)
+        (has-status (or status 201) url)
+        (:body)
+        (check #(is (not (= %1 nil))))
+        (#(when %1 (slurp %1)))
+        (parse-string true)
+        (do-this #(pp/pprint %1)))))
 
 (defn get-party-members [{:keys [with quest-id login-cookie status]}]
-  (-> (json-request (str "/api/v1/quests/" quest-id "/party")
-                    {:type :get
-                     :cookies login-cookie})
-      (with)
-      (has-status (or status 200))
-      (:body)
-      (check #(is (not (= %1 nil))))
-      (#(when %1 (slurp %1)))
-      (parse-string true)
-      (do-this #(pp/pprint %1))))
+  (let [url (str "/api/v1/quests/" quest-id "/party")]
+    (-> (json-request url
+         {:type :get
+          :cookies login-cookie})
+        (with)
+        (has-status (or status 200) url)
+        (:body)
+        (check #(is (not (= %1 nil))))
+        (#(when %1 (slurp %1)))
+        (parse-string true)
+        (do-this #(pp/pprint %1)))))
 
 (defn remove-party-member [{:keys [with quest-id member-id login-cookie status]}]
-  (-> (json-request (str "/api/v1/quests/" quest-id "/party/" member-id)
-                    {:type :delete
-                     :cookies login-cookie})
-      (with)
-      (has-status (or status 204))))
+  (let [url (str "/api/v1/quests/" quest-id "/party/" member-id)]
+    (-> (json-request url
+         {:type :delete
+          :cookies login-cookie})
+        (with)
+        (has-status (or status 204) url))))
 
 (defn get-moderated-quests [{:keys [with]}]
-  (-> (json-request (str "/api/v1/quests/moderated")
-                    {:type :get})
-      (with)
-      (has-status 200)
-      (:body)
-      (check #(is (not (= %1 nil))))
-      (#(when %1 (slurp %1)))
-      (parse-string true)
-      (do-this #(pp/pprint %1))))
+  (let [url (str "/api/v1/quests/moderated")]
+    (-> (json-request url
+         {:type :get})
+        (with)
+        (has-status 200 url)
+        (do-this pp/pprint)
+        (:body)
+        (check #(is (not (= %1 nil))))
+        (#(when %1 (slurp %1)))
+        (parse-string true)
+        (do-this pp/pprint))))
 
 (defn accept-quest [{:keys [with login-cookie quest-id]}]
-  (-> (json-request (str "/api/v1/quests/" quest-id "/moderate-accept")
-                    {:type :post
-                     :cookies login-cookie})
-      (with)
-      (has-status 200)
-      (:body)
-      (check #(is (not (nil? %1))))
-      (#(when %1 (slurp %1)))
-      (parse-string true)))
+  (let [url (str "/api/v1/quests/" quest-id "/moderate-accept")]
+    (-> (json-request url
+                      {:type :post
+                       :cookies login-cookie})
+        (with)
+        (has-status 200 url)
+        (:body)
+        (check #(is (not (nil? %1))))
+        (#(when %1 (slurp %1)))
+        (parse-string true)
+        (do-this pp/pprint))))
 
 
 (deftest test-api
@@ -497,7 +506,7 @@
                           :quest added-quest
                           :login-cookie login-cookie})
            :id (:id added-quest)}
-          (check #(is (nil? (db/get-moderated-quest-by-id {:id (:id %1)}))))
+          (check #(is (nil? (db/get-moderated-quest-by-id %1))))
           (#(db/delete-quest-by-id! {:id (:id %1)}))
           (just-do #(db/delete-user! *db* {:id (sc/string->uuid @test-user-id)})))
       ))
