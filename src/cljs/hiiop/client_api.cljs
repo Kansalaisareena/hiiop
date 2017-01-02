@@ -77,7 +77,6 @@
       (when (= (:status response) 200)
         (:body response)))))
 
-
 (defn get-own-quests []
   (go
     (let [response (<! (http/get (str base-path "/quests/own")))]
