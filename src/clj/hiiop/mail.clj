@@ -95,7 +95,8 @@
                   :body-text (content :leipateksti)
                   :button-text (content :ekanappiteksti)}}))))
 
-(defn send-join-quest [{:keys [email quest locale]}]
+(defn send-join-quest [{:keys [email quest locale member-id]}]
+  (log/info "send-join-quest" email quest locale member-id)
   (let [tr (ht/tr-with [locale])
         quest-id (:id quest)
         content (mail-content "join-quest" locale)
@@ -110,7 +111,11 @@
                   :quest quest
                   :body-text (content :leipateksti)
                   :button-text (content :ekanappiteksti)
-                  :button-url (url-to' :quest :quest-id quest-id)}}))))
+                  :button-url (url-to' :quest :quest-id quest-id)
+                  :button2-text (content :tokanappiteksti)
+                  :button2-url (url-to' :part-quest-party
+                                        :quest-id quest-id
+                                        :member-id member-id)}}))))
 
 (defn send-quest-declined [{:keys [email quest message locale]}]
   (log/info email quest message locale)
