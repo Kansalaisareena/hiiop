@@ -18,7 +18,7 @@
  :pages
  {
   :index
-  {:title :name
+  {:title "Etusivu"
    :banner
    {:header "Vuoden tärkein päivä on päivä vapaaehtoisena!"
     :content "Jokainen voi lähteä mukaan vapaaehtoistoimintaan. Nyt on itsenäisyyden juhlavuosi. Anna sinäkin Suomelle lahjaksi päivä omasta vuodestasi. #hiiop on hyvä paikka aloittaa."
@@ -61,13 +61,17 @@
    :email-sent "Lähetimme sinulle sähköpostia. Viestissä on linkki, jota klikkaamalla pääset luomaan salasanasi ja kirjautumaan palveluun. Tähän saattaa mennä pari minuuttia."}
 
   :profile
-  {:past-quests "Menneet vapaaehtoistehtäväsi"
+  {:title "Käyttäjä"
+   :past-quests "Menneet vapaaehtoistehtäväsi"
    :upcoming-quests "Tulevat vapaaehtoistehtäväsi"
    :cancel "Peruuta"
    :delete "Poista tapahtuma"
    :do-you-want-to-delete "Oletko varma, että haluat poistaa tapahtuman?"
    :no-upcoming-quests "Sinulla ei vielä ole tulevia tehtäviä"
-   :my-event "Oma tapahtuma"}
+   :my-event "Oma tapahtuma"
+   :cancel-enrollment "Peru ilmoittautuminen"
+   :pending-approval "Odottaa hyväksymistä"
+   :published "Julkaistu"}
 
   :activate
   {:title "Luo salasana"
@@ -79,7 +83,6 @@
 
   :quest
   {:title "Löydä tehtävä"
-
    :view
    {:participants "vapaata paikkaa"
     :signup
@@ -120,40 +123,55 @@ Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit
      }}
 
    :edit
-   {:title "Ilmoita uusi tehtävä"
+   {:title "Ilmoita vapaaehtoistehtävä"
 
     :subtitles
     {:content "1/4 Vapaaehtoistehtävän sisältö"
      :time-place "2/4 Missä ja milloin vapaaehtoistoiminta järjestetään?"
      :related-to "3/4 Mihin vapaaehtoistehtävä liittyy?"
-     :participation "4/4 Osallistuminen"}
+     :participation "Osallistuminen"
+
+     :info
+     {:content "Kerro, mitä haluat saada aikaan yhteisvoimin. Ole innostava! Mitä päivän aikana tapahtuu? Miten vapaaehtoiset voivat osallistua ja auttaa? Millaisia voimia ja kykyjä tarvitset mukaan?"
+      :related-to "Valitse yksi tai useampi aihealue, jotka kuvaavat parhaiten vapaaehtoistehtävääsi."
+      :participation "Kerro, kuinka moni voi osallistua toimintaan ja liittyykö osallistumiseen rajoituksia."
+     }
+    }
 
     :name "Vapaaehtoistehtävän nimi"
     :description "Kerro tehtävän sisällöstä"
     :picture "Lisää kuva"
     :hashtags "Aihetunnisteet eli hashtagit"
 
+    :info{:picture "Onhan sinulla on oikeudet kuvasi käyttöön? Kuvan käyttöön tarvitset aina kuvaajan nimen. Kuvan tulee olla vähintään 1100 pikseliä leveä ja 500 pikseliä korkea."}
+
     :organisation
     {:name "Järjestävä yhteisö tai järjestö"
      :description "Kerro yhteisösi toiminnasta"}
-    :start-time "Alkamisaika"
-    :end-time "Päättymisaika"
+    :start-date "Päivämäärä"
+    :end-date "Lisää päättymispäivämäärä"
+    :start-time "Kellonaika"
+    :end-time "Kellonaika"
+
     :location {:label "Paikka"
                :placeholder "Anna sijainti"}
+    :address "Osoite"
+    :town "Paikkakunta"
 
     :max-participants
     {:can-join "Vapaaehtoistehtävään voi osallistua"
      :amount-of-people "henkilöä"}
 
     :open "Tehtävä on avoin kaikille"
-    :closed "Vapaaehtoiseksi voi ilmoittautua ainoastaan järjestäjältä saadun yksityisen linkin kautta"
-    :organiser-participates "Osallistun lisäksi itse tehtävään"
+    :closed "Tehtävä on yksityinen ja siihen voi osallistua ainoastaan järjestäjältä saadun yksityisen linkin kautta."
+    :organiser-will-participate "Osallistun lisäksi itse tehtävään"
 
     :button
     {:add-organisation "Haluatko lisätä tehtävään tietoa yhteisöstäsi tai organisaatiostasi?"
      :reveal-end-time "Lisää päättymisaika"
      :preview "Esikatsele ja julkaise"
      :submit "Julkaise"
+     :cancel "Peruuta"
      :remove "Poista tehtävä"}
 
     :remove
@@ -161,6 +179,8 @@ Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit
      :confirm "Poista tehtävä"
      :cancel "Peruuta"}
 
+    :cancel
+    {:confirmation "Oletko varma, että haluat poistaa tehtävän? Jos vapaaehtoistehtävä on jo julkinen, siihen ilmoittautuneet vapaaehtoiset saavat automaattisesti viestin peruutuksesta."}
     :party
     {:title "Tehtävääsi ilmoittautuneet"
      :confirm-remove "Poista ilmoittautuminen?"
@@ -178,6 +198,14 @@ Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit
      :when "Milloin?"
      }
     }
+
+   :part
+   {:title "Peru ilmoittautuminen"
+    :text "Oletko varma, että haluat perua ilmoittautumisen tehtävään %1?"
+    :confirm "Peru ilmoittautuminen"
+    :success "Peruminen onnistui!"
+    :to-quest "Takaisin tehtävään"}
+
 
    :preview
    {:title "Vapaaehtoistehtävän esikatselu"
@@ -207,7 +235,7 @@ Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit
  :actions
  {
   :quest
-  {:create  "Ilmoita tehtävä"
+  {:create  "Ilmoita vapaaehtoistehtävä"
    :browse  "Löydä tehtävä"
    :edit    "Muokkaa tehtävää"
    :signup  "Ilmoittaudu mukaan"
@@ -219,6 +247,8 @@ Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit
    :logout   "Kirjaudu ulos"
    :save-password "Tallenna salasana"}
 
+  :cancel "Peruuta"
+
   :profile
   {:sign-out "Kirjaudu ulos"
    :edit "Muokkaa"}
@@ -227,18 +257,18 @@ Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit
  :pikaday
  {:previous-month "Edellinen"
   :next-month     "Seuraava"
-  :months ["Tammikuussa"
-           "Helmikuussa"
-           "Maaliskuussa"
-           "Huhtikuussa"
-           "Toukokuussa"
-           "Kesäkuussa"
-           "Heinäkuussa"
-           "Elokuussa"
-           "Syyskuussa"
-           "Lokakuussa"
-           "Marraskuussa"
-           "Joulukuussa"],
+  :months         ["Tammikuussa"
+                   "Helmikuussa"
+                   "Maaliskuussa"
+                   "Huhtikuussa"
+                   "Toukokuussa"
+                   "Kesäkuussa"
+                   "Heinäkuussa"
+                   "Elokuussa"
+                   "Syyskuussa"
+                   "Lokakuussa"
+                   "Marraskuussa"
+                   "Joulukuussa"],
   :weekdays       ["sunnuntai"
                    "maanantai"
                    "tiistai"
@@ -261,6 +291,11 @@ Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit
   :dict-remove-file                "Poista kuva"
   :dict-max-files-exceeded         "Et voi lisätä enempää kuvia"
   }
+
+ :email
+ {:quest
+  {:time "Aika"
+   :place "Paikka"}}
 
  :errors
  {
