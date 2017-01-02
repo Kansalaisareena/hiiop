@@ -12,7 +12,6 @@
             [hiiop.components.register :as p-r]
             [hiiop.components.quest-single :as quest-single]
             [hiiop.components.quests :as quests]
-            [hiiop.components.quests-browse :as quest-browse]
             [hiiop.components.part-party :refer [part-party]]
             [hiiop.components.quests-browse :as quest-browse]
             [hiiop.client-api :refer [get-quest
