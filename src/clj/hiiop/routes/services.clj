@@ -259,10 +259,11 @@
              :middleware  [api-authenticated]
              :return      Quest
              (fn [request]
+               (log/info "-------------------moderate accept")
                (-> (api-handlers/moderate-accept-quest {:quest-id quest-id
-                                                        :user-id (:id request)})
+                                                        :user-id (get-in request [:identity :id])})
                    (#(if-not (:errors %)
-                       (ok)
+                       (ok %)
                        (unauthorized))))))
 
         (POST "/:quest-id/moderate-reject" []

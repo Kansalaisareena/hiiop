@@ -123,11 +123,8 @@
     (concat moderated unmoderated)))
 
 (redef-with-cache get-all-moderated-quests :all-moderated-quests)
-(redef-invalidate-cache add-moderated-quest! :all-moderated-quests)
 (redef-invalidate-cache add-unmoderated-quest! :all-moderated-quests)
 (redef-invalidate-cache update-quest! :all-moderated-quests)
 (redef-invalidate-cache delete-quest-by-id! :all-moderated-quests)
 (redef-invalidate-cache join-quest! :all-moderated-quests)
 (redef-invalidate-cache moderate-accept-quest! :all-moderated-quests)
-
-

@@ -6,24 +6,33 @@
  :header
  {:title "Hiiop"}
 
+ :footer
+ {:rules-and-guidelines "Ohjeet ja säännöt"
+  :frequently-asked-questions "Usein kysyttyjä kysymyksiä"
+  :contact "Ota yhteyttä"
+  :terms-of-service "Käyttäjäehdot"
+  :privacy "Henkilötietojen käsittely"
+  :follow-us "Hiiop! Seuraa meitä"
+  :copyright "© OP Ryhmä"}
+
  :pages
  {
   :index
   {:title :name
    :banner
-   {:header "Vapaaehtoistoiminnan koti"
-    :content "Itsenäisyyden juhlavuoden kunniaksi haluamme innostaa jokaista tekemään yhdessä hyvää ja lähtemään mukaan vapaaehtoistoimintaan. Anna sinäkin aikaasi ja löydä oma tapasi toimia vapaaehtoisena."
+   {:header "Vuoden tärkein päivä on päivä vapaaehtoisena!"
+    :content "Jokainen voi lähteä mukaan vapaaehtoistoimintaan. Nyt on itsenäisyyden juhlavuosi. Anna sinäkin Suomelle lahjaksi päivä omasta vuodestasi. #hiiop on hyvä paikka aloittaa."
     :subtitle "#hiiop"}
 
    :category-selector
-   {:title "Tehdään yhdessä 100 vuotta vapaaehtoistyötä Suomen hyväksi!"
-    :subtitle "Hiiop on vapaaehtoistoiminnan kohtaamispaikka. Täältä löydät itsellesi sopivan tehtävän tai voit kutsua apukäsiä järjestämääsi toimintaan. Kutsumme kaikki mukaan rakentamaan yhdessä hyvää huomista – sadan vuoden edestä."
+   {:title "Tule mukaan vapaaehtoistoimintaan"
+    :subtitle "Hiiop on vapaaehtoistoiminnan tori ja kohtaamispaikka. Täältä löydät helposti itsellesi sopivat tavat ja paikat tehdä vapaaehtoistyötä. Voit myös kutsua apukäsiä mukaan vapaaehtoistoimintaan, jota olet itse järjestämässä. Yhdessä voimme saada aikaan koko Suomea koskettavia hyviä tekoja. Valitse itseäsi kiinnostava aihe ja selaa vapaaehtoismahdollisuuksia."
     :search "Näytä tehtävät"}
 
    :index-links
-   {:browse-quests-text "Ryhdy vapaaehtoiseksi ja löydä itsellesi mieluinen tekemisen kohde."
+   {:browse-quests-text "Ryhdy vapaaehtoiseksi ja löydä oma tapasi auttaa"
     :browse-quests "Löydä tehtävä"
-    :create-quest-text "Järjestä itse vapaaehtoistempaus ja kutsu kaverisi mukaan."
+    :create-quest-text "Järjestä vapaaehtoistehtävä ja kutsu kaverisi mukaan"
     :create-quest "Ilmoita tehtävä"
     :read-stories-text "Tutustu kokemuksiin vapaaehtoistoiminnasta."
     :read-stories "Lue tarinoita"}
@@ -34,29 +43,34 @@
 
 
   :login
-  {:title "Kirjaudu"
+  {:title "Kirjaudu palveluun"
    :email "Sähköpostiosoite"
    :password "Salasana"
+   :login-subtitle "Kirjautuneena käyttäjänä voit ilmoittaa ja muokata tapahtumia. Näet myös kaikki vapaaehtoistehtävät, joihin olet osallistunut Hiiop100.fi -sivuston kautta."
    :forget-password "Olen unohtanut salasanani"
    :register "Luo tunnus"
    :remember-me "Muista minut"}
 
   :register
-  {:title "Luo tunnus"
+  {:title "Tervetuloa mukaan - luo tunnus"
+   :register-subtitle "Kirjautuneena käyttäjänä voit ilmoittaa ja muokata tapahtumia. Näet myös kaikki vapaaehtoistehtävät, joihin olet osallistunut Hiiop100.fi -sivuston kautta."
    :name "Nimi"
-   :email "Sähköposti"
+   :email "Sähköpostiosoite"
    :phone "Puhelinnumero"
-   :check-your-email "Tarkista sähköpostisi"
-   :email-sent "Varmistusviesti lähetetty"}
+   :check-your-email "Hiiop - tarkista sähköpostisi"
+   :email-sent "Lähetimme sinulle sähköpostia. Viestissä on linkki, jota klikkaamalla pääset luomaan salasanasi ja kirjautumaan palveluun. Tähän saattaa mennä pari minuuttia."}
 
   :profile
-  {:past-quests "Menneet tehtäväsi"
-   :upcoming-quests "Tulevat tehtäväsi"
+  {:past-quests "Menneet vapaaehtoistehtäväsi"
+   :upcoming-quests "Tulevat vapaaehtoistehtäväsi"
    :cancel "Peruuta"
-   :delete "Poista"
+   :delete "Poista tapahtuma"
    :do-you-want-to-delete "Oletko varma, että haluat poistaa tapahtuman?"
-   :no-upcoming-quests "ei tulevia tehtäviä"
-   :my-event "Oma tapahtuma"}
+   :no-upcoming-quests "Sinulla ei vielä ole tulevia tehtäviä"
+   :my-event "Oma tapahtuma"
+   :cancel-enrollment "Peru ilmoittautuminen"
+   :pending-approval "Odottaa hyväksymistä"
+   :published "Julkaistu"}
 
   :activate
   {:title "Luo salasana"
@@ -68,21 +82,19 @@
 
   :quest
   {:title "Löydä tehtävä"
-
    :view
    {:participants "vapaata paikkaa"
     :signup
-    {:subtitle "Olet ilmoittautumassa tapahtumaan. Huomioithan että ilmoittautuminen on sitova.
-Mikäli et jostain syystä pääse osallistumaan tapahtumaan ilmoitathan siitä suoraan järjestäjälle. "
+    {:subtitle "Tervetuloa vapaaehtoiseksi!"
      :name "Nimi"
      :email "Sähköposti"
      :phone "Puhelinnumero"
-     :days "Kuinka monena päivänä aion osallistua"
-     :agree-to-terms-and-conditions "Olen lukenut palvelun ehdot ja hyväksyn ne"}
+     :days "Kuinka monena päivänä aiot osallistua"
+     :agree-to-terms-and-conditions "Olen lukenut palvelun ehdot ja hyväksyn ne. Ilmoittautuminen on sitova. Esteen sattuessa voit perua osallistumisen."}
     :join
     {:success "Loistavaa, että olet mukana - kiitos ilmottautumisestasi! Saat sähköpostiisi lisätietoa tapahtumasta."
      :fail    "Hups, ilmottautumisesi epäonnistui. Tarkista sähköpostiosoitteesi tai oletko jo aiemmin ilmoittautunut tehtävään."
-     :to-front-page "Etusivulle"}
+     :to-front-page "Sulje"}
     }
 
    :created
@@ -133,20 +145,20 @@ Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit
     :info{:picture "Onhan sinulla on oikeudet kuvasi käyttöön? Kuvan käyttöön tarvitset aina kuvaajan nimen. Kuvan tulee olla vähintään 1100 pikseliä leveä ja 500 pikseliä korkea."}
 
     :organisation
-    {:name "Yhteisön tai organisaation nimi"
+    {:name "Järjestävä yhteisö tai järjestö"
      :description "Kerro yhteisösi toiminnasta"}
-
     :start-date "Päivämäärä"
     :end-date "Lisää päättymispäivämäärä"
     :start-time "Kellonaika"
-    :end-time ""
+    :end-time "Kellonaika"
+
     :location {:label "Paikka"
                :placeholder "Anna sijainti"}
     :address "Osoite"
     :town "Paikkakunta"
 
     :max-participants
-    {:can-join "Tehtävään voi osallistua"
+    {:can-join "Vapaaehtoistehtävään voi osallistua"
      :amount-of-people "henkilöä"}
 
     :open "Tehtävä on avoin kaikille"
@@ -154,7 +166,7 @@ Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit
     :organiser-will-participate "Osallistun lisäksi itse tehtävään"
 
     :button
-    {:add-organisation "Haluatko lisätä tehtävään tietoa yhteisöstäsi tai organisaatiosta"
+    {:add-organisation "Haluatko lisätä tehtävään tietoa yhteisöstäsi tai organisaatiostasi?"
      :reveal-end-time "Lisää päättymisaika"
      :preview "Esikatsele ja julkaise"
      :submit "Julkaise"
@@ -162,14 +174,14 @@ Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit
      :remove "Poista tehtävä"}
 
     :remove
-    {:title "Oletko ihan varma, että haluat poistaa tehtävän?"
-     :confirm "Poista"
+    {:title "Oletko varma, että haluat poistaa tehtävän? Jos vapaaehtoistehtävä on jo julkinen, siihen ilmoittautuneet vapaaehtoiset saavat automaattisesti viestin peruutuksesta."
+     :confirm "Poista tehtävä"
      :cancel "Peruuta"}
 
     :cancel
     {:confirmation "Oletko varma, että haluat poistaa tehtävän? Jos vapaaehtoistehtävä on jo julkinen, siihen ilmoittautuneet vapaaehtoiset saavat automaattisesti viestin peruutuksesta."}
     :party
-    {:title "Tehtävään ilmoittautuneet"
+    {:title "Tehtävääsi ilmoittautuneet"
      :confirm-remove "Poista ilmoittautuminen?"
      :cancel-remove "Peruuta"
      :empty "Kerro muillekin tehtävästäsi!"}
@@ -177,10 +189,10 @@ Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit
 
    :browse
    {:title "Hiiop! Löydä sinulle sopiva vapaaehtoistehtävä"
-    :not-found "Juuri näillä hakuehdoilla ei löytynyt tapahtumia. Koita valita useampia kiinnostuksen kohteita."
+    :not-found "Emme juuri nyt löytäneet täysin hakuasi vastaavia tehtäviä. Voit ilmoittaa vapaaehtoistehtävän tai laajentaa hakuehtoja."
 
     :filter
-    {:category "Kiinnostuksen kohde"
+    {:category "Miten haluat auttaa?"
      :where "Missä?"
      :when "Milloin?"
      }
@@ -195,7 +207,7 @@ Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit
 
 
    :preview
-   {:title "Tehtävän esikatselu"
+   {:title "Vapaaehtoistehtävän esikatselu"
     :check "Tarkista kohteesi tiedot ja, että sinulla on oikeus käyttää lisäämääsi kuvaa."
     :buttons {:edit "Muokkaa"
               :publish "Julkaise tehtävä"}
@@ -244,18 +256,18 @@ Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit
  :pikaday
  {:previous-month "Edellinen"
   :next-month     "Seuraava"
-  :months         ["tammikuu"
-                   "helmikuu"
-                   "maaliskuu"
-                   "huhtikuu"
-                   "toukokuu"
-                   "kesäkuu"
-                   "heinäkuu"
-                   "elokuu"
-                   "syyskuu"
-                   "lokakuu"
-                   "marraskuu"
-                   "joulukuu"],
+  :months ["Tammikuussa"
+           "Helmikuussa"
+           "Maaliskuussa"
+           "Huhtikuussa"
+           "Toukokuussa"
+           "Kesäkuussa"
+           "Heinäkuussa"
+           "Elokuussa"
+           "Syyskuussa"
+           "Lokakuussa"
+           "Marraskuussa"
+           "Joulukuussa"],
   :weekdays       ["sunnuntai"
                    "maanantai"
                    "tiistai"
@@ -268,7 +280,7 @@ Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit
   }
 
  :dropzone
- {:dict-default-message            "Raahaa kuva tänne"
+ {:dict-default-message            "Lisää kuva"
   :dict-fallback-message           "Selaimesi ei ole tuettu"
   :dict-invalid-file-type          "Kuvatyyppi ei ole tuettu"
   :dict-file-too-big               "Kuva on liian iso"

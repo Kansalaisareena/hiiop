@@ -68,14 +68,14 @@
                   :body-text (content :leipateksti)
                   :button-text (content :ekanappiteksti)}}))))
 
-(defn send-new-quest [email quest-id locale]
+(defn send-new-quest [{:keys [email quest locale]}]
   (let [content (mail-content "new-quest" locale)]
     (send-mail
      (make-mail {:to email
                  :subject (content :otsikko)
                  :template emails/simple-mail
                  :template-params
-                 {:button-url (url-to' :quest :quest-id quest-id)
+                 {:button-url (url-to' :quest :quest-id (:id quest))
                   :title (content :otsikko)
                   :body-text (content :leipateksti)
                   :button-text (content :ekanappiteksti)}}))))
@@ -123,29 +123,36 @@
                   :button-text (content :ekanappiteksti)
                   :message message}}))))
 
-(defn send-quest-accepted [email quest-id locale]
-  (let [content (mail-content "quest-accepted" locale)]
+(defn send-quest-accepted [email quest locale]
+  (let [content (mail-content "quest-accepted" locale)
+        title (str (content :otsikko) (:name quest))]
     (send-mail
      (make-mail {:to email
-                 :subject (content :otsikko)
-                 :template emails/simple-mail
+                 :subject title
+                 :template emails/quest-details-mail
                  :template-params
-                 {:button-url (url-to' :quest :quest-id quest-id)
-                  :title (content :otsikko)
+                 {:button-url (url-to' :quest :quest-id (:id quest))
+                  :title title
+                  :quest quest
                   :body-text (content :leipateksti)
                   :button-text (content :ekanappiteksti)}}))))
 
-(defn send-private-quest-accepted [email quest-id locale]
-  (let [content (mail-content "private-quest-accepted" locale)]
+(defn send-private-quest-accepted [{:keys [email quest locale]}]
+  (let [content (mail-content "private-quest-accepted" locale)
+        title (str (content :otsikko) (:name quest))]
     (send-mail
      (make-mail {:to email
-                 :subject (content :otsikko)
-                 :template emails/simple-mail
+                 :subject title
+                 :template emails/quest-details-mail
                  :template-params
-                 {:button-url (url-to' :quest :quest-id quest-id)
-                  :title (content :otsikko)
+                 {:title (content :otsikko)
                   :body-text (content :leipateksti)
-                  :button-text (content :ekanappiteksti)}}))))
+                  :button-text (content :ekanappiteksti)
+                  :button-url (url-to' :quest :quest-id (:id quest))
+                  :button2-text (content :tokanappiteksti)
+                  :button2-url (url-to' :secret-quest
+                                        :quest-id (:id quest)
+                                        :secret-party (:secret-party quest))}}))))
 
 (defn send-quest-deleted [email quest-id locale]
   (let [content (mail-content "quest-deleted" locale)]

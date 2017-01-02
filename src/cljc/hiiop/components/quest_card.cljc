@@ -56,7 +56,8 @@
 (rum/defcs quest-card-profile < rum/reactive
   (rum/local "default" ::card-state)
   [state {:keys [quest context quests]}]
-  (let [{:keys [name
+  (let [card-state (::card-state state)
+        {:keys [name
                 location
                 id
                 start-time
@@ -65,7 +66,9 @@
                 max-participants]} quest
         quest-link (path-for hierarchy :quest :quest-id id)
         town (:town location)
-        card-state (::card-state state)
+        is-own-quest (= (str (:id (:identity context)))
+                        (str (:owner quest)))
+        is-open (:is-open quest)
         tr (:tr context)]
 
     [:div {:class "opux-card-container"}
@@ -73,7 +76,12 @@
 
       [:div {:class "opux-card__image-container"}
        [:div {:class "opux-card__status"}
-        (tr [:pages.profile.my-event])]
+        (if is-own-quest
+          (str (tr [:pages.profile.my-event])
+               " | "
+               (if (not is-open)
+                 (tr [:pages.profile.pending-approval])
+                 (tr [:pages.profile.published]))))]
        [:a {:href quest-link}
         [:div {:class "opux-card__image"
                :style {:background-image (str "url('"
@@ -96,29 +104,36 @@
         (time/to-string (time/from-string start-time) time/with-weekday-format)]
        [:span {:class "opux-card__time opux-inline-icon opux-inline-icon-clock"}
         (str
-         (time/to-string
-          (time/from-string start-time) time/hour-minute-format)
-         "-"
-         (time/to-string
-          (time/from-string end-time) time/hour-minute-format)
-         )]
+          (time/to-string
+            (time/from-string start-time) time/hour-minute-format)
+          "-"
+          (time/to-string
+            (time/from-string end-time) time/hour-minute-format)
+          )]
 
-       [:div {:class "opux-card__actions"}
-        [:span
-         {:class "opux-card-action opux-icon-circled opux-icon-trashcan"
-          :on-click (fn [e]
-                      (if (not (= @card-state "delete"))
-                        (reset! card-state "delete")))}]
-        [:span {:class "opux-card-action opux-icon-circled opux-icon-personnel"}]
-        [:a {:class "opux-card-action opux-icon-circled opux-icon-edit"
-             :href (path-for hierarchy :edit-quest :quest-id (:id quest))}]]
+       (if is-own-quest
+         [:div {:class "opux-card__actions"}
+          [:span
+           {:class "opux-card-action opux-icon-circled opux-icon-trashcan"
+            :on-click (fn [e]
+                        (if (not (= @card-state "delete"))
+                          (reset! card-state "delete")))}]
 
-       (if (= @card-state "delete")
-         (quest-card-action-delete {:quest quest
-                                    :card-state card-state
-                                    :quests quests
-                                    :tr tr}))
-       ]]]))
+          (if is-open
+            [:span {:class "opux-card-action opux-icon-circled opux-icon-personnel"}])
+
+          [:a {:class "opux-card-action opux-icon-circled opux-icon-edit"
+               :href (path-for hierarchy :edit-quest :quest-id (:id quest))}]
+
+          (if (= @card-state "delete")
+            (quest-card-action-delete {:quest quest
+                                       :card-state card-state
+                                       :quests quests
+                                       :tr tr}))]
+
+         [:div {:class "opux-card__actions"}
+          [:span {:class "opux-button"}
+           (tr [:pages.profile.cancel-enrollment])]])]]]))
 
 (rum/defc quest-card-browse [{:keys [quest context]}]
   (let [{:keys [name
@@ -158,10 +173,10 @@
         (time/to-string (time/from-string start-time) time/with-weekday-format)]
        [:span {:class "opux-card__time opux-inline-icon opux-inline-icon-clock"}
         (str
-         (time/to-string
-          (time/from-string start-time) time/hour-minute-format)
-         "-"
-         (time/to-string
-          (time/from-string end-time) time/hour-minute-format)
-         )]
+          (time/to-string
+            (time/from-string start-time) time/hour-minute-format)
+          "-"
+          (time/to-string
+            (time/from-string end-time) time/hour-minute-format)
+          )]
        ]]]))

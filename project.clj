@@ -122,17 +122,28 @@
            :include-files ["target/uberjar/hiiop.jar"]
            :process-types { "web" "java -jar $JVM_OPTS target/uberjar/hiiop.jar" }}
 
-  :resource {:resource-paths ["target/cljsbuild/public/js"]
-             :skip-stencil [#"target/cljsbuild/public/js.*"]
-             :target-path
-             ~(str "resources/public/"
-                   (apply
-                    str
-                    (clojure.string/trim
-                     (:out
-                      (clojure.java.shell/sh
-                       "git" "rev-parse" "--verify" "HEAD"))))
-                   "/js")}
+  :resource
+  {:resource-paths [["target/cljsbuild/public/js"
+                     {:skip-stencil [#"target/cljsbuild/public/js.*"]
+                      :target-path
+                      ~(str "resources/public/"
+                            (apply
+                              str
+                              (clojure.string/trim
+                                (:out
+                                 (clojure.java.shell/sh
+                                   "git" "rev-parse" "--verify" "HEAD"))))
+                            "/js")}]
+                    ["resources/public/css"
+                     {:target-path
+                      ~(str "resources/public/"
+                            (apply
+                              str
+                              (clojure.string/trim
+                                (:out
+                                 (clojure.java.shell/sh
+                                   "git" "rev-parse" "--verify" "HEAD"))))
+                            "/css")}]]}
 
   :essthree
   {:deploy {:type       :directory
@@ -142,7 +153,8 @@
 
   :profiles
   {:uberjar {:omit-source true
-             :prep-tasks ["git-version" "compile" ["cljsbuild" "once" "min"] "resource" "minify-assets"]
+             ;;:prep-tasks ["git-version" "compile" ["cljsbuild" "once" "min"] "resource" "minify-assets"]
+             :prep-tasks ["git-version" "compile" ["cljsbuild" "once" "min"] "resource"]
              :cljsbuild
              {:builds
               {:min
@@ -157,17 +169,17 @@
                  :closure-warnings
                  {:externs-validation :off :non-standard-jsdoc :off}}}}}
 
-             :minify-assets
-             {:assets
-              {~(str "resources/public/"
-                     (apply str (clojure.string/trim
-                                 (:out (clojure.java.shell/sh
-                                        "git" "rev-parse" "--verify" "HEAD"))))
-                     "/css/screen.css")
-               "resources/public/css"
-               }
-              :options {:optimizations :none}
-              }
+             ;; :minify-assets
+             ;; {:assets
+             ;;  {~(str "resources/public/"
+             ;;         (apply str (clojure.string/trim
+             ;;                      (:out (clojure.java.shell/sh
+             ;;                              "git" "rev-parse" "--verify" "HEAD"))))
+             ;;         "/css/screen.css")
+             ;;   "resources/public/css"
+             ;;   }
+             ;;  :options {:optimizations :none}
+             ;;  }
 
              :aot :all
              :uberjar-name "hiiop.jar"

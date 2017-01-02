@@ -103,65 +103,15 @@ INSERT INTO quests
  google_place_id,
  categories,
  max_participants,
- unmoderated_hashtags
+ unmoderated_hashtags,
  unmoderated_picture,
  unmoderated_organisation,
  unmoderated_organisation_description,
  is_open,
  owner)
 VALUES
-(:unmoderated_name,
- :unmoderated_description,
- :start_time,
- :end_time,
- :street_number,
- :street,
- :town,
- :postal_code,
- :country,
- :latitude,
- :longitude,
- :google_maps_url,
- :google_place_id,
- :categories,
- :max_participants,
- :unmoderated_hashtags,
- :unmoderated_picture,
- :unmoderated_organisation,
- :unmoderated_organisation_description,
- :is_open,
- :owner)
-RETURNING id
-
--- :name add-moderated-quest! :? :1
--- :doc add a quest
-INSERT INTO quests
-(name,
- description,
- organisation,
- organisation_description,
- start_time,
- end_time,
- street_number,
- street,
- town,
- postal_code,
- country,
- latitude,
- longitude,
- google_maps_url,
- google_place_id,
- categories,
- max_participants,
- hashtags,
- picture,
- is_open,
- owner)
-VALUES
 (:name,
  :description,
- :organisation,
- :organisation_description,
  :start_time,
  :end_time,
  :street_number,
@@ -177,6 +127,8 @@ VALUES
  :max_participants,
  :hashtags,
  :picture,
+ :organisation,
+ :organisation_description,
  :is_open,
  :owner)
 RETURNING id
@@ -357,15 +309,16 @@ quests q
 where q.unmoderated_name IS NOT NULL AND
       is_rejected = false AND
       EXISTS (SELECT FROM users u
-              WHERE u.id = :user-id AND u.moderator = true)
+              WHERE u.id = :user_id AND u.moderator = true)
 
 -- :name moderate-accept-quest! :! :n
 -- :doc accept unmoderated changes to a quest
 UPDATE quests
 SET
-  description = unmoderated_description,
   name = unmoderated_name,
   unmoderated_name = null,
+  description = unmoderated_description,
+  unmoderated_description = null,
   organisation = unmoderated_organisation,
   unmoderated_organisation = null,
   organisation_description = unmoderated_organisation_description,
@@ -377,7 +330,7 @@ SET
   is_rejected = false
 WHERE id = :id AND
       EXISTS (SELECT FROM users u
-              WHERE u.id = :user-id AND u.moderator = true)
+              WHERE u.id = :user_id AND u.moderator = true)
 
 -- :name moderate-reject-quest! :! :n
 -- :doc reject unmoderated changes to a quest
@@ -385,7 +338,7 @@ UPDATE quests
 SET is_rejected = true
 where id = :id AND
       EXISTS (SELECT FROM users u
-              WHERE u.id = :user-id AND u.moderator = true)
+              WHERE u.id = :user_id AND u.moderator = true)
 
 -- :name get-unmoderated-quests-by-owner :? :*
 -- :doc get all unmoderated quests by owner
@@ -416,7 +369,7 @@ SELECT
 FROM
   quests q
 WHERE
-  q.owner = :owner AND q.name IS NOT NULL
+  q.owner = :owner AND q.unmoderated_name IS NOT NULL
 
 -- :name get-moderated-quests-by-owner :? :*
 -- :doc get quest by owner
@@ -449,11 +402,20 @@ FROM
 WHERE
   q.owner = :owner AND q.name IS NOT NULL
 
--- :name get-quest-owner-email :? :1
--- :doc get email address of quest owner
-SELECT u.email
-FROM quests q, users u
-WHERE u.id = q.owner
+-- :name get-quest-owner :? :1
+-- :doc get quest owner
+SELECT
+  u.id,
+  u.name,
+  u.email,
+  u.phone,
+  u.locale
+FROM
+  quests q,
+  users u
+WHERE
+  u.id = q.owner AND
+  q.id = :id
 
 -- :name update-quest! :? :1
 -- :doc "Update a quest"
