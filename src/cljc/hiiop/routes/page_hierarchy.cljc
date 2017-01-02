@@ -22,6 +22,10 @@
    (leaf "tehtavat" :browse-quests)
 
    (branch
+     "tehtavat/"
+     (leaf "hyvaksynta" :moderate))
+
+  (branch
     "tehtavat/" (param :quest-id)
     (leaf "" :quest)
 
@@ -36,4 +40,5 @@
     (branch
      "/muokkaa/"
      (leaf "" :edit-quest)))
+
    ))
