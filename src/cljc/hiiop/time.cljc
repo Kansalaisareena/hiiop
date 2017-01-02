@@ -13,7 +13,8 @@
    #?(:clj [clj-time.coerce :as timec])
    #?(:clj [clj-time.format :as timef])
    [hiiop.mangling :as mangle])
-  #?(:clj (:import [org.joda.time MutableDateTime DateTime Days])))
+  #?(:clj (:import [org.joda.time MutableDateTime DateTime Days]
+                   [java.util Locale])))
 
 #?(:cljs
    (def server-client-diff-seconds (atom 0)))
@@ -43,10 +44,12 @@
   #?(:clj "MMMM"
      :cljs "MMMM"))
 
-#?(:cljs (defstate locale :start :fi))
-#?(:cljs (defn switch-locale [locale]
-           (swap {#'hiiop.time/locale locale})
-           (.locale js/moment (name locale))))
+#?(:cljs
+   (defstate locale :start :fi))
+#?(:cljs
+   (defn switch-locale [locale]
+     (swap {#'hiiop.time/locale locale})
+     (.locale js/moment (name locale))))
 
 (def time-zone (atom "Europe/Helsinki"))
 (defn switch-time-zone [time-zone-param]
@@ -55,7 +58,8 @@
 
 
 #?(:clj
-   (def print-formatter (clj-time.format/formatter print-format)))
+   (def print-formatter
+     (clj-time.format/formatter print-format)))
 
 (defn with-default-time-zone [time]
   #?(:clj  (time/to-time-zone time (time/time-zone-for-id @time-zone))
@@ -287,14 +291,14 @@
    (if (nil? date)
      ""
      #?(:clj
-        (let [formatter (if format
-                          (timef/formatter format)
-                          (timef/formatters :date-time-no-ms))]
-          (timef/unparse
-            (timef/with-zone
-              formatter
-              (time/time-zone-for-id @time-zone))
-            date))
+        (let [formatter (-> (if format
+                              (timef/formatter format)
+                              (timef/formatters :date-time-no-ms))
+                            (timef/with-locale (Locale. "fi")))]
+          (-> (timef/with-zone
+                formatter
+                (time/time-zone-for-id @time-zone))
+              (timef/unparse date)))
         :cljs (.format (.tz date @time-zone) format))))
   ([date]
    (if (nil? date)
