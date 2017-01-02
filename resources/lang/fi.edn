@@ -18,7 +18,7 @@
  :pages
  {
   :index
-  {:title :name
+  {:title "Etusivu"
    :banner
    {:header "Vuoden tärkein päivä on päivä vapaaehtoisena!"
     :content "Jokainen voi lähteä mukaan vapaaehtoistoimintaan. Nyt on itsenäisyyden juhlavuosi. Anna sinäkin Suomelle lahjaksi päivä omasta vuodestasi. #hiiop on hyvä paikka aloittaa."
@@ -61,7 +61,8 @@
    :email-sent "Lähetimme sinulle sähköpostia. Viestissä on linkki, jota klikkaamalla pääset luomaan salasanasi ja kirjautumaan palveluun. Tähän saattaa mennä pari minuuttia."}
 
   :profile
-  {:past-quests "Menneet vapaaehtoistehtäväsi"
+  {:title "Käyttäjä"
+   :past-quests "Menneet vapaaehtoistehtäväsi"
    :upcoming-quests "Tulevat vapaaehtoistehtäväsi"
    :cancel "Peruuta"
    :delete "Poista tapahtuma"
@@ -122,7 +123,7 @@ Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit
      }}
 
    :edit
-   {:title "Ilmoita uusi tehtävä"
+   {:title "Ilmoita vapaaehtoistehtävä"
 
     :subtitles
     {:content "1/4 Vapaaehtoistehtävän sisältö"

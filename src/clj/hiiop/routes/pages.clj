@@ -90,7 +90,8 @@
         user-info (get-user owner)
         quests (get-quests-for-owner (:id (:identity context)))
         tr (:tr context)]
-    (layout/render {:context context
+    (layout/render {:title (str (tr [:pages.profile.title]) " " (:name user-info))
+                    :context context
                     :content (p-p/profile {:context context
                                            :user-info user-info
                                            :quests (atom quests)})})))
@@ -116,7 +117,7 @@
         quest-atom (atom quest)
         party-atom (atom party)
         errors (atom (same-keys-with-nils @quest-atom))]
-    (layout/render {:title (tr [])
+    (layout/render {:title (tr [title-key])
                     :context context
                     :content
                     (quests/edit {:context context
@@ -134,24 +135,16 @@
         quests (get-moderated-quests)
         quest-filter (atom (new-empty-quest-filter))
         errors (atom (same-keys-with-nils @quest-filter))
-        ;;category-queries (into [] (map keyword (:categories (:params req))))
         filtered-quests (atom quests)]
 
-    ;; (if (not-empty category-queries)
-    ;;   (swap! quest-filter assoc :categories category-queries))
-
-    ;; (reset!
-    ;;   filtered-quests
-    ;;   (p-b/filters {:quests quests
-    ;;                 :quest-filter @quest-filter}))
-
     (layout/render {:context context
-                    :content (p-b/list-quests {:quests quests
-                                               :quest-filter quest-filter
-                                               :filtered-quests filtered-quests
-                                               :context context
-                                               :schema QuestFilter})
-                    :title (tr [:actions.quest.create])
+                    :content
+                    (p-b/list-quests {:quests quests
+                                      :quest-filter quest-filter
+                                      :filtered-quests filtered-quests
+                                      :context context
+                                      :schema QuestFilter})
+                    :title (tr [:actions.quest.browse])
                     :scripts
                     [google-maps-url]
                     })))
@@ -191,7 +184,7 @@
         context (create-context req)
         tr (:tr context)]
     (if quest
-      (layout/render {:title (tr [:actions.quest.create])
+      (layout/render {:title (:name quest)
                       :context context
                       :content
                       (quest/quest {:context context
@@ -215,7 +208,7 @@
         context (create-context req)
         tr (:tr context)]
     (if quest
-      (layout/render {:title (tr [:actions.quest.create])
+      (layout/render {:title (:name quest)
                       :context context
                       :content
                       (quest/quest {:context context
