@@ -203,14 +203,15 @@
 
 (defn get-unmoderated-quests [{:keys [user-id]}]
   (try
-    (-> (db/get-all-unmoderated-quests {:user-id user-id})
+    (-> (db/get-all-unmoderated-quests
+         (db/->snake_case_keywords
+          {:user-id user-id}))
         ((partial map hc/db-quest->api-quest-coercer)))
     (catch Exception e
       (log/error e)
       {:errors {:quests :error.quest.unexpected-error}})))
 
 (defn- send-quest-accepted-email [{:keys [quest user] :as args}]
-  (log/info "------------send-quest-accepted-email" quest user)
   (try
     (let [quest-accepted-email
           (if (:is-open quest)
@@ -218,7 +219,12 @@
             mail/send-private-quest-accepted-email)]
       (assoc args
              :email
-             (quest-accepted-email {:quest quest :user user})))
+             (quest-accepted-email
+              {:quest        quest
+               :email        (:email user)
+               :user         user
+               :locale       (:locale user)
+               :secret-party (:secret-party quest)})))
     (catch Exception e
       (log/error e)
       (assoc args :email false))))
@@ -230,22 +236,52 @@
                                     :user-id user-id}))
         (#(assoc {} :accepted-quest %1))
         (assoc :user (db/get-quest-owner {:id quest-id}))
-        (assoc :quest (db/get-moderated-quest-by-id {:id quest-id}))
+        (assoc :quest
+               (hc/db-quest->api-quest-coercer
+                (db/get-moderated-quest-by-id {:id quest-id})))
+        (assoc-in [:quest :secret-party]
+                  (:secret-party (db/get-quest-secret-party
+                                  {:id quest-id})))
         (send-quest-accepted-email)
         (:quest)
-        (hc/db-quest->api-quest-coercer))
+        (dissoc :secret-party))
     (catch Exception e
       (log/error e)
       {:errors {:quests :errors.unauthorized}})))
 
-(defn moderate-reject-quest [{:keys [quest-id message]}]
+(defn- send-quest-rejected-email [{:keys [quest user message] :as args}]
   (try
-    (-> (db/moderate-reject-quest! {:id quest-id})
-        (#(assoc {} :reject-quest %1))
-        (assoc :owner (db/get-quest-owner {:id quest-id}))
-        (:reject-quest))
+    (assoc args
+           :email
+           (mail/send-quest-declined-email
+            {:quest quest
+             :user user
+             :email (:email user)
+             :message message
+             :locale (:locale user)}))
     (catch Exception e
-      (log/error e))))
+      (log/error e)
+      (assoc args :email false))))
+
+(defn moderate-reject-quest [{:keys [quest-id message user-id]}]
+  (try
+    (-> (db/moderate-reject-quest!
+         (db/->snake_case_keywords {:id quest-id
+                                    :user-id user-id}))
+        (#(assoc {} :reject-quest %1))
+        (assoc :user (db/get-quest-owner {:id quest-id}))
+        (#(assoc %1 :quest
+                 (hc/db-quest->api-quest-coercer
+                  (db/get-unmoderated-quest-by-id
+                   {:id quest-id
+                    :owner (get-in %1 [:user :id])}))))
+        (assoc :message message)
+        (send-quest-rejected-email)
+        (:quest))
+    (catch Exception e
+      (log/error e)
+      {:errors {:moderation :errors.moderation.failed}}
+      )))
 
 (defn check-and-update-user-info [user-info]
   user-info)
