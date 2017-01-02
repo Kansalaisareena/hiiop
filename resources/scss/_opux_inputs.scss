@@ -111,6 +111,17 @@
         top: 0px;
         width: 50px;
       }
+
+      @include block('opux-date-picker-trigger') {
+        background: rgba(255, 255, 255, 0);
+        height: 100%;
+        left: 0px;
+        opacity: 0;
+        position: absolute;
+        top: 0px;
+        width: 100%;
+        z-index: 3;
+      }
     }
 
     // opux-input__container--number-tick

@@ -27,13 +27,15 @@
    (fn [state]
      (log/trace state)
      (let [args (first (:rum/args state))
-           current-locale (keyword (get-in args [:context :conf :current-locale]))
+           ;;current-locale (keyword (get-in args [:context :conf :current-locale]))
+           current-locale :fi
            translations (get-in args [:context :conf :langs current-locale :pikaday])
            date (:date args)
            format (:format args)
            position (:position args)
            instance (pikaday
-                     {:field (.querySelector (rum/dom-node state) "input")
+                      {:field (.querySelector (rum/dom-node state) "input")
+                       :trigger (.querySelector (rum/dom-node state) ".opux-date-picker-trigger")
                       :first-day (:first-day translations)
                       :i18n translations
                       :date (time/to-string @date format)
