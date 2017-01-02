@@ -5,7 +5,7 @@
     @include modifier('select') {
       // opux-input--select--time
       @include modifier('time') {
-        max-width: calc(100% - 81px);
+        max-width: calc(100% - 61px);
         margin-top: .5rem;
       }
     }
@@ -45,10 +45,38 @@
 
     // opux-input__label
     @include element('label') {
-
       // opux-input__label--multi-select
       @include modifier('multi-select') {
         @include flex(0, 0, calc(50%));
+        width: 50%;
+        overflow-wrap: break-word;
+        word-wrap: break-word;
+        -webkit-hyphens: auto;
+        -ms-hyphens: auto;
+        -moz-hyphens: auto;
+        hyphens: auto;
+      }
+    }
+
+    // opux-input__container
+    @include element('container') {
+      // opux-input__container--date-picker
+      @include modifier('date-picker') {
+        width: 100%;
+        padding-right: 61px;
+        &:before {
+          right: 0px;
+        }
+      }
+    }
+  }
+
+  @include block('opux-card-filter') {
+    // opux-card-filter__field
+    @include element('field') {
+      // opux-card-filter__field--location
+      @include modifier('location') {
+        padding-right: 0px;
       }
     }
   }

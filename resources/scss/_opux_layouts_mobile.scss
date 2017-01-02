@@ -14,6 +14,11 @@
     }
   }
 
+  @include block('opux-banner') {
+    width: calc(100% + 2rem);
+    margin-left: -1rem;
+  }
+
   // opux-index-links
   @include block('opux-index-links') {
     display: block;
@@ -78,17 +83,17 @@
 @include viewports(tiny) {
 
   @include block('opux-wrapper') {
-    padding-bottom: 34rem;
-  }
-
-  @include block('opux-page-section') {
-    padding-left: 0px;
-    padding-right: 0px;
+    padding-bottom: 44rem;
   }
 
   // opux-card-container
   @include block('opux-card-container') {
     @include flex(0, 0, calc(100% - 1rem));
+  }
+
+  @include block('opux-card-list-container') {
+    padding-left: 0px;
+    padding-right: 0px;
   }
 
   @include block('opux-content') {
@@ -98,10 +103,6 @@
   }
 
   @include block('opux-banner') {
-    width: 100%;
-    margin-left: 0px;
-    margin-right: 0px;
-
     // opux-banner__content
     @include element('content') {
       padding-left: .5rem;
