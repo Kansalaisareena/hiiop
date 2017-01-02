@@ -488,21 +488,15 @@
           added-quest (add-quest
                        {:with current-app
                         :quest quest-to-add
-                        :login-cookie login-cookie})]
-      (-> added-quest
-          (:id)
-          ((fn [id]
-             (accept-quest {:with current-app
-                            :quest-id id
-                            :login-cookie login-cookie})))
-          ((fn [wat]
-             (log/info "------------------------------- wat" wat)
-             {:response
-              (delete-quest {:with current-app
-                             :quest added-quest
-                             :login-cookie login-cookie})
-              :id (:id added-quest)}
-             ))
+                        :login-cookie login-cookie})
+          accepted-quest (accept-quest {:with current-app
+                                        :quest-id (:id added-quest)
+                                        :login-cookie login-cookie})]
+      (-> {:response
+           (delete-quest {:with current-app
+                          :quest added-quest
+                          :login-cookie login-cookie})
+           :id (:id added-quest)}
           (check #(is (nil? (db/get-moderated-quest-by-id {:id (:id %1)}))))
           (#(db/delete-quest-by-id! {:id (:id %1)}))
           (just-do #(db/delete-user! *db* {:id (sc/string->uuid @test-user-id)})))
@@ -528,20 +522,19 @@
             added-quest (add-quest
                          {:with current-app
                           :quest quest-to-add
-                          :login-cookie login-cookie})]
-        (-> added-quest
-            (:id)
-            (#(accept-quest {:with current-app
-                             :quest-id %1}))
-            ((fn [_]
-               (join-quest {:quest-id (:id added-quest)
-                            :days 1
-                            :signup
-                            {:name "Erkki Esimerkki"
-                             :email "erkki@esimerkki.fi"
-                             :agreement true}
-                            :with current-app
-                            })))
+                          :login-cookie login-cookie})
+            accepted-quest (accept-quest {:with current-app
+                                          :quest-id (:id added-quest)
+                                          :login-cookie login-cookie})]
+        (-> (:id added-quest)
+            (#(join-quest {:quest-id %1
+                           :days 1
+                           :signup
+                           {:name "Erkki Esimerkki"
+                            :email "erkki@esimerkki.fi"
+                            :agreement true}
+                           :with current-app
+                           }))
             (check #(is (not (nil? %1))))
             (#(assoc %1 :member-id (schema.coerce/string->uuid (:member-id %1))))
             (#(assoc %1 :user-id (schema.coerce/string->uuid (:user-id %1))))
@@ -571,18 +564,17 @@
           added-quest (add-quest
                        {:with current-app
                         :quest quest-to-add
-                        :login-cookie login-cookie})]
-      (-> added-quest
-          (:id)
-          (#(accept-quest {:with current-app
-                           :quest-id %1}))
-          ((fn [_]
-             (join-quest {:quest-id (:id added-quest)
-                          :days 1
-                          :user-id @test-user-id
-                          :with current-app
-                          :login-cookie login-cookie
-                          })))
+                        :login-cookie login-cookie})
+          accepted-quest (accept-quest {:with current-app
+                                        :quest-id (:id added-quest)
+                                        :login-cookie login-cookie})]
+      (-> (:id added-quest)
+          (#(join-quest {:quest-id %1
+                         :days 1
+                         :user-id @test-user-id
+                         :with current-app
+                         :login-cookie login-cookie
+                         }))
           (check #(is (not (nil? %1))))
           (#(assoc %1 :member-id (schema.coerce/string->uuid (:member-id %1))))
           (#(assoc %1 :user-id (schema.coerce/string->uuid (:user-id %1))))
@@ -597,6 +589,7 @@
                         {:user-data test-user
                          :save-id-to test-user-id
                          :read-token-from activation-token})
+          made-moderator (db/make-moderator! {:id @test-user-id})
           login-cookie (login-and-get-cookie
                         {:with current-app
                          :user-data test-user})
@@ -610,9 +603,11 @@
           added-quest (add-quest
                        {:with current-app
                         :quest quest-to-add
-                        :login-cookie login-cookie})]
-      (-> added-quest
-          (:id)
+                        :login-cookie login-cookie})
+          accepted-quest (accept-quest {:with current-app
+                                        :quest-id (:id added-quest)
+                                        :login-cookie login-cookie})]
+      (-> (:id added-quest)
           (#(join-quest {:quest-id %1
                          :days 1
                          :user-id @test-user-id
@@ -630,23 +625,27 @@
   (testing "POST /api/v1/quests/:id/join with existing user twice to fail"
     (let [current-app (app)
           user-created (create-test-user
-                          {:user-data test-user
-                           :save-id-to test-user-id
-                           :read-token-from activation-token})
-            login-cookie (login-and-get-cookie
-                          {:with current-app
-                           :user-data test-user})
-            quest-to-add (test-quest
-                          {:use-date-string true
-                           :location-to :location
-                           :coordinates-to :coordinates
-                           :organisation-to {:in :organisation
-                                             :name :name
-                                             :description :description}})
-            added-quest (add-quest
-                         {:with current-app
-                          :quest quest-to-add
-                          :login-cookie login-cookie})]
+                        {:user-data test-user
+                         :save-id-to test-user-id
+                         :read-token-from activation-token})
+          made-moderator (db/make-moderator! {:id @test-user-id})
+          login-cookie (login-and-get-cookie
+                        {:with current-app
+                         :user-data test-user})
+          quest-to-add (test-quest
+                        {:use-date-string true
+                         :location-to :location
+                         :coordinates-to :coordinates
+                         :organisation-to {:in :organisation
+                                           :name :name
+                                           :description :description}})
+          added-quest (add-quest
+                       {:with current-app
+                        :quest quest-to-add
+                        :login-cookie login-cookie})
+          accepted-quest (accept-quest {:with current-app
+                                        :quest-id (:id added-quest)
+                                        :login-cookie login-cookie})]
         (-> (join-quest {:quest-id (:id added-quest)
                          :days 1
                          :user-id @test-user-id
@@ -669,23 +668,27 @@
   (testing "POST /api/v1/quests/:id/join fail when max-participants reached"
     (let [current-app (app)
           user-created (create-test-user
-                          {:user-data test-user
-                           :save-id-to test-user-id
-                           :read-token-from activation-token})
-            login-cookie (login-and-get-cookie
-                          {:with current-app
-                           :user-data test-user})
-            quest-to-add (test-quest
-                          {:use-date-string true
-                           :location-to :location
-                           :coordinates-to :coordinates
-                           :organisation-to {:in :organisation
-                                             :name :name
-                                             :description :description}})
-            added-quest (add-quest
-                         {:with current-app
-                          :quest (assoc quest-to-add :max-participants 1)
-                          :login-cookie login-cookie})]
+                        {:user-data test-user
+                         :save-id-to test-user-id
+                         :read-token-from activation-token})
+          made-moderator (db/make-moderator! {:id @test-user-id})
+          login-cookie (login-and-get-cookie
+                        {:with current-app
+                         :user-data test-user})
+          quest-to-add (test-quest
+                        {:use-date-string true
+                         :location-to :location
+                         :coordinates-to :coordinates
+                         :organisation-to {:in :organisation
+                                           :name :name
+                                           :description :description}})
+          added-quest (add-quest
+                       {:with current-app
+                        :quest (assoc quest-to-add :max-participants 1)
+                        :login-cookie login-cookie})
+          accepted-quest (accept-quest {:with current-app
+                                        :quest-id (:id added-quest)
+                                        :login-cookie login-cookie})]
         (-> (join-quest {:quest-id (:id added-quest)
                          :days 1
                          :user-id @test-user-id
@@ -713,6 +716,7 @@
                         {:user-data test-user
                          :save-id-to test-user-id
                          :read-token-from activation-token})
+          made-moderator (db/make-moderator! {:id @test-user-id})
           login-cookie (login-and-get-cookie
                         {:with current-app
                          :user-data test-user})
@@ -727,6 +731,9 @@
                        {:with current-app
                         :quest (assoc quest-to-add :is-open false)
                         :login-cookie login-cookie})
+          accepted-quest (accept-quest {:with current-app
+                                        :quest-id (:id added-quest)
+                                        :login-cookie login-cookie})
           secret-party (:secret-party
                         (db/get-quest-limitations {:id (:id added-quest)}))]
         (-> (join-quest {:quest-id (:id added-quest)
@@ -750,6 +757,7 @@
                         {:user-data test-user
                          :save-id-to test-user-id
                          :read-token-from activation-token})
+          made-moderator (db/make-moderator! {:id @test-user-id})
           login-cookie (login-and-get-cookie
                         {:with current-app
                          :user-data test-user})
@@ -766,6 +774,9 @@
                        {:with current-app
                         :quest quest-to-add
                         :login-cookie login-cookie})
+          accepted-quest (accept-quest {:with current-app
+                                        :quest-id (:id added-quest)
+                                        :login-cookie login-cookie})
           secret-party (:secret-party
                         (db/get-quest-limitations {:id (:id added-quest)}))]
       (-> (join-quest {:quest-id (:id added-quest)
@@ -860,6 +871,7 @@
                         {:user-data test-user
                          :save-id-to test-user-id
                          :read-token-from activation-token})
+          made-moderator (db/make-moderator! {:id @test-user-id})
           login-cookie (login-and-get-cookie
                         {:with current-app
                          :user-data test-user})
@@ -879,6 +891,9 @@
               :quest quest-to-add
               :login-cookie login-cookie})))
           (do-this pp/pprint)
+          (#(accept-quest {:with current-app
+                           :quest-id (:id %1)
+                           :login-cookie login-cookie}))
           ((fn [_] (get-moderated-quests {:with current-app})))
           (check #(is (not-empty %1)))
           (#(db/delete-quest-by-id! {:id (:id %1)}))

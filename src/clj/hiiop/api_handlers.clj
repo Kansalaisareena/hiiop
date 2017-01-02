@@ -233,11 +233,7 @@
         (assoc :user (db/get-quest-owner {:id quest-id}))
         (assoc :quest (db/get-moderated-quest-by-id {:id quest-id}))
         (send-quest-accepted-email)
-        ((fn [lol]
-          (log/info "__________________LOLOLOLOLLOLOLOLO")
-          (log/info lol)
-          lol))
-        (#(assoc {} :accepted-quest (:accepted-quest %1))))
+        (:accepted-quest))
     (catch Exception e
       (log/error e)
       {:errors {:quests :errors.unauthorized}})))
