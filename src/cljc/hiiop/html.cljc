@@ -494,19 +494,21 @@
     (tr [:footer.copyright])]])
 
 (defn app-structure
-  [{:keys [context title content csrf-token servlet-context scripts]}]
+  [{:keys [context title content csrf-token servlet-context scripts no-script]}]
   (let [tr (:tr context)
         asset-path (:asset-path context)
         default-script (str asset-path "/js/app.js")
         script-tags (vec (map script-tag (conj scripts default-script)))]
     (page
-      (head-content {:title (tr [:title] [title]) :asset-path asset-path})
-      (body-content
-        (header context)
-        [:div {:id "app" :class "opux-page-section" :dangerouslySetInnerHTML {:__html content}}]
-        (footer context)
+     (head-content {:title (tr [:title] [title]) :asset-path asset-path})
+     (body-content
+      (header context)
+      [:div {:id "app" :class "opux-page-section" :dangerouslySetInnerHTML {:__html content}}]
+      (footer context)
+      (if (not no-script)
         (into [:div {:class "script-tags"}] script-tags)
-        ))))
+        nil)
+      ))))
 
 (defn wrap-paragraph [content]
   (into [:div]

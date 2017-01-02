@@ -299,6 +299,7 @@ Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit
 
  :errors
  {
+  :general "Hupsis! Jotain hassua sattui."
   :non-empty-string "Tyhjä arvo ei käy"
   :hashtag "Hashtag alkaa risuaidalla, eikä voi sisältää viivoja."
   :date-needs-to-be-before "Ajan pitää olla ennen %1"
