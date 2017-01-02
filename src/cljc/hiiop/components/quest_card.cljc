@@ -12,7 +12,7 @@
 (defn get-quest-image [quest]
   (let [{:keys [picture-url categories]} quest]
     (if (nil? picture-url)
-      (str "/images/category/"
+      (str "/img/category/"
           (name (first categories))
           ".jpg")
       picture-url)))

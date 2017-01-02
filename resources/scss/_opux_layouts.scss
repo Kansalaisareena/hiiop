@@ -221,7 +221,7 @@
 }
 
 @include block('opux-banner') {
-  background-image: url('/images/banner.jpg');
+  background-image: url('/img/banner.jpg');
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
@@ -303,18 +303,18 @@
 
     // opux-index-links__item--browse-quests
     @include modifier('browse-quests') {
-      background-image: url('/images/equality.jpg');
+      background-image: url('/img/equality.jpg');
       border-right: 2px solid $OP-white;
     }
 
     // opux-index-links__item--create-quest
     @include modifier('create-quest') {
-      background-image: url('/images/well-being.jpg');
+      background-image: url('/img/well-being.jpg');
     }
 
     // opux-index-links__item--read-stories
     @include modifier('read-stories') {
-      background-image: url('/images/stories.jpg');
+      background-image: url('/img/stories.jpg');
       border-left: 2px solid $OP-white;
     }
 
