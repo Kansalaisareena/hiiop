@@ -63,7 +63,7 @@
        [:h2 {:class "opux-centered"}
         (tr [:pages.profile.upcoming-quests])]
 
-       (if (not-empty upcoming-quests)
+       (if (not (nil? upcoming-quests))
          [:ul {:class "opux-card-list opux-card-list--centered"}
           (map #(quest-card-profile {:quest %
                                      :context context

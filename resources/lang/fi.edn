@@ -67,7 +67,10 @@
    :delete "Poista tapahtuma"
    :do-you-want-to-delete "Oletko varma, että haluat poistaa tapahtuman?"
    :no-upcoming-quests "Sinulla ei vielä ole tulevia tehtäviä"
-   :my-event "Oma tapahtuma"}
+   :my-event "Oma tapahtuma"
+   :cancel-enrollment "Peru ilmoittautuminen"
+   :pending-approval "Odottaa hyväksymistä"
+   :published "Julkaistu"}
 
   :activate
   {:title "Luo salasana"
@@ -149,7 +152,7 @@ Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit
     :start-date "Päivämäärä"
     :end-date "Lisää päättymispäivämäärä"
     :start-time "Kellonaika"
-    :end-time ""
+    :end-time "Kellonaika"
     :location {:label "Paikka"
                :placeholder "Anna sijainti"}
     :address "Osoite"
