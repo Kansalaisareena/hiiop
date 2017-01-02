@@ -273,7 +273,6 @@
              :body        [moderation Moderation]
              :summary     "Reject quest"
              :middleware  [api-authenticated]
-             :return      Quest
              (fn [request]
                (-> (api-handlers/moderate-reject-quest
                     {:quest-id quest-id

@@ -293,10 +293,10 @@ q.name IS NOT NULL
 -- :doc get unmoderated quests
 SELECT
   q.id as id,
-  q.unmoderated_name as unmoderated_name,
-  q.unmoderated_description as unmoderated_description,
-  q.unmoderated_organisation as unmoderated_organisation,
-  q.unmoderated_organisation_description as unmoderated_organisation_description,
+  q.unmoderated_name as name,
+  q.unmoderated_description as description,
+  q.unmoderated_organisation as organisation,
+  q.unmoderated_organisation_description as organisation_description,
   q.start_time as start_time,
   q.end_time as end_time,
   q.street_number as street_number,
@@ -310,7 +310,7 @@ SELECT
   q.google_place_id as google_place_id,
   q.categories as categories,
   q.max_participants as max_participants,
-  q.unmoderated_hashtags as unmoderated_hashtags,
+  q.unmoderated_hashtags as hashtags,
   (SELECT url FROM pictures WHERE id = q.unmoderated_picture) as picture_url,
   q.is_open as is_open,
   q.owner as owner

@@ -276,15 +276,16 @@
      [:div {:class "opux-fieldset__item"}
       (html/checkbox-binary
        {:class "organiser-participates opux-fieldset__item"
-        :id (name :pages.quest.edit.organiser-participates)
+        :id (name :pages.quest.edit.organiser-will-participate)
         :schema (get-in cursors-and-schema [:organiser-participates :schema])
         :value (get-in cursors-and-schema [:organiser-participates :value])
         :error (get-in cursors-and-schema [:organiser-participates :error])
-        })
+        }
+       )
       (html/label
        (tr [:pages.quest.edit.organiser-will-participate])
        {:class "opux-input__label opux-input__label--checkbox"
-        :for (name :pages.quest.edit.organiser-participates)})])
+        :for (name :pages.quest.edit.organiser-will-participate)})])
    ))
 
 (rum/defc confirm-remove < rum/reactive

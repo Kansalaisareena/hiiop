@@ -17,6 +17,14 @@
 
  :pages
  {
+  :moderate
+  {:title "Moderointi"
+   :unmoderated-quests "Moderoimattomat tehtävät"
+   :reject-quest "Poista"
+   :cancel "Peruuta"
+   :moderate-quest "Hyväksy"
+   }
+
   :index
   {:title "Etusivu"
    :banner
@@ -66,6 +74,7 @@
    :upcoming-quests "Tulevat vapaaehtoistehtäväsi"
    :cancel "Peruuta"
    :delete "Poista tapahtuma"
+   :moderation "Moderointi"
    :do-you-want-to-delete "Oletko varma, että haluat poistaa tapahtuman?"
    :no-upcoming-quests "Sinulla ei vielä ole tulevia tehtäviä"
    :my-event "Oma tapahtuma"

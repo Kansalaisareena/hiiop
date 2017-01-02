@@ -32,7 +32,7 @@
 
 (rum/defc profile < rum/reactive
   [{:keys [context user-info quests]}]
-  (let [{:keys [email name]} user-info
+  (let [{:keys [email name moderator]} user-info
         tr (:tr context)
         past-quests (get-past-quests (rum/react quests))
         upcoming-quests (get-upcoming-quests (rum/react quests))]
@@ -55,7 +55,12 @@
         (tr [:actions.profile.sign-out])]
 
        [:span {:class "opux-button opux-button--spacing opux-button--highlight"}
-        (tr [:actions.profile.edit])]]]
+        (tr [:actions.profile.edit])]
+
+       (if moderator
+         [:a {:class "opux-button opux-button--spacing opux-button--highlight"
+              :href (path-for hierarchy :moderate)}
+          (tr [:pages.profile.moderation])])]]
 
      [:div {:class "opux-card-list-container"}
       [:div {:class "opux-content"}
