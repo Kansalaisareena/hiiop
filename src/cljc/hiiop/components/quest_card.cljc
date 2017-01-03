@@ -131,12 +131,7 @@
 
            [:a {:class "opux-card-action opux-icon-circled opux-icon-edit"
                 :href (path-for hierarchy :edit-quest :quest-id (:id quest))}]
-
-           (if (= @card-state "delete")
-             (quest-card-action-delete {:quest quest
-                                        :card-state card-state
-                                        :quests quests
-                                        :tr tr}))])
+           ])
          [:div {:class "opux-card__actions"}
           [:span {:class "opux-button"}
            (tr [:pages.profile.cancel-enrollment])]])]]]))
