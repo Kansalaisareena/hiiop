@@ -284,7 +284,8 @@ SELECT
   q.picture as picture,
   (SELECT url FROM pictures WHERE id = q.picture) as picture_url,
   q.is_open as is_open,
-  q.owner as owner
+  q.owner as owner,
+  TRUE as moderated
 FROM quests q
 WHERE
   q.unmoderated_name IS NULL AND
