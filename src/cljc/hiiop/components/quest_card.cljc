@@ -119,19 +119,19 @@
                                     :tr tr}))
 
        (if is-own-quest
-         [:div {:class "opux-card__actions"}
-          [:span
-           {:class "opux-card-action opux-icon-circled opux-icon-trashcan"
-            :on-click (fn [e]
-                        (if (not (= @card-state "delete"))
-                          (reset! card-state "delete")))}]
+         (when moderated
+           [:div {:class "opux-card__actions"}
+            [:span
+             {:class "opux-card-action opux-icon-circled opux-icon-trashcan"
+              :on-click (fn [e]
+                          (if (not (= @card-state "delete"))
+                            (reset! card-state "delete")))}]
 
-          (if is-open
-            [:span {:class "opux-card-action opux-icon-circled opux-icon-personnel"}])
+            [:span {:class "opux-card-action opux-icon-circled opux-icon-personnel"}]
 
-          [:a {:class "opux-card-action opux-icon-circled opux-icon-edit"
-               :href (path-for hierarchy :edit-quest :quest-id (:id quest))}]]
-
+           [:a {:class "opux-card-action opux-icon-circled opux-icon-edit"
+                :href (path-for hierarchy :edit-quest :quest-id (:id quest))}]
+           ])
          [:div {:class "opux-card__actions"}
           [:span {:class "opux-button"}
            (tr [:pages.profile.cancel-enrollment])]])]]]))
