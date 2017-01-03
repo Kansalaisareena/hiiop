@@ -57,6 +57,7 @@
                :headers {"Cache-Control" ""
                          "X-Requested-With" ""}
                :max-files 1
+               :max-filesize 3
                :clickable true
                :add-remove-links true
                :accepted-files "image/*"
