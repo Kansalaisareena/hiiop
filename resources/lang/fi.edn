@@ -18,9 +18,10 @@
  :pages
  {
   :moderate
-  {:title "Moderointi"
-   :unmoderated-quests "Moderoimattomat tehtävät"
-   :reject-quest "Poista"
+  {:title "Tehtävän hyväksyntä"
+   :unmoderated-quests "Käsittelemättömät tehtävät"
+   :reject-quest "Hylkää"
+   :reject-quest-message-title "Viesti hylättessä"
    :cancel "Peruuta"
    :moderate-quest "Hyväksy"
    }
