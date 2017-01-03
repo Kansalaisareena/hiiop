@@ -19,6 +19,7 @@
                                       get-secret-quest
                                       get-user-info
                                       get-own-quests
+                                      get-participating-quests
                                       get-quest-party
                                       get-moderated-quests
                                       get-unmoderated-quests
@@ -85,8 +86,12 @@
 (defn profile-page [params]
   (go
     (let [owner (:id (:identity @context))
-          quests (<! (get-own-quests))
-          user-info (<! (get-user-info owner))]
+          user-info (<! (get-user-info owner))
+          own-quests (<! (get-own-quests))
+          participating-quests (<! (get-participating-quests))
+          quests (into []
+                       (distinct
+                         (flatten [participating-quests own-quests])))]
       (log/info "profile-page")
       (rum/mount
         (p-p/profile {:context @context
