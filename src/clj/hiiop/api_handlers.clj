@@ -201,6 +201,14 @@
       (log/error e)
       {:errors {:quests :error.quest.unexpected-error}})))
 
+(defn get-participating-quests [{:keys [user-id]}]
+  (try
+    (-> (db/get-all-participating-quests {:user_id user-id})
+        ((partial map hc/db-quest->api-quest-coercer)))
+    (catch Exception e
+      (log/error e)
+      {:errors {:quests :error.quest.unexpected-error}})))
+
 (defn get-unmoderated-quests [{:keys [user-id]}]
   (try
     (-> (db/get-all-unmoderated-quests
