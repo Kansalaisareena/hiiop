@@ -153,7 +153,7 @@ $opux-icon-cross-name-collection: (eyeglasses, law, sound, globe, handicap, chil
 }
 
 @include block('opux-icon-social') {
-  background: url(/images/sharebadges_sprite.png) no-repeat;
+  background: url(/img/sharebadges_sprite.png) no-repeat;
   display: inline-block;
   height: 30px;
   margin-right: .2rem;

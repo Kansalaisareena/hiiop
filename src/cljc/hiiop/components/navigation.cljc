@@ -87,7 +87,7 @@
     [:li {:class "opux-menu__item"}
      [:a {:class "opux-menu__item-link opux-menu__item-link--footer"
           :target "_blank"
-          :href "/images/faq.pdf"}
+          :href "/img/faq.pdf"}
       (tr [:footer.frequently-asked-questions])]]
 
     ;; [:li {:class "opux-menu__item"}
@@ -98,11 +98,11 @@
     [:li {:class "opux-menu__item"}
      [:a {:class "opux-menu__item-link opux-menu__item-link--footer"
           :target "_blank"
-          :href "/images/terms-of-service.pdf"}
+          :href "/img/terms-of-service.pdf"}
       (tr [:footer.terms-of-service])]]
 
     [:li {:class "opux-menu__item"}
      [:a {:class "opux-menu__item-link opux-menu__item-link--footer"
           :target "_blank"
-          :href "/images/privacy.pdf"}
+          :href "/img/privacy.pdf"}
       (tr [:footer.privacy])]]]])
