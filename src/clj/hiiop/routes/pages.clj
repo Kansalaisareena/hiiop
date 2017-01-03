@@ -40,6 +40,7 @@
                                         get-secret-quest
                                         get-user
                                         get-quests-for-owner
+                                        get-participating-quests
                                         get-quest-party
                                         get-moderated-quests
                                         get-party-member]]
@@ -88,10 +89,14 @@
 
 (defn profile [req]
   (let [context (create-context req)
-        owner (:id (:identity context))
+        tr (:tr context)
+        owner (get-in context [:identity :id])
         user-info (get-user owner)
-        quests (get-quests-for-owner (:id (:identity context)))
-        tr (:tr context)]
+        participating-quests (get-participating-quests {:user-id owner})
+        own-quests (get-quests-for-owner (:id (:identity context)))
+        quests (into []
+                     (distinct
+                       (flatten [participating-quests own-quests])))]
     (layout/render {:title (str (tr [:pages.profile.title]) " " (:name user-info))
                     :context context
                     :content
