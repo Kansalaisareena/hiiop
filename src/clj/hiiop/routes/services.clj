@@ -161,6 +161,18 @@
                    (ok quests)
                    (bad-request quests)))))
 
+        (GET "/participating" []
+             :name ::get-participating-quests
+             :middleware [api-authenticated]
+             :return [Quest]
+             (fn [request]
+               (let [user-id (get-in request [:identity :id])
+                     quests (api-handlers/get-participating-quests
+                              {:user-id user-id})]
+                 (if (nil? (:errors quests))
+                   (ok quests)
+                   (bad-request quests)))))
+
         (GET
          "/moderated" []
          :name ::get-moderated-quests
