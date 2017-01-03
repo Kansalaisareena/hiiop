@@ -83,7 +83,7 @@
                             (swap! processing not)
                             #?(:cljs
                                (go
-                                 (let [result (<! (reject-quest (:id quest)))]
+                                 (let [result (<! (reject-quest (:id quest) ""))]
                                    (if (not (nil? result))
                                      (let [new-quests (<! (get-unmoderated-quests))]
                                        (reset! quests new-quests)

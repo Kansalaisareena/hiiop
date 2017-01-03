@@ -277,7 +277,7 @@
                (-> (api-handlers/moderate-reject-quest
                     {:quest-id quest-id
                      :user-id (get-in request [:identity :id])
-                     :message (:message moderation)})
+                     :message ""})
                    (#(if (not (:errors %1))
                        (ok %1)
                        (unauthorized))))

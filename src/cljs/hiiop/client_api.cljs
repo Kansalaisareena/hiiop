@@ -168,11 +168,12 @@
       (when (= status 200)
         body))))
 
-(defn reject-quest [quest-id]
+(defn reject-quest [quest-id message]
   (go
     (let [response (<! (http/post (str base-path
                                        "/quests/" quest-id
-                                       "/moderate-reject")))
+                                       "/moderate-reject")
+                                  {:json-params message}))
           status (:status response)
           body (:body response)]
       (when (= status 200)
