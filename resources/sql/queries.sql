@@ -32,6 +32,17 @@ SET
   locale = :locale
 WHERE id = :id
 
+-- :name edit-user! :! :1
+-- :doc update user fields editable by user
+UPDATE
+  users
+SET
+  name = :name,
+  phone = :phone,
+  locale = :locale
+WHERE id = :id
+
+
 -- :name get-user-by-id :? :1 :uuid
 -- :doc retrieve a user given the uuid.
 SELECT

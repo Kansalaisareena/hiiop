@@ -106,6 +106,17 @@
       (log/error e)
       {:errors {:users :errors.user.not-found}})))
 
+(defn edit-user [{:keys [new-user id]}]
+  (try
+    (-> new-user
+        (assoc :id id)
+        (hc/api-edit-user->db-edit-user-coercer)
+        (db/edit-user!)
+        (#(when (= 1 %) (db/get-user-by-id {:id id}))))
+    (catch Exception e
+      (log/error e)
+      {:errors {:users "Failed to update user"}})))
+
 (defn add-quest [{:keys [quest user]}]
   (try
     (let [organiser-participates (:organiser-participates quest)
