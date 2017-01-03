@@ -12,11 +12,15 @@
    [hiiop.url :as u]
    [hiiop.routes.page-hierarchy :as pages]))
 
-(rum/defc login [{:keys [context]}]
+(rum/defcs login < rum/reactive
+                   (rum/local nil ::error)
+  [state {:keys [context]}]
   (let [tr (:tr context)
+        error (::error state)
         credentials (atom {:email "" :password ""})
         user (rum/cursor credentials :email)
         password (rum/cursor credentials :password)]
+    (log/info @error)
     [:form
      {:class "opux-form"
       :on-submit
@@ -24,12 +28,14 @@
         (.preventDefault e)
         #?(:cljs
            (go
+             (reset! error nil)
              (let [status (<! (api/login @credentials))
                    sitten (keyword (:sitten (u/query-params (.-href js/location))))
                    to-key (or sitten :index)
                    to (or (path-for pages/hierarchy to-key) (path-for pages/hierarchy :index))]
-               (when status
-                 (set! (.-pathname js/location) to))))
+               (if status
+                 (set! (.-pathname js/location) to)
+                 (reset! error :errors.login.check))))
            ))}
      [:div {:class "opux-form-section"}
       [:h2 (tr [:pages.login.title])]
@@ -48,7 +54,8 @@
           :value user
           :type "text"
           :class "opux-input opux-input--text email"
-          :error (atom nil)})]
+          :error (atom nil)
+          :context context})]
 
        [:div {:class "opux-fieldset opux-fieldset__item"}
         (html/label
@@ -59,7 +66,8 @@
           :value password
           :type "password"
           :class "opux-input opux-input--text password"
-          :error (atom nil)})]
+          :error error
+          :context context})]
 
        [:div {:class "opux-fieldset__inline-container opux-fieldset opux-fieldset__item opux-fieldset--login-links"}
         [:a {:class "opux-forget-password-link"
