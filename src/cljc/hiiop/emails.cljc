@@ -37,9 +37,10 @@
       (into [:div {:class "body-text"}] body)
       (when message
         [:p {:class "message"} message])
-      [:a {:href button-url
-           :class "button-1"
-           :id "button-1"} button-text]
+      (when button-text
+        [:a {:href button-url
+             :class "button-1"
+             :id "button-1"} button-text])
       (when button2-text
         [:a {:href button2-url
              :class "button-2"
