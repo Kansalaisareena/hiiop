@@ -125,7 +125,7 @@
    (s/optional-key :street-number) (s/maybe s/Int)
    (s/optional-key :street) (s/maybe NonEmptyString)
    :town NonEmptyString
-   :postal-code NonEmptyString
+   (s/optional-key :postal-code) (s/maybe NonEmptyString)
    :country NonEmptyString
    (s/optional-key :coordinates) (s/maybe Coordinates)
    (s/optional-key :google-maps-url) (s/maybe NonEmptyString)

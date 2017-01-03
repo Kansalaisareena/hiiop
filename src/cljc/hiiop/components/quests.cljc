@@ -559,7 +559,9 @@
                  (let [api-call (if (:id @quest)
                                   api/edit-quest
                                   api/add-quest)
-                       api-quest (assoc @quest :picture-id (str (:picture-id @quest)))
+                       api-quest (-> @quest
+                                     (assoc :picture-id (str (:picture-id @quest)))
+                                     (dissoc :participant-count))
                        from-api (<! (api-call api-quest))]
                    (if (:success from-api)
                      (reset! view "success"))
