@@ -446,7 +446,7 @@
   (-> (:content-type file)
       (#(assoc {}
                :type
-               (re-find #"^image/(jpg|jpeg|png|gif)$" %1)))
+               (not (re-find #"^image/(jpg|jpeg|png|gif)$" %1))))
       (assoc :size
              (> (:size file) (* 3 (math/expt 10 6))))
       (#(cond
