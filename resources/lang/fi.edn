@@ -344,5 +344,8 @@ Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit
   {:title "Muokkaaminen epäonnistui."
    :content "Hups, muokkaaminen epäonnistui. Tapahtuma ei ole sinun."
    }
+
+  :login
+  {:check "Tarkista sähköposti ja salasana"}
   }
  }
