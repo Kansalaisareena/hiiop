@@ -132,6 +132,18 @@
     (f)
     (db/delete-user! *db* {:id (sc/string->uuid @test-user-id)})))
 
+(defn login-and-get-cookie [{:keys [with user-data]}]
+  (-> (json-request "/api/v1/login"
+                    {:type :post
+                     :body-string
+                     (generate-string
+                       {:email (:email user-data)
+                        :password (:password user-data)})})
+      (with)
+      (get-in [:headers "Set-Cookie"])
+      (first)
+      (session-cookie-string)))
+
 (deftest test-app
   (testing "main route"
     (let [response ((app) (request :get "/"))]
@@ -152,20 +164,44 @@
                     (assoc (request :get "/api/v1/config") :cookies {"lang" {:value "sv"}}))
           config (parse-string (slurp (:body response)) true)
           lang (first (:accept-langs config))]
-      (is (= "sv" lang)))))
+      (is (= "sv" lang))))
 
+  (testing "moderation page should not be accessible by anonymous user"
+    (let [response ((app) (request :get "/tehtavat/hyvaksynta"))]
+      (is (= (:status response) 302))
+      (db/delete-user! *db* {:id @test-user-id})))
 
-(defn login-and-get-cookie [{:keys [with user-data]}]
-  (-> (json-request "/api/v1/login"
-                    {:type :post
-                     :body-string
-                     (generate-string
-                      {:email (:email user-data)
-                       :password (:password user-data)})})
-      (with)
-      (get-in [:headers "Set-Cookie"])
-      (first)
-      (session-cookie-string)))
+  (testing "moderation page should not be accessible by normal user"
+    (let [current-app (app)
+          user-created (create-test-user
+                         {:user-data test-user
+                          :save-id-to test-user-id
+                          :read-token-from activation-token})
+          login-cookie (login-and-get-cookie
+                         {:with current-app
+                          :user-data test-user})
+          response (current-app
+                     (-> (request :get "/tehtavat/hyvaksynta")
+                         (header "cookie" login-cookie)))]
+      (is (= (:status response) 302))
+      (db/delete-user! *db* {:id @test-user-id})))
+
+  (testing "moderation page should be accessible by moderator"
+    (let [current-app (app)
+          user-created (create-test-user
+                         {:user-data test-user
+                          :save-id-to test-user-id
+                          :read-token-from activation-token})
+          made-moderator (db/make-moderator! {:id (sc/string->uuid @test-user-id)})
+          login-cookie (login-and-get-cookie
+                         {:with current-app
+                          :user-data test-user})
+          response (current-app
+                     (-> (request :get "/tehtavat/hyvaksynta")
+                         (header "cookie" login-cookie)))]
+      (is (= (:status response) 200))
+      (db/delete-user! *db* {:id @test-user-id})))
+  )
 
 (defn add-quest [{:keys [login-cookie with quest organiser-participates]}]
   (let [url "/api/v1/quests/add"]

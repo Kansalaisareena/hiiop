@@ -12,6 +12,7 @@
             [hiiop.components.register :as p-r]
             [hiiop.components.quest-single :as quest-single]
             [hiiop.components.quests :as quests]
+            [hiiop.components.moderate :as moderate]
             [hiiop.components.part-party :refer [part-party]]
             [hiiop.components.quests-browse :as quest-browse]
             [hiiop.client-api :refer [get-quest
@@ -20,6 +21,7 @@
                                       get-own-quests
                                       get-quest-party
                                       get-moderated-quests
+                                      get-unmoderated-quests
                                       get-party-member]]
             [hiiop.context :refer [context]]
             [hiiop.mangling :refer [parse-natural-number same-keys-with-nils]]
@@ -122,6 +124,18 @@
                       :errors errors
                       :schema QuestFilter})
         (. js/document (getElementById "app"))))))
+
+(defn moderate-page [params]
+  (go
+    (let [moderated-quests (<! (get-moderated-quests))
+          unmoderated-quests (<! (get-unmoderated-quests))]
+      (rum/mount
+        (moderate/moderate-page {:context @context
+                                 :unmoderated-quests (atom unmoderated-quests)
+                                 :moderated-quests (atom moderated-quests)})
+        (. js/document (getElementById "app"))))))
+
+
 
 (defn create-quest-page [params]
   (let [quest (atom (new-empty-quest))
@@ -266,4 +280,6 @@
    create-quest-page
    :edit-quest
    edit-quest-page
+   :moderate
+   moderate-page
    })

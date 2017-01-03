@@ -65,6 +65,13 @@
       (when (= (:status response) 200)
         (:body response)))))
 
+(defn get-unmoderated-quests []
+  (go
+    (let [response (<! (http/get (str base-path "/quests/unmoderated")))]
+      (when (= (:status response) 200)
+        (:body response)))))
+
+
 (defn get-own-quests []
   (go
     (let [response (<! (http/get (str base-path "/quests/own")))]
@@ -151,3 +158,23 @@
       (when (= status 200)
         body))))
 
+(defn moderate-quest [quest-id]
+  (go
+    (let [response (<! (http/post (str base-path
+                                       "/quests/" quest-id
+                                       "/moderate-accept")))
+          status (:status response)
+          body (:body response)]
+      (when (= status 200)
+        body))))
+
+(defn reject-quest [{:keys [quest-id message]}]
+  (go
+    (let [response (<! (http/post (str base-path
+                                       "/quests/" quest-id
+                                       "/moderate-reject")
+                                  {:json-params {:message message}}))
+          status (:status response)
+          body (:body response)]
+      (when (= status 200)
+        body))))

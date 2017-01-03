@@ -35,6 +35,18 @@
 @include block('opux-section') {
   display: block;
   width: 100%;
+
+  // opux-section--moderate-overlay
+  @include modifier('moderate-overlay') {
+    position: fixed;
+    width: 100%;
+    overflow: auto;
+    height: 100%;
+    top: 0px;
+    left: 0px;
+    z-index: 999999;
+    background: $OP-white;
+  }
 }
 
 @include block('opux-content') {
@@ -54,6 +66,10 @@
     background-size: cover;
     display: block;
     height: 550px;
+
+    @include modifier('small') {
+      height: 300px;
+    }
   }
 
   @include modifier('quest-header') {
@@ -124,6 +140,7 @@
     position: absolute;
     top: 38px;
     width: 100%;
+    z-index: 9;
 
     .opux-content {
         padding-bottom: 2rem;

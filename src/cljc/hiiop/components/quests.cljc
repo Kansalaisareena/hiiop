@@ -51,7 +51,7 @@
      default-content
      (if (not (rum/react local-picture-url))
        [(html/label
-         (tr [:pages.quest.edit.picture])
+         (tr [:pages.quest.edit.picture.title])
          {:class "opux-input__label opux-input__label--picture-label"
           :error (get-in cursors-and-schema [:picture-id :error])})
         (html/file-input
@@ -59,14 +59,15 @@
           :error (get-in cursors-and-schema [:picture-id :error])
           :url picture-url
           :context context
-          :tr (partial tr [:page.quest.edit.picture.upload-failed])})
+          :tr (partial tr [:pages.quest.edit.picture.upload-failed])})
+        [:p {:class "opux-info opux-centered"} (tr [:pages.quest.edit.picture.info])]
         ]
        [[:img {:src @picture-url
                :on-click
                (fn []
                  #?(:cljs
                     (do
-                      (if (js/confirm (tr [:page.quest.edit.picture.remove]))
+                      (if (js/confirm (tr [:pages.quest.edit.picture.remove]))
                         (reset! picture-url nil)
                       ))))
                }]])
@@ -276,15 +277,16 @@
      [:div {:class "opux-fieldset__item"}
       (html/checkbox-binary
        {:class "organiser-participates opux-fieldset__item"
-        :id (name :pages.quest.edit.organiser-participates)
+        :id (name :pages.quest.edit.organiser-will-participate)
         :schema (get-in cursors-and-schema [:organiser-participates :schema])
         :value (get-in cursors-and-schema [:organiser-participates :value])
         :error (get-in cursors-and-schema [:organiser-participates :error])
-        })
+        }
+       )
       (html/label
        (tr [:pages.quest.edit.organiser-will-participate])
        {:class "opux-input__label opux-input__label--checkbox"
-        :for (name :pages.quest.edit.organiser-participates)})])
+        :for (name :pages.quest.edit.organiser-will-participate)})])
    ))
 
 (rum/defc confirm-remove < rum/reactive
