@@ -23,6 +23,7 @@
                  [org.clojure/clojurescript              "1.9.293" :scope "provided"]
                  [org.clojure/tools.cli                  "0.3.5"]
                  [org.clojure/tools.logging              "0.3.1"]
+                 [org.clojure/math.numeric-tower         "0.0.4"]
                  [org.postgresql/postgresql              "9.4.1211"]
                  [org.webjars.bower/tether               "1.3.7"]
                  [org.webjars/bootstrap                  "4.0.0-alpha.5"]
