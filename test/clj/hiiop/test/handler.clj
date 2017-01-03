@@ -502,6 +502,68 @@
           (just-do #(db/delete-user! *db* {:id (sc/string->uuid @test-user-id)})))
       ))
 
+  (testing "PUT /api/v1/quests/:id with nil as postal-code"
+    (let [current-app (app)
+          user-created (create-test-user
+                        {:user-data test-user
+                         :save-id-to test-user-id
+                         :read-token-from activation-token})
+          login-cookie (login-and-get-cookie
+                        {:with current-app
+                         :user-data test-user})
+          quest-to-add (test-quest
+                        {:use-date-string true
+                         :location-to :location
+                         :coordinates-to :coordinates
+                         :organisation-to {:in :organisation
+                                           :name :name
+                                           :description :description}})]
+      (-> (add-quest
+           {:with current-app
+            :quest quest-to-add
+            :login-cookie login-cookie})
+          (assoc :name "WAAT"
+                 :description "OMG!")
+          (#(assoc-in %1 [:location :postal-code] nil))
+          (#(edit-quest {:with current-app
+                         :quest %1
+                         :login-cookie login-cookie}))
+          (check #(is (nil? (get-in %1 [:location :postal-code]))))
+          (#(db/delete-quest-by-id! {:id (:id %1)}))
+          (just-do #(db/delete-user! *db* {:id (sc/string->uuid @test-user-id)})))
+      ))
+
+  (testing "PUT /api/v1/quests/:id with without postal-code"
+    (let [current-app (app)
+          user-created (create-test-user
+                        {:user-data test-user
+                         :save-id-to test-user-id
+                         :read-token-from activation-token})
+          login-cookie (login-and-get-cookie
+                        {:with current-app
+                         :user-data test-user})
+          quest-to-add (test-quest
+                        {:use-date-string true
+                         :location-to :location
+                         :coordinates-to :coordinates
+                         :organisation-to {:in :organisation
+                                           :name :name
+                                           :description :description}})]
+      (-> (add-quest
+           {:with current-app
+            :quest quest-to-add
+            :login-cookie login-cookie})
+          (assoc :name "WAAT"
+                 :description "OMG!")
+          (#(assoc %1 :location (dissoc (:location %1) :postal-code)))
+          (#(edit-quest {:with current-app
+                         :quest %1
+                         :login-cookie login-cookie}))
+          (check #(is (nil? (get-in %1 [:location :postal-code]))))
+          (#(db/delete-quest-by-id! {:id (:id %1)}))
+          (just-do #(db/delete-user! *db* {:id (sc/string->uuid @test-user-id)})))
+      ))
+
   (testing "DELETE /api/v1/quests/:id"
     (let [current-app (app)
           user-created (create-test-user

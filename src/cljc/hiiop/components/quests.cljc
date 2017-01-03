@@ -9,6 +9,7 @@
             [schema.coerce :as sc]
             #?(:cljs [cljs.core.async :refer [<!]])
             #?(:cljs [hiiop.client-api :as api])
+            #?(:cljs [hiiop.scroll :refer [scroll-top]])
             [hiiop.url :refer [redirect-to]]
             [hiiop.time :as time]
             [hiiop.components.core :as c]
@@ -559,7 +560,9 @@
                  (let [api-call (if (:id @quest)
                                   api/edit-quest
                                   api/add-quest)
-                       api-quest (assoc @quest :picture-id (str (:picture-id @quest)))
+                       api-quest (-> @quest
+                                     (assoc :picture-id (str (:picture-id @quest)))
+                                     (dissoc :participant-count))
                        from-api (<! (api-call api-quest))]
                    (if (:success from-api)
                      (reset! view "success"))
@@ -593,8 +596,10 @@
         is-valid (::is-valid state)
         locals {:view view :is-valid is-valid}]
     (cond
-      (= @view "edit") (edit-form (conj args locals))
-      (= @view "preview") (preview (conj args locals))
+      (= @view "edit")    (edit-form (conj args locals))
+      (= @view "preview") (let [p (preview (conj args locals))]
+                            #?(:cljs (scroll-top))
+                            p)
       (= @view "success") (edit-success {:quest quest
                                          :context context})
       )))
