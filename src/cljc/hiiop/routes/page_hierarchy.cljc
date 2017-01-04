@@ -13,6 +13,12 @@
     "rekisteroidy/" (param :token)
     (leaf "" :activate))
 
+   (leaf "unohdin-salasanani" :request-password-reset)
+
+   (branch
+    "unohdin-salasanani/" (param :token)
+    (leaf "" :password-reset))
+
    ;; Profile
    (leaf "kayttaja" :profile)
 

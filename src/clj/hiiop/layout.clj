@@ -14,12 +14,13 @@
 
 (defn render
   "renders the HTML given"
-  [{:keys [context content title scripts] :or [params]}]
+  [{:keys [context content title scripts no-script] :or [params]}]
   (let [final-content (if content (rum/render-html content) "")]
     (content-type
      (ok
       (rum/render-static-markup
        (app-structure {:context (conj context {:asset-path (asset-path env)})
+                       :no-script (or no-script false)
                        :scripts (or scripts [])
                        :title title
                        :content final-content

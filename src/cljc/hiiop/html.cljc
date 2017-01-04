@@ -92,7 +92,7 @@
      text]))
 
 (rum/defc input < rum/reactive
-  [{:keys [type value schema matcher error class to-value transform-value context error-key value-key]}]
+  [{:keys [type id value schema matcher error class to-value transform-value context error-key value-key]}]
   (let [tr (:tr context)
         usable-value-key (or value-key :default-value)
         usable-matcher (if (not matcher) {schema #(identity %)} matcher)
@@ -106,6 +106,7 @@
       (assoc
        {:type type
         :class class
+        :id id
         :on-change
         (fn [e]
           (-> (value-from-event e usable-transform)
