@@ -53,6 +53,29 @@
       )
     ))
 
+(defn- quest-card-image [{:keys [quest]}]
+  (let [quest-image (get-quest-image quest)
+        quest-id (:id quest)
+        quest-link (path-for hierarchy :quest :quest-id quest-id)
+        moderated (:moderated quest)]
+    (if moderated
+      [:a {:href quest-link}
+       [:div {:class "opux-card__image"
+              :style {:background-image (str "url('" quest-image "')")}}]]
+
+      [:div {:class "opux-card__image"
+             :style {:background-image (str "url('" quest-image "')")}}])))
+
+(defn- quest-card-title [{:keys [quest]}]
+  (let [quest-id (:id quest)
+        name (:name quest)
+        quest-link (path-for hierarchy :quest :quest-id quest-id)
+        moderated (:moderated quest)]
+
+    (if moderated 
+      [:a {:class "opux-card__title" :href quest-link} name]
+      [:div {:class "opux-card__title"} name])))
+
 (rum/defcs quest-card-profile < rum/reactive
                                (rum/local "default" ::card-state)
   [state {:keys [quest context quests]}]
@@ -83,11 +106,7 @@
                (if (not moderated)
                  (tr [:pages.profile.pending-approval])
                  (tr [:pages.profile.published]))))]
-       [:a {:href quest-link}
-        [:div {:class "opux-card__image"
-               :style {:background-image (str "url('"
-                                              (get-quest-image quest)
-                                              "')")}}]]]
+       (quest-card-image {:quest quest})]
 
       [:div {:class "opux-card__content"}
 
@@ -98,8 +117,7 @@
         {:class "opux-card__attendance opux-inline-icon opux-inline-icon-personnel opux-inline-icon--right"}
         max-participants]
 
-       [:a {:class "opux-card__title" :href quest-link}
-        name]
+       (quest-card-title {:quest quest})
 
        [:span {:class "opux-card__date opux-inline-icon opux-inline-icon-calendar"}
         (time/to-string (time/from-string start-time) time/with-weekday-format)]
