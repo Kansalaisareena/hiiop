@@ -18,8 +18,7 @@
             [hiiop.client-api :refer [get-quest
                                       get-secret-quest
                                       get-user-info
-                                      get-own-quests
-                                      get-participating-quests
+                                      get-user-quests
                                       get-quest-party
                                       get-moderated-quests
                                       get-unmoderated-quests
@@ -87,11 +86,10 @@
   (go
     (let [owner (:id (:identity @context))
           user-info (<! (get-user-info owner))
-          own-quests (<! (get-own-quests))
-          participating-quests (<! (get-participating-quests))
-          quests (into []
-                       (distinct
-                         (flatten [participating-quests own-quests])))]
+          user-quests (<! (get-user-quests))
+          own-quests (:organizing user-quests)
+          participating-quests (:attending user-quests)
+          quests (into [] (distinct (concat participating-quests own-quests)))]
       (log/info "profile-page")
       (rum/mount
         (p-p/profile {:context @context
