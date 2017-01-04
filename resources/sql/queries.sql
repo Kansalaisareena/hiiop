@@ -53,6 +53,7 @@ SELECT
   name,
   email,
   phone,
+  locale,
   moderator,
   last_login,
   is_active
@@ -498,6 +499,7 @@ SELECT
   t.token as token,
   u.id as user_id,
   u.email as email,
+  u.locale as locale,
   t.expires as expires
 FROM
   users u,

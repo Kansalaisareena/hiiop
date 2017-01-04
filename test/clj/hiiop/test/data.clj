@@ -68,5 +68,5 @@
   {:name "Test user"
    :email "test@email.com"
    :phone "+358 1234567"
-   :password "password#"
+   :password "Passw0rd#"
    :is_active true})

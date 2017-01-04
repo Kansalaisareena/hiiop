@@ -4,6 +4,7 @@
             [taoensso.timbre :as log]
             [schema.coerce :as sc]
             [bidi.ring :refer (make-handler)]
+            [bidi.bidi :refer [path-for]]
             [hiiop.middleware :refer [authenticated]]
             [hiiop.layout :as layout]
             [hiiop.components.moderate :as p-m]
@@ -43,7 +44,11 @@
                                         get-quest-party
                                         get-moderated-quests
                                         get-party-member]]
-            [hiiop.db.core :as db]))
+            [hiiop.components.password-reset :refer [display-message
+                                                     request-password-reset
+                                                     password-reset]]
+            [hiiop.db.core :as db]
+            [hiiop.api-handlers :as api-handlers]))
 
 (defn tr-from-req [req]
   (:tempura/tr req))
@@ -102,17 +107,28 @@
 (defn activate [req]
   (let [context (create-context req)
         tr (:tr context)
-        activation-info (atom (new-empty-activation-info))
-        errors (atom (same-keys-with-nils @activation-info))
-        route-params (:route-params req)
-        token (:token route-params)]
-    (layout/render {:context context
-                    :content (p-a/activate {:context context
-                                            :activation-info activation-info
-                                            :token token
-                                            :schema UserActivation
-                                            :errors errors})
-                    :title (tr [:pages.activate.title])})))
+        token (try
+                (schema.coerce/string->uuid
+                 (get-in req [:params :token]))
+                (catch Exception e
+                  (log/error e)))
+        token-info (api-handlers/validate-token token)]
+    (layout/render
+     {:title (tr [:pages.activate.title])
+      :context context
+      :no-script (not-empty (:errors token-info))
+      :content
+      (if (not (:errors token-info))
+        (password-reset
+         {:token-info token-info
+          :token token
+          :context context
+          :api-fn nil})
+        (display-message
+         {:context context
+          :title-key :errors.token.expired
+          :message-key :errors.user.token.contact})
+        )})))
 
 (defn edit-quest-with-schema [{:keys [request schema quest party title-key]}]
   (let [context (create-context request)
@@ -250,12 +266,51 @@
         moderated-quests (db/get-all-moderated-quests)]
     (if is-moderator
       (layout/render {:title (tr [:pages.moderate.title])
-                     :context context
-                     :content
-                      (p-m/moderate-page {:context context
-                                          :unmoderated-quests (atom unmoderated-quests)
-                                          :moderated-quests (atom moderated-quests)})})
+                      :context context
+                      :content
+                      (p-m/moderate-page
+                       {:context context
+                        :unmoderated-quests (atom unmoderated-quests)
+                        :moderated-quests (atom moderated-quests)})})
       (redirect-to {:path-key :index}))))
+
+(defn request-password-reset-page [req]
+  (let [context (create-context req)
+        tr (:tr context)]
+    (layout/render {:title (tr [:pages.password-reset.title])
+                    :context context
+                    :content
+                    (request-password-reset
+                     {:context context})})
+    ))
+
+(defn password-reset-page [req]
+  (let [context (create-context req)
+        tr (:tr context)
+        token (try
+                (schema.coerce/string->uuid
+                 (get-in req [:params :token]))
+                (catch Exception e
+                  (log/error e)))
+        token-info (api-handlers/validate-token token)]
+    (layout/render
+     {:title (tr [:pages.password-reset.title])
+      :context context
+      :no-script (not-empty (:errors token-info))
+      :content
+      (if (not (:errors token-info))
+        (password-reset
+         {:token-info token-info
+          :token token
+          :context context
+          :api-fn nil})
+        (display-message
+         {:context context
+          :title-key :errors.token.expired
+          :message-key :pages.password-reset.expired.text
+          :link-to (path-for hierarchy :request-password-reset)})
+        )})
+    ))
 
 (def handlers
   {:index
@@ -281,7 +336,12 @@
    :edit-quest
    (authenticated edit-quest)
    :moderate
-   (authenticated moderate)})
+   (authenticated moderate)
+   :request-password-reset
+   request-password-reset-page
+   :password-reset
+   password-reset-page
+   })
 
 (def ring-handler
   (do

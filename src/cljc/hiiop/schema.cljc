@@ -16,7 +16,10 @@
    #"(^[a-zA-Z0-9._+-]+@[^@.]+\.[^@.]+)$"
    #(= % %) :errors.email.not-valid))
 
-(def Password s/Str)
+(def Password
+  (s/constrained
+   #"^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,}$"
+   #(= % %) :errors.password.not-valid))
 
 (def Phone
   (s/constrained
@@ -78,10 +81,14 @@
   NewGuestUser)
 
 (def UserActivation
-  "Email, password and password token"
-  {:email Email
+  "Validate activation"
+  {:token s/Uuid
    :password Password
-   :confirm-password Password
+   :confirm-password Password})
+
+(def TokenAndPassword
+  "Token and password"
+  {:password Password
    :token s/Uuid})
 
 (defn new-empty-activation-info []

@@ -66,7 +66,6 @@
       {:errors {:email :errors.email.in-use}})))
 
 (defn validate-token [token-uuid]
-  (log/info "validate-token" token-uuid)
   (try
     (let [token-info (db/get-token-info {:token token-uuid})]
       (if (nil? token-info)
@@ -77,25 +76,56 @@
       {:errors {:token :errors.user.token.invalid}})))
 
 
-(defn activate [{:keys [email password token]}]
+(defn activate [{:keys [password token]}]
   "Attempt to activate user with token. If successful, delete token,
   set password and set user active."
   (let [pwhash (hashers/derive password {:alg :bcrypt+blake2b-512})
-        token-uuid (sc/string->uuid token)]
-    (< 0 (with-transaction [db/*db*]
-           (db/activate-user! {:pass pwhash :email email :token token-uuid})
-           (db/delete-password-token! {:token token-uuid})))))
+        token-info (db/get-token-info {:token token})]
+    (< 0
+       (with-transaction [db/*db*]
+         (db/activate-user!
+          {:pass pwhash
+           :email (:email token-info)
+           :token token})
+         (db/delete-password-token! {:token token})))))
 
+(defn- send-password-reset-email [{:keys [user token] :as args}]
+  (try
+    (assoc args
+           :email-sent
+           (mail/send-password-reset-token-email
+            (:email user)
+            token
+            (keyword (:locale user))))
+    (catch Exception e
+      (log/error e)
+      (assoc args :email-sent false))))
 
 (defn reset-password [email]
-  (db/create-password-token!
-   {:email email :expires (time/add (time/now) time/an-hour)}))
+  (try
+    (-> (assoc {} :user (db/get-user-by-email {:email email}))
+        (assoc :token
+               (:token (db/create-password-token!
+                        {:email email
+                         :expires (time/add (time/now) time/an-hour)})))
+        (send-password-reset-email)
+        (#(if (:email-sent %1)
+            true
+            {:errors {:password-reset :errors.password-reset.email-sending-failed}})))
+    (catch Exception e
+      (log/error e)
+      {:errors {:password-reset :errors.password-reset.failed}})))
 
-(defn change-password [{:keys [email password token]}]
-  (let [pwhash (hashers/derive password {:alg :bcrypt+blake2b-512})]
-    (= 1 (with-transaction [db/*db*]
-           (db/change-password! {:email email :pass pwhash :token token})
-           (db/delete-password-token! {:token token})))))
+(defn change-password [{:keys [password token]}]
+  (log/info "change-password" password token)
+  (let [pwhash (hashers/derive password {:alg :bcrypt+blake2b-512})
+        token-info (db/get-token-info {:token token})]
+    (if token-info
+      (= 1
+         (with-transaction [db/*db*]
+           (db/change-password! {:email (:email token-info) :pass pwhash :token token})
+           (db/delete-password-token! {:token token})))
+      {:errors {:token :errors.token.expired}})))
 
 (defn get-user [id]
   (try

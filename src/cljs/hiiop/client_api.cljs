@@ -44,7 +44,9 @@
                         {:json-params activation-info}))
           status (:status response)
           body (:body response)]
-      body)))
+      {:success (= status 200)
+       :body body}
+      )))
 
 (defn get-quest [id]
   (go
@@ -178,3 +180,23 @@
           body (:body response)]
       (when (= status 200)
         body))))
+
+(defn request-reset-password [email]
+  (go
+    (let [response (<! (http/post (str base-path
+                                       "/users/reset-password")
+                                  {:json-params email}))
+          status (:status response)
+          body (:body response)]
+      {:success (= status 200)
+       :body body})))
+
+(defn change-password [{:keys [token password] :as args}]
+  (go
+    (let [response (<! (http/post (str base-path
+                                       "/users/change-password")
+                                  {:json-params args}))
+          status (:status response)
+          body (:body response)]
+      {:success (= status 200)
+       :body body})))

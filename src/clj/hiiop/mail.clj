@@ -66,10 +66,10 @@
                  :subject (content :otsikko)
                  :template emails/simple-mail
                  :template-params
-                 {:button-url (url-to' :index)
-                  :title (content :otsikko)
+                 {:title (content :otsikko)
                   :body-text (content :leipateksti)
-                  :button-text (content :ekanappiteksti)}}))))
+                  :button-text (content :ekanappiteksti)
+                  :button-url (url-to' :password-reset :token token)}}))))
 
 (defn send-new-quest [{:keys [email quest locale]}]
   (let [content (mail-content "new-quest" locale)]
