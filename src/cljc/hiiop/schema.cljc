@@ -169,7 +169,7 @@
    (s/optional-key :participant-count) (s/maybe NaturalNumber)
    (s/optional-key :moderated) (s/maybe s/Bool)})
 
-(def UserQuest
+(def UserQuests
   {:attending [Quest]
    :organizing [Quest]})
 

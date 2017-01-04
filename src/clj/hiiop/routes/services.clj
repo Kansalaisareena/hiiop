@@ -154,7 +154,7 @@
           "/user" []
           :name ::get-user-quests
           :middleware [api-authenticated]
-          :return UserQuest
+          :return UserQuests
           (fn [request]
             (let [user-id (get-in request [:identity :id])
                   quests (api-handlers/get-user-quests
