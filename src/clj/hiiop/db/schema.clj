@@ -27,7 +27,7 @@
    :street_number (s/maybe s/Int)
    :street (s/maybe hs/NonEmptyString)
    :town hs/NonEmptyString
-   :postal_code hs/NonEmptyString
+   :postal_code (s/maybe hs/NonEmptyString)
    :country hs/NonEmptyString
    :latitude (s/maybe hs/NonEmptyString)
    :longitude (s/maybe hs/NonEmptyString)

@@ -9,6 +9,7 @@
             [schema.coerce :as sc]
             #?(:cljs [cljs.core.async :refer [<!]])
             #?(:cljs [hiiop.client-api :as api])
+            #?(:cljs [hiiop.scroll :refer [scroll-top]])
             [hiiop.url :refer [redirect-to]]
             [hiiop.time :as time]
             [hiiop.components.core :as c]
@@ -50,7 +51,7 @@
      default-content
      (if (not (rum/react local-picture-url))
        [(html/label
-         (tr [:pages.quest.edit.picture])
+         (tr [:pages.quest.edit.picture.title])
          {:class "opux-input__label opux-input__label--picture-label"
           :error (get-in cursors-and-schema [:picture-id :error])})
         (html/file-input
@@ -58,14 +59,15 @@
           :error (get-in cursors-and-schema [:picture-id :error])
           :url picture-url
           :context context
-          :tr (partial tr [:page.quest.edit.picture.upload-failed])})
+          :tr (partial tr [:pages.quest.edit.picture.upload-failed])})
+        [:p {:class "opux-info opux-centered"} (tr [:pages.quest.edit.picture.info])]
         ]
        [[:img {:src @picture-url
                :on-click
                (fn []
                  #?(:cljs
                     (do
-                      (if (js/confirm (tr [:page.quest.edit.picture.remove]))
+                      (if (js/confirm (tr [:pages.quest.edit.picture.remove]))
                         (reset! picture-url nil)
                       ))))
                }]])
@@ -560,7 +562,9 @@
                  (let [api-call (if (:id @quest)
                                   api/edit-quest
                                   api/add-quest)
-                       api-quest (assoc @quest :picture-id (str (:picture-id @quest)))
+                       api-quest (-> @quest
+                                     (assoc :picture-id (str (:picture-id @quest)))
+                                     (dissoc :participant-count))
                        from-api (<! (api-call api-quest))]
                    (if (:success from-api)
                      (reset! view "success"))
@@ -594,8 +598,10 @@
         is-valid (::is-valid state)
         locals {:view view :is-valid is-valid}]
     (cond
-      (= @view "edit") (edit-form (conj args locals))
-      (= @view "preview") (preview (conj args locals))
+      (= @view "edit")    (edit-form (conj args locals))
+      (= @view "preview") (let [p (preview (conj args locals))]
+                            #?(:cljs (scroll-top))
+                            p)
       (= @view "success") (edit-success {:quest quest
                                          :context context})
       )))

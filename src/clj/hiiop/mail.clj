@@ -132,8 +132,6 @@
                   :title title
                   :quest quest
                   :body-text (content :leipateksti)
-                  :button-text (content :ekanappiteksti)
-                  :button-url (url-to' :edit-quest :quest-id quest-id)
                   :message message}}))))
 
 (defn send-quest-accepted [{:keys [email quest locale]}]

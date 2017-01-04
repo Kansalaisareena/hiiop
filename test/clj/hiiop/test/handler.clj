@@ -132,6 +132,18 @@
     (f)
     (db/delete-user! *db* {:id (sc/string->uuid @test-user-id)})))
 
+(defn login-and-get-cookie [{:keys [with user-data]}]
+  (-> (json-request "/api/v1/login"
+                    {:type :post
+                     :body-string
+                     (generate-string
+                       {:email (:email user-data)
+                        :password (:password user-data)})})
+      (with)
+      (get-in [:headers "Set-Cookie"])
+      (first)
+      (session-cookie-string)))
+
 (deftest test-app
   (testing "main route"
     (let [response ((app) (request :get "/"))]
@@ -152,20 +164,44 @@
                     (assoc (request :get "/api/v1/config") :cookies {"lang" {:value "sv"}}))
           config (parse-string (slurp (:body response)) true)
           lang (first (:accept-langs config))]
-      (is (= "sv" lang)))))
+      (is (= "sv" lang))))
 
+  (testing "moderation page should not be accessible by anonymous user"
+    (let [response ((app) (request :get "/tehtavat/hyvaksynta"))]
+      (is (= (:status response) 302))
+      (db/delete-user! *db* {:id @test-user-id})))
 
-(defn login-and-get-cookie [{:keys [with user-data]}]
-  (-> (json-request "/api/v1/login"
-                    {:type :post
-                     :body-string
-                     (generate-string
-                      {:email (:email user-data)
-                       :password (:password user-data)})})
-      (with)
-      (get-in [:headers "Set-Cookie"])
-      (first)
-      (session-cookie-string)))
+  (testing "moderation page should not be accessible by normal user"
+    (let [current-app (app)
+          user-created (create-test-user
+                         {:user-data test-user
+                          :save-id-to test-user-id
+                          :read-token-from activation-token})
+          login-cookie (login-and-get-cookie
+                         {:with current-app
+                          :user-data test-user})
+          response (current-app
+                     (-> (request :get "/tehtavat/hyvaksynta")
+                         (header "cookie" login-cookie)))]
+      (is (= (:status response) 302))
+      (db/delete-user! *db* {:id @test-user-id})))
+
+  (testing "moderation page should be accessible by moderator"
+    (let [current-app (app)
+          user-created (create-test-user
+                         {:user-data test-user
+                          :save-id-to test-user-id
+                          :read-token-from activation-token})
+          made-moderator (db/make-moderator! {:id (sc/string->uuid @test-user-id)})
+          login-cookie (login-and-get-cookie
+                         {:with current-app
+                          :user-data test-user})
+          response (current-app
+                     (-> (request :get "/tehtavat/hyvaksynta")
+                         (header "cookie" login-cookie)))]
+      (is (= (:status response) 200))
+      (db/delete-user! *db* {:id @test-user-id})))
+  )
 
 (defn add-quest [{:keys [login-cookie with quest organiser-participates]}]
   (let [url "/api/v1/quests/add"]
@@ -511,6 +547,68 @@
                          :login-cookie login-cookie}))
           (check #(is (= "WAAT" (:name %1))))
           (check #(is (= "OMG!" (:description %1))))
+          (#(db/delete-quest-by-id! {:id (:id %1)}))
+          (just-do #(db/delete-user! *db* {:id (sc/string->uuid @test-user-id)})))
+      ))
+
+  (testing "PUT /api/v1/quests/:id with nil as postal-code"
+    (let [current-app (app)
+          user-created (create-test-user
+                        {:user-data test-user
+                         :save-id-to test-user-id
+                         :read-token-from activation-token})
+          login-cookie (login-and-get-cookie
+                        {:with current-app
+                         :user-data test-user})
+          quest-to-add (test-quest
+                        {:use-date-string true
+                         :location-to :location
+                         :coordinates-to :coordinates
+                         :organisation-to {:in :organisation
+                                           :name :name
+                                           :description :description}})]
+      (-> (add-quest
+           {:with current-app
+            :quest quest-to-add
+            :login-cookie login-cookie})
+          (assoc :name "WAAT"
+                 :description "OMG!")
+          (#(assoc-in %1 [:location :postal-code] nil))
+          (#(edit-quest {:with current-app
+                         :quest %1
+                         :login-cookie login-cookie}))
+          (check #(is (nil? (get-in %1 [:location :postal-code]))))
+          (#(db/delete-quest-by-id! {:id (:id %1)}))
+          (just-do #(db/delete-user! *db* {:id (sc/string->uuid @test-user-id)})))
+      ))
+
+  (testing "PUT /api/v1/quests/:id with without postal-code"
+    (let [current-app (app)
+          user-created (create-test-user
+                        {:user-data test-user
+                         :save-id-to test-user-id
+                         :read-token-from activation-token})
+          login-cookie (login-and-get-cookie
+                        {:with current-app
+                         :user-data test-user})
+          quest-to-add (test-quest
+                        {:use-date-string true
+                         :location-to :location
+                         :coordinates-to :coordinates
+                         :organisation-to {:in :organisation
+                                           :name :name
+                                           :description :description}})]
+      (-> (add-quest
+           {:with current-app
+            :quest quest-to-add
+            :login-cookie login-cookie})
+          (assoc :name "WAAT"
+                 :description "OMG!")
+          (#(assoc %1 :location (dissoc (:location %1) :postal-code)))
+          (#(edit-quest {:with current-app
+                         :quest %1
+                         :login-cookie login-cookie}))
+          (check #(is (nil? (get-in %1 [:location :postal-code]))))
           (#(db/delete-quest-by-id! {:id (:id %1)}))
           (just-do #(db/delete-user! *db* {:id (sc/string->uuid @test-user-id)})))
       ))

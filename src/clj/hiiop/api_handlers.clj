@@ -1,5 +1,6 @@
 (ns hiiop.api-handlers
   (:require [clojure.pprint :as pp]
+            [clojure.math.numeric-tower :as math]
             [taoensso.timbre :as log]
             [ring.util.http-response :refer :all]
             [mount.core :as mount]
@@ -443,26 +444,40 @@
 
 (defn picture-supported? [file]
   (-> (:content-type file)
-      (#(re-find #"^image/(jpg|jpeg|png|gif)$" %1))))
+      (#(assoc {}
+               :type
+               (not (re-find #"^image/(jpg|jpeg|png|gif)$" %1))))
+      (assoc :size
+             (> (:size file) (* 3 (math/expt 10 6))))
+      (#(cond
+          (:size %1)
+          {:errors {:picture :errors.picture.too-big}}
+
+          (:type %1)
+          {:errors {:picture :errors.picture.type-not-supported
+                    :type (:content-type file)}}
+
+          :else
+          true
+          ))))
 
 (defn add-picture [{:keys [file user]}]
-  (if (picture-supported? file)
-    (try
-      (let [picture-id (:id
-                        (db/add-picture! {:url ""
-                                          :owner (:id user)}))]
-        (log/info picture-id)
-        (-> picture-id
-            (upload-picture file)
-            (#(db/update-picture-url! {:id picture-id
-                                       :url %1}))
-            ((fn [db-reply]
-               (log/info db-reply)
-               {:id picture-id
-                :url (:url db-reply)}))
-            ))
-      (catch Exception e
-        (log/error e)
-        {:errors {:picture :errors.picture.add-failed}}))
-    {:errors {:picture :errors.picture.type-not-supported
-              :type (:content-type file)}}))
+  (let [picture-supported (picture-supported? file)]
+    (if (not (:errors picture-supported))
+      (try
+        (let [picture-id (:id
+                          (db/add-picture! {:url ""
+                                            :owner (:id user)}))]
+          (-> picture-id
+              (upload-picture file)
+              (#(db/update-picture-url! {:id picture-id
+                                         :url %1}))
+              ((fn [db-reply]
+                 (log/info db-reply)
+                 {:id picture-id
+                  :url (:url db-reply)}))
+              ))
+        (catch Exception e
+          (log/error e)
+          {:errors {:picture :errors.picture.add-failed}}))
+      picture-supported)))

@@ -28,6 +28,7 @@
       (assoc :organisation-description (:description organisation))
       (conj (:coordinates location))
       (conj location)
+      (assoc :postal-code (:postal-code location))
       (assoc :street-number (:street-number location))
       (dissoc :location :coordinates :picture-id :picture-url)
       (db/->snake_case_keywords))
