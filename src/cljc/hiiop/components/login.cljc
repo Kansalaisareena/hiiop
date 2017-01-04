@@ -71,7 +71,7 @@
 
        [:div {:class "opux-fieldset__inline-container opux-fieldset opux-fieldset__item opux-fieldset--login-links"}
         [:a {:class "opux-forget-password-link"
-             :href "#"}
+             :href (path-for pages/hierarchy :request-password-reset)}
          (tr [:pages.login.forget-password])]
         [:a {:class "opux-register-link"
              :href (path-for pages/hierarchy :register)}
