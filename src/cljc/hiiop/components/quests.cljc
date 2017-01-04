@@ -170,7 +170,7 @@
   (swap! end-time-revealed #(identity true)))
 
 (rum/defcs edit-time-place < rum/reactive
-  (rum/local false ::end-time-revealed)
+                            (rum/local false ::end-time-revealed)
   [state {:keys [cursors-and-schema context tr]}]
   (let [end-time-revealed (::end-time-revealed state)
         end-time (get-in cursors-and-schema [:end-time :value])

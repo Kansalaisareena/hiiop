@@ -250,10 +250,10 @@
         is-invalid? (fn [new-datetime]
                       (cond
                         (not (is-after-min? new-datetime))
-                        (tr [:error.date-needs-to-be-before]
+                        (tr [:errors.date.needs-to-be-before]
                             [(time/to-string (min-date-object) print-date-time-format)])
                         (not (is-before-max? new-datetime))
-                        (tr [:error.date-needs-to-be-after]
+                        (tr [:errors.date.needs-to-be-after]
                             [(time/to-string (max-date-object) print-date-time-format)])
                         :else nil))]
     (add-watch
