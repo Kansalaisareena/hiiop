@@ -122,6 +122,7 @@
         tr (:tr context)
         quest-atom (atom quest)
         party-atom (atom party)
+        user (get-user (:owner quest))
         errors (atom (same-keys-with-nils @quest-atom))]
     (layout/render {:title (tr [title-key])
                     :context context
@@ -129,6 +130,7 @@
                     (quests/edit {:context context
                                   :quest quest-atom
                                   :party party-atom
+                                  :user user
                                   :schema schema
                                   :errors errors})
                     :scripts
