@@ -38,14 +38,10 @@
                      #?(:cljs
                         (go
                           (let [resp (<! (api/delete-quest (:id quest)))
-                                new-own-quests (<! (api/get-own-quests))
-                                new-participating-quests
-                                (<! (api/get-participating-quests))
-                                new-quests
-                                (into []
-                                      (distinct
-                                        (concat new-own-quests
-                                                new-participating-quests)))]
+                                user-quests (<! (api/get-user-quests))
+                                new-own-quests (:organizing user-quests)
+                                new-participating-quests (:attending user-quests)
+                                new-quests (into [] (distinct (concat new-own-quests new-participating-quests)))]
                             (reset! quests new-quests)
                             (reset! processing false)
                             (reset-card-state)))))}
