@@ -149,10 +149,6 @@
 (defn new-empty-category-filter []
   {:categories []})
 
-(def UserQuest
-  {:attending [Quest]
-   :organizing [Quest]})
-
 (def Quest
   "Quest"
   {:id NaturalNumber
@@ -172,6 +168,10 @@
    (s/optional-key :organisation) (s/maybe Organisation)
    (s/optional-key :participant-count) (s/maybe NaturalNumber)
    (s/optional-key :moderated) (s/maybe s/Bool)})
+
+(def UserQuest
+  {:attending [Quest]
+   :organizing [Quest]})
 
 (def EditQuest
   (st/dissoc Quest :participant-count))
