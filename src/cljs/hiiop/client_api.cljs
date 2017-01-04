@@ -65,22 +65,15 @@
       (when (= (:status response) 200)
         (:body response)))))
 
-(defn get-participating-quests []
-  (go
-    (let [response (<! (http/get (str base-path "/quests/participating")))]
-      (when (= (:status response) 200)
-        (:body response)))))
-
 (defn get-unmoderated-quests []
   (go
     (let [response (<! (http/get (str base-path "/quests/unmoderated")))]
       (when (= (:status response) 200)
         (:body response)))))
 
-
-(defn get-own-quests []
+(defn get-user-quests []
   (go
-    (let [response (<! (http/get (str base-path "/quests/own")))]
+    (let [response (<! (http/get (str base-path "/quests/user")))]
       (when (= (:status response) 200)
         (:body response)))))
 

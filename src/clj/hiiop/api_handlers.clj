@@ -186,7 +186,7 @@
       (log/error e)
       {:errors {:quest "Failed to update"}})))
 
-(defn get-quests-for-owner [owner]
+(defn get-quests-for-owner [{:keys [owner]}]
   (try
     (-> (db/get-all-quests-by-owner {:owner owner})
         ((partial map hc/db-quest->api-quest-coercer)))
@@ -206,6 +206,18 @@
   (try
     (-> (db/get-all-participating-quests {:user_id user-id})
         ((partial map hc/db-quest->api-quest-coercer)))
+    (catch Exception e
+      (log/error e)
+      {:errors {:quests :error.quest.unexpected-error}})))
+
+(defn get-user-quests [{:keys [user-id]}]
+  (try
+    (let [own-quests (get-quests-for-owner {:owner user-id})
+          participating-quests (get-participating-quests {:user-id user-id})]
+      (if (and (nil? (:errors own-quests))
+               (nil? (:errors participating-quests)))
+        {:organizing own-quests :attending participating-quests}
+        {:errors {:quests :error.quest.unexpected-error}}))
     (catch Exception e
       (log/error e)
       {:errors {:quests :error.quest.unexpected-error}})))

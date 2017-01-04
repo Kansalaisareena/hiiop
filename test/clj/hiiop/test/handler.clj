@@ -318,8 +318,8 @@
         (parse-string true)
         (do-this pp/pprint))))
 
-(defn get-participating-quests [{:keys [with login-cookie]}]
-  (let [url (str "/api/v1/quests/participating")]
+(defn get-user-quests [{:keys [with login-cookie]}]
+  (let [url (str "/api/v1/quests/user")]
     (-> (json-request url
                       {:type :get
                        :cookies login-cookie})
@@ -1010,7 +1010,7 @@
           (just-do #(db/delete-user! {:id (sc/string->uuid @test-user-id)})))
       ))
 
-  (testing "GET /api/v1/quests/participating with participating quests"
+  (testing "GET /api/v1/quests/user"
     (let [current-app (app)
           moderator (create-test-user
                       {:user-data test-user
@@ -1049,9 +1049,23 @@
                               :user-id @normal-user-id
                               :with current-app
                               :login-cookie user-login-cookie})]
-      (-> (get-participating-quests {:with current-app
-                                     :login-cookie user-login-cookie})
-          (check #(is (= 1 (count %1)))))
+      (-> (get-user-quests {:with current-app
+                            :login-cookie user-login-cookie})
+          (check #(is (= 1 (count (:attending %1)))))
+          (check #(is (= 0 (count (:organizing %1))))))
+
+      ;; add new quest under normal user name
+      (let [new-added-quest (add-quest
+                              {:with current-app
+                               :quest quest-to-add
+                               :login-cookie user-login-cookie})
+            new-quest-id (:id new-added-quest)]
+        (-> (get-user-quests {:with current-app
+                              :login-cookie user-login-cookie})
+            (check #(is (= 1 (count (:attending %1)))))
+            (check #(is (= 1 (count (:organizing %1))))))
+        (db/delete-quest-by-id! {:id new-quest-id}))
+
       (db/delete-quest-by-id! {:id quest-id})
       (db/delete-user! *db* {:id (sc/string->uuid @test-user-id)})
       (db/delete-user! *db* {:id (sc/string->uuid @normal-user-id)})))

@@ -149,6 +149,10 @@
 (defn new-empty-category-filter []
   {:categories []})
 
+(def UserQuest
+  {:attending [Quest]
+   :organizing [Quest]})
+
 (def Quest
   "Quest"
   {:id NaturalNumber

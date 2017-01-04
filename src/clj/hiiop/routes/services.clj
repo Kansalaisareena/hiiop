@@ -150,28 +150,18 @@
       (context "/quests" []
         :tags ["quest"]
 
-        (GET "/own" []
-             :name ::get-own-quests
-             :middleware [api-authenticated]
-             :return [Quest]
-             (fn [request]
-               (let [owner (:id (:identity request))
-                     quests (api-handlers/get-quests-for-owner owner)]
-                 (if (nil? (:errors quests))
-                   (ok quests)
-                   (bad-request quests)))))
-
-        (GET "/participating" []
-             :name ::get-participating-quests
-             :middleware [api-authenticated]
-             :return [Quest]
-             (fn [request]
-               (let [user-id (get-in request [:identity :id])
-                     quests (api-handlers/get-participating-quests
-                              {:user-id user-id})]
-                 (if (nil? (:errors quests))
-                   (ok quests)
-                   (bad-request quests)))))
+        (GET
+          "/user" []
+          :name ::get-user-quests
+          :middleware [api-authenticated]
+          :return UserQuest
+          (fn [request]
+            (let [user-id (get-in request [:identity :id])
+                  quests (api-handlers/get-user-quests
+                           {:user-id user-id})]
+              (if (nil? (:errors quests))
+                (ok quests)
+                (bad-request quests)))))
 
         (GET
          "/moderated" []
