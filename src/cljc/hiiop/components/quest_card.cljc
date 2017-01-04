@@ -38,20 +38,57 @@
                      #?(:cljs
                         (go
                           (let [resp (<! (api/delete-quest (:id quest)))
-                                new-quests (<! (api/get-own-quests))]
+                                user-quests (<! (api/get-user-quests))
+                                new-own-quests (:organizing user-quests)
+                                new-participating-quests (:attending user-quests)
+                                new-quests (into [] (distinct (concat new-own-quests new-participating-quests)))]
                             (reset! quests new-quests)
                             (reset! processing false)
-                            (reset-card-state)))
-                        ))}
+                            (reset-card-state)))))}
         (tr [:pages.profile.delete])]
 
        [:span
         {:class "opux-button opux-button--dull opux-button--spacing"
          :on-click reset-card-state}
-        (tr [:pages.profile.cancel])]
-       ]
-      )
-    ))
+        (tr [:pages.profile.cancel])]])))
+
+(rum/defcs quest-card-action-cancel-enrollment < rum/reactive
+                                                 (rum/local false ::processing)
+  [state {:keys [quest card-state tr quests]}]
+  (let [reset-card-state #(reset! card-state "default")
+        processing (::processing state)]
+    (if (rum/react processing)
+      [:div {:class "opux-card__overlay"}
+       [:div {:class "opux-content opux-centered"}
+        [:i {:class "opux-icon opux-icon-ellipses"}]]]
+
+      [:div {:class "opux-card__overlay"}
+       [:div {:class "opux-content opux-centered"}
+        (tr [:pages.profile.do-you-want-to-cancel-enrollment])]
+
+       [:span
+        {:class "opux-button opux-button--highlight opux-button--spacing"
+         :on-click (fn [e]
+                     (reset! processing true)
+                     #?(:cljs
+                        (go
+                          (let [party-info (first (<! (api/get-party-info {:quest-id (:id quest)})))
+                                resp (<! (api/remove-party-member
+                                           {:member-id (:member-id party-info)
+                                            :quest-id (:id quest)}))
+                                user-quests (<! (api/get-user-quests))
+                                new-own-quests (:organizing user-quests)
+                                new-participating-quests (:attending user-quests)
+                                new-quests (into [] (distinct (concat new-own-quests new-participating-quests)))]
+                            (reset! quests new-quests)
+                            (reset! processing false)
+                            (reset-card-state)))))}
+        (tr [:pages.profile.cancel-enrollment])]
+
+       [:span
+        {:class "opux-button opux-button--dull opux-button--spacing"
+         :on-click reset-card-state}
+        (tr [:pages.profile.cancel])]])))
 
 (rum/defcs quest-card-profile < rum/reactive
                                (rum/local "default" ::card-state)
@@ -112,28 +149,40 @@
             (time/from-string end-time) time/hour-minute-format)
           )]
 
-       (if (= @card-state "delete")
-         (quest-card-action-delete {:quest quest
-                                    :card-state card-state
-                                    :quests quests
-                                    :tr tr}))
+       (cond (= @card-state "delete")
+             (quest-card-action-delete
+               {:quest quest
+                :card-state card-state
+                :quests quests
+                :tr tr})
+
+             (= @card-state "cancel-enrollment")
+             (quest-card-action-cancel-enrollment
+               {:quest quest
+                :card-state card-state
+                :quests quests
+                :tr tr}))
 
        (if is-own-quest
+
+         ;; own quest
          (when moderated
            [:div {:class "opux-card__actions"}
             [:span
              {:class "opux-card-action opux-icon-circled opux-icon-trashcan"
-              :on-click (fn [e]
-                          (if (not (= @card-state "delete"))
-                            (reset! card-state "delete")))}]
+              :on-click #(if (not (= @card-state "delete"))
+                           (reset! card-state "delete"))}]
 
             [:span {:class "opux-card-action opux-icon-circled opux-icon-personnel"}]
 
-           [:a {:class "opux-card-action opux-icon-circled opux-icon-edit"
-                :href (path-for hierarchy :edit-quest :quest-id (:id quest))}]
-           ])
-         [:div {:class "opux-card__actions"}
-          [:span {:class "opux-button"}
+            [:a {:class "opux-card-action opux-icon-circled opux-icon-edit"
+                 :href (path-for hierarchy :edit-quest :quest-id (:id quest))}]])
+
+         ;; participating quest
+         [:div {:class "opux-card__actions"} 
+          [:span {:class "opux-button"
+                  :on-click #(if (not (= @card-state "cancel-enrollment"))
+                               (reset! card-state "cancel-enrollment"))}
            (tr [:pages.profile.cancel-enrollment])]])]]]))
 
 (rum/defc quest-card-browse [{:keys [quest context]}]
@@ -178,9 +227,7 @@
             (time/from-string start-time) time/hour-minute-format)
           "-"
           (time/to-string
-            (time/from-string end-time) time/hour-minute-format)
-          )]
-       ]]]))
+            (time/from-string end-time) time/hour-minute-format))]]]]))
 
 (rum/defc quest-card-moderate [{:keys [quest context is-moderated on-click-fn]}]
   (let [{:keys [name
@@ -234,6 +281,4 @@
           #?(:cljs
              (time/to-string (time/from-string end-time) time/with-weekday-format)
              :clj
-             (time/to-string end-time time/with-weekday-format)
-             )])
-       ]]]))
+             (time/to-string end-time time/with-weekday-format))])]]]))

@@ -169,6 +169,10 @@
    (s/optional-key :participant-count) (s/maybe NaturalNumber)
    (s/optional-key :moderated) (s/maybe s/Bool)})
 
+(def UserQuests
+  {:attending [Quest]
+   :organizing [Quest]})
+
 (def EditQuest
   (st/dissoc Quest :participant-count))
 

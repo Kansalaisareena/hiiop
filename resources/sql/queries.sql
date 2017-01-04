@@ -259,6 +259,40 @@ WHERE
            WHERE u.id = :owner AND
                  u.moderator = true))
 
+-- :name get-all-participating-quests :? :*
+-- :doc "Get a list of user's participating quests"
+SELECT
+  q.id as id,
+  q.name as name,
+  q.description as description,
+  q.organisation as organisation,
+  q.organisation_description as organisation_description,
+  q.start_time as start_time,
+  q.end_time as end_time,
+  q.street_number as street_number,
+  q.street as street,
+  q.postal_code as postal_code,
+  q.town as town,
+  q.country as country,
+  q.latitude as latitude,
+  q.longitude as longitude,
+  q.google_maps_url as google_maps_url,
+  q.google_place_id as google_place_id,
+  q.categories as categories,
+  q.max_participants as max_participants,
+  q.hashtags as hashtags,
+  q.picture as picture,
+  (SELECT url FROM pictures WHERE id = q.picture) as picture_url,
+  q.is_open as is_open,
+  q.owner as owner,
+  TRUE as moderated
+FROM quests q
+WHERE
+  q.unmoderated_name IS NULL AND
+  EXISTS (SELECT FROM parties p
+          WHERE p.user_id = :user_id AND
+                p.quest_id = q.id)
+
 -- :name get-all-moderated-quests :? :*
 -- :doc get all moderated quests
 SELECT
@@ -292,28 +326,28 @@ q.name IS NOT NULL
 -- :name get-all-unmoderated-quests :? :*
 -- :doc get unmoderated quests
 SELECT
-  q.id as id,
-  q.unmoderated_name as name,
-  q.unmoderated_description as description,
-  q.unmoderated_organisation as organisation,
-  q.unmoderated_organisation_description as organisation_description,
-  q.start_time as start_time,
-  q.end_time as end_time,
-  q.street_number as street_number,
-  q.street as street,
-  q.postal_code as postal_code,
-  q.town as town,
-  q.country as country,
-  q.latitude as latitude,
-  q.longitude as longitude,
-  q.google_maps_url as google_maps_url,
-  q.google_place_id as google_place_id,
-  q.categories as categories,
-  q.max_participants as max_participants,
-  q.unmoderated_hashtags as hashtags,
-  (SELECT url FROM pictures WHERE id = q.unmoderated_picture) as picture_url,
-  q.is_open as is_open,
-  q.owner as owner
+q.id as id,
+q.unmoderated_name as name,
+q.unmoderated_description as description,
+q.unmoderated_organisation as organisation,
+q.unmoderated_organisation_description as organisation_description,
+q.start_time as start_time,
+q.end_time as end_time,
+q.street_number as street_number,
+q.street as street,
+q.postal_code as postal_code,
+q.town as town,
+q.country as country,
+q.latitude as latitude,
+q.longitude as longitude,
+q.google_maps_url as google_maps_url,
+q.google_place_id as google_place_id,
+q.categories as categories,
+q.max_participants as max_participants,
+q.unmoderated_hashtags as hashtags,
+(SELECT url FROM pictures WHERE id = q.unmoderated_picture) as picture_url,
+q.is_open as is_open,
+q.owner as owner
 FROM
   quests q
 WHERE q.unmoderated_name IS NOT NULL AND

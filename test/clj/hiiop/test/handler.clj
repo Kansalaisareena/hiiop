@@ -318,6 +318,19 @@
         (parse-string true)
         (do-this pp/pprint))))
 
+(defn get-user-quests [{:keys [with login-cookie]}]
+  (let [url (str "/api/v1/quests/user")]
+    (-> (json-request url
+                      {:type :get
+                       :cookies login-cookie})
+        (with)
+        (has-status 200 url)
+        (:body)
+        (check #(is (not (nil? %1))))
+        (#(when %1 (slurp %1)))
+        (parse-string true)
+        (do-this pp/pprint))))
+
 (defn accept-quest [{:keys [with login-cookie quest-id]}]
   (let [url (str "/api/v1/quests/" quest-id "/moderate-accept")]
     (-> (json-request url
@@ -505,13 +518,13 @@
           (do-this pp/pprint)
           (#(db/delete-quest-by-id! {:id (:id %1)}))
           (just-do #(db/delete-user! *db* {:id (sc/string->uuid @test-user-id)})))
-      ))
+      )) 
 
   (testing "PUT /api/v1/quests/:id"
     (let [current-app (app)
           user-created (create-test-user
-                        {:user-data test-user
-                         :save-id-to test-user-id
+                         {:user-data test-user
+                          :save-id-to test-user-id
                          :read-token-from activation-token})
           login-cookie (login-and-get-cookie
                         {:with current-app
@@ -996,6 +1009,66 @@
           (just-do #(db/delete-quest-by-id! {:id (:id added-quest)}))
           (just-do #(db/delete-user! {:id (sc/string->uuid @test-user-id)})))
       ))
+
+  (testing "GET /api/v1/quests/user"
+    (let [current-app (app)
+          moderator (create-test-user
+                      {:user-data test-user
+                       :save-id-to test-user-id
+                       :read-token-from activation-token})
+          made-moderator (db/make-moderator! {:id (sc/string->uuid @test-user-id)})
+          login-cookie (login-and-get-cookie
+                         {:with current-app
+                          :user-data test-user})
+          quest-to-add (test-quest
+                         {:use-date-string true
+                          :location-to :location
+                          :coordinates-to :coordinates
+                          :organisation-to {:in :organisation
+                                            :name :name
+                                            :description :description}})
+          added-quest (add-quest
+                        {:with current-app
+                         :quest quest-to-add
+                         :login-cookie login-cookie})
+          quest-id (:id added-quest)
+          accepted-quest (accept-quest {:with current-app
+                                        :quest-id quest-id
+                                        :login-cookie login-cookie})
+          normal-user-id (atom nil)
+          normal-user-data (assoc test-user :email "normaluser@email.com")
+          user-created (create-test-user
+                         {:user-data normal-user-data
+                          :save-id-to normal-user-id
+                          :read-token-from activation-token})
+          user-login-cookie (login-and-get-cookie
+                              {:with current-app
+                               :user-data normal-user-data})
+          joined (join-quest {:quest-id quest-id
+                              :days 1
+                              :user-id @normal-user-id
+                              :with current-app
+                              :login-cookie user-login-cookie})]
+      (-> (get-user-quests {:with current-app
+                            :login-cookie user-login-cookie})
+          (check #(is (= 1 (count (:attending %1)))))
+          (check #(is (= 0 (count (:organizing %1))))))
+
+      ;; add new quest under normal user name
+      (let [new-added-quest (add-quest
+                              {:with current-app
+                               :quest quest-to-add
+                               :login-cookie user-login-cookie})
+            new-quest-id (:id new-added-quest)]
+        (-> (get-user-quests {:with current-app
+                              :login-cookie user-login-cookie})
+            (check #(is (= 1 (count (:attending %1)))))
+            (check #(is (= 1 (count (:organizing %1))))))
+        (db/delete-quest-by-id! {:id new-quest-id}))
+
+      (db/delete-quest-by-id! {:id quest-id})
+      (db/delete-user! *db* {:id (sc/string->uuid @test-user-id)})
+      (db/delete-user! *db* {:id (sc/string->uuid @normal-user-id)})))
 
   (testing "/api/v1/quests/moderated should be updated after /api/v1/quests/add and /api/v1/quests/:id/moderate"
     (let [current-app (app)

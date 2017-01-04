@@ -71,10 +71,9 @@
       (when (= (:status response) 200)
         (:body response)))))
 
-
-(defn get-own-quests []
+(defn get-user-quests []
   (go
-    (let [response (<! (http/get (str base-path "/quests/own")))]
+    (let [response (<! (http/get (str base-path "/quests/user")))]
       (when (= (:status response) 200)
         (:body response)))))
 
@@ -141,6 +140,18 @@
   (go
     (let [response (<! (http/get
                         (str "/api/v1/users/" id)))
+          status (:status response)
+          body (:body response)]
+      (when (= status 200)
+        body))))
+
+(defn get-party-info [{:keys [quest-id]}]
+  (go
+    (let [response (<! (http/get
+                         (str base-path
+                              "/quests/"
+                              quest-id
+                              "/party")))
           status (:status response)
           body (:body response)]
       (when (= status 200)
