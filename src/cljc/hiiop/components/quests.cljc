@@ -240,6 +240,7 @@
         :error (get-in cursors-and-schema [:location :error])})
       (html/location-selector
        {:class "opux-input opux-input--location-selector"
+        :search-type "geocode"
         :location (get-in cursors-and-schema [:location :value])
         :error (get-in cursors-and-schema [:location :error])
         :schema (get-in cursors-and-schema [:location :schema])
