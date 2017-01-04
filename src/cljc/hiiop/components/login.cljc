@@ -14,13 +14,13 @@
 
 (rum/defcs login < rum/reactive
                    (rum/local nil ::error)
+                   (rum/local {:email "" :password ""} ::credentials)
   [state {:keys [context]}]
   (let [tr (:tr context)
+        credentials (::credentials state)
         error (::error state)
-        credentials (atom {:email "" :password ""})
         user (rum/cursor credentials :email)
         password (rum/cursor credentials :password)]
-    (log/info @error)
     [:form
      {:class "opux-form"
       :on-submit
