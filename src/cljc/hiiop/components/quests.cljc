@@ -170,7 +170,7 @@
   (swap! end-time-revealed #(identity true)))
 
 (rum/defcs edit-time-place < rum/reactive
-  (rum/local false ::end-time-revealed)
+                            (rum/local false ::end-time-revealed)
   [state {:keys [cursors-and-schema context tr]}]
   (let [end-time-revealed (::end-time-revealed state)
         end-time (get-in cursors-and-schema [:end-time :value])
@@ -240,6 +240,7 @@
         :error (get-in cursors-and-schema [:location :error])})
       (html/location-selector
        {:class "opux-input opux-input--location-selector"
+        :search-type "geocode"
         :location (get-in cursors-and-schema [:location :value])
         :error (get-in cursors-and-schema [:location :error])
         :schema (get-in cursors-and-schema [:location :schema])

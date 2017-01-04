@@ -167,7 +167,7 @@ Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit
     :start-time "Kellonaika"
     :end-time "Kellonaika"
 
-    :location {:label "Paikka"
+    :location {:label "Osoite"
                :placeholder "Anna sijainti"}
     :address "Osoite"
     :town "Paikkakunta"
@@ -337,6 +337,10 @@ Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit
 
   :paticipate-days
   {:not-valid "Voi olla numero nollasta ylöspäin"}
+
+  :date
+  {:needs-to-be-before "Tulee olla aiemmin, kuin %1"
+   :needs-to-be-after "Tulee olla myöhemmin, kuin %1"}
 
   :number
   {:greater-than-one "Tulee olla 1 suurempi"
