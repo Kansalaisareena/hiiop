@@ -152,6 +152,18 @@
       (when (= status 200)
         body))))
 
+(defn get-party-info [{:keys [quest-id]}]
+  (go
+    (let [response (<! (http/get
+                         (str base-path
+                              "/quests/"
+                              quest-id
+                              "/party")))
+          status (:status response)
+          body (:body response)]
+      (when (= status 200)
+        body))))
+
 (defn get-party-member [{:keys [quest-id member-id]}]
   (go
     (let [response (<! (http/get

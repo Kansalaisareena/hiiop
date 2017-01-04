@@ -167,6 +167,7 @@
   // opux-card__status
   @include element('status') {
     background: $OP-gray-light;
+    min-height: 1.2rem;
     padding: .5rem;
   }
 
