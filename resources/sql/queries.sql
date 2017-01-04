@@ -81,9 +81,10 @@ WHERE email = :email
 -- :doc get all users
 SELECT * FROM users
 
--- :name get-user-id :? :1
+-- :name get-user-name-and-id :? :1
 -- :doc get user id by email
-SELECT id FROM users
+SELECT id, name
+FROM users
 WHERE email = :email
 
 -- :name add-unmoderated-quest! :? :1
