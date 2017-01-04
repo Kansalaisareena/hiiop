@@ -148,22 +148,19 @@
            :transform-value #(if (string? %) (mangling/parse-natural-number %))
            :context context})])
 
-     [:div {:class "opux-fieldset__item opux-fieldset__item--inline-container"}
-      (html/button
-       (tr [:actions.quest.cancel])
-       {:class "opux-button opux-button--dull opux-form__button opux-fieldset__inline-item"
-        :type "submit"})
+     [:div {:class "opux-fieldset__item opux-centered"}
       (html/button
        (tr [:actions.quest.signup])
-       {:class "opux-button opux-button--highlight opux-form__button opux-fieldset__inline-item"
+       {:class "opux-button opux-button--highlight opux-form__button"
         :type "submit"
         :active is-valid})]]))
 
-(rum/defc show-message [{:keys [context message]}]
+(rum/defc show-message [{:keys [context message secret-party quest-id]}]
+  (let [quest-link (path-for hierarchy :quest :quest-id quest-id)]
   [:div {:class "opux-content opux-centered"}
    [:p message]
-   [:a {:class "opux-button" :href (path-for hierarchy :index)}
-    ((:tr context) [:pages.quest.view.join.to-front-page])]])
+   [:a {:class "opux-button" :href quest-link}
+    ((:tr context) [:pages.quest.view.join.to-front-page])]]))
 
 (rum/defcs join-quest < rum/reactive
                         (rum/local false ::is-valid)
@@ -232,9 +229,11 @@
 
       (= view "success")
       (show-message {:message message
-                     :context context})
+                     :context context
+                     :quest-id quest-id})
 
       (= view "fail")
       (show-message {:message message
-                     :context context})
+                     :context context
+                     :quest-id quest-id})
       )))

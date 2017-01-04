@@ -20,14 +20,14 @@
   [quests]
   (let [today (time/today)]
     (filter (fn [quest]
-              (time/before? (time/from-string (:end-time quest)) today))
+              (time/before? (time/from-string (:start-time quest)) today))
             quests)))
 
 (defn get-upcoming-quests
   [quests]
   (let [today (time/today)]
     (filter (fn [quest]
-              (time/after? (time/from-string (:end-time quest)) today))
+              (time/after? (time/from-string (:start-time quest)) today))
             quests)))
 
 (rum/defc profile < rum/reactive

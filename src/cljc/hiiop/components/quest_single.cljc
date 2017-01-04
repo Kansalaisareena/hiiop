@@ -72,21 +72,21 @@
      [:div {:class "opux-content"}
       [:div {:class "opux-line"}]]
 
-     (cond
-       (and (:is-open @quest) empty-party-member)
-       (join-quest {:context context
-                    :quest-id (:id @quest)
-                    :party-member empty-party-member
-                    :schema party-member-schema
-                    :days-between days-between
-                    :errors party-member-errors})
+     (if (time/after? (time/from-string start-time) (time/today))
+       (cond
+         (and (:is-open @quest) empty-party-member)
+         (join-quest {:context context
+                      :quest-id (:id @quest)
+                      :party-member empty-party-member
+                      :schema party-member-schema
+                      :days-between days-between
+                      :errors party-member-errors})
 
-       (and (not (:is-open @quest)) secret-party)
-       (join-quest {:context context
-                    :quest-id (:id @quest)
-                    :party-member empty-party-member
-                    :schema party-member-schema
-                    :days-between days-between
-                    :errors party-member-errors
-                    :secret-party secret-party}))
-       ]))
+         (and (not (:is-open @quest)) secret-party)
+         (join-quest {:context context
+                      :quest-id (:id @quest)
+                      :party-member empty-party-member
+                      :schema party-member-schema
+                      :days-between days-between
+                      :errors party-member-errors
+                      :secret-party secret-party})))]))
