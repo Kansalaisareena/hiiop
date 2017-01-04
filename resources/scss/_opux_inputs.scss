@@ -18,6 +18,10 @@
     outline: none;
   }
 
+  @include modifier('hidden') {
+    display: none;
+  }
+
   // opux-input--inline
   @include modifier('inline') {
     display: inline-block;

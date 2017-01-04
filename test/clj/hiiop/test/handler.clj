@@ -116,15 +116,15 @@
                     {:cookie set-cookie}))))
 
 (defn create-test-user [{:keys [user-data save-id-to read-token-from]}]
-  (-> (hiiop.api-handlers/register {:email (:email user-data)
-                                    :name "Wat"
-                                    :locale :fi})
+  (-> (hiiop.api-handlers/register
+       {:email (:email user-data)
+        :name "Wat"
+        :locale :fi})
       (#(reset! save-id-to %))
       ((fn [id]
          (hiiop.api-handlers/activate
-          {:email    (:email user-data)
-           :password (:password user-data)
-           :token    @read-token-from})))))
+          {:password (:password user-data)
+           :token    (schema.coerce/string->uuid @read-token-from)})))))
 
 (use-fixtures
   :once
@@ -368,6 +368,35 @@
         (check #(is (not (= %1 nil))))
         (#(when %1 (slurp %1)))
         (parse-string true)
+        (do-this #(pp/pprint %1)))))
+
+(defn request-reset-password [{:keys [with email]}]
+  (log/info "request-reset-password" email)
+  (let [url (str "/api/v1/users/reset-password")]
+    (-> (json-request url
+                      {:type :post
+                       :body-string (generate-string email)})
+        (with)
+        (has-status 200 url)
+        (:body)
+        (check #(is (= %1 nil)))
+        (#(when %1 (slurp %1)))
+        (#(when %1 (parse-string %1 true)))
+        (do-this #(pp/pprint %1)))))
+
+(defn change-password [{:keys [with token password]}]
+  (let [url (str "/api/v1/users/change-password")]
+    (-> (json-request url
+                      {:type :post
+                       :body-string (generate-string
+                                     {:token token
+                                      :password password})})
+        (with)
+        (has-status 200 url)
+        (:body)
+        (check #(is (= %1 nil)))
+        (#(when %1 (slurp %1)))
+        (#(when %1 (parse-string %1 true)))
         (do-this #(pp/pprint %1)))))
 
 (deftest test-api
@@ -1175,5 +1204,31 @@
           (#(db/delete-quest-by-id! {:id (:id %1)}))
           (just-do #(db/delete-user! *db* {:id (sc/string->uuid @test-user-id)})))
       ))
+
+  (testing "/api/v1/users/reset-password /api/v1/users/change-password should change password"
+    (let [current-app (app)
+          user-created (create-test-user
+                        {:user-data test-user
+                         :save-id-to test-user-id
+                         :read-token-from activation-token})]
+      (-> {:request-password-reset
+           (request-reset-password
+            {:with current-app
+             :email (:email test-user)})}
+          (assoc :token @password-reset-token)
+          (assoc :password "LOL1234!")
+          (#(assoc %1 :changed-password
+                   (change-password {:with current-app
+                                     :token (:token %1)
+                                     :password (:password %1)})))
+          (#(assoc %1 :login
+                   (login-and-get-cookie {:with current-app
+                                          :user-data
+                                          {:email (:email test-user)
+                                           :password (:password %1)}})))
+          (check #(= (not (nil? (:login %1)))))
+          (just-do #(db/delete-user! *db* {:id (sc/string->uuid @test-user-id)})))
+      ))
+
   )
 

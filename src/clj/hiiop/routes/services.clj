@@ -91,7 +91,7 @@
                     (ok %1))))))
 
         (POST "/activate" []
-          :body [activation UserActivation]
+          :body [activation TokenAndPassword]
           :summary "Activates inactive user"
           (fn [request]
             (if (api-handlers/activate activation)
@@ -99,22 +99,24 @@
               (bad-request))))
 
         (POST "/reset-password" []
-              :body [email Email]
-              :summary "Creates a password reset token and sends it to
+          :body [email Email]
+          :summary "Creates a password reset token and sends it to
               the given email address."
-              (fn [request]
-                (try (api-handlers/reset-password email)
-                     (catch Exception e
-                       (log/info e)))
-                (ok)))
+          (fn [request]
+            (try (api-handlers/reset-password email)
+                 (catch Exception e
+                   (log/info e)))
+            (ok)))
 
         (POST "/change-password" []
-          :body [password-reset UserActivation]
-          :summary "Activates inactive user"
+          :body [password-reset TokenAndPassword]
+          :summary "Change password"
           (fn [request]
-            (if (api-handlers/change-password password-reset)
-             (ok)
-             (bad-request {:error "Password change failed."})))))
+            (-> (api-handlers/change-password password-reset)
+                (#(if (not (:errors %1))
+                    (ok)
+                    (bad-request %1))))))
+        )
 
       (context "/pictures" []
         :tags ["picture"]
