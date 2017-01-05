@@ -100,7 +100,7 @@
 (def UserCredentials
   "Email and password"
   {:email Email
-   :password Password})
+   :password s/Str})
 
 (def Category
   (s/enum
