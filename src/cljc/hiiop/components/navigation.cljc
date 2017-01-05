@@ -63,14 +63,14 @@
 
         [:li {:class "opux-menu__item opux-menu__item--login"}
 
-         (if (nil? identity)
+         (if-not identity
            ;; not logged in
            [:a {:class "opux-menu__item-link opux-menu__item-link--login"
                 :href (path-for hierarchy :login)}
             (tr [:actions.user.login])]
 
            ;; logged in
-           (if (not (nil? (:name identity)))
+           (if (:name identity)
              [:a {:class "opux-menu__item-link opux-menu__item-link--login"
                   :href (path-for hierarchy :profile)}
               (:name identity)]))]
