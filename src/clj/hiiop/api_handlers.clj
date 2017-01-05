@@ -40,10 +40,10 @@
 (defn login
   [{{:keys [email password]} :body-params session :session}]
   (let [password-ok (db/check-password email password)
-        user-id (db/get-user-by-id {:email email})]
+        user-info (db/get-user-name-and-id {:email email})]
     (if password-ok
       (assoc (ok)
-             :session (assoc session :identity user-id))
+             :session (assoc session :identity user-info))
       (unauthorized))))
 
 (defn register [{:keys [email name phone locale]}]

@@ -547,9 +547,9 @@
           (do-this pp/pprint)
           (#(db/delete-quest-by-id! {:id (:id %1)}))
           (just-do #(db/delete-user! *db* {:id (sc/string->uuid @test-user-id)})))
-      )) 
+      ))
 
-  (testing "PUT /api/v1/quests/:id"
+  (testing "PUT /api/v1/quests/:id with unmoderated quest"
     (let [current-app (app)
           user-created (create-test-user
                          {:user-data test-user
@@ -569,6 +569,41 @@
            {:with current-app
             :quest quest-to-add
             :login-cookie login-cookie})
+          (assoc :name "WAAT"
+                 :description "OMG!")
+          (#(edit-quest {:with current-app
+                         :quest %1
+                         :login-cookie login-cookie}))
+          (check #(is (= "WAAT" (:name %1))))
+          (check #(is (= "OMG!" (:description %1))))
+          (#(db/delete-quest-by-id! {:id (:id %1)}))
+          (just-do #(db/delete-user! *db* {:id (sc/string->uuid @test-user-id)})))
+      ))
+
+  (testing "PUT /api/v1/quests/:id with moderated quest"
+    (let [current-app (app)
+          user-created (create-test-user
+                         {:user-data test-user
+                          :save-id-to test-user-id
+                         :read-token-from activation-token})
+          made-moderator (db/make-moderator! {:id (sc/string->uuid @test-user-id)})
+          login-cookie (login-and-get-cookie
+                        {:with current-app
+                         :user-data test-user})
+          quest-to-add (test-quest
+                        {:use-date-string true
+                         :location-to :location
+                         :coordinates-to :coordinates
+                         :organisation-to {:in :organisation
+                                           :name :name
+                                           :description :description}})]
+      (-> (add-quest
+           {:with current-app
+            :quest quest-to-add
+            :login-cookie login-cookie})
+          (#(accept-quest {:with current-app
+                           :quest-id (:id %1)
+                           :login-cookie login-cookie}))
           (assoc :name "WAAT"
                  :description "OMG!")
           (#(edit-quest {:with current-app

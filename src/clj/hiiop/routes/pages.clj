@@ -39,6 +39,7 @@
                                   new-empty-activation-info]]
             [hiiop.api-handlers :refer [get-quest
                                         get-secret-quest
+                                        get-moderated-or-unmoderated-quest
                                         get-user
                                         get-user-quests
                                         get-quest-party
