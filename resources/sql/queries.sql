@@ -261,7 +261,7 @@ WHERE
            WHERE u.id = :owner AND
                  u.moderator = true))
 
--- :name get-quest-by-id :? :1
+-- :name get-moderated-or-unmoderated-quest-by-id :? :1
 -- :doc get quest by id regardless of moderated state
 SELECT
   q.id as id,
