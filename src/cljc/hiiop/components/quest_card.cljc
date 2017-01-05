@@ -190,7 +190,10 @@
             :on-click #(if (not (= @card-state "delete"))
                          (reset! card-state "delete"))}]
 
-          [:span {:class "opux-card-action opux-icon-circled opux-icon-personnel"}]
+          (when moderated
+            [:a {:class "opux-card-action opux-icon-circled opux-icon-personnel"
+                 :href (str (path-for hierarchy :edit-quest :quest-id (:id quest))
+                            "#edit-party-members")}])
 
           [:a {:class "opux-card-action opux-icon-circled opux-icon-edit"
                :href (path-for hierarchy :edit-quest :quest-id (:id quest))}]]
