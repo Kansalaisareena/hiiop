@@ -84,14 +84,15 @@
 
 (defn get-all-items
   "Fetch all items from contentful space."
-  ([] (get-all-items 0))
-  ([fetched-count]
-   (let [items (get-items fetched-count)
-         new-fetched-count (+ fetched-count (+ fetched-count (:limit items)))
-         total (:total items)]
+  ([] (get-all-items 0 {}))
+  ([fetched-count prev-items]
+   (let [items-response (get-items fetched-count)
+         total (:total items-response)
+         new-items (:items items-response)
+         new-fetched-count (+ fetched-count (count new-items))]
      (if (<= total new-fetched-count)
-       (:items items)
-       (recur new-fetched-count)))))
+       (concat prev-items new-items)
+       (recur new-fetched-count (concat prev-items new-items))))))
 
 (defn refresh-items [items]
   (doseq [i items]
