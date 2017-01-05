@@ -137,17 +137,19 @@
                                  :moderated-quests (atom moderated-quests)})
         (. js/document (getElementById "app"))))))
 
-
-
 (defn create-quest-page [params]
-  (let [quest (atom (new-empty-quest))
-        errors (atom (same-keys-with-nils @quest))]
-    (rum/mount
-      (quests/edit {:context @context
-                    :quest quest
-                    :errors errors
-                    :schema NewQuest})
-      (. js/document (getElementById "app")))))
+  (go
+    (let [quest (atom (new-empty-quest))
+          user-id (get-in @context [:identity :id])
+          user (<! (get-user-info (str user-id)))
+          errors (atom (same-keys-with-nils @quest))]
+      (rum/mount
+        (quests/edit {:context @context
+                      :quest quest
+                      :user user
+                      :errors errors
+                      :schema NewQuest})
+        (. js/document (getElementById "app"))))))
 
 (defn edit-quest-page [params]
   (go
