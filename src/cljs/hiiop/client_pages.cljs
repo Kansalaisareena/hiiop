@@ -19,6 +19,7 @@
                                                      password-reset]]
             [hiiop.url :as u]
             [hiiop.client-api :refer [get-quest
+                                      get-moderated-or-unmoderated-quest
                                       get-secret-quest
                                       get-user-info
                                       get-user-quests
@@ -153,7 +154,7 @@
   (go
     (let [id (parse-natural-number
               (get-in params [:route-params :quest-id]))
-          quest (<! (get-quest id))
+          quest (<! (get-moderated-or-unmoderated-quest id))
           user-info (<! (get-user-info (:owner quest)))
           party (<! (get-quest-party id))]
       (-> quest

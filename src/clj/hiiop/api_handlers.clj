@@ -40,10 +40,10 @@
 (defn login
   [{{:keys [email password]} :body-params session :session}]
   (let [password-ok (db/check-password email password)
-        user-info (db/get-user-name-and-id {:email email})]
+        user-id (db/get-user-by-id {:email email})]
     (if password-ok
       (assoc (ok)
-             :session (assoc session :identity user-info))
+             :session (assoc session :identity user-id))
       (unauthorized))))
 
 (defn register [{:keys [email name phone locale]}]
@@ -176,6 +176,19 @@
     (catch Exception e
       (log/error e)
       {:errors {:quest :errors.quest.failed-to-delete-quest}})))
+
+(defn get-moderated-or-unmoderated-quest [{:keys [id user-id]}]
+  (log/info "quest" id)
+  (try
+    (-> (db/get-quest-by-id {:id id :user_id user-id})
+        ((fn [lol]
+           (log/info "----------------------------User IDDDD")
+           (log/info "----------------------------lolololol")
+           (log/info lol)
+           lol))
+        (hc/db-quest->api-quest-coercer))
+    (catch Exception e
+      (log/error e))))
 
 (defn get-quest [id]
   (log/info "quest" id)

@@ -261,6 +261,41 @@ WHERE
            WHERE u.id = :owner AND
                  u.moderator = true))
 
+-- :name get-quest-by-id :? :1
+-- :doc get quest by id regardless of moderated state
+SELECT
+  q.id as id,
+  COALESCE(q.name, q.unmoderated_name) as name,
+  COALESCE(q.unmoderated_description, q.description) as description,
+  COALESCE(q.unmoderated_organisation, q.organisation) as organisation,
+  COALESCE(q.unmoderated_organisation_description, q.organisation_description) as organisation_description,
+  q.start_time as start_time,
+  q.end_time as end_time,
+  q.street_number as street_number,
+  q.street as street,
+  q.postal_code as postal_code,
+  q.town as town,
+  q.country as country,
+  q.latitude as latitude,
+  q.longitude as longitude,
+  q.google_maps_url as google_maps_url,
+  q.google_place_id as google_place_id,
+  q.categories as categories,
+  q.max_participants as max_participants,
+  COALESCE(q.unmoderated_hashtags, q.hashtags) as hashtags,
+  COALESCE(q.unmoderated_picture, q.picture) as picture,
+  (SELECT url FROM pictures WHERE id = COALESCE(q.unmoderated_picture, q.picture)) as picture_url,
+  q.is_open as is_open,
+  q.owner as owner
+FROM
+  quests q
+WHERE
+  q.id = :id AND
+  (q.owner = :user_id OR
+   EXISTS (SELECT FROM users u
+           WHERE u.id = :user_id AND
+                 u.moderator = true))
+
 -- :name get-all-participating-quests :? :*
 -- :doc "Get a list of user's participating quests"
 SELECT
