@@ -26,6 +26,24 @@
    :moderate-quest "Hyväksy"
    }
 
+  :password-reset
+  {:title "Unohditko salasanasi?"
+   :send "Lähetä linkki"
+   :text "Ei hätää! Kirjoita alle sähköpostiosoitteesi. Lähetämme sinulle linkin, jota klikkaamalla pääset muuttamaan salasanasi."
+
+   :check-email
+   {:title "Tarkista sähköpostisi"
+    :text "Lähetimme sinulle linkin, jota klikkaamalla pääset muuttamaan salasanasi."}
+
+   :done
+   {:title "Salanasi on vaihdettu!"
+    :text "Voit nyt kirjautua"}
+
+   :expired
+   {:text "Tilaa täältä uusi."
+    }
+   }
+
   :index
   {:title "Etusivu"
    :banner
@@ -325,12 +343,19 @@ Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit
   {:register
    {:fail "Rekisteröinti epäonnistui."
     :success "Rekisteröinti onnistui!"}
+
    :token
-   {:invalid "Rekisteröintiavain ei ole enää voimassa."}}
+   {:invalid "Rekisteröintiavain ei ole enää voimassa."
+    :contact "Jos et saanut luotua tunnusta, ota yhteyttä hiiop@op.fi."}
+   }
+
+  :password
+  {:not-valid "Salasanan täytyy sisältää yksi iso kirjain, yksi numero, yksi erikoismerkki ja yhteensä kahdeksan merkkiä."
+   :not-same  "Salanasanat eivät täsmää."}
 
   :email
   {:not-valid "Sähköposti, kuten erkki@esimerkki.fi"
-   :in-use "Sähköposti on jo käytössä"}
+   :in-use    "Sähköposti on jo käytössä"}
 
   :phone
   {:not-valid "Puhelinnumero ei ole muotoa +358 40 1234567"}
@@ -353,6 +378,9 @@ Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit
   {:title "Muokkaaminen epäonnistui."
    :content "Hups, muokkaaminen epäonnistui. Tapahtuma ei ole sinun."
    }
+
+  :token
+  {:expired "Linkki vanhentunut!"}
 
   :login
   {:check "Tarkista sähköposti ja salasana"}
