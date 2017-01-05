@@ -246,7 +246,7 @@
           (fn [request]
             (let [result (api-handlers/delete-quest
                           {:id id
-                           :user (:identity request)})]
+                           :user-id (get-in request [:identity :id])})]
               (if (nil? (:errors result))
                 (no-content)
                 (bad-request result)))))
