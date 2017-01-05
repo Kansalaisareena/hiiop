@@ -41,7 +41,8 @@
      [:div {:class "opux-fieldset__item"}
       (html/label
        (tr [:pages.activate.password])
-       {:class "opux-input__label password-label"})
+       {:class "opux-input__label password-label"
+        :required true})
       (html/input
        {:schema (get-in cursors-and-schema [:password :schema])
         :value (get-in cursors-and-schema [:password :value])
@@ -53,7 +54,8 @@
      [:div {:class "opux-fieldset__item"}
       (html/label
        (tr [:pages.activate.confirm-password])
-       {:class "opux-input__label password-label"})
+       {:class "opux-input__label password-label"
+        :required true})
       (html/input
        {:schema (get-in cursors-and-schema [:password :schema])
         :value (get-in cursors-and-schema [:confirm-password :value])

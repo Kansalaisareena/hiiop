@@ -79,6 +79,7 @@
         (html/label
          (tr [:pages.login.password])
          {:class "opux-input__label user-label"
+          :required true
           :for (name :pages.password-reset.password)})
         (html/input
          {:schema s/Str
@@ -98,6 +99,7 @@
         (html/label
          (tr [:pages.activate.confirm-password])
          {:class "opux-input__label user-label"
+          :required true
           :for (name :pages.password-reset.confirm-password)})
         (html/input
          {:schema s/Str
@@ -183,7 +185,8 @@
        [:div {:class "opux-fieldset__item"}
         (html/label
          (tr [:pages.login.email])
-         {:class "opux-input__label user-label"})
+         {:class "opux-input__label user-label"
+          :required true})
         (html/input
          {:schema schema/Email
           :value email
