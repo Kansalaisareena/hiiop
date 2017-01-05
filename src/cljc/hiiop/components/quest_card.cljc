@@ -184,20 +184,19 @@
        (if is-own-quest
 
          ;; own quest
-         (when moderated
-           [:div {:class "opux-card__actions"}
-            [:span
-             {:class "opux-card-action opux-icon-circled opux-icon-trashcan"
-              :on-click #(if (not (= @card-state "delete"))
-                           (reset! card-state "delete"))}]
+         [:div {:class "opux-card__actions"}
+          [:span
+           {:class "opux-card-action opux-icon-circled opux-icon-trashcan"
+            :on-click #(if (not (= @card-state "delete"))
+                         (reset! card-state "delete"))}]
 
-            [:span {:class "opux-card-action opux-icon-circled opux-icon-personnel"}]
+          [:span {:class "opux-card-action opux-icon-circled opux-icon-personnel"}]
 
-            [:a {:class "opux-card-action opux-icon-circled opux-icon-edit"
-                 :href (path-for hierarchy :edit-quest :quest-id (:id quest))}]])
+          [:a {:class "opux-card-action opux-icon-circled opux-icon-edit"
+               :href (path-for hierarchy :edit-quest :quest-id (:id quest))}]]
 
          ;; participating quest
-         [:div {:class "opux-card__actions"} 
+         [:div {:class "opux-card__actions"}
           [:span {:class "opux-button"
                   :on-click #(if (not (= @card-state "cancel-enrollment"))
                                (reset! card-state "cancel-enrollment"))}

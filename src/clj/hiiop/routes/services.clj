@@ -212,6 +212,20 @@
                 (ok quest)
                 (not-found)))))
 
+        (GET "/moderated-or-unmoderated/:id" []
+             :name ::moderated-or-unmoderated-quest
+             :path-params [id :- Long]
+             :middleware  [api-authenticated]
+             :summary "Get moderated or unmoderated quest to be used for quest edit page."
+             :return Quest
+             (fn [request]
+               (let [quest (api-handlers/get-moderated-or-unmoderated-quest
+                             {:id id
+                              :user-id (get-in request [:identity :id])})]
+                 (if quest
+                   (ok quest)
+                   (not-found)))))
+
         (GET "/moderated/:id" []
           :name        ::moderated-quest
           :path-params [id :- Long]
