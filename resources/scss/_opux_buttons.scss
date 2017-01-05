@@ -51,9 +51,18 @@
   }
 
   @include modifier('small') {
-    min-width: 0;
     height: 35px;
     line-height: 35px;
+    min-width: 0;
+  }
+
+  @include modifier('icon') {
+    height: 35px;
+    line-height: 35px;
+    min-width: 0px;
+    &:hover {
+      color: $OP-orange;
+    }
   }
 
   // opux-button--dull

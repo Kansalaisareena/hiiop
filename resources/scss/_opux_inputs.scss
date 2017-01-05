@@ -180,6 +180,13 @@
       color: $OP-red;
     }
 
+    // opux-input__label--required
+    @include modifier('required') {
+      &:after {
+        content: " *";
+      }
+    }
+
     // opux-input__label--multi-select
     @include modifier('multi-select') {
       @include flex(0, 0, 20%);

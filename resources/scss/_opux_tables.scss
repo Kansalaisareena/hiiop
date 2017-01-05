@@ -12,9 +12,10 @@
 
   @include element('data') {
     padding: 0.4rem;
-  }
+    text-align: left;
 
-  &:hover {
-    background-color: $OP-gray-light;
+    @include modifier('actions') {
+      text-align: right;
+    }
   }
 }
