@@ -61,6 +61,7 @@
                  [cljsjs/pikaday                         "1.4.0-1"]
                  [cljsjs/dropzone                        "4.3.0-0"]
                  [clj-http                               "2.3.0"]
+                 [me.raynes/cegdown                      "0.1.1"]
                  ]
 
   :min-lein-version "2.7.1"

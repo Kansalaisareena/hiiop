@@ -68,17 +68,17 @@
         (copy data-stream temp)
         (s3/put-object aws-credentials
                        :bucket-name blog-bucket
-                       :key (str "assets/" to)
+                       :key to
                        :file temp
                        :metadata {:content-type content-type})))))
 
-(defn upload-story-to-s3 [id story-html]
+(defn upload-story-to-s3 [key story-html]
   (with-temp-file
     (fn [temp]
       (spit temp story-html)
       (s3/put-object aws-credentials
                      :bucket-name blog-bucket
-                     :key (str id ".html")
+                     :key key
                      :file temp
                      :metadata {:content-type "text/html"}))))
 
@@ -87,8 +87,8 @@
     (fn [temp]
       (spit temp story-html)
       (s3/put-object aws-credentials
-                     :bucket-name hiiop-bucket
-                     :key (str "pages/" name ".html")
+                     :bucket-name blog-bucket
+                     :key pagekey
                      :file temp
                      :metadata {:content-type "text/html"}))))
 

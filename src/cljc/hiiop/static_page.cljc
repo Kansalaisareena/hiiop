@@ -7,4 +7,4 @@
     [:meta {:charset "UTF-8"}]
     [:title (str "Hiiop: " headline)]]
    [:h1 headline]
-   [:div body-text]])
+   [:div {:dangerouslySetInnerHTML {:__html body-text}}]])

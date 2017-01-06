@@ -1,5 +1,6 @@
 (ns hiiop.contentful
-  (:require [mount.core :refer [defstate]]
+  (:require [clojure.core.async :refer [go]]
+            [mount.core :refer [defstate]]
             [clj-http.client :as http]
             [rum.core :refer [render-static-markup]]
             [hiiop.redis :refer [wcar*]]
@@ -9,14 +10,16 @@
             [taoensso.carmine :as car]
             [mount.core :refer [defstate]]
             [taoensso.timbre :as log]
-            [hiiop.file-upload :refer [upload-story upload-page]]
+            [hiiop.file-upload :refer [upload-story upload-page get-and-upload-asset]]
             [hiiop.db.core :as db]
             [hiiop.blog :as blog]
-            [hiiop.static-page :as page]))
+            [hiiop.static-page :as page]
+            [me.raynes.cegdown :as md]))
 
 (def cf-url "https://cdn.contentful.com/")
-(defstate items-url :start (str cf-url "spaces/" (:space-id (:contentful env)) "/entries?access_token="
-                                (:cd-api-key (:contentful env)) "&locale=*"))
+(defstate entries-url :start (str cf-url "spaces/" (:space-id (:contentful env)) "/entries?access_token="
+                                  (:cd-api-key (:contentful env)) "&locale=*"))
+
 (def locales [:fi :sv])
 
 (defn localize-fields [fields locale]
@@ -34,7 +37,7 @@
   (let [fields (localize-fields (:fields cfobject) locale)]
     (render-static-markup
      (page/static-page {:headline (:otsikko fields)
-                        :body-text (:leipateksti fields)}))))
+                        :body-text (md/to-html (:leipateksti fields))}))))
 
 (defn process-page [cfobject]
   (let [id (get-in cfobject [:sys :id])
@@ -43,42 +46,56 @@
     (try
       (doseq [locale locales]
         (->> (render-page cfobject locale)
-             (upload-page (str (name locale) "/" pagekey))))
+             (upload-page (str (name locale) "/pages/" pagekey ".html"))))
       (catch Exception e
         (log/info "Exception in processing page " pagekey ":" e)))))
 
 
-(defn render-story [cfobject locale]
+(defn render-story [cfobject locale image-url youtube-id]
   (let [fields (localize-fields (:fields cfobject) locale)]
     (render-static-markup
      (blog/blog-post {:headline (:otsikko fields)
-                      :body-text (:leipteksti fields)
-                      :picture nil
-                      :video nil}))))
+                      :body-text (md/to-html (:leipteksti fields))
+                      :picture image-url
+                      :youtube-id youtube-id }))))
 
 (defn process-story [cfobject]
   (let [id (get-in cfobject [:sys :id])
         topic-fi (get-in cfobject [:fields :otsikko :fi])
-        topic-sv (get-in cfobject [:fields :otsikko :sv])]
+        topic-sv (get-in cfobject [:fields :otsikko :sv])
+        youtube-id (get-in cfobject [:fields :youtubeUrl :fi])
+        image-id (get-in cfobject [:fields :kuva :fi :sys :id])]
     (try
       (doseq [locale locales]
-        (->> (render-story cfobject locale)
-             (upload-story (str (name locale) "/" id))))
+        (let [image-url (str "/" (name locale) "/kuvat/" image-id)]
+            (->> (render-story cfobject locale image-url youtube-id)
+                 (upload-story (str (name locale) "/blog/" id ".html")))))
       (db/add-or-update-story! {:id id :topic-fi topic-fi :topic-sv topic-sv}))))
+
+(defn process-asset [cfobject]
+  (let [id (get-in cfobject [:sys :id])
+        fi-url (str "http:" (get-in cfobject [:fields :file :fi :url]))
+        sv-url (str "http:" (get-in cfobject [:fields :file :sv :url]))]
+    (go
+      (get-and-upload-asset fi-url (str "fi/kuvat/" id))
+      (get-and-upload-asset sv-url (str "sv/kuvat/" id)))))
 
 (def handlers
   {"sahkopostiviesti" process-email
    "sivu" process-page
-   "tarina" process-story})
+   "tarina" process-story
+   "Asset" process-asset})
 
 (defn process-item [item]
-  (let [type (get-in item [:sys :contentType :sys :id])
+  (let [type (if (= (get-in item [:sys :type]) "Entry")
+               (get-in item [:sys :contentType :sys :id])
+               (get-in item [:sys :type]))
         handler (handlers type)]
     (when handler
       (handler item))))
 
 (defn get-items [skip]
-  (let [response (http/get (str items-url "&skip=" skip))]
+  (let [response (http/get (str entries-url "&skip=" skip))]
     (when (= 200 (:status response))
       (parse-string (:body response) true))))
 
@@ -88,7 +105,9 @@
   ([fetched-count prev-items]
    (let [items-response (get-items fetched-count)
          total (:total items-response)
-         new-items (:items items-response)
+         new-entries (:items items-response)
+         new-assets (get-in items-response [:includes :Asset])
+         new-items (concat new-entries new-assets)
          new-fetched-count (+ fetched-count (count new-items))]
      (if (<= total new-fetched-count)
        (concat prev-items new-items)
@@ -107,3 +126,4 @@
          (log/info "Updating items failed: " e))))
 
 (defstate contentful-init :start (update-all-items))
+
