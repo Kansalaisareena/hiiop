@@ -75,9 +75,9 @@
   (let [fields (localize-fields (:fields cfobject) locale)]
     (render-static-markup
      (blog/blog-post {:headline (:otsikko fields)
-                      :body-text (:leipteksti fields)
-                      :picture nil
-                      :video nil}))))
+                      :body-text (md/to-html (:leipteksti fields))
+                      :picture image-url
+                      :youtube-id youtube-id }))))
 
 (defn process-story [cfobject]
   (let [id (get-in cfobject [:sys :id])
@@ -146,3 +146,4 @@
          (log/info "Updating items failed: " e))))
 
 (defstate contentful-init :start (update-all-items))
+
