@@ -527,9 +527,10 @@ SET
   is_open = :is_open,
   is_rejected = false
 WHERE
-  owner = :owner OR
-  EXISTS (SELECT FROM users u
-          WHERE u.id = :owner AND u.moderator = true)
+  id = :id AND
+  (owner = :owner OR
+   EXISTS (SELECT FROM users u
+           WHERE u.id = :owner AND u.moderator = true))
 RETURNING ID
 
 -- :name delete-quest-by-id! :! :n
