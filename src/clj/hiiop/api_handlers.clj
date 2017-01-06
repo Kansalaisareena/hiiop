@@ -207,6 +207,10 @@
         (assoc :owner (:id user))
         (dissoc :organiser-participates)
         (hc/api-quest->db-quest-coercer)
+        ((fn [lol]
+           (log/info "----------------------LOLOLOLOLOLOL")
+           (log/info lol)
+           lol))
         (db/update-quest!)
         (#(db/get-unmoderated-quest-by-id {:id (:id %) :owner (:id user)}))
         (#(if %1
