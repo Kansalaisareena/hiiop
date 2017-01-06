@@ -32,6 +32,16 @@
     (log/info "Starting with picture base url" base-url)
     base-url))
 
+
+(defn with-temp-file [f]
+  (let [temp-file (java.io.File/createTempFile "pre" ".suff")]
+    (try
+      (f temp-file)
+      (catch Exception e
+        (.delete temp-file)
+        (throw e)))))
+
+
 (defn upload-picture-to-s3 [id picture-file]
   (-> (pm/extension-for-name (:content-type picture-file))
       (#(str "images/" id %1))
@@ -49,18 +59,24 @@
   )
 
 (defn upload-story-to-s3 [id story-html]
-  (s3/put-object aws-credentials
-                 :bucket-name blog-bucket
-                 :key (str id ".html")
-                 :input-stream (input-stream (.getBytes story-html))
-                 :metadata {:content-type "text/html"}))
+  (with-temp-file
+    (fn [temp]
+      (spit temp story-html)
+      (s3/put-object aws-credentials
+                     :bucket-name blog-bucket
+                     :key (str id ".html")
+                     :file temp
+                     :metadata {:content-type "text/html"}))))
 
 (defn upload-page-to-s3 [pagekey story-html]
-  (s3/put-object aws-credentials
-                 :bucket-name hiiop-bucket
-                 :key (str "pages/" name ".html")
-                 :input-stream (input-stream (.getBytes story-html))
-                 :metadata {:content-type "text/html"}))
+  (with-temp-file
+    (fn [temp]
+      (spit temp story-html)
+      (s3/put-object aws-credentials
+                     :bucket-name hiiop-bucket
+                     :key (str "pages/" name ".html")
+                     :file temp
+                     :metadata {:content-type "text/html"}))))
 
 
 (defstate upload-picture :start upload-picture-to-s3)
