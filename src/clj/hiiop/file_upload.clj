@@ -5,7 +5,8 @@
             [amazonica.aws.s3 :as s3]
             [hiiop.config :refer [env]]
             [schema.core :as s]
-            [clojure.java.io :refer [input-stream]]))
+            [clojure.java.io :refer [copy]]
+            [clj-http.client :as http]))
 
 (defstate aws-credentials
   :start
@@ -58,6 +59,19 @@
       )
   )
 
+(defn get-and-upload-asset-to-s3 [from to]
+  (with-temp-file
+    (fn [temp]
+      (let [response (http/get from {:as :stream})
+            content-type (get-in response [:headers "Content-Type"])
+            data-stream (:body response)]
+        (copy data-stream temp)
+        (s3/put-object aws-credentials
+                       :bucket-name blog-bucket
+                       :key (str "assets/" to)
+                       :file temp
+                       :metadata {:content-type content-type})))))
+
 (defn upload-story-to-s3 [id story-html]
   (with-temp-file
     (fn [temp]
@@ -82,3 +96,4 @@
 (defstate upload-picture :start upload-picture-to-s3)
 (defstate upload-story :start upload-story-to-s3)
 (defstate upload-page :start upload-page-to-s3)
+(defstate get-and-upload-asset :start get-and-upload-asset-to-s3)
