@@ -44,6 +44,7 @@
                                         get-user-quests
                                         get-quest-party
                                         get-moderated-quests
+                                        get-unmoderated-quests
                                         get-party-member]]
             [hiiop.components.password-reset :refer [display-message
                                                      request-password-reset
@@ -100,7 +101,10 @@
         user-quests (get-user-quests {:user-id user-id})
         participating-quests (:attending user-quests)
         own-quests (:organizing user-quests)
-        quests (into [] (distinct (concat participating-quests own-quests)))]
+        own-quest-ids (map :id own-quests)
+        quests (into [] (concat own-quests
+                                (filter #(not (some #{(:id %)} own-quest-ids))
+                                        participating-quests)))]
     (layout/render {:title (str (tr [:pages.profile.title]) " " (:name user-info))
                     :context context
                     :content
@@ -268,18 +272,16 @@
   (let [context (create-context req)
         tr (:tr context)
         id (:id (:identity context))
-        user (db/get-user-by-id {:id (sc/string->uuid id)})
+        user (get-user (sc/string->uuid id))
         is-moderator (:moderator user)
-        unmoderated-quests (db/get-all-unmoderated-quests {:user_id id})
-        moderated-quests (db/get-all-moderated-quests)]
+        unmoderated-quests (get-unmoderated-quests {:user-id id})]
     (if is-moderator
       (layout/render {:title (tr [:pages.moderate.title])
                       :context context
                       :content
                       (p-m/moderate-page
                        {:context context
-                        :unmoderated-quests (atom unmoderated-quests)
-                        :moderated-quests (atom moderated-quests)})})
+                        :unmoderated-quests (atom unmoderated-quests)})})
       (redirect-to {:path-key :index}))))
 
 (defn request-password-reset-page [req]

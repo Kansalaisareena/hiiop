@@ -483,7 +483,7 @@ SELECT
 FROM
   quests q
 WHERE
-  q.owner = :owner AND q.name IS NOT NULL
+  q.owner = :owner AND q.unmoderated_name IS NULL
 
 -- :name get-quest-owner :? :1
 -- :doc get quest owner
