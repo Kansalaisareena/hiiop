@@ -52,7 +52,14 @@
        (html/combine-text ", " street-number street town postal-code)]
       [:p
        [:i {:class "opux-icon opux-icon-calendar"}]
-       (time/to-string (time/from-string start-time) time/date-print-format)]]
+       (time/duration-to-print-str-date
+         (time/from-string start-time)
+         (time/from-string end-time))]
+      [:p
+       [:i {:class "opux-icon opux-icon-clock"}]
+       (time/duration-to-print-str-time
+         (time/from-string start-time)
+         (time/from-string end-time))]]
 
      [:div {:class "opux-content opux-content--medium"} (html/wrap-paragraph description)]
 
