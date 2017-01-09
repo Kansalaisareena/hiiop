@@ -116,7 +116,6 @@
       (html/label
        (tr [:pages.quest.edit.hashtags])
        {:class "opux-input__label opux-input__label--hashtags-label"
-        :required true
         :error (get-in cursors-and-schema [:hashtags :error])})
       (html/input
        {:class "opux-input opux-input--text opux-input--text--hashtags"
