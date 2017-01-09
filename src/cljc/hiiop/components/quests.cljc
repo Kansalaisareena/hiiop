@@ -379,7 +379,7 @@
   (let [tr (:tr context)]
     [:div
      [:span
-      {:class "opux-button opux-button--small opux-button--spacing"
+      {:class "opux-button opux-button--small opux-button--dull opux-button--spacing"
        :type "button"
        :on-click
        (fn []
@@ -422,7 +422,7 @@
           :member-id member-id
           :processing processing})
         [:button
-         {:class "opux-button opux-button--icon opux-icon-circled opux-icon-trashcan opux-button--spacing"
+         {:class "opux-button opux-button--icon opux-icon opux-icon-trashcan opux-button--spacing"
           :type "button"
           :on-click
           (fn [e]
