@@ -36,8 +36,16 @@
   #?(:clj "EE dd.M."
      :cljs "dd DD.M."))
 
+(def short-date-format
+  #?(:clj "dd.M."
+     :cljs "DD.M."))
+
 (def hour-minute-format
   #?(:clj "HH.mm"
+     :cljs "HH.mm"))
+
+(def week-day-hour-minute-format
+  #?(:clj "EE dd.M. HH.mm"
      :cljs "HH.mm"))
 
 (def month-name-format
@@ -275,7 +283,7 @@
 
 (defn days-between [a b]
   (if (and a b)
-    #?(:clj (.getDays (Days/daysBetween (.toLocalDate a) (.toLocalDate b)))
+    #?(:clj (.getDays (Days/daysBetween (.toLocalDate b) (.toLocalDate a)))
        :cljs (.diff a b "days"))))
 
 (defn from-string
@@ -339,3 +347,30 @@
          (to-string
           end-time
           time-print-format))))
+
+(defn duration-to-print-str-date [start-time end-time]
+  (str (to-string start-time date-print-format)
+       (if (and
+             end-time
+             (> (days-between
+                  (time-to end-time 0 0)
+                  (time-to start-time 0 0)) 0))
+         (str "-"
+              (to-string end-time date-print-format)))))
+
+(defn duration-to-print-str-date-short [start-time end-time]
+  (if (and
+        end-time
+        (> (days-between
+             (time-to end-time 0 0)
+             (time-to start-time 0 0)) 0))
+    (str (to-string start-time short-date-format)
+         "-"
+         (to-string end-time short-date-format))
+    (str (to-string start-time with-weekday-format))))
+
+(defn duration-to-print-str-time [start-time end-time]
+  (str (to-string start-time time-print-format)
+       (if end-time
+         (str "-"
+              (to-string end-time time-print-format)))))
