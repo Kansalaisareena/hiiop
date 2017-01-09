@@ -199,6 +199,12 @@
       text-align: center;
     }
 
+    // opux-input__label--categories
+    @include modifier('categories') {
+      font-size: 1.5rem;
+      font-weight: 200;
+    }
+
     // opux-input__label--radio
     @include modifier('radio') {
       @include align-items(flex-start);
