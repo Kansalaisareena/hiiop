@@ -81,9 +81,10 @@ WHERE email = :email
 -- :doc get all users
 SELECT * FROM users
 
--- :name get-user-id :? :1
+-- :name get-user-name-and-id :? :1
 -- :doc get user id by email
-SELECT id FROM users
+SELECT id, name
+FROM users
 WHERE email = :email
 
 -- :name add-unmoderated-quest! :? :1
@@ -491,9 +492,10 @@ SET
   is_open = :is_open,
   is_rejected = false
 WHERE
-  owner = :owner OR
-  EXISTS (SELECT FROM users u
-          WHERE u.id = :owner AND u.moderator = true)
+  id = :id AND
+  (owner = :owner OR
+   EXISTS (SELECT FROM users u
+           WHERE u.id = :owner AND u.moderator = true))
 RETURNING ID
 
 -- :name delete-quest-by-id! :! :n

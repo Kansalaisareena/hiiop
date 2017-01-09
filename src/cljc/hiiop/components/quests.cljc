@@ -537,37 +537,37 @@
 (rum/defc preview
   [{:keys [context quest user schema errors view is-valid]}]
   (let [tr (:tr context)]
-    [:div
-     {:class "opux-content"}
-     [:h1 {:class "opux-centered"}
-      (tr [:pages.quest.preview.title])]
-     [:p {:class "opux-centered"} (tr [:pages.quest.preview.check])]
-     [:div {:class "opux-fieldset__item opux-fieldset__item--inline-container"}
-      (html/button
-       (tr [:pages.quest.preview.buttons.edit])
-       {:class "opux-button opux-form__button opux-fieldset__inline-item"
-        :on-click
-        (fn []
-          (reset! view "edit"))})
-      (html/button
-       (tr [:pages.quest.preview.buttons.publish])
-       {:class "opux-button opux-button--highlight opux-form__button opux-fieldset__inline-item"
-        :type "submit"
-        :active is-valid
-        :on-click
-        (fn []
-          (when @is-valid
-            #?(:cljs
-               (go
-                 (let [api-call (if (:id @quest)
-                                  api/edit-quest
-                                  api/add-quest)
-                       api-quest (-> @quest
-                                     (assoc :picture-id (str (:picture-id @quest)))
-                                     (dissoc :participant-count))
-                       from-api (<! (api-call api-quest))]
-                   (if (:success from-api)
-                     (reset! view "success")))))))})]
+    [:div {:class "opux-content"}
+     [:div {:class "opux-section opux-centered"}
+      [:h1  (tr [:pages.quest.preview.title])]
+      [:p  (tr [:pages.quest.preview.check])]
+      [:div {:class "opux-section opux-centered"}
+       (html/button
+         (tr [:pages.quest.preview.buttons.edit])
+         {:class "opux-button opux-button--spacing"
+          :on-click
+          (fn []
+            (reset! view "edit"))})
+       (html/button
+         (tr [:pages.quest.preview.buttons.publish])
+         {:class "opux-button opux-button--highlight opux-button--spacing"
+          :type "submit"
+          :active is-valid
+          :on-click
+          (fn []
+            (when @is-valid
+              #?(:cljs
+                 (go
+                   (let [api-call (if (:id @quest)
+                                    api/edit-quest
+                                    api/add-quest)
+                         api-quest (-> @quest
+                                       (assoc :picture-id (str (:picture-id @quest)))
+                                       (dissoc :participant-count))
+                         from-api (<! (api-call api-quest))]
+                     (if (:success from-api)
+                       (reset! view "success"))
+                     )))))})]]
      (qs/quest {:quest quest :context context :user user})]))
 
 (rum/defc edit-success < rum/reactive
@@ -582,7 +582,7 @@
                   (cond
                     (:is-open @quest) :pages.quest.created.public
                     :else :pages.quest.created.private))]
-    [:div {:class "opux-content"}
+    [:div {:class "opux-content opux-centered"}
      [:h1 (tr [title])]
      [:p (tr [content])]]
     ))
