@@ -258,14 +258,17 @@
 (rum/defc edit-participation-settings < rum/reactive
   [{:keys [quest is-valid cursors-and-schema context tr]}]
   (html/form-section
-   (tr [:pages.quest.edit.subtitles.related-to])
-   (html/multi-selector-for-schema
-    {:schema (get-in cursors-and-schema [:categories :schema])
-     :value (get-in cursors-and-schema [:categories :value])
-     :error (get-in cursors-and-schema [:categories :error])
-     :choice-name-fn hs/category-choice
-     :context context})
-   )
+    [:div {:class "opux-section"}
+     (html/label
+       (tr [:pages.quest.edit.subtitles.related-to])
+       {:class "opux-input__label opux-input__label--categories"
+        :required true})
+     (html/multi-selector-for-schema
+       {:schema (get-in cursors-and-schema [:categories :schema])
+        :value (get-in cursors-and-schema [:categories :value])
+        :error (get-in cursors-and-schema [:categories :error])
+        :choice-name-fn hs/category-choice
+        :context context})])
   (html/form-section
    (tr [:pages.quest.edit.subtitles.participation])
    (html/max-participants
@@ -506,14 +509,18 @@
      [:div {:class "opux-line opux-content"}]
 
      (html/form-section
-      (tr [:pages.quest.edit.subtitles.related-to])
-      (html/multi-selector-for-schema
-       {:schema (get-in cursors-and-schema [:categories :schema])
-        :value (get-in cursors-and-schema [:categories :value])
-        :error (get-in cursors-and-schema [:categories :error])
-        :choice-name-fn hs/category-choice
-        :context context})
-      )
+       [:div {:class "opux-section"}
+        (html/label
+          (tr [:pages.quest.edit.subtitles.related-to])
+          {:class "opux-input__label opux-input__label--categories"
+           :required true
+           :error (get-in cursors-and-schema [:categories :error])})
+        (html/multi-selector-for-schema
+          {:schema (get-in cursors-and-schema [:categories :schema])
+           :value (get-in cursors-and-schema [:categories :value])
+           :error (get-in cursors-and-schema [:categories :error])
+           :choice-name-fn hs/category-choice
+           :context context})])
      [:div {:class "opux-line opux-content"}]
 
      (edit-participation-settings
