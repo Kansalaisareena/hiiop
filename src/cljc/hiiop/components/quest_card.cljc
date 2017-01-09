@@ -157,15 +157,11 @@
        (quest-card-title {:quest quest})
 
        [:span {:class "opux-card__date opux-inline-icon opux-inline-icon-calendar"}
-        (time/to-string (time/from-string start-time) time/with-weekday-format)]
+        (time/duration-to-print-str-date-short (time/from-string start-time)
+                                               (time/from-string end-time))]
        [:span {:class "opux-card__time opux-inline-icon opux-inline-icon-clock"}
-        (str
-          (time/to-string
-            (time/from-string start-time) time/hour-minute-format)
-          "-"
-          (time/to-string
-            (time/from-string end-time) time/hour-minute-format)
-          )]
+        (time/duration-to-print-str-time (time/from-string start-time)
+                                         (time/from-string end-time))]
 
        (cond (= @card-state "delete")
              (quest-card-action-delete
@@ -240,14 +236,11 @@
         name]
 
        [:span {:class "opux-card__date opux-inline-icon opux-inline-icon-calendar"}
-        (time/to-string (time/from-string start-time) time/with-weekday-format)]
+        (time/duration-to-print-str-date-short (time/from-string start-time)
+                                               (time/from-string end-time))]
        [:span {:class "opux-card__time opux-inline-icon opux-inline-icon-clock"}
-        (str
-          (time/to-string
-            (time/from-string start-time) time/hour-minute-format)
-          "-"
-          (time/to-string
-            (time/from-string end-time) time/hour-minute-format))]]]]))
+        (time/duration-to-print-str-time (time/from-string start-time)
+                                         (time/from-string end-time))]]]]))
 
 (rum/defc quest-card-moderate [{:keys [quest context is-moderated on-click-fn]}]
   (let [{:keys [name
@@ -291,14 +284,16 @@
 
        [:span {:class "opux-card__date opux-inline-icon opux-inline-icon-calendar"}
         #?(:cljs
-           (time/to-string (time/from-string start-time) time/with-weekday-format)
+           (time/duration-to-print-str-date-short (time/from-string start-time)
+                                                  (time/from-string end-time))
            :clj
-           (time/to-string start-time time/with-weekday-format)
+           (time/duration-to-print-str-date-short start-time end-time)
            )]
 
        (if (not (nil? end-time))
          [:span {:class "opux-card__time opux-inline-icon opux-inline-icon-clock"}
           #?(:cljs
-             (time/to-string (time/from-string end-time) time/with-weekday-format)
+             (time/duration-to-print-str-time (time/from-string start-time)
+                                              (time/from-string end-time))
              :clj
-             (time/to-string end-time time/with-weekday-format))])]]]))
+             (time/duration-to-print-str-time start-time end-time))])]]]))

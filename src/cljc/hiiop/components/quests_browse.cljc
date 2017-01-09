@@ -48,21 +48,21 @@
                  quests)
        :quest-filter quest-filter})))
 
-(defn- filter-by-start-time
+(defn- filter-by-end-time
   [{:keys [quests quest-filter]}]
-  (let [start-time-filter (:start-time quest-filter)]
-    (if (= "" start-time-filter)
+  (let [end-time-filter (:end-time quest-filter)]
+    (if (= "" end-time-filter)
       {:quests quests :quest-filter quest-filter}
       {:quests (filter
                  #(time/after?
-                    (time/from-string (:start-time %))
-                    (time/from-string start-time-filter))
+                    (time/from-string (:end-time %))
+                    (time/from-string end-time-filter))
                  quests)
        :quest-filter quest-filter})))
 
 (defn filters
   [{:keys [quests quest-filter]}]
-  (:quests ((comp filter-by-start-time
+  (:quests ((comp filter-by-end-time
                   filter-by-location
                   filter-by-categories)
             {:quests quests
@@ -120,29 +120,29 @@
         :context context
         :search-type "geocode"})]))
 
-(defn- quest-start-time-filter
+(defn- quest-end-time-filter
   [{:keys [context cursors-and-schema]}]
   (let [tr (:tr context)
-        start-time (get-in cursors-and-schema [:start-time :value])
-        start-time-object (if (not (= @start-time ""))
-                            (time/from-string @start-time time/transit-format)
+        end-time (get-in cursors-and-schema [:end-time :value])
+        end-time-object (if (not (= @end-time ""))
+                            (time/from-string @end-time time/transit-format)
                             nil)
-        start-time-atom (atom start-time-object)]
+        end-time-atom (atom end-time-object)]
 
     (add-watch
-      start-time-atom
-      :filter-start-time
+      end-time-atom
+      :filter-end-time
       (fn [key _ _ new-time]
-        (let [new-start-time (time/time-to @start-time-atom 0 0)]
-          (reset! start-time
+        (let [new-end-time (time/time-to @end-time-atom 0 0)]
+          (reset! end-time
                   (time/to-string
-                    new-start-time
+                    new-end-time
                     time/transit-format)))))
 
     [:div {:class "opux-card-filter__field opux-card-filter__field--datetime"}
      [:div {:class "opux-card-filter__label"}
       (tr [:pages.quest.list.filter.when])]
-      (html/datepicker {:date start-time-atom
+      (html/datepicker {:date end-time-atom
                         :position "bottom left"
                         :context context
                         :format time/date-print-format})]))
@@ -156,7 +156,7 @@
 
    (quest-location-filter {:context context
                            :cursors-and-schema cursors-and-schema})
-   (quest-start-time-filter {:context context
+   (quest-end-time-filter {:context context
                              :cursors-and-schema cursors-and-schema})])
 
 (defn- monthly-quest-list

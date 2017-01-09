@@ -142,12 +142,12 @@
   "Quest listing filter"
   {:categories [Category]
    (s/optional-key :location) (s/maybe Location)
-   (s/optional-key :start-time) (s/maybe DateTime)})
+   (s/optional-key :end-time) (s/maybe DateTime)})
 
 (defn new-empty-quest-filter []
   {:categories []
    :location nil
-   :start-time ""})
+   :end-time ""})
 
 (def QuestCategoryFilter
   "Home page category filter"
