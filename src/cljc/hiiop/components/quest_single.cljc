@@ -18,6 +18,7 @@
                 picture-url
                 hashtags
                 max-participants
+                participant-count
                 start-time
                 end-time
                 description]} @quest
@@ -27,6 +28,7 @@
                 postal-code
                 country
                 google-maps-url]} location
+        available-slots (- max-participants participant-count)
         usable-owner (or owner-name (:name user))
         tr (:tr context)
         days-between (time/days-between
@@ -67,7 +69,7 @@
         [:p (string/join " " hashtags)])
       [:p
        [:i {:class "opux-icon opux-icon-personnel"}]
-       (str max-participants " " (tr [:pages.quest.view.participants]))]]
+       (str available-slots " " (tr [:pages.quest.view.participants]))]]
 
      [:div {:class "opux-content"}
       [:div {:class "opux-line"}]]

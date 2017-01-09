@@ -285,6 +285,7 @@ SELECT
   q.hashtags as hashtags,
   q.picture as picture,
   (SELECT url FROM pictures WHERE id = q.picture) as picture_url,
+  (SELECT COUNT(user_id) FROM parties WHERE quest_id = q.id) as participant_count,
   q.is_open as is_open,
   q.owner as owner,
   TRUE as moderated
@@ -318,6 +319,7 @@ SELECT
   q.max_participants as max_participants,
   q.hashtags as hashtags,
   (SELECT url FROM pictures WHERE id = q.picture) as picture_url,
+  (SELECT COUNT(user_id) FROM parties WHERE quest_id = q.id) as participant_count,
   q.is_open as is_open,
   q.owner as owner
 FROM
@@ -348,6 +350,7 @@ q.categories as categories,
 q.max_participants as max_participants,
 q.unmoderated_hashtags as hashtags,
 (SELECT url FROM pictures WHERE id = q.unmoderated_picture) as picture_url,
+(SELECT COUNT(user_id) FROM parties WHERE quest_id = q.id) as participant_count,
 q.is_open as is_open,
 q.owner as owner
 FROM
@@ -410,6 +413,7 @@ SELECT
   q.unmoderated_hashtags as hashtags,
   q.unmoderated_picture as picture,
   (SELECT url FROM pictures WHERE id = q.unmoderated_picture) as picture_url,
+  (SELECT COUNT(user_id) FROM parties WHERE quest_id = q.id) as participant_count,
   q.is_open as is_open,
   q.owner as owner,
   FALSE as moderated
@@ -442,6 +446,7 @@ SELECT
   q.hashtags as hashtags,
   q.picture as picture,
   (SELECT url FROM pictures WHERE id = q.picture) as picture_url,
+  (SELECT COUNT(user_id) FROM parties WHERE quest_id = q.id) as participant_count,
   q.is_open as is_open,
   q.owner as owner,
   TRUE as moderated
