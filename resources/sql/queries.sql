@@ -184,6 +184,7 @@ SELECT
   q.picture as picture,
   (SELECT url FROM pictures WHERE id = q.picture) as picture_url,
   q.is_open as is_open,
+  q.is_rejected as is_rejected,
   (SELECT COUNT(user_id) FROM parties WHERE quest_id = :id) as participant_count,
   q.owner as owner
 FROM
@@ -251,6 +252,7 @@ SELECT
   q.unmoderated_picture as picture,
   (SELECT url FROM pictures WHERE id = q.unmoderated_picture) as picture_url,
   q.is_open as is_open,
+  q.is_rejected as is_rejected,
   q.owner as owner
 FROM
   quests q
@@ -322,11 +324,12 @@ SELECT
   (SELECT url FROM pictures WHERE id = q.picture) as picture_url,
   (SELECT COUNT(user_id) FROM parties WHERE quest_id = q.id) as participant_count,
   q.is_open as is_open,
+  q.is_rejected as is_rejected,
   q.owner as owner,
   TRUE as moderated
 FROM quests q
 WHERE
-  q.unmoderated_name IS NULL AND
+  q.name IS NOT NULL AND
   EXISTS (SELECT FROM parties p
           WHERE p.user_id = :user_id AND
                 p.quest_id = q.id)
@@ -356,11 +359,12 @@ SELECT
   (SELECT url FROM pictures WHERE id = q.picture) as picture_url,
   (SELECT COUNT(user_id) FROM parties WHERE quest_id = q.id) as participant_count,
   q.is_open as is_open,
+  q.is_rejected as is_rejected,
   q.owner as owner
 FROM
-quests q
+  quests q
 WHERE
-q.name IS NOT NULL
+  q.name IS NOT NULL
 
 -- :name get-all-unmoderated-quests :? :*
 -- :doc get unmoderated quests
@@ -387,6 +391,7 @@ q.unmoderated_hashtags as hashtags,
 (SELECT url FROM pictures WHERE id = q.unmoderated_picture) as picture_url,
 (SELECT COUNT(user_id) FROM parties WHERE quest_id = q.id) as participant_count,
 q.is_open as is_open,
+q.is_rejected as is_rejected,
 q.owner as owner
 FROM
   quests q
@@ -451,6 +456,7 @@ SELECT
   (SELECT COUNT(user_id) FROM parties WHERE quest_id = q.id) as participant_count,
   q.is_open as is_open,
   q.owner as owner,
+  q.is_rejected as is_rejected,
   FALSE as moderated
 FROM
   quests q
@@ -484,6 +490,7 @@ SELECT
   (SELECT COUNT(user_id) FROM parties WHERE quest_id = q.id) as participant_count,
   q.is_open as is_open,
   q.owner as owner,
+  q.is_rejected as is_rejected,
   TRUE as moderated
 FROM
   quests q
