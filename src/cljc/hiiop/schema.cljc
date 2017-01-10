@@ -19,10 +19,10 @@
 (def Password
   (s/constrained
    String
-   #(and (<= 6 (count %))       ; min 6 characters
-         (re-find #"\d" %)      ; digit
-         (re-find #"\p{Lu}" %)) ; unicode uppercase category
-   :errors.password.not-valid9))
+   #(and (<= 6 (count %))         ; min 6 characters
+         (re-find #"\d" %)        ; contains digit
+         (re-find #"[A-ZÅÄÖ]" %)) ; contains uppercase character
+   :errors.password.not-valid))
 
 (def Phone
   (s/constrained
@@ -73,7 +73,7 @@
              :organisation
              :moderator
              :active))
-
+ 
 (defn new-empty-registration-info []
   {:name ""
    :email ""

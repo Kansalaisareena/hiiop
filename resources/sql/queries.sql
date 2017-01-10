@@ -609,8 +609,9 @@ UPDATE users
 -- :name change-password! :! :1
 -- :doc "Change user password with password token"
 UPDATE users
-  SET pass = :pass
-  is_active = true
+  SET
+    pass = :pass,
+    is_active = true
   WHERE email = :email AND
     EXISTS (
       SELECT 1
