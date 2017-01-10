@@ -44,6 +44,10 @@
   #?(:clj "HH.mm"
      :cljs "HH.mm"))
 
+(def year-month-format
+  #?(:clj "YYYY-MM"
+     :cljs "YYYY-MM"))
+
 (def week-day-hour-minute-format
   #?(:clj "EE dd.M. HH.mm"
      :cljs "HH.mm"))
@@ -179,7 +183,7 @@
 (defn month
   ([from]
    #?(:clj (time/month from)
-      :cljs (.month from)))
+      :cljs (+ (.month from) 1)))
   ([date to]
    #?(:clj
       (let [^MutableDateTime mdt (.toMutableDateTime ^DateTime date)]
