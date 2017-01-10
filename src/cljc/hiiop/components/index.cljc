@@ -10,8 +10,7 @@
   [:div {:class "opux-banner"}
    [:div {:class "opux-banner__content opux-centered"}
     [:div {:class "opux-banner__title"} (tr [:pages.index.banner.header])]
-    [:div {:class "opux-banner__body-text"} (tr [:pages.index.banner.content])]
-    [:div {:class "opux-banner__subtitle"} (tr [:pages.index.banner.subtitle])]]])
+    [:div {:class "opux-banner__body-text"} (tr [:pages.index.banner.content])]]])
 
 (defn- index-link-item
   [{:keys [class content button-text button-link]}]

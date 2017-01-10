@@ -226,9 +226,7 @@
       [:div {:class "opux-card__image-container"}
        [:a {:href quest-link}
         [:div {:class "opux-card__image"
-               :style {:background-image (str "url('"
-                                              (get-quest-image quest)
-                                              "')")}}]]]
+               :style {:background-image (str "url('" (get-quest-image quest) "')")}}]]]
 
       [:div {:class "opux-card__content"}
 
