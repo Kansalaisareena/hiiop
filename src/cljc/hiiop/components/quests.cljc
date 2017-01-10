@@ -218,11 +218,12 @@
 
      (if (not (rum/react end-time-revealed))
        [:div {:class "opux-fieldset__item"}
-        (html/button
-         (tr [:pages.quest.edit.button.reveal-end-time])
-         {:class "opux-button end-time-reveal"
-          :on-click (fn [e]
-                      (reveal-end-time end-time-revealed))})]
+        [:a {:class "end-time-reveal"
+             :href "#"
+             :on-click (fn [e]
+                         (.preventDefault e)
+                         (reveal-end-time end-time-revealed))}
+         (str "+ " (tr [:pages.quest.edit.button.reveal-end-time]))]]
        [:div {:class "opux-fieldset__item"}
         (html/label
          (tr [:pages.quest.edit.end-date-and-time])
