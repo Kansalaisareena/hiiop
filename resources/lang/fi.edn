@@ -47,13 +47,13 @@
   :index
   {:title "Etusivu"
    :banner
-   {:header "Vuoden tärkein päivä on päivä vapaaehtoisena!"
-    :content "Jokainen voi lähteä mukaan vapaaehtoistoimintaan. Nyt on itsenäisyyden juhlavuosi. Anna sinäkin Suomelle lahjaksi päivä omasta vuodestasi. #hiiop on hyvä paikka aloittaa."
+   {:header "Vuoden tärkein päivä on päivä vapaaehtoisena."
+    :content "Jokainen voi lähteä mukaan vapaaehtoistyöhön. Anna sinäkin itsenäisyyden juhlavuoden kunniaksi Suomelle lahjaksi päivä vapaaehtoisena. #hiiop on hyvä paikka aloittaa."
     :subtitle "#hiiop"}
 
    :category-selector
-   {:title "Tule mukaan vapaaehtoistoimintaan"
-    :subtitle "Hiiop on vapaaehtoistoiminnan tori ja kohtaamispaikka. Täältä löydät helposti itsellesi sopivat tavat ja paikat tehdä vapaaehtoistyötä. Voit myös kutsua apukäsiä mukaan vapaaehtoistoimintaan, jota olet itse järjestämässä. Yhdessä voimme saada aikaan koko Suomea koskettavia hyviä tekoja. Valitse itseäsi kiinnostava aihe ja selaa vapaaehtoismahdollisuuksia."
+   {:title "Tule mukaan vapaaehtoistyöhön"
+    :subtitle "Hiiop on vapaaehtoistyön tori ja kohtaamispaikka. Täältä löydät helposti itsellesi sopivat tavat ja paikat tehdä vapaaehtoistyötä. Voit myös kutsua apukäsiä mukaan vapaaehtoistoimintaan, jota olet itse järjestämässä. Yhdessä voimme saada aikaan koko Suomea koskettavia hyviä tekoja. Valitse itseäsi kiinnostava aihe ja selaa vapaaehtoismahdollisuuksia."
     :search "Näytä tehtävät"}
 
    :index-links
@@ -65,7 +65,8 @@
     :read-stories "Lue tarinoita"}
 
    :social-feed
-   {:title "Jaettu ilo on paras ilo"}
+   {:title "Jaa kokemuksesti vapaaehtoistyöstä."
+    :text "Käytä tunnistetta #hiiop ja kutsu ystäväsi mukaan käyttämään päivä vapaaehtoistyöhön!"}
    }
 
 
@@ -98,6 +99,7 @@
    :no-upcoming-quests "Sinulla ei vielä ole tulevia tehtäviä"
    :my-event "Oma tapahtuma"
    :cancel-enrollment "Peru ilmoittautuminen"
+   :do-you-want-to-cancel-enrollment "Oletko varma, että haluat perua ilmoittautumisen tehtävään?"
    :pending-approval "Odottaa hyväksymistä"
    :rejected "Hylätty"
    :published "Julkaistu"}
@@ -146,7 +148,7 @@ Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit
     :not-found "Juuri näillä hakuehdoilla ei löytynyt tapahtumia. Koita valita useampia kiinnostuksen kohteita."
 
     :filter
-    {:category "Kiinnostuksen kohde"
+    {:category "Miten haluat auttaa?"
      :where "Missä?"
      :when "Milloin?"
      }}
