@@ -178,7 +178,6 @@
       {:errors {:quest :errors.quest.failed-to-delete-quest}})))
 
 (defn get-moderated-or-unmoderated-quest [{:keys [id user-id]}]
-  (log/info "quest" id)
   (try
     (-> (db/get-moderated-or-unmoderated-quest-by-id
           {:id id :user_id user-id})
@@ -187,7 +186,6 @@
       (log/error e))))
 
 (defn get-quest [id]
-  (log/info "quest" id)
   (try
     (-> (db/get-moderated-quest-by-id {:id id})
         (hc/db-quest->api-quest-coercer))
