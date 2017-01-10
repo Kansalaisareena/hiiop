@@ -184,6 +184,7 @@ SELECT
   q.picture as picture,
   (SELECT url FROM pictures WHERE id = q.picture) as picture_url,
   q.is_open as is_open,
+  q.is_rejected as is_rejected,
   (SELECT COUNT(user_id) FROM parties WHERE quest_id = :id) as participant_count,
   q.owner as owner
 FROM
@@ -251,6 +252,7 @@ SELECT
   q.unmoderated_picture as picture,
   (SELECT url FROM pictures WHERE id = q.unmoderated_picture) as picture_url,
   q.is_open as is_open,
+  q.is_rejected as is_rejected,
   q.owner as owner
 FROM
   quests q
@@ -259,6 +261,41 @@ WHERE
   (q.owner = :owner OR
    EXISTS (SELECT FROM users u
            WHERE u.id = :owner AND
+                 u.moderator = true))
+
+-- :name get-moderated-or-unmoderated-quest-by-id :? :1
+-- :doc get quest by id regardless of moderated state
+SELECT
+  q.id as id,
+  COALESCE(q.name, q.unmoderated_name) as name,
+  COALESCE(q.unmoderated_description, q.description) as description,
+  COALESCE(q.unmoderated_organisation, q.organisation) as organisation,
+  COALESCE(q.unmoderated_organisation_description, q.organisation_description) as organisation_description,
+  q.start_time as start_time,
+  q.end_time as end_time,
+  q.street_number as street_number,
+  q.street as street,
+  q.postal_code as postal_code,
+  q.town as town,
+  q.country as country,
+  q.latitude as latitude,
+  q.longitude as longitude,
+  q.google_maps_url as google_maps_url,
+  q.google_place_id as google_place_id,
+  q.categories as categories,
+  q.max_participants as max_participants,
+  COALESCE(q.unmoderated_hashtags, q.hashtags) as hashtags,
+  COALESCE(q.unmoderated_picture, q.picture) as picture,
+  (SELECT url FROM pictures WHERE id = COALESCE(q.unmoderated_picture, q.picture)) as picture_url,
+  q.is_open as is_open,
+  q.owner as owner
+FROM
+  quests q
+WHERE
+  q.id = :id AND
+  (q.owner = :user_id OR
+   EXISTS (SELECT FROM users u
+           WHERE u.id = :user_id AND
                  u.moderator = true))
 
 -- :name get-all-participating-quests :? :*
@@ -286,11 +323,12 @@ SELECT
   q.picture as picture,
   (SELECT url FROM pictures WHERE id = q.picture) as picture_url,
   q.is_open as is_open,
+  q.is_rejected as is_rejected,
   q.owner as owner,
   TRUE as moderated
 FROM quests q
 WHERE
-  q.unmoderated_name IS NULL AND
+  q.name IS NOT NULL AND
   EXISTS (SELECT FROM parties p
           WHERE p.user_id = :user_id AND
                 p.quest_id = q.id)
@@ -319,11 +357,12 @@ SELECT
   q.hashtags as hashtags,
   (SELECT url FROM pictures WHERE id = q.picture) as picture_url,
   q.is_open as is_open,
+  q.is_rejected as is_rejected,
   q.owner as owner
 FROM
-quests q
+  quests q
 WHERE
-q.name IS NOT NULL
+  q.name IS NOT NULL
 
 -- :name get-all-unmoderated-quests :? :*
 -- :doc get unmoderated quests
@@ -349,6 +388,7 @@ q.max_participants as max_participants,
 q.unmoderated_hashtags as hashtags,
 (SELECT url FROM pictures WHERE id = q.unmoderated_picture) as picture_url,
 q.is_open as is_open,
+q.is_rejected as is_rejected,
 q.owner as owner
 FROM
   quests q
@@ -412,6 +452,7 @@ SELECT
   (SELECT url FROM pictures WHERE id = q.unmoderated_picture) as picture_url,
   q.is_open as is_open,
   q.owner as owner,
+  q.is_rejected as is_rejected,
   FALSE as moderated
 FROM
   quests q
@@ -444,6 +485,7 @@ SELECT
   (SELECT url FROM pictures WHERE id = q.picture) as picture_url,
   q.is_open as is_open,
   q.owner as owner,
+  q.is_rejected as is_rejected,
   TRUE as moderated
 FROM
   quests q

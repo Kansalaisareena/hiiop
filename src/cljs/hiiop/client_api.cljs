@@ -54,6 +54,14 @@
       (when (= (:status response) 200)
         (:body response)))))
 
+(defn get-moderated-or-unmoderated-quest [id]
+  (go
+    (let [response (<! (http/get (str base-path "/quests"
+                                      "/moderated-or-unmoderated/"
+                                      id)))]
+      (when (= (:status response) 200)
+        (:body response)))))
+
 (defn get-secret-quest [{:keys [id secret-party]}]
   (go
     (let [response (<! (http/get

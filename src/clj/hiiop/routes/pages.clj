@@ -39,6 +39,7 @@
                                   new-empty-activation-info]]
             [hiiop.api-handlers :refer [get-quest
                                         get-secret-quest
+                                        get-moderated-or-unmoderated-quest
                                         get-user
                                         get-user-quests
                                         get-quest-party
@@ -183,7 +184,9 @@
 (defn edit-quest [req]
   (let [id (get-in req [:params :quest-id])
         identity (:identity req)
-        quest (get-quest (parse-natural-number id))
+        quest (get-moderated-or-unmoderated-quest
+                {:id (parse-natural-number id)
+                 :user-id (:id identity)})
         owner? (= (:owner quest) (:id identity))
         party (vec (get-quest-party
                     {:quest-id (:id id)
