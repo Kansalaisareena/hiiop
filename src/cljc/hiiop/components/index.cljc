@@ -94,6 +94,8 @@
   (let [tr (:tr context)]
     [:div {:class "opux-section opux-social-feed"}
      [:h1 (tr [:pages.index.social-feed.title])]
+     [:div {:class "opux-content opux-centered"}
+      (tr [:pages.index.social-feed.text])]
      [:div {:class "opux-content"}
       [:ul {:class        "juicer-feed"
             :data-feed-id "hiiop-9a6ea220-feaa-4128-9711-a874fa79cf74"
@@ -108,5 +110,4 @@
                          :category-filter category-filter
                          :schema          schema})
      (index-links {:context context})
-     (social-feed {:context context})
-     ]))
+     (social-feed {:context context})]))
