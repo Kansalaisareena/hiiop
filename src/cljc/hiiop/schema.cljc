@@ -18,8 +18,11 @@
 
 (def Password
   (s/constrained
-   #"^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,}$"
-   #(= % %) :errors.password.not-valid))
+   String
+   #(and (<= 6 (count %))       ; min 6 characters
+         (re-find #"\d" %)      ; digit
+         (re-find #"\p{Lu}" %)) ; unicode uppercase category
+   :errors.password.not-valid9))
 
 (def Phone
   (s/constrained
