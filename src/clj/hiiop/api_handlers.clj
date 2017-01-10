@@ -215,6 +215,7 @@
     (-> quest
         (assoc :owner (:id user))
         (dissoc :organiser-participates)
+        (dissoc :is-rejected)
         (hc/api-quest->db-quest-coercer)
         (db/update-quest!)
         (#(db/get-unmoderated-quest-by-id {:id (:id %) :owner (:id user)}))
