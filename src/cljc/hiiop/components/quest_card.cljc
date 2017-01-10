@@ -129,6 +129,7 @@
         is-own-quest (= (str (:id (:identity context)))
                         (str (:owner quest)))
         is-open (:is-open quest)
+        is-rejected (:is-rejected quest)
         moderated (:moderated quest)
         tr (:tr context)]
 
@@ -140,9 +141,11 @@
         (if is-own-quest
           (str (tr [:pages.profile.my-event])
                " | "
-               (if (not moderated)
-                 (tr [:pages.profile.pending-approval])
-                 (tr [:pages.profile.published]))))]
+               (if is-rejected
+                 (tr [:pages.profile.rejected])
+                 (if (not moderated)
+                   (tr [:pages.profile.pending-approval])
+                   (tr [:pages.profile.published])))))]
        (quest-card-image {:quest quest})]
 
       [:div {:class "opux-card__content"}

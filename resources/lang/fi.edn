@@ -99,6 +99,7 @@
    :my-event "Oma tapahtuma"
    :cancel-enrollment "Peru ilmoittautuminen"
    :pending-approval "Odottaa hyväksymistä"
+   :rejected "Hylätty"
    :published "Julkaistu"}
 
   :activate
