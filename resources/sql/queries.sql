@@ -191,7 +191,6 @@ FROM
   quests q
 WHERE
   q.id = :id AND
-  q.is_rejected = false AND
   q.name IS NOT NULL;
 
 -- :name get-moderated-secret-quest :? :1
