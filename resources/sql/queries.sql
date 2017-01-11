@@ -32,6 +32,15 @@ SET
   locale = :locale
 WHERE id = :id
 
+-- :name get-public-user-by-id :? :1 :uuid
+-- :doc retrieve a user given the uuid.
+SELECT
+  id,
+  name
+FROM users
+WHERE
+  id = :id
+
 -- :name get-user-by-id :? :1 :uuid
 -- :doc retrieve a user given the uuid.
 SELECT
@@ -44,7 +53,13 @@ SELECT
   is_active,
   locale
 FROM users
-WHERE id = :id
+WHERE
+  id = :id AND
+  (id = :user_id OR
+   EXISTS (SELECT FROM users u
+           WHERE u.id = :user_id AND
+                 u.moderator = true))
+
 
 -- :name get-user-by-email :? :1 :email
 -- :doc retrieve a user given the email.

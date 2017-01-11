@@ -61,11 +61,23 @@
       (context "/users" []
         :tags ["user"]
         (GET "/:id" []
-          :name ::user
+          :name ::public-user
           :path-params [id :- s/Uuid]
           :summary "Return user object"
           (fn [request]
-            (-> (api-handlers/get-user (:id (:params request)))
+            (-> (api-handlers/get-public-user id)
+                (#(if (:errors %1)
+                    (bad-request %1)
+                    (ok %1))))))
+
+        (GET "/private/:id" []
+          :name ::user
+          :path-params [id :- s/Uuid]
+          :middleware  [api-authenticated]
+          :summary "Return user object"
+          (fn [request]
+            (-> (api-handlers/get-private-user {:id id
+                                                :user-id (get-in request [:identity :id])})
                 (#(if (:errors %1)
                     (bad-request %1)
                     (ok %1))))))
