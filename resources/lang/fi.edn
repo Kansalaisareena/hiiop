@@ -149,7 +149,7 @@ Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit
     {:category "Miten haluat auttaa?"
      :where "Missä?"
      :when "Milloin?"
-     }}
+     :clear "tyhjentää"}}
 
    :edit
    {:title "Ilmoita vapaaehtoistehtävä"
@@ -228,9 +228,7 @@ Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit
     :filter
     {:category "Miten haluat auttaa?"
      :where "Missä?"
-     :when "Milloin?"
-     }
-    }
+     :when "Milloin?"}}
 
    :part
    {:title "Peru ilmoittautuminen"

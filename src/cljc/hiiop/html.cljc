@@ -186,15 +186,19 @@
       html-options))))
 
 (rum/defcs datepicker < pikaday-mixin
-  [state {:keys [date min-date max-date format schema error class transform-value context error-key]}]
-  [:div {:class
-         (str "opux-input__container opux-input__container--date-picker opux-icon "
-              class)}
-   [:input
-    {:type "text"
-     :class "opux-input opux-input--date-picker"
-     :default-value (time/to-string @date format)}]
-   [:div {:class "opux-date-picker-trigger"}]])
+  [state {:keys [date min-date max-date format schema error class transform-value context error-key use-value]}]
+  (let [default-options {:type "text"
+                        :class "opux-input opux-input--date-picker"
+                        :default-value (time/to-string @date format)}
+       options (if use-value
+                 (assoc default-options
+                        :value (time/to-string @date format))
+                 default-options)]
+    [:div {:class (str
+                    "opux-input__container opux-input__container--date-picker opux-icon "
+                    class)}
+     [:input options]
+     [:div {:class "opux-date-picker-trigger"}]]))
 
 (rum/defc timepicker < rum/reactive
   [{:keys [time class time-print-format context]}]

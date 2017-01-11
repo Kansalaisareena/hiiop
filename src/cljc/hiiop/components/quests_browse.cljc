@@ -149,14 +149,16 @@
       (tr [:pages.quest.list.filter.when])]
       (html/datepicker {:date end-time-atom
                         :position "bottom left"
+                        :use-value true
                         :context context
                         :format time/date-print-format})
      [:div {:class "opux-card-filter__label"}
-      [:a {:href "#"
-           :on-click (fn [e]
-                       (.preventDefault e)
-                       (reset! end-time ""))}
-       "- yololololol"]]]))
+      (if (not-empty @end-time)
+        [:a {:href "#"
+             :on-click (fn [e]
+                         (.preventDefault e)
+                         (reset! end-time ""))}
+         (str "- " (tr [:pages.quest.list.filter.clear]))])]]))
 
 (defn- quest-filters
   [{:keys [tr cursors-and-schema context quest-filter]}]
