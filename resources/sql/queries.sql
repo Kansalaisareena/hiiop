@@ -191,7 +191,7 @@ FROM
   quests q
 WHERE
   q.id = :id AND
-  q.name IS NOT NULL
+  q.name IS NOT NULL;
 
 -- :name get-moderated-secret-quest :? :1
 -- :doc get quest by id
