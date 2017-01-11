@@ -41,19 +41,21 @@
   (shutdown-agents))
 
 (defn start-app [args]
-  (doseq [component (-> args
+    (doseq [component (-> args
                         (parse-opts cli-options)
                         mount/start-with-args
                         :started)]
     (log/info component "started"))
-  (clear-from-cache :all-moderated-quests)
   (.addShutdownHook (Runtime/getRuntime) (Thread. stop-app)))
 
 (defn -main [& args]
+  (mount/start #'hiiop.config/env)
+  (mount/start #'hiiop.redis/redis-connection-options)
+  (mount/start #'hiiop.redis/clear-from-cache)
+  (clear-from-cache :all-moderated-quests)
   (cond
     (some #{"migrate" "rollback"} args)
     (do
-      (mount/start #'hiiop.config/env)
       (migrations/migrate args (select-keys env [:database-url]))
       (System/exit 0))
     :else
