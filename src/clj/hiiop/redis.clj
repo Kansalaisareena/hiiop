@@ -26,6 +26,10 @@
          result#)
        cached-result#)))
 
+(defstate clear-from-cache
+  :start (fn [key]
+           (wcar* (car/del key))))
+
 (defmacro redef-with-cache [fun key]
   "Redefine an arity 0 function to be cached with the given key."
   `(let [old-fun# ~fun]
