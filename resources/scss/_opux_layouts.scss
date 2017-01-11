@@ -270,6 +270,8 @@
   @include element('title') {
     @include flex(0, 0, 100%);
     font-size: 4rem;
+    margin: 0 auto;
+    max-width: $screen-large;
     padding-bottom: 2rem;
   }
 
