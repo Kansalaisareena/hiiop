@@ -5,7 +5,7 @@
   (:require [rum.core :as rum]
             [clojure.string :as string]
             [taoensso.timbre :as log]
-            #?(:cljs [hiiop.client-api :refer [get-user-info
+            #?(:cljs [hiiop.client-api :refer [get-private-user-info
                                                moderate-quest
                                                reject-quest
                                                get-unmoderated-quests]])
@@ -42,7 +42,7 @@
     #?(:cljs
        (if (and (nil? @usable-owner) (nil? owner-name))
          (go
-           (let [user (<! (get-user-info (:owner quest)))]
+           (let [user (<! (get-private-user-info (:owner quest)))]
              (reset! usable-owner (:name user))))))
 
     (if @processing

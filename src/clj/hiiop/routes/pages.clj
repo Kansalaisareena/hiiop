@@ -40,7 +40,8 @@
             [hiiop.api-handlers :refer [get-quest
                                         get-secret-quest
                                         get-moderated-or-unmoderated-quest
-                                        get-user
+                                        get-public-user
+                                        get-private-user
                                         get-user-quests
                                         get-quest-party
                                         get-moderated-quests
@@ -96,7 +97,8 @@
   (let [context (create-context req)
         tr (:tr context)
         user-id (get-in context [:identity :id])
-        user-info (get-user user-id)
+        user-info (get-private-user {:id (sc/string->uuid user-id)
+                                     :user-id (get-in req [:identity :id])})
         user-quests (get-user-quests {:user-id user-id})
         participating-quests (:attending user-quests)
         own-quests (:organizing user-quests)
@@ -139,7 +141,8 @@
         tr (:tr context)
         quest-atom (atom quest)
         party-atom (atom party)
-        user (get-user (:owner quest))
+        user (get-private-user {:id (:owner quest)
+                                :user-id (get-in request [:identity :id])})
         errors (atom (same-keys-with-nils @quest-atom))]
     (layout/render {:title (tr [title-key])
                     :context context
@@ -207,7 +210,7 @@
         quest (get-quest (parse-natural-number id))
         empty-party-member (atom (new-empty-party-member))
         errors (atom (same-keys-with-nils @empty-party-member))
-        owner-name (:name (get-user (:owner quest)))
+        owner-name (:name (get-public-user (:owner quest)))
         context (create-context req)
         tr (:tr context)]
     (if quest
@@ -231,7 +234,7 @@
                             (-> (new-empty-party-member)
                                 (assoc :secret-party secret-party)))
         errors (atom (same-keys-with-nils @empty-party-member))
-        owner-name (:name (get-user (:owner quest)))
+        owner-name (:name (get-public-user (:owner quest)))
         context (create-context req)
         tr (:tr context)]
     (if quest
@@ -268,7 +271,8 @@
   (let [context (create-context req)
         tr (:tr context)
         id (:id (:identity context))
-        user (db/get-user-by-id {:id (sc/string->uuid id)})
+        user (get-private-user {:id (sc/string->uuid id)
+                                :user-id id})
         is-moderator (:moderator user)
         unmoderated-quests (db/get-all-unmoderated-quests {:user_id id})
         moderated-quests (db/get-all-moderated-quests)]
