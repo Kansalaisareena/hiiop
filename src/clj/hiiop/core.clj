@@ -4,6 +4,7 @@
             [luminus.http-server :as http]
             [luminus-migrations.core :as migrations]
             [hiiop.config :refer [env]]
+            [hiiop.redis :refer [clear-from-cache]]
             [cider.nrepl :refer [cider-nrepl-handler]]
             [clojure.tools.cli :refer [parse-opts]]
             [taoensso.timbre :as log]
@@ -45,6 +46,7 @@
                         mount/start-with-args
                         :started)]
     (log/info component "started"))
+  (clear-from-cache :all-moderated-quests)
   (.addShutdownHook (Runtime/getRuntime) (Thread. stop-app)))
 
 (defn -main [& args]
