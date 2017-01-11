@@ -18,7 +18,7 @@
 
 (def Password
   (s/constrained
-   String
+   s/Str
    #(and (<= 6 (count %))         ; min 6 characters
          (re-find #"\d" %)        ; contains digit
          (re-find #"[A-ZÅÄÖ]" %)) ; contains uppercase character
