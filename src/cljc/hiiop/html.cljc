@@ -66,7 +66,7 @@
                          {:class
                           (class-label-with-required
                             required
-                            (if (or error (and error (rum/react error)))
+                            (if (and error (rum/react error))
                               (class-label-with-error error class)
                               class))
                           :for for}
