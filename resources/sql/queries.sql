@@ -233,7 +233,8 @@ SELECT
   q.picture as picture,
   (SELECT url FROM pictures WHERE id = q.picture) as picture_url,
   q.is_open as is_open,
-  q.owner as owner
+  q.owner as owner,
+  (SELECT COUNT(user_id) FROM parties WHERE quest_id = :id) as participant_count
 FROM
   quests q
 WHERE
