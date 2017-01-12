@@ -192,7 +192,7 @@
                  :user-id (:id identity)})
         owner? (= (:owner quest) (:id identity))
         party (vec (get-quest-party
-                    {:quest-id (:id id)
+                    {:quest-id (:id quest)
                      :user identity}))
         context (create-context req)
         tr (:tr context)]
