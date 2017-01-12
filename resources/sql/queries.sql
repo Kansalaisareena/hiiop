@@ -266,7 +266,7 @@ WHERE
 -- :doc get quest by id regardless of moderated state
 SELECT
   q.id as id,
-  COALESCE(q.name, q.unmoderated_name) as name,
+  COALESCE(q.unmoderated_name, q.name) as name,
   COALESCE(q.unmoderated_description, q.description) as description,
   COALESCE(q.unmoderated_organisation, q.organisation) as organisation,
   COALESCE(q.unmoderated_organisation_description, q.organisation_description) as organisation_description,

@@ -290,17 +290,12 @@
           name])
 
        [:span {:class "opux-card__date opux-inline-icon opux-inline-icon-calendar"}
-        #?(:cljs
-           (time/duration-to-print-str-date-short (time/from-string start-time)
-                                                  (time/from-string end-time))
-           :clj
-           (time/duration-to-print-str-date-short start-time end-time)
-           )]
+        (time/duration-to-print-str-date-short
+          (time/from-string start-time)
+          (time/from-string end-time))]
 
        (if (not (nil? end-time))
          [:span {:class "opux-card__time opux-inline-icon opux-inline-icon-clock"}
-          #?(:cljs
-             (time/duration-to-print-str-time (time/from-string start-time)
-                                              (time/from-string end-time))
-             :clj
-             (time/duration-to-print-str-time start-time end-time))])]]]))
+          (time/duration-to-print-str-time
+            (time/from-string start-time)
+            (time/from-string end-time))])]]]))
