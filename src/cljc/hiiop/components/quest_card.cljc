@@ -129,6 +129,7 @@
         is-own-quest (= (str (:id (:identity context)))
                         (str (:owner quest)))
         is-open (:is-open quest)
+        is-rejected (:is-rejected quest)
         moderated (:moderated quest)
         tr (:tr context)]
 
@@ -140,9 +141,11 @@
         (if is-own-quest
           (str (tr [:pages.profile.my-event])
                " | "
-               (if (not moderated)
-                 (tr [:pages.profile.pending-approval])
-                 (tr [:pages.profile.published]))))]
+               (if is-rejected
+                 (tr [:pages.profile.rejected])
+                 (if (not moderated)
+                   (tr [:pages.profile.pending-approval])
+                   (tr [:pages.profile.published])))))]
        (quest-card-image {:quest quest})]
 
       [:div {:class "opux-card__content"}
@@ -180,20 +183,22 @@
        (if is-own-quest
 
          ;; own quest
-         (when moderated
-           [:div {:class "opux-card__actions"}
-            [:span
-             {:class "opux-card-action opux-icon-circled opux-icon-trashcan"
-              :on-click #(if (not (= @card-state "delete"))
-                           (reset! card-state "delete"))}]
+         [:div {:class "opux-card__actions"}
+          [:span
+           {:class "opux-card-action opux-icon-circled opux-icon-trashcan"
+            :on-click #(if (not (= @card-state "delete"))
+                         (reset! card-state "delete"))}]
 
-            [:span {:class "opux-card-action opux-icon-circled opux-icon-personnel"}]
+          (when moderated
+            [:a {:class "opux-card-action opux-icon-circled opux-icon-personnel"
+                 :href (str (path-for hierarchy :edit-quest :quest-id (:id quest))
+                            "#edit-party-members")}])
 
-            [:a {:class "opux-card-action opux-icon-circled opux-icon-edit"
-                 :href (path-for hierarchy :edit-quest :quest-id (:id quest))}]])
+          [:a {:class "opux-card-action opux-icon-circled opux-icon-edit"
+               :href (path-for hierarchy :edit-quest :quest-id (:id quest))}]]
 
          ;; participating quest
-         [:div {:class "opux-card__actions"} 
+         [:div {:class "opux-card__actions"}
           [:span {:class "opux-button"
                   :on-click #(if (not (= @card-state "cancel-enrollment"))
                                (reset! card-state "cancel-enrollment"))}

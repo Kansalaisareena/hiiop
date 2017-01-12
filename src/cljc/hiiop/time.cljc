@@ -287,8 +287,9 @@
 
 (defn days-between [a b]
   (if (and a b)
-    #?(:clj (.getDays (Days/daysBetween (.toLocalDate b) (.toLocalDate a)))
-       :cljs (.diff a b "days"))))
+    #?(:clj (java.lang.Math/abs
+              (.getDays (Days/daysBetween (.toLocalDate b) (.toLocalDate a))))
+       :cljs (.abs js/Math (.diff a b "days")))))
 
 (defn from-string
   ([string]

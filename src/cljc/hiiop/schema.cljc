@@ -18,8 +18,11 @@
 
 (def Password
   (s/constrained
-   #"^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,}$"
-   #(= % %) :errors.password.not-valid))
+   s/Str
+   #(and (<= 6 (count %))         ; min 6 characters
+         (re-find #"\d" %)        ; contains digit
+         (re-find #"[A-ZÅÄÖ]" %)) ; contains uppercase character
+   :errors.password.not-valid))
 
 (def Phone
   (s/constrained
@@ -70,7 +73,7 @@
              :organisation
              :moderator
              :active))
-
+ 
 (defn new-empty-registration-info []
   {:name ""
    :email ""
@@ -174,6 +177,7 @@
    :owner s/Uuid
    (s/optional-key :organisation) (s/maybe Organisation)
    (s/optional-key :participant-count) (s/maybe NaturalNumber)
+   (s/optional-key :is-rejected) (s/maybe s/Bool)
    (s/optional-key :moderated) (s/maybe s/Bool)})
 
 (def UserQuests

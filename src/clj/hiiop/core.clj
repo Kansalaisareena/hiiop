@@ -4,6 +4,7 @@
             [luminus.http-server :as http]
             [luminus-migrations.core :as migrations]
             [hiiop.config :refer [env]]
+            [hiiop.redis :refer [clear-from-cache]]
             [cider.nrepl :refer [cider-nrepl-handler]]
             [clojure.tools.cli :refer [parse-opts]]
             [taoensso.timbre :as log]
@@ -40,7 +41,7 @@
   (shutdown-agents))
 
 (defn start-app [args]
-  (doseq [component (-> args
+    (doseq [component (-> args
                         (parse-opts cli-options)
                         mount/start-with-args
                         :started)]
@@ -48,10 +49,13 @@
   (.addShutdownHook (Runtime/getRuntime) (Thread. stop-app)))
 
 (defn -main [& args]
+  (mount/start #'hiiop.config/env)
+  (mount/start #'hiiop.redis/redis-connection-options)
+  (mount/start #'hiiop.redis/clear-from-cache)
+  (clear-from-cache :all-moderated-quests)
   (cond
     (some #{"migrate" "rollback"} args)
     (do
-      (mount/start #'hiiop.config/env)
       (migrations/migrate args (select-keys env [:database-url]))
       (System/exit 0))
     :else

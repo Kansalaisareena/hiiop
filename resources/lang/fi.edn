@@ -100,6 +100,7 @@
    :cancel-enrollment "Peru ilmoittautuminen"
    :do-you-want-to-cancel-enrollment "Oletko varma, että haluat perua ilmoittautumisen tehtävään?"
    :pending-approval "Odottaa hyväksymistä"
+   :rejected "Hylätty"
    :published "Julkaistu"}
 
   :activate
@@ -351,7 +352,7 @@ Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit
    }
 
   :password
-  {:not-valid "Salasanan täytyy sisältää yksi iso kirjain, yksi numero, yksi erikoismerkki ja yhteensä kahdeksan merkkiä."
+  {:not-valid "Salasanan täytyy sisältää yksi iso kirjain, yksi numero ja yhteensä vähintään kuusi merkkiä."
    :not-same  "Salanasanat eivät täsmää."}
 
   :email

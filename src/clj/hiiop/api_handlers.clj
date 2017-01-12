@@ -165,20 +165,27 @@
     (catch Exception e
       (log/error e))))
 
-(defn delete-quest [{:keys [id user]}]
-  ;; TODO: currently only supports deleting moderated quest
+(defn delete-quest [{:keys [id user-id]}]
   (try
-    (let [quest (db/get-moderated-quest-by-id {:id id})
+    (let [quest (db/get-moderated-or-unmoderated-quest-by-id
+                  {:id id :user_id user-id})
           owner (:owner quest)]
-      (if (= (str owner) (str (:id user)))
+      (if (= (str owner) (str user-id))
         (db/delete-quest-by-id! {:id id})
         {:errors {:quest :errors.quest.not-authorised-to-delete-quest}}))
     (catch Exception e
       (log/error e)
       {:errors {:quest :errors.quest.failed-to-delete-quest}})))
 
+(defn get-moderated-or-unmoderated-quest [{:keys [id user-id]}]
+  (try
+    (-> (db/get-moderated-or-unmoderated-quest-by-id
+          {:id id :user_id user-id})
+        (hc/db-quest->api-quest-coercer))
+    (catch Exception e
+      (log/error e))))
+
 (defn get-quest [id]
-  (log/info "quest" id)
   (try
     (-> (db/get-moderated-quest-by-id {:id id})
         (hc/db-quest->api-quest-coercer))
@@ -206,6 +213,7 @@
     (-> quest
         (assoc :owner (:id user))
         (dissoc :organiser-participates)
+        (dissoc :is-rejected)
         (hc/api-quest->db-quest-coercer)
         (db/update-quest!)
         (#(db/get-unmoderated-quest-by-id {:id (:id %) :owner (:id user)}))
