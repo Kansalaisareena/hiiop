@@ -203,6 +203,19 @@
       (db/delete-user! *db* {:id @test-user-id})))
   )
 
+(defn get-quest [{:keys [quest-id login-cookie with]}]
+  (let [url (str "/api/v1/quests/" quest-id)]
+    (-> (json-request url
+                      {:type :get
+                       :cookies login-cookie})
+        (with)
+        (has-status 200 url)
+        (:body)
+        (check #(is (not (= %1 nil))))
+        (#(when %1 (slurp %1)))
+        (parse-string true)
+        (do-this #(pp/pprint %1)))))
+
 (defn add-quest [{:keys [login-cookie with quest organiser-participates]}]
   (let [url "/api/v1/quests/add"]
     (-> quest
@@ -1065,6 +1078,44 @@
           (just-do #(db/delete-user! {:id (sc/string->uuid @test-user-id)})))
       ))
 
+  (testing "GET /api/v1/quests/:id moderated quest shows correct participant-count"
+    (let [current-app (app)
+          user-created (create-test-user
+                         {:user-data test-user
+                          :save-id-to test-user-id
+                          :read-token-from activation-token})
+          made-moderator (db/make-moderator! {:id @test-user-id})
+          login-cookie (login-and-get-cookie
+                         {:with current-app
+                          :user-data test-user})
+          quest-to-add (test-quest
+                         {:use-date-string true
+                          :location-to :location
+                          :coordinates-to :coordinates
+                          :organisation-to {:in :organisation
+                                            :name :name
+                                            :description :description}})
+          added-quest (add-quest
+                        {:with current-app
+                         :quest quest-to-add
+                         :login-cookie login-cookie})
+          accepted-quest (accept-quest {:with current-app
+                                        :quest-id (:id added-quest)
+                                        :login-cookie login-cookie})
+          joined (join-quest {:quest-id (:id added-quest)
+                              :days 1
+                              :user-id @test-user-id
+                              :with current-app
+                              :login-cookie login-cookie})]
+      (-> (:id added-quest)
+          (#(get-quest {:quest-id %1
+                        :login-cookie login-cookie
+                        :with current-app}))
+          (:participant-count)
+          (check #(is (= 1 %1)))
+          (just-do #(db/delete-quest-by-id! {:id (:id added-quest)}))
+          (just-do #(db/delete-user! {:id (sc/string->uuid @test-user-id)})))))
+
   (testing "DELETE /api/v1/quests/:quest-id/party/:member-id"
     (let [current-app (app)
           user-created (create-test-user
@@ -1146,7 +1197,8 @@
       (-> (get-user-quests {:with current-app
                             :login-cookie user-login-cookie})
           (check #(is (= 1 (count (:attending %1)))))
-          (check #(is (= 0 (count (:organizing %1))))))
+          (check #(is (= 0 (count (:organizing %1)))))
+          (check #(is (= 1 (:participant-count (first (:attending %1)))))))
 
       ;; add new quest under normal user name
       (let [new-added-quest (add-quest
@@ -1157,7 +1209,9 @@
         (-> (get-user-quests {:with current-app
                               :login-cookie user-login-cookie})
             (check #(is (= 1 (count (:attending %1)))))
-            (check #(is (= 1 (count (:organizing %1))))))
+            (check #(is (= 1 (count (:organizing %1)))))
+            (check #(is (= 1 (:participant-count (first (:attending %1))))))
+            (check #(is (= 0 (:participant-count (first (:organizing %1)))))))
         (db/delete-quest-by-id! {:id new-quest-id}))
 
       (db/delete-quest-by-id! {:id quest-id})
