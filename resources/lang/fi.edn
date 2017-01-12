@@ -150,7 +150,7 @@ Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit
     {:category "Miten haluat auttaa?"
      :where "Missä?"
      :when "Milloin?"
-     :clear "tyhjentää"}}
+     :clear "Tyhjennä"}}
 
    :edit
    {:title "Ilmoita vapaaehtoistehtävä"

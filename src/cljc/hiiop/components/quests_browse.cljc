@@ -158,7 +158,7 @@
              :on-click (fn [e]
                          (.preventDefault e)
                          (reset! end-time ""))}
-         (str "- " (tr [:pages.quest.list.filter.clear]))])]]))
+         (tr [:pages.quest.list.filter.clear])])]]))
 
 (defn- quest-filters
   [{:keys [tr cursors-and-schema context quest-filter]}]
