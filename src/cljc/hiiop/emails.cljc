@@ -33,6 +33,7 @@
              :class "button-1"
              :id "button-1"} button-text])
       (when button2-text
+        [:br]
         [:a {:href button2-url
              :class "button-2"
              :id "button-2"} button2-text])]]))
@@ -77,6 +78,7 @@
         :class "button-1"
         :id "button-1"} button-text]
    (when button2-text
+     [:br]
      [:a {:href button-url
           :class "button-2"
           :id "button-2"} button2-text])])
