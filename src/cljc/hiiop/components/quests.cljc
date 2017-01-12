@@ -147,8 +147,7 @@
          [:div {:class "opux-fieldset__item"}
           (html/label
            (tr [:pages.quest.edit.organisation.name])
-           {:class "opux-input__label opux-input__label--organisation-name"
-            :requied true})
+           {:class "opux-input__label opux-input__label--organisation-name"})
           (html/input
            {:class "opux-input opux-input--text"
             :type "text"
@@ -160,8 +159,7 @@
          [:div {:class "opux-fieldset__item"}
           (html/label
            (tr [:pages.quest.edit.organisation.description])
-           {:class "opux-input__label opux-input__label--organisation-description"
-            :required true})
+           {:class "opux-input__label opux-input__label--organisation-description"})
           (html/text
            {:class "opux-input opux-input--textarea testingshit"
             :value (rum/cursor-in quest [:organisation :description])
@@ -228,7 +226,6 @@
         (html/label
          (tr [:pages.quest.edit.end-date-and-time])
          {:class "opux-input__label end-time-label"
-          :required true
           :error (get-in cursors-and-schema [:end-time :error])})
         (html/datetime-picker
          {:date end-time
