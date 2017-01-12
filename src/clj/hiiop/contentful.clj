@@ -29,9 +29,15 @@
   (into {} (for [[k v] fields] [k (get v locale (get v default-locale))])))
 
 (defn process-email [{{{emailkey :fi} :emailkey} :fields :as email-object}]
-  "Store email object in redis."
-  (wcar* (car/set (str "email:" emailkey)
-                  email-object)))
+  "Render body text and store email object in redis."
+  (let [fi-text (get-in email-object [:fields :leipateksti :fi])
+        sv-text (get-in email-object [:fields :leipateksti :sv])]
+    (wcar* (car/set (str "email:" emailkey)
+                    (-> email-object
+                        (assoc-in [:fields :leipateksti-rendered :fi]
+                                  (md/to-html fi-text))
+                        (assoc-in [:fields :leipateksti-rendered :sv]
+                                  (md/to-html sv-text)))))))
 
 (defn render-page [cfobject locale]
   (let [fields (localize-fields (:fields cfobject) locale)]
@@ -126,4 +132,3 @@
          (log/info "Updating items failed: " e))))
 
 (defstate contentful-init :start (update-all-items))
-
