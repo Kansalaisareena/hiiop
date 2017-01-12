@@ -438,12 +438,12 @@
                                                 :party party
                                                 :processing processing})]
     [:div {:class "opux-form-section opux-form-section--no-border"}
-     [:h2 {:class "opux-centered"}
+     [:h2 {:class "opux-centered"
+           :id "edit-party-members"}
       (tr [:pages.quest.edit.party.title])]
      (if (not-empty (rum/react party))
        [:table
-        {:class "opux-table opux-centered opux-content"
-         :id "edit-party-members"}
+        {:class "opux-table opux-centered opux-content"}
         (into [:tbody {:class "opux-table__body"}] (map edit-member @party))]
        [:p {:class "opux-content opux-centered"} (tr [:pages.quest.edit.party.empty])])]))
 
