@@ -412,6 +412,21 @@
         (#(when %1 (parse-string %1 true)))
         (do-this #(pp/pprint %1)))))
 
+(defn get-profile [{:keys [with user-id private login-cookie status is-nil]}]
+  (let [url (str "/api/v1/users/" (when private "private/") user-id)]
+    (-> (json-request url
+                      {:type :get
+                       :cookies login-cookie})
+        (with)
+        (has-status (or status 200) url)
+        (:body)
+        (check #(is (if is-nil
+                      (nil? %1)
+                      (not (nil? %1)))))
+        (#(when %1 (slurp %1)))
+        (#(when %1 (parse-string %1 true)))
+        (do-this #(pp/pprint %1)))))
+
 (deftest test-api
 
   (testing "api/v1/users/register"
@@ -1347,6 +1362,84 @@
                                            :password (:password %1)}})))
           (check #(= (not (nil? (:login %1)))))
           (just-do #(db/delete-user! *db* {:id (sc/string->uuid @test-user-id)})))
+      ))
+
+  (testing "getting public user should work"
+    (let [current-app (app)
+          user-created (create-test-user
+                        {:user-data test-user
+                         :save-id-to test-user-id
+                         :read-token-from activation-token})]
+      (-> (get-profile {:with current-app
+                        :user-id @test-user-id})
+          (#(assoc {} :public-user %1))
+          (check #(= (not (nil? (:public-user %1)))))
+          (just-do #(db/delete-user! *db* {:id (sc/string->uuid @test-user-id)})))
+      ))
+
+  (testing "getting private user should work"
+    (let [current-app (app)
+          user-created (create-test-user
+                        {:user-data test-user
+                         :save-id-to test-user-id
+                         :read-token-from activation-token})]
+      (-> (assoc {}
+                 :login
+                 (login-and-get-cookie
+                  {:with current-app
+                   :user-data test-user}))
+          (#(assoc %1 :private-user
+                   (get-profile {:with current-app
+                                 :user-id @test-user-id
+                                 :private true
+                                 :login-cookie (:login %1)})))
+          (check #(= (not (nil? (:private-user %1)))))
+          (just-do #(db/delete-user! *db* {:id (sc/string->uuid @test-user-id)})))
+      ))
+
+  (testing "getting private user should't work if not logged in"
+    (let [current-app (app)
+          user-created (create-test-user
+                        {:user-data test-user
+                         :save-id-to test-user-id
+                         :read-token-from activation-token})]
+      (-> (assoc {}
+                 :private-user
+                 (get-profile {:with current-app
+                               :user-id @test-user-id
+                               :private true
+                               :status 401
+                               :is-nil true}))
+          (just-do #(db/delete-user! *db* {:id (sc/string->uuid @test-user-id)})))
+      ))
+
+
+  (testing "getting private user should't work if not logged in"
+    (let [current-app (app)
+          user-created (create-test-user
+                        {:user-data test-user
+                         :save-id-to test-user-id
+                         :read-token-from activation-token})
+          user2-id (atom nil)
+          user2-data (assoc test-user :email "email@foo.bar")
+          user2-created (create-test-user
+                         {:user-data user2-data
+                          :save-id-to user2-id
+                          :read-token-from activation-token})]
+      (-> (assoc {}
+                 :login
+                 (login-and-get-cookie
+                  {:with current-app
+                   :user-data test-user}))
+          (#(assoc %1
+                   :private-user
+                   (get-profile {:with current-app
+                                 :user-id @user2-id
+                                 :login-cookie (:login %1)
+                                 :private true
+                                 :status 400})))
+          (just-do #(db/delete-user! *db* {:id (sc/string->uuid @test-user-id)}))
+          (just-do #(db/delete-user! *db* {:id (sc/string->uuid @user2-id)})))
       ))
 
   )
