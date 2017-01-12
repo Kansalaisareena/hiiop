@@ -58,6 +58,7 @@
      (html/label
       (tr [:pages.quest.view.signup.email])
       {:class "opux-input__label"
+       :required true
        :error (get-in cursors-and-schema [:email :error])})
      (html/input
       {:class "opux-input opux-input--text"
@@ -70,6 +71,7 @@
      (html/label
       (tr [:pages.quest.view.signup.phone])
       {:class "opux-input__label"
+       :required true
        :error (get-in cursors-and-schema [:phone :error])})
      (html/input
       {:class "opux-input opux-input--text"
@@ -89,6 +91,7 @@
       (html/label
        (tr [:pages.quest.view.signup.agree-to-terms-and-conditions])
        {:class "opux-input__label opux-input__label--checkbox"
+        :required true
         :for (name :pages.quest.view.signup.agreement)
         :error (get-in cursors-and-schema [:agreement :error])})
       ]]
@@ -138,6 +141,7 @@
         (html/label
           (tr [:pages.quest.view.signup.days])
           {:class "opux-input__label"
+           :required true
            :error (get-in cursors-and-schema [:days :error])})
         (html/number-input-with-ticker
           {:class "opux-input opux-input--text opux-input--text--centered centered"

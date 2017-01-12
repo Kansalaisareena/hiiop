@@ -25,7 +25,15 @@
                     (str class)
                     "")]
     (if (and error (deref error))
-      (str class " opux-input__label--error")
+      (str class-str " opux-input__label--error")
+      class-str)))
+
+(defn class-label-with-required [required class]
+  (let [class-str (if class
+                    (str class)
+                    "")]
+    (if required
+      (str class-str " opux-input__label--required")
       class-str)))
 
 (defn class-error-or-hide [error]
@@ -45,7 +53,7 @@
 
 (rum/defcs label < rum/reactive
                    (rum/local nil ::error)
-  [state text {:keys [for class error] :as or-content} & content]
+  [state text {:keys [for class error required] :as or-content} & content]
   (let [local-error (::error state)
         also-content (if (sequential? or-content)
                        (into [] or-content)
@@ -56,14 +64,16 @@
         content-vector (into [] (concat more-content also-content))
         default-content [:label
                          {:class
-                          (if (or error (and error (rum/react error)))
-                            (class-label-with-error error class)
-                            class)
+                          (class-label-with-required
+                            required
+                            (if (and error (rum/react error))
+                              (class-label-with-error error class)
+                              class))
                           :for for}
                          text]]
     (when error
       (add-watch
-       error
+        error
        ::label-error
        (fn [key _ _ new]
          (reset! local-error new))))
