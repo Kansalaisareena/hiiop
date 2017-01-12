@@ -21,7 +21,8 @@
             [hiiop.client-api :refer [get-quest
                                       get-moderated-or-unmoderated-quest
                                       get-secret-quest
-                                      get-user-info
+                                      get-public-user-info
+                                      get-private-user-info
                                       get-user-quests
                                       get-quest-party
                                       get-moderated-quests
@@ -84,8 +85,8 @@
 
 (defn profile-page [params]
   (go
-    (let [owner (:id (:identity @context))
-          user-info (<! (get-user-info owner))
+    (let [user-id (:id (:identity @context))
+          user-info (<! (get-private-user-info user-id))
           user-quests (<! (get-user-quests))
           own-quests (:organizing user-quests)
           participating-quests (:attending user-quests)
@@ -142,7 +143,7 @@
   (go
     (let [quest (atom (new-empty-quest))
           user-id (get-in @context [:identity :id])
-          user (<! (get-user-info (str user-id)))
+          user (<! (get-private-user-info (str user-id)))
           errors (atom (same-keys-with-nils @quest))]
       (rum/mount
         (quests/edit {:context @context
@@ -157,7 +158,7 @@
     (let [id (parse-natural-number
               (get-in params [:route-params :quest-id]))
           quest (<! (get-moderated-or-unmoderated-quest id))
-          user-info (<! (get-user-info (:owner quest)))
+          user-info (<! (get-private-user-info (:owner quest)))
           party (<! (get-quest-party id))]
       (-> quest
           (#(assoc %1
@@ -187,7 +188,7 @@
       (let [id (parse-natural-number
                  (get-in params [:route-params :quest-id]))
             quest (<! (get-quest id))
-            user-info (<! (get-user-info (str (:owner quest))))
+            user-info (<! (get-public-user-info (str (:owner quest))))
             owner-name (:name user-info)]
         (-> quest
             (#(assoc %1
@@ -221,7 +222,7 @@
             secret-party (get-in params [:route-params :secret-party])
             quest (<! (get-secret-quest {:id id
                                          :secret-party secret-party}))
-            user-info (<! (get-user-info (str (:owner quest))))
+            user-info (<! (get-public-user-info (str (:owner quest))))
             owner-name (:name user-info)]
         (-> quest
             (#(assoc %1

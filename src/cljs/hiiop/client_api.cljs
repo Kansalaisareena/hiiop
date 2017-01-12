@@ -146,10 +146,21 @@
       (when (= (:status response) 204)
         true))))
 
-(defn get-user-info [id]
+(defn get-public-user-info [id]
   (go
     (let [response (<! (http/get
-                        (str "/api/v1/users/" id)))
+                        (str base-path
+                             "/users/" id)))
+          status (:status response)
+          body (:body response)]
+      (when (= status 200)
+        body))))
+
+(defn get-private-user-info [id]
+  (go
+    (let [response (<! (http/get
+                        (str base-path
+                             "/users/private/" id)))
           status (:status response)
           body (:body response)]
       (when (= status 200)

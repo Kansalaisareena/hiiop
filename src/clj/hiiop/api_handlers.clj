@@ -127,9 +127,21 @@
            (db/delete-password-token! {:token token})))
       {:errors {:token :errors.token.expired}})))
 
-(defn get-user [id]
+(defn get-public-user [id]
   (try
-    (let [user-info (db/get-user-by-id {:id (sc/string->uuid id)})]
+    (let [user-info (db/get-public-user-by-id {:id id})]
+      (if (nil? user-info)
+        {:errors {:user :errors.user.not-found}}
+        user-info))
+    (catch Exception e
+      (log/error e)
+      {:errors {:users :errors.user.not-found}})))
+
+(defn get-private-user [{:keys [id user-id]}]
+  (try
+    (let [user-info (db/get-user-by-id
+                     {:id id
+                      :user_id (sc/string->uuid user-id)})]
       (if (nil? user-info)
         {:errors {:user :errors.user.not-found}}
         user-info))
@@ -467,7 +479,8 @@
           (if (nil? (:errors joined))
             (do
               (log/info joined)
-              (-> (db/get-user-by-id {:id (:user_id party-member)})
+              (-> (db/get-user-by-id {:id (:user_id party-member)
+                                      :user_id (:user_id party-member)})
                   (#(assoc {} :user %1))
                   (assoc :member (db/get-party-member joined))
                   (#(send-join-email
