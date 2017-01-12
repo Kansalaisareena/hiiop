@@ -12,10 +12,15 @@
             [hiiop.html :as html]
             [hiiop.schema :as hs]))
 
+(defn- sort-quests-by-latest-date [quests]
+  (sort-by #(time/from-string (:start-time %))
+           time/after?
+           quests))
+
 (defn- split-quests-by-months [quests]
-  (let [result (group-by #(time/month
-                            (time/from-string
-                              (:start-time %)))
+  (let [result (group-by #(keyword
+                            (time/to-string
+                              (time/from-string (:start-time %)) time/year-month-format))
                          quests)]
     result))
 
@@ -144,8 +149,16 @@
       (tr [:pages.quest.list.filter.when])]
       (html/datepicker {:date end-time-atom
                         :position "bottom left"
+                        :use-value true
                         :context context
-                        :format time/date-print-format})]))
+                        :format time/date-print-format})
+     [:div {:class "opux-card-filter__label"}
+      (if (not-empty @end-time)
+        [:a {:href "#"
+             :on-click (fn [e]
+                         (.preventDefault e)
+                         (reset! end-time ""))}
+         (tr [:pages.quest.list.filter.clear])])]]))
 
 (defn- quest-filters
   [{:keys [tr cursors-and-schema context quest-filter]}]
@@ -157,20 +170,25 @@
    (quest-location-filter {:context context
                            :cursors-and-schema cursors-and-schema})
    (quest-end-time-filter {:context context
-                             :cursors-and-schema cursors-and-schema})])
+                           :cursors-and-schema cursors-and-schema})])
+
+(defn- quest-card-list [{:keys [quests context]}]
+  (let [tr (:tr context)]
+    [:ul {:class "opux-card-list"}
+     (map #(quest-card-browse {:context context
+                               :quest %})
+          (sort-quests-by-latest-date quests))]))
 
 (defn- monthly-quest-list
   [{:keys [quests context]}]
-  (let [start-time (time/from-string (:start-time (first quests)))
-        month-name (time/to-string start-time time/month-name-format)]
+  (let [tr (:tr context)
+        start-time (time/from-string (:start-time (first quests)))
+        month-name (nth (tr [:pikaday.months])
+                        (time/month start-time))]
     [:div
-     [:h2 {:class "opux-centered"}
-      month-name]
-
-     [:ul {:class "opux-card-list"}
-      (map #(quest-card-browse {:context context
-                                :quest %})
-           quests)]]))
+     [:h2 {:class "opux-centered"} month-name]
+     (quest-card-list {:quests quests
+                       :context context})]))
 
 (rum/defc list-quests < rum/reactive
   [{:keys [context quests quest-filter schema errors filtered-quests]}]
@@ -181,12 +199,14 @@
                                                :schema schema
                                                :errors errors})]
 
-    (add-watch quest-filter
+    (add-watch
+      quest-filter
       :quest-filter
       (fn [key _ _ new-filter]
         (reset! filtered-quests
-                (filters {:quests quests
-                          :quest-filter new-filter}))
+                (sort-quests-by-latest-date
+                  (filters {:quests quests
+                            :quest-filter new-filter})))
 
         ;; Update window location hash
         #?(:cljs
@@ -211,12 +231,17 @@
      [:div {:class "opux-card-list-container"}
       [:div {:class "opux-content"}
       (if (empty? (rum/react filtered-quests))
-
         [:h1 {:class "opux-content opux-centered"}
          (tr [:pages.quest.list.not-found])]
 
-        (map #(monthly-quest-list
-                {:quests (quests-by-months %)
-                 :context context})
-               (sort
-                 (keys quests-by-months))))]]]))
+        (if (empty? (:end-time @quest-filter))
+          ;; Monthly view without end-date filter
+          (map #(monthly-quest-list
+                  {:quests (quests-by-months %)
+                   :context context})
+               ((comp reverse sort)
+                (keys quests-by-months)))
+
+          ;; Continuous list with end-date filter
+          (quest-card-list {:quests (rum/react filtered-quests)
+                            :context context})))]]]))

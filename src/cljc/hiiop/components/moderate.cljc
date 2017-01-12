@@ -139,13 +139,12 @@
 
 (rum/defcs moderate-page < rum/reactive
                            (rum/local nil ::active-quest)
-  [state {:keys [context moderated-quests unmoderated-quests]}]
+  [state {:keys [context unmoderated-quests]}]
   (let [tr (:tr context)
         active-quest (::active-quest state)]
     [:div {:class "opux-section"}
      [:h1 {:class "opux-centered"}
       (tr [:pages.moderate.title])]
-
 
      (if (nil? @active-quest)
        ;; show moderation list

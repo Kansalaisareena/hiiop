@@ -206,7 +206,7 @@ FROM
   quests q
 WHERE
   q.id = :id AND
-  q.name IS NOT NULL;
+  q.name IS NOT NULL
 
 -- :name get-moderated-secret-quest :? :1
 -- :doc get quest by id
@@ -281,7 +281,7 @@ WHERE
 -- :doc get quest by id regardless of moderated state
 SELECT
   q.id as id,
-  COALESCE(q.name, q.unmoderated_name) as name,
+  COALESCE(q.unmoderated_name, q.name) as name,
   COALESCE(q.unmoderated_description, q.description) as description,
   COALESCE(q.unmoderated_organisation, q.organisation) as organisation,
   COALESCE(q.unmoderated_organisation_description, q.organisation_description) as organisation_description,
@@ -336,6 +336,7 @@ SELECT
   q.hashtags as hashtags,
   q.picture as picture,
   (SELECT url FROM pictures WHERE id = q.picture) as picture_url,
+  (SELECT COUNT(user_id) FROM parties WHERE quest_id = q.id) as participant_count,
   q.is_open as is_open,
   q.is_rejected as is_rejected,
   q.owner as owner,
@@ -370,6 +371,7 @@ SELECT
   q.max_participants as max_participants,
   q.hashtags as hashtags,
   (SELECT url FROM pictures WHERE id = q.picture) as picture_url,
+  (SELECT COUNT(user_id) FROM parties WHERE quest_id = q.id) as participant_count,
   q.is_open as is_open,
   q.is_rejected as is_rejected,
   q.owner as owner
@@ -401,6 +403,7 @@ q.categories as categories,
 q.max_participants as max_participants,
 q.unmoderated_hashtags as hashtags,
 (SELECT url FROM pictures WHERE id = q.unmoderated_picture) as picture_url,
+(SELECT COUNT(user_id) FROM parties WHERE quest_id = q.id) as participant_count,
 q.is_open as is_open,
 q.is_rejected as is_rejected,
 q.owner as owner
@@ -464,6 +467,7 @@ SELECT
   q.unmoderated_hashtags as hashtags,
   q.unmoderated_picture as picture,
   (SELECT url FROM pictures WHERE id = q.unmoderated_picture) as picture_url,
+  (SELECT COUNT(user_id) FROM parties WHERE quest_id = q.id) as participant_count,
   q.is_open as is_open,
   q.owner as owner,
   q.is_rejected as is_rejected,
@@ -497,6 +501,7 @@ SELECT
   q.hashtags as hashtags,
   q.picture as picture,
   (SELECT url FROM pictures WHERE id = q.picture) as picture_url,
+  (SELECT COUNT(user_id) FROM parties WHERE quest_id = q.id) as participant_count,
   q.is_open as is_open,
   q.owner as owner,
   q.is_rejected as is_rejected,
@@ -504,7 +509,7 @@ SELECT
 FROM
   quests q
 WHERE
-  q.owner = :owner AND q.name IS NOT NULL
+  q.owner = :owner AND q.unmoderated_name IS NULL
 
 -- :name get-quest-owner :? :1
 -- :doc get quest owner

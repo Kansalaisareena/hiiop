@@ -48,7 +48,8 @@
        [:div {:class "opux-fieldset__item"}
         (html/label
          (tr [:pages.login.email])
-         {:class "opux-input__label user-label"})
+         {:class "opux-input__label user-label"
+          :required true})
         (html/input
          {:schema s/Str
           :value user
@@ -60,7 +61,8 @@
        [:div {:class "opux-fieldset opux-fieldset__item"}
         (html/label
          (tr [:pages.login.password])
-         {:class "opux-input__label password-label"})
+         {:class "opux-input__label password-label"
+          :required true})
         (html/input
          {:schema s/Str
           :value password

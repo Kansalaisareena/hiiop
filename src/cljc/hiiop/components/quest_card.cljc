@@ -123,7 +123,9 @@
                 start-time
                 end-time
                 picture-url
+                participant-count
                 max-participants]} quest
+        available-slots (- max-participants participant-count)
         quest-link (path-for hierarchy :quest :quest-id id)
         town (:town location)
         is-own-quest (= (str (:id (:identity context)))
@@ -155,7 +157,7 @@
         town]
        [:span
         {:class "opux-card__attendance opux-inline-icon opux-inline-icon-personnel opux-inline-icon--right"}
-        max-participants]
+        available-slots]
 
        (quest-card-title {:quest quest})
 
@@ -211,7 +213,9 @@
                 start-time
                 end-time
                 picture-url
+                participant-count
                 max-participants]} quest
+        available-slots (- max-participants participant-count)
         quest-link (path-for hierarchy :quest :quest-id id)
         town (:town location)
         tr (:tr context)]
@@ -222,9 +226,7 @@
       [:div {:class "opux-card__image-container"}
        [:a {:href quest-link}
         [:div {:class "opux-card__image"
-               :style {:background-image (str "url('"
-                                              (get-quest-image quest)
-                                              "')")}}]]]
+               :style {:background-image (str "url('" (get-quest-image quest) "')")}}]]]
 
       [:div {:class "opux-card__content"}
 
@@ -233,7 +235,7 @@
         town]
        [:span
         {:class "opux-card__attendance opux-inline-icon opux-inline-icon-personnel opux-inline-icon--right"}
-        max-participants]
+        available-slots]
 
        [:a {:class "opux-card__title" :href quest-link}
         name]
@@ -252,7 +254,9 @@
                 start-time
                 end-time
                 picture-url
+                participant-count
                 max-participants]} quest
+        available-slots (- max-participants participant-count)
         quest-link (path-for hierarchy :quest :quest-id id)
         town (:town location)
         tr (:tr context)]
@@ -277,7 +281,7 @@
         town]
        [:span
         {:class "opux-card__attendance opux-inline-icon opux-inline-icon-personnel opux-inline-icon--right"}
-        max-participants]
+        available-slots]
 
        (if is-moderated
          [:a {:class "opux-card__title" :href quest-link} name]
@@ -286,17 +290,12 @@
           name])
 
        [:span {:class "opux-card__date opux-inline-icon opux-inline-icon-calendar"}
-        #?(:cljs
-           (time/duration-to-print-str-date-short (time/from-string start-time)
-                                                  (time/from-string end-time))
-           :clj
-           (time/duration-to-print-str-date-short start-time end-time)
-           )]
+        (time/duration-to-print-str-date-short
+          (time/from-string start-time)
+          (time/from-string end-time))]
 
        (if (not (nil? end-time))
          [:span {:class "opux-card__time opux-inline-icon opux-inline-icon-clock"}
-          #?(:cljs
-             (time/duration-to-print-str-time (time/from-string start-time)
-                                              (time/from-string end-time))
-             :clj
-             (time/duration-to-print-str-time start-time end-time))])]]]))
+          (time/duration-to-print-str-time
+            (time/from-string start-time)
+            (time/from-string end-time))])]]]))

@@ -88,9 +88,12 @@
     (let [user-id (:id (:identity @context))
           user-info (<! (get-private-user-info user-id))
           user-quests (<! (get-user-quests))
-          own-quests (:organizing user-quests)
           participating-quests (:attending user-quests)
-          quests (into [] (distinct (concat participating-quests own-quests)))]
+          own-quests (:organizing user-quests)
+          own-quest-ids (map :id own-quests)
+          quests (into [] (concat own-quests
+                                  (filter #(not (some #{(:id %)} own-quest-ids))
+                                          participating-quests)))]
       (log/info "profile-page")
       (rum/mount
         (p-p/profile {:context @context
