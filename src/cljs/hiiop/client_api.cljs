@@ -135,6 +135,24 @@
       {:success (= status 201)
        :body body})))
 
+(defn joinable-open-quest? [quest-id]
+  (go
+    (let [response (<! (http/get
+                         (str base-path "/quests/" quest-id "/joinable")))
+          status (:status response)
+          body (:body response)]
+      (if (= status 200) body false))))
+
+(defn joinable-secret-quest? [quest-id secret-party]
+  (go
+    (let [response (<! (http/get
+                         (str base-path "/quests/" quest-id
+                              "/secret/" secret-party
+                              "/joinable")))
+          status (:status response)
+          body (:body response)]
+      (if (= status 200) body false))))
+
 (defn remove-party-member [{:keys [quest-id member-id]}]
   (log/info "remove-party-member called with" quest-id member-id)
   (go

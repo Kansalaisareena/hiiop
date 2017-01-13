@@ -391,18 +391,37 @@
              :else
              (check-and-update-user-info existing-user)))))))
 
-(defn join-open-quest! [{:keys [quest_id user_id days] :as args}]
+(defn join-open-quest! [{:keys [quest_id user_id] :as args}]
   (with-transaction [db/*db*]
     (if (:exists (db/can-join-open-quest? args))
       (db/join-quest! args)
-      {:errors {:party :errors.quest.full}})))
+      {:errors
+       {:party [:errors.quest.full :or
+                :errors.quest.ended]}})))
 
 (defn join-secret-quest! [{:keys [quest_id user_id days secret_party] :as args}]
   (log/info "join secret quest!" quest_id user_id days secret_party)
   (with-transaction [db/*db*]
     (if (:exists (db/can-join-secret-quest? args))
       (db/join-quest! args)
-      {:errors {:party [:errors.quest.full :or :errors.quest.join.secret-key.incorrect]}})))
+      {:errors
+       {:party [:errors.quest.full :or
+                :errors.quest.join.secret-key.incorrect :or
+                :errors.quest.ended]}})))
+
+(defn joinable-quest? [{:keys [secret-party quest-id]}]
+  (try
+    (with-transaction [db/*db*]
+      (let [check-fn (if secret-party
+                       db/can-join-secret-quest?
+                       db/can-join-open-quest?)]
+        (:exists (check-fn
+                   {:quest_id quest-id
+                    :secret_party
+                    (sc/string->uuid secret-party)}))))
+    (catch Exception e
+      (log/error e)
+      {:errors {:quest :errors.quest.not-able-to-join}})))
 
 (defn party-member-or-errors [{:keys [quest-id new-member days session-user locale]}]
   (cond
@@ -414,8 +433,8 @@
          (= (:user-id new-member) (:id session-user)))
     (do
       (hc/api-new-member->db-new-member-coercer
-       (-> (conj new-member
-                 {:quest-id quest-id})
+        (-> (conj new-member
+                  {:quest-id quest-id})
            (assoc :days days))))
 
     (and (:user-id new-member)

@@ -10,7 +10,7 @@
             [taoensso.timbre :as log]))
 
 (rum/defc quest < rum/reactive
-  [{:keys [context quest user empty-party-member party-member-errors party-member-schema secret-party]}]
+  [{:keys [context quest user empty-party-member party-member-errors party-member-schema secret-party joinable]}]
   (let [{:keys [name
                 organisation
                 owner-name
@@ -81,7 +81,7 @@
      [:div {:class "opux-content"}
       [:div {:class "opux-line"}]]
 
-     (if (time/after? (time/from-string start-time) (time/today))
+     (if joinable
        (cond
          (and (:is-open @quest) empty-party-member)
          (join-quest {:context context

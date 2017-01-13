@@ -44,6 +44,7 @@
                                         get-private-user
                                         get-user-quests
                                         get-quest-party
+                                        joinable-quest?
                                         get-moderated-quests
                                         get-unmoderated-quests
                                         get-party-member]]
@@ -164,16 +165,16 @@
 (defn browse-quests [req]
   (let [context (create-context req)
         tr (:tr context)
-        quests (get-moderated-quests)
+        quests (filter
+                 :is-open
+                 (get-moderated-quests))
         quest-filter (atom (new-empty-quest-filter))
-        errors (atom (same-keys-with-nils @quest-filter))
-        filtered-quests (atom quests)]
+        errors (atom (same-keys-with-nils @quest-filter))]
 
     (layout/render {:context context
                     :content
                     (p-b/list-quests {:quests quests
                                       :quest-filter quest-filter
-                                      :filtered-quests filtered-quests
                                       :context context
                                       :schema QuestFilter})
                     :title (tr [:actions.quest.browse])
@@ -214,6 +215,8 @@
         quest (get-quest (parse-natural-number id))
         empty-party-member (atom (new-empty-party-member))
         errors (atom (same-keys-with-nils @empty-party-member))
+        joinable (= true
+                    (joinable-quest? {:quest-id (:id quest)}))
         owner-name (:name (get-public-user (:owner quest)))
         context (create-context req)
         tr (:tr context)]
@@ -224,6 +227,7 @@
                       (quest/quest {:context context
                                     :quest (atom (assoc quest
                                                         :owner-name owner-name))
+                                    :joinable joinable
                                     :empty-party-member empty-party-member
                                     :party-member-errors errors
                                     :party-member-schema NewPartyMember})}))))
@@ -238,6 +242,10 @@
                             (-> (new-empty-party-member)
                                 (assoc :secret-party secret-party)))
         errors (atom (same-keys-with-nils @empty-party-member))
+        joinable (= true
+                    (joinable-quest?
+                      {:quest-id (:id quest)
+                                      :secret-party secret-party}))
         owner-name (:name (get-public-user (:owner quest)))
         context (create-context req)
         tr (:tr context)]
@@ -246,6 +254,7 @@
                       :context context
                       :content
                       (quest/quest {:context context
+                                    :joinable joinable
                                     :quest (atom (assoc quest
                                                         :owner-name owner-name))
                                     :empty-party-member empty-party-member
