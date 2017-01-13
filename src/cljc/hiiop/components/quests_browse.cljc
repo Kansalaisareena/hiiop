@@ -239,7 +239,7 @@
           (map #(monthly-quest-list
                   {:quests (quests-by-months %)
                    :context context})
-               ((comp reverse sort)
+               (sort
                 (keys quests-by-months)))
 
           ;; Continuous list with end-date filter
