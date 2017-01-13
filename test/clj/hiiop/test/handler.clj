@@ -14,7 +14,8 @@
             [hiiop.db.core :refer [*db*] :as db]
             [hiiop.test.util :refer [contains-many? hash-password json-request]]
             [hiiop.test.data :refer [test-quest test-user]]
-            [schema-tools.core :as st]))
+            [schema-tools.core :as st]
+            [clj-time.core :as t]))
 
 (def activation-token (atom nil))
 (def password-reset-token (atom nil))
@@ -262,6 +263,30 @@
         (has-status 204 url)
         (do-this #(log/info %1))
         )))
+
+(defn joinable-open-quest? [{:keys [quest-id status with]}]
+  (let [url (str "/api/v1/quests/"
+                 quest-id
+                 "/joinable")]
+    (-> (json-request url {:type :get})
+        (with)
+        (has-status (or status 200) url)
+        (do-this #(log/info %1))
+        (:body)
+        (slurp)
+        (parse-string true))))
+
+(defn joinable-secret-quest? [{:keys [quest-id secret-party status with]}]
+  (let [url (str "/api/v1/quests/" quest-id
+                 "/secret/" secret-party
+                 "/joinable")]
+    (-> (json-request url {:type :get})
+        (with)
+        (has-status (or status 200) url)
+        (do-this #(log/info %1))
+        (:body)
+        (slurp)
+        (parse-string true))))
 
 (defn join-quest [{:keys [login-cookie
                           user-id
@@ -735,16 +760,75 @@
           (just-do #(db/delete-user! *db* {:id (sc/string->uuid @test-user-id)})))
       ))
 
-(testing "DELETE /api/v1/quests/:id with moderated quest"
+  (testing "GET api/v1/quests/:id/joinable"
     (let [current-app (app)
           user-created (create-test-user
-                        {:user-data test-user
-                         :save-id-to test-user-id
-                         :read-token-from activation-token})
+                         {:user-data test-user
+                          :save-id-to test-user-id
+                          :read-token-from activation-token})
           made-moderator (db/make-moderator! {:id (sc/string->uuid @test-user-id)})
           login-cookie (login-and-get-cookie
+                         {:with current-app
+                          :user-data test-user})
+          quest-to-add (test-quest
+                         {:use-date-string true
+                          :location-to :location
+                          :coordinates-to :coordinates
+                          :organisation-to {:in :organisation
+                                            :name :name
+                                            :description :description}})
+          added-quest (add-quest
                         {:with current-app
-                         :user-data test-user})
+                         :quest quest-to-add
+                         :login-cookie login-cookie})]
+
+      (testing "unmoderated quest should not be joinable"
+        (is (:errors (joinable-open-quest? {:quest-id (:id added-quest)
+                                            :status 400
+                                            :with current-app}))))
+
+      (testing "moderated quest should be joinable"
+        (accept-quest {:with current-app
+                       :quest-id (:id added-quest)
+                       :login-cookie login-cookie})
+        (is (= true (joinable-open-quest? {:quest-id (:id added-quest)
+                                             :status 200
+                                           :with current-app}))))
+
+      (testing "quest that ended should not be joinable"
+        (edit-quest
+          {:login-cookie login-cookie
+           :with current-app
+           :quest (assoc added-quest
+                         :start-time (-> -365
+                                         t/days
+                                         t/from-now)
+                         :end-time (-> -30
+                                       t/days
+                                       t/from-now))})
+        (accept-quest
+          {:with current-app
+           :quest-id (:id added-quest)
+           :login-cookie login-cookie})
+        (is (:errors (joinable-open-quest?
+                       {:quest-id (:id added-quest)
+                        :status 400
+                        :with current-app}))))
+
+      ;; Cleanup
+      (db/delete-quest-by-id! {:id (:id added-quest)})
+      (db/delete-user! {:id (sc/string->uuid @test-user-id)})))
+
+  (testing "DELETE /api/v1/quests/:id with moderated quest"
+    (let [current-app (app)
+          user-created (create-test-user
+                         {:user-data test-user
+                          :save-id-to test-user-id
+                          :read-token-from activation-token})
+          made-moderator (db/make-moderator! {:id (sc/string->uuid @test-user-id)})
+          login-cookie (login-and-get-cookie
+                         {:with current-app
+                          :user-data test-user})
           quest-to-add (test-quest
                         {:use-date-string true
                          :location-to :location
@@ -1092,6 +1176,77 @@
           (just-do #(db/delete-quest-by-id! {:id (:id added-quest)}))
           (just-do #(db/delete-user! {:id (sc/string->uuid @test-user-id)})))
       ))
+
+  (testing "GET api/v1/quests/:id/secret/:secret-party/joinable"
+    (let [current-app (app)
+          user-created (create-test-user
+                         {:user-data test-user
+                          :save-id-to test-user-id
+                          :read-token-from activation-token})
+          made-moderator (db/make-moderator! {:id (sc/string->uuid @test-user-id)})
+          login-cookie (login-and-get-cookie
+                         {:with current-app
+                          :user-data test-user})
+          quest-to-add (assoc
+                         (test-quest
+                           {:use-date-string true
+                            :location-to :location
+                            :coordinates-to :coordinates
+                            :organisation-to {:in :organisation
+                                              :name :name
+                                              :description :description}})
+                         :is-open false)
+          added-quest (add-quest
+                        {:with current-app
+                         :quest quest-to-add
+                         :login-cookie login-cookie})
+          secret-party (:secret-party
+                        (db/get-quest-limitations {:id (:id added-quest)}))]
+
+      (testing "unmoderated secret quest should not be joinable"
+        (is (:errors (joinable-secret-quest?
+                       {:quest-id (:id added-quest)
+                        :secret-party secret-party
+                        :status 400
+                        :with current-app}))))
+
+      (testing "moderated secret quest should be joinable"
+        (accept-quest {:with current-app
+                       :quest-id (:id added-quest)
+                       :login-cookie login-cookie})
+        (is (= true (joinable-secret-quest?
+                      {:quest-id (:id added-quest)
+                       :secret-party secret-party
+                       :status 200
+                       :with current-app}))))
+
+      (testing "secret quest that ended should not be joinable"
+        (edit-quest
+          {:login-cookie login-cookie
+           :with current-app
+           :quest (assoc
+                    added-quest
+                    :start-time
+                    (-> -365
+                        t/days
+                        t/from-now)
+                    :end-time
+                    (-> -30
+                        t/days
+                        t/from-now))})
+        (accept-quest
+          {:with current-app
+           :quest-id (:id added-quest)
+           :secret-party secret-party
+           :login-cookie login-cookie})
+        (is (:errors (joinable-open-quest?
+                       {:quest-id (:id added-quest)
+                        :status 400
+                        :with current-app}))))
+
+      ;; Cleanup
+      (db/delete-quest-by-id! {:id (:id added-quest)})
+      (db/delete-user! {:id (sc/string->uuid @test-user-id)})))
 
   (testing "GET /api/v1/quests/:id moderated quest shows correct participant-count"
     (let [current-app (app)

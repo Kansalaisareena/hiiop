@@ -280,8 +280,7 @@
                       (get-in %1 [:errors :unauthorized])
                       (unauthorized %1)
                       :else
-                      (bad-request %1)))))
-            ))
+                      (bad-request %1)))))))
 
         (POST "/:quest-id/moderate-accept" []
              :name        ::quest-moderate-accept
@@ -294,8 +293,7 @@
                                                         :user-id (get-in request [:identity :id])})
                    (#(if (not (:errors %1))
                        (ok %1)
-                       (unauthorized))))
-               ))
+                       (unauthorized))))))
 
         (POST "/:quest-id/moderate-reject" []
           :name        ::quest-moderate-reject
@@ -310,8 +308,7 @@
                   :message (:message moderation)})
                 (#(if (not (:errors %1))
                     (ok %1)
-                    (unauthorized))))
-            ))
+                    (unauthorized))))))
 
         (POST "/:quest-id/party" []
           :name        ::quest-join
@@ -331,8 +328,19 @@
                                {:quest-id quest-id
                                 :member-id (str (:id %1))})
                      %1)
-                    (bad-request %1))))
-            ))
+                    (bad-request %1))))))
+
+        (GET "/:quest-id/joinable" []
+             :name ::joinable-quest?
+             :path-params [quest-id :- Long]
+             :summary "Check if a quest is joinable or not"
+             :return s/Bool
+             (fn [request]
+               (-> (api-handlers/joinable-quest?
+                     {:quest-id quest-id})
+                   (#(if (not (:errors %1))
+                       (ok %1)
+                       (bad-request %1))))))
 
         (GET "/:id/secret/:secret-party" []
           :name        ::secret-quest
@@ -348,6 +356,20 @@
                 (ok quest)
                 (not-found)))))
 
+        (GET "/:id/secret/:secret-party/joinable" []
+             :name ::joinable-secret-quest?
+             :path-params [id :- Long
+                           secret-party :- s/Uuid]
+             :summary "Check if a secret quest is joinable or not"
+             :return s/Bool
+             (fn [request]
+               (-> (api-handlers/joinable-quest?
+                     {:quest-id id
+                      :secret-party secret-party})
+                   (#(if (not (:errors %1))
+                       (ok %1)
+                       (bad-request %1))))))
+
         (GET "/:quest-id/party" []
           :name        ::quest-party
           :path-params [quest-id :- Long]
@@ -359,8 +381,7 @@
                   :user (:identity request)})
                 (#(if (not (:errors %1))
                     (ok %1)
-                    (bad-request %1))))
-            ))
+                    (bad-request %1))))))
 
         (GET "/:quest-id/party/:member-id" []
           :name        ::quest-party-member
@@ -372,8 +393,7 @@
             (-> (api-handlers/get-party-member {:member-id member-id})
                 (#(if %1
                     (ok %1)
-                    (bad-request {:errors {:quest "Not found"}}))))
-            ))
+                    (bad-request {:errors {:quest "Not found"}}))))))
 
         (DELETE "/:quest-id/party/:member-id" []
           :name        ::quest-delete-party-member
@@ -388,6 +408,4 @@
                     (no-content)
                     (bad-request
                      {:errors {:party :errors.quest.party.member.remove.failed}}))))
-            ))
-
-        ))))
+            ))))))
