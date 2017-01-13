@@ -25,6 +25,8 @@
                                       get-private-user-info
                                       get-user-quests
                                       get-quest-party
+                                      joinable-open-quest?
+                                      joinable-secret-quest?
                                       get-moderated-quests
                                       get-unmoderated-quests
                                       get-party-member
@@ -181,8 +183,7 @@
           (assoc :party (atom party))
           (#(rum/mount
               (quests/edit %1)
-              (. js/document (getElementById "app"))))
-          ))))
+              (. js/document (getElementById "app"))))))))
 
 (defn quest-page [params]
   (let [empty-party-member (atom (new-empty-party-member))
@@ -192,6 +193,7 @@
                  (get-in params [:route-params :quest-id]))
             quest (<! (get-quest id))
             user-info (<! (get-public-user-info (str (:owner quest))))
+            joinable (<! (joinable-open-quest? (:id quest)))
             owner-name (:name user-info)]
         (-> quest
             (#(assoc %1
@@ -200,7 +202,8 @@
                      :owner-name owner-name))
             (atom)
             ((fn [quest]
-               {:quest quest}))
+               {:quest quest
+                :joinable joinable}))
             (#(assoc %1
                      :errors
                      (-> (:quest %1)
@@ -213,8 +216,7 @@
                    :party-member-schema NewPartyMember)
             (#(rum/mount
                (quest-single/quest %1)
-               (. js/document (getElementById "app"))))
-            )))))
+               (. js/document (getElementById "app")))))))))
 
 (defn secret-quest-page [params]
   (let [empty-party-member (atom (new-empty-party-member))
@@ -225,6 +227,7 @@
             secret-party (get-in params [:route-params :secret-party])
             quest (<! (get-secret-quest {:id id
                                          :secret-party secret-party}))
+            joinable (<! (joinable-secret-quest? (:id quest) secret-party))
             user-info (<! (get-public-user-info (str (:owner quest))))
             owner-name (:name user-info)]
         (-> quest
@@ -234,7 +237,8 @@
                      :owner-name owner-name))
             (atom)
             ((fn [quest]
-               {:quest quest}))
+               {:quest quest
+                :joinable joinable}))
             (#(assoc %1
                      :errors
                      (-> (:quest %1)
@@ -248,8 +252,7 @@
                    :secret-party secret-party)
             (#(rum/mount
                (quest-single/quest %1)
-               (. js/document (getElementById "app"))))
-            )))))
+               (. js/document (getElementById "app")))))))))
 
 (defn part-quest-party-page [params]
   (go
@@ -263,8 +266,7 @@
           (assoc :party-member party-member)
           (#(rum/mount
              (part-party %1)
-             (. js/document (getElementById "app")))))
-      )))
+             (. js/document (getElementById "app"))))))))
 
 (defn request-password-reset-page [params]
   (rum/mount (request-password-reset
