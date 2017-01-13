@@ -65,7 +65,7 @@
 
    :social-feed
    {:title "Jaa kokemuksesti vapaaehtoistyöstä."
-    :text "Käytä tunnistetta #hiiop ja kutsu ystäväsi mukaan käyttämään päivä vapaaehtoistyöhön!"}
+    :text "#hiiop jaa kokemuksesi ja kutsu ystäväsi mukaan"}
    }
 
 
@@ -269,7 +269,7 @@ Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit
  :actions
  {
   :quest
-  {:create  "Ilmoita vapaaehtoistehtävä"
+  {:create  "Ilmoita tehtävä"
    :browse  "Löydä tehtävä"
    :edit    "Muokkaa tehtävää"
    :signup  "Ilmoittaudu mukaan"
