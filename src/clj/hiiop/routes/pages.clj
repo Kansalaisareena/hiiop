@@ -213,9 +213,8 @@
         quest (get-quest (parse-natural-number id))
         empty-party-member (atom (new-empty-party-member))
         errors (atom (same-keys-with-nils @empty-party-member))
-        joinable (not
-                   (:errors
-                    (joinable-quest? {:quest-id (:id quest)})))
+        joinable (= true
+                    (joinable-quest? {:quest-id (:id quest)}))
         owner-name (:name (get-public-user (:owner quest)))
         context (create-context req)
         tr (:tr context)]
@@ -241,10 +240,10 @@
                             (-> (new-empty-party-member)
                                 (assoc :secret-party secret-party)))
         errors (atom (same-keys-with-nils @empty-party-member))
-        joinable (not
-                   (:errors
-                    (joinable-quest? {:quest-id (:id quest)
-                                      :secret-party secret-party})))
+        joinable (= true
+                    (joinable-quest?
+                      {:quest-id (:id quest)
+                                      :secret-party secret-party}))
         owner-name (:name (get-public-user (:owner quest)))
         context (create-context req)
         tr (:tr context)]
