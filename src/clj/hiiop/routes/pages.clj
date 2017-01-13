@@ -165,7 +165,9 @@
 (defn browse-quests [req]
   (let [context (create-context req)
         tr (:tr context)
-        quests (get-moderated-quests)
+        quests (filter
+                 :is-open
+                 (get-moderated-quests))
         quest-filter (atom (new-empty-quest-filter))
         errors (atom (same-keys-with-nils @quest-filter))]
 
