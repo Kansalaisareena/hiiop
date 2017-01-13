@@ -29,6 +29,11 @@
           time-zone (:time-zone conf)
           locale (:current-locale conf)
           diff (time/diff-in-ms server-time client-time)]
+
+      ;; Hide console logs in production
+      (when (not (:dev conf))
+        (log/set-config! {:enabled? false}))
+
       (log/info conf)
       (log/info locale diff client-time (.utc (time/from-string server-time)))
       (time/switch-time-zone time-zone)

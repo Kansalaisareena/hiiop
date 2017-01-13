@@ -675,8 +675,10 @@ SELECT EXISTS(
     FROM
       quests
     WHERE
+      end_time > NOW() AND
       id = :quest_id AND
       is_open = true AND
+      name IS NOT NULL AND
       max_participants > (SELECT
                             COUNT(user_id)
                           FROM
@@ -690,9 +692,11 @@ SELECT EXISTS(
     FROM
       quests
     WHERE
+      end_time > NOW() AND
       id = :quest_id AND
       is_open = false AND
       secret_party = :secret_party AND
+      name IS NOT NULL AND
       max_participants > (SELECT
                             COUNT(user_id)
                           FROM
