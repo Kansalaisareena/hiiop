@@ -108,7 +108,6 @@
     (let [quests (<! (get-moderated-quests))
           quest-filter (atom (new-empty-quest-filter))
           errors (atom (same-keys-with-nils @quest-filter))
-          filtered-quests (atom quests)
           category-queries (-> js/location
                                (.-hash)
                                (clojure.string/replace #"[#\?\&]" "")
@@ -120,16 +119,12 @@
 
       ;; Filter quests categories from url hash
       (when (not-empty category-queries)
-        (swap! quest-filter assoc :categories category-queries)
-        (reset! filtered-quests
-                (quest-browse/filters {:quests quests
-                                       :quest-filter @quest-filter})))
+        (swap! quest-filter assoc :categories category-queries))
 
       (rum/mount
         (quest-browse/list-quests {:quests quests
                                    :context @context
                       :quest-filter quest-filter
-                      :filtered-quests filtered-quests
                       :errors errors
                       :schema QuestFilter})
         (. js/document (getElementById "app"))))))

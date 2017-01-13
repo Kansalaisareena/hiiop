@@ -14,7 +14,7 @@
 
 (defn- sort-quests-by-latest-date [quests]
   (sort-by #(time/from-string (:start-time %))
-           time/after?
+           time/before?
            quests))
 
 (defn- split-quests-by-months [quests]
@@ -65,13 +65,23 @@
                  quests)
        :quest-filter quest-filter})))
 
-(defn filters
+(defn filter-past-events [quests]
+  (filter
+    #(time/after?
+       (time/from-string (:end-time %))
+       (time/now))
+    quests))
+
+(defn apply-filters
   [{:keys [quests quest-filter]}]
-  (:quests ((comp filter-by-end-time
-                  filter-by-location
-                  filter-by-categories)
-            {:quests quests
-             :quest-filter quest-filter})))
+  (:quests
+   ((comp filter-by-end-time
+          filter-by-location
+          filter-by-categories)
+    {:quests (if (= "" (:end-time quest-filter))
+               (filter-past-events quests)
+               quests)
+     :quest-filter quest-filter})))
 
 (rum/defc quest-category-icon < rum/reactive
   [{:keys [category categories]}]
@@ -130,8 +140,8 @@
   (let [tr (:tr context)
         end-time (get-in cursors-and-schema [:end-time :value])
         end-time-object (if (not (= @end-time ""))
-                            (time/from-string @end-time time/transit-format)
-                            nil)
+                          (time/from-string @end-time time/transit-format)
+                          nil)
         end-time-atom (atom end-time-object)]
 
     (add-watch
@@ -147,11 +157,11 @@
     [:div {:class "opux-card-filter__field opux-card-filter__field--datetime"}
      [:div {:class "opux-card-filter__label"}
       (tr [:pages.quest.list.filter.when])]
-      (html/datepicker {:date end-time-atom
-                        :position "bottom left"
-                        :use-value true
-                        :context context
-                        :format time/date-print-format})
+     (html/datepicker {:date end-time-atom
+                       :position "bottom left"
+                       :use-value true
+                       :context context
+                       :format time/date-print-format})
      [:div {:class "opux-card-filter__label"}
       (if (not-empty @end-time)
         [:a {:href "#"
@@ -191,8 +201,11 @@
                        :context context})]))
 
 (rum/defc list-quests < rum/reactive
-  [{:keys [context quests quest-filter schema errors filtered-quests]}]
+  [{:keys [context quests quest-filter schema errors]}]
   (let [tr (:tr context)
+        filtered-quests (atom (apply-filters
+                                {:quests quests
+                                 :quest-filter @quest-filter}))
         quests-by-months (split-quests-by-months (rum/react filtered-quests))
         cursors-and-schema
         (c/value-and-error-cursors-and-schema {:for quest-filter
@@ -205,8 +218,8 @@
       (fn [key _ _ new-filter]
         (reset! filtered-quests
                 (sort-quests-by-latest-date
-                  (filters {:quests quests
-                            :quest-filter new-filter})))
+                  (apply-filters {:quests quests
+                                  :quest-filter new-filter})))
 
         ;; Update window location hash
         #?(:cljs
@@ -230,18 +243,18 @@
 
      [:div {:class "opux-card-list-container"}
       [:div {:class "opux-content"}
-      (if (empty? (rum/react filtered-quests))
-        [:h1 {:class "opux-content opux-centered"}
-         (tr [:pages.quest.list.not-found])]
+       (if (empty? (rum/react filtered-quests))
+         [:h1 {:class "opux-content opux-centered"}
+          (tr [:pages.quest.list.not-found])]
 
-        (if (empty? (:end-time @quest-filter))
-          ;; Monthly view without end-date filter
-          (map #(monthly-quest-list
-                  {:quests (quests-by-months %)
-                   :context context})
-               (sort
-                (keys quests-by-months)))
+         (if (empty? (:end-time @quest-filter))
+           ;; Monthly view without end-date filter
+           (map #(monthly-quest-list
+                   {:quests (quests-by-months %)
+                    :context context})
+                (sort
+                  (keys quests-by-months)))
 
-          ;; Continuous list with end-date filter
-          (quest-card-list {:quests (rum/react filtered-quests)
-                            :context context})))]]]))
+           ;; Continuous list with end-date filter
+           (quest-card-list {:quests (rum/react filtered-quests)
+                             :context context})))]]]))

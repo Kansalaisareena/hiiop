@@ -783,17 +783,16 @@
                          :login-cookie login-cookie})]
 
       (testing "unmoderated quest should not be joinable"
-        (is (:errors (joinable-open-quest? {:quest-id (:id added-quest)
-                                            :status 400
-                                            :with current-app}))))
+        (is (not (joinable-open-quest?
+                   {:quest-id (:id added-quest)
+                    :with current-app}))))
 
       (testing "moderated quest should be joinable"
         (accept-quest {:with current-app
                        :quest-id (:id added-quest)
                        :login-cookie login-cookie})
-        (is (= true (joinable-open-quest? {:quest-id (:id added-quest)
-                                           :status 200
-                                           :with current-app}))))
+        (is (joinable-open-quest? {:quest-id (:id added-quest)
+                                   :with current-app})))
 
       (testing "quest that ended should not be joinable"
         (edit-quest
@@ -810,10 +809,9 @@
           {:with current-app
            :quest-id (:id added-quest)
            :login-cookie login-cookie})
-        (is (:errors (joinable-open-quest?
-                       {:quest-id (:id added-quest)
-                        :status 400
-                        :with current-app}))))
+        (is (not (joinable-open-quest?
+                   {:quest-id (:id added-quest)
+                    :with current-app}))))
 
       ;; Cleanup
       (db/delete-quest-by-id! {:id (:id added-quest)})
@@ -830,7 +828,7 @@
                          {:with current-app
                           :user-data test-user})
           quest-to-add (test-quest
-                        {:use-date-string true
+                         {:use-date-string true
                          :location-to :location
                          :coordinates-to :coordinates
                          :organisation-to {:in :organisation
@@ -1204,31 +1202,25 @@
                         (db/get-quest-limitations {:id (:id added-quest)}))]
 
       (testing "unmoderated secret quest should not be joinable"
-        (is (:errors (joinable-secret-quest?
-                       {:quest-id (:id added-quest)
-                        :secret-party secret-party
-                        :status 400
-                        :with current-app}))))
+        (is (not (joinable-secret-quest?
+                   {:quest-id (:id added-quest)
+                    :secret-party secret-party
+                    :with current-app}))))
 
       (testing "moderated secret quest should be joinable"
         (accept-quest {:with current-app
                        :quest-id (:id added-quest)
                        :login-cookie login-cookie})
-        (is (= true (joinable-secret-quest?
-                      {:quest-id (:id added-quest)
-                       :secret-party secret-party
-                       :status 200
-                       :with current-app}))))
+        (is (joinable-secret-quest?
+              {:quest-id (:id added-quest)
+               :secret-party secret-party
+               :with current-app})))
 
-      (testing "secret quest with wrong secret token should be joinable"
-        (accept-quest {:with current-app
-                       :quest-id (:id added-quest)
-                       :login-cookie login-cookie})
-        (is (:errors (joinable-secret-quest?
-                       {:quest-id (:id added-quest)
-                        :secret-party (sc/string->uuid "thisbetternotwork")
-                        :status 400
-                        :with current-app}))))
+      (testing "secret quest with wrong secret token should not be joinable"
+        (is (not (joinable-secret-quest?
+                   {:quest-id (:id added-quest)
+                    :secret-party "0327fcb4-1ddd-4a0c-b103-08dcba7da15d"
+                    :with current-app}))))
 
       (testing "secret quest that ended should not be joinable"
         (edit-quest
@@ -1249,10 +1241,9 @@
            :quest-id (:id added-quest)
            :secret-party secret-party
            :login-cookie login-cookie})
-        (is (:errors (joinable-open-quest?
-                       {:quest-id (:id added-quest)
-                        :status 400
-                        :with current-app}))))
+        (is (not (joinable-open-quest?
+                   {:quest-id (:id added-quest)
+                    :with current-app}))))
 
       ;; Cleanup
       (db/delete-quest-by-id! {:id (:id added-quest)})
