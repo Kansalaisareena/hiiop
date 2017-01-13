@@ -105,7 +105,9 @@
 
 (defn browse-quests-page [params]
   (go
-    (let [quests (<! (get-moderated-quests))
+    (let [quests (filter
+                   :is-open
+                   (<! (get-moderated-quests)))
           quest-filter (atom (new-empty-quest-filter))
           errors (atom (same-keys-with-nils @quest-filter))
           category-queries (-> js/location

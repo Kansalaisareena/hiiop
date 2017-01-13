@@ -64,8 +64,7 @@
     :read-stories "Lue tarinoita"}
 
    :social-feed
-   {:title "Jaa kokemuksesti vapaaehtoistyöstä."
-    :text "#hiiop jaa kokemuksesi ja kutsu ystäväsi mukaan"}
+   {:title "#hiiop jaa kokemuksesi ja kutsu ystäväsi mukaan"}
    }
 
 
