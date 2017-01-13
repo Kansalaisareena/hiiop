@@ -411,16 +411,14 @@
 
 (defn joinable-quest? [{:keys [secret-party quest-id]}]
   (try
-    (let [check-fn (if secret-party
-                     db/can-join-secret-quest?
-                     db/can-join-open-quest?)
-          joinable (:exists
-                    (check-fn {:quest_id quest-id
-                               :secret_party (sc/string->uuid secret-party)}))]
-      (with-transaction [db/*db*]
-        (if-not joinable
-          {:errors {:quest :errors.quest.not-able-to-join}}
-          joinable)))
+    (with-transaction [db/*db*]
+      (let [check-fn (if secret-party
+                       db/can-join-secret-quest?
+                       db/can-join-open-quest?)]
+        (:exists (check-fn
+                   {:quest_id quest-id
+                    :secret_party
+                    (sc/string->uuid secret-party)}))))
     (catch Exception e
       (log/error e)
       {:errors {:quest :errors.quest.not-able-to-join}})))
@@ -435,8 +433,8 @@
          (= (:user-id new-member) (:id session-user)))
     (do
       (hc/api-new-member->db-new-member-coercer
-       (-> (conj new-member
-                 {:quest-id quest-id})
+        (-> (conj new-member
+                  {:quest-id quest-id})
            (assoc :days days))))
 
     (and (:user-id new-member)

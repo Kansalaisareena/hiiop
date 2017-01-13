@@ -167,14 +167,12 @@
         tr (:tr context)
         quests (get-moderated-quests)
         quest-filter (atom (new-empty-quest-filter))
-        errors (atom (same-keys-with-nils @quest-filter))
-        filtered-quests (atom quests)]
+        errors (atom (same-keys-with-nils @quest-filter))]
 
     (layout/render {:context context
                     :content
                     (p-b/list-quests {:quests quests
                                       :quest-filter quest-filter
-                                      :filtered-quests filtered-quests
                                       :context context
                                       :schema QuestFilter})
                     :title (tr [:actions.quest.browse])
