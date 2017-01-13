@@ -410,16 +410,20 @@
                 :errors.quest.ended]}})))
 
 (defn joinable-quest? [{:keys [secret-party quest-id]}]
-  (let [check-fn (if secret-party
-                   db/can-join-secret-quest?
-                   db/can-join-open-quest?)
-        joinable (:exists
-                  (check-fn {:quest_id quest-id
-                             :secret_party secret-party}))]
-    (with-transaction [db/*db*]
-      (if-not joinable
-        {:errors {:quest :errors.quest.not-able-to-join}}
-        joinable))))
+  (try
+    (let [check-fn (if secret-party
+                     db/can-join-secret-quest?
+                     db/can-join-open-quest?)
+          joinable (:exists
+                    (check-fn {:quest_id quest-id
+                               :secret_party (sc/string->uuid secret-party)}))]
+      (with-transaction [db/*db*]
+        (if-not joinable
+          {:errors {:quest :errors.quest.not-able-to-join}}
+          joinable)))
+    (catch Exception e
+      (log/error e)
+      {:errors {:quest :errors.quest.not-able-to-join}})))
 
 (defn party-member-or-errors [{:keys [quest-id new-member days session-user locale]}]
   (cond

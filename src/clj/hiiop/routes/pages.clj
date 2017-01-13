@@ -44,6 +44,7 @@
                                         get-private-user
                                         get-user-quests
                                         get-quest-party
+                                        joinable-quest?
                                         get-moderated-quests
                                         get-unmoderated-quests
                                         get-party-member]]
@@ -214,6 +215,9 @@
         quest (get-quest (parse-natural-number id))
         empty-party-member (atom (new-empty-party-member))
         errors (atom (same-keys-with-nils @empty-party-member))
+        joinable (not
+                   (:errors
+                    (joinable-quest? {:quest-id (:id quest)})))
         owner-name (:name (get-public-user (:owner quest)))
         context (create-context req)
         tr (:tr context)]
@@ -224,6 +228,7 @@
                       (quest/quest {:context context
                                     :quest (atom (assoc quest
                                                         :owner-name owner-name))
+                                    :joinable joinable
                                     :empty-party-member empty-party-member
                                     :party-member-errors errors
                                     :party-member-schema NewPartyMember})}))))
@@ -238,6 +243,10 @@
                             (-> (new-empty-party-member)
                                 (assoc :secret-party secret-party)))
         errors (atom (same-keys-with-nils @empty-party-member))
+        joinable (not
+                   (:errors
+                    (joinable-quest? {:quest-id (:id quest)
+                                      :secret-party secret-party})))
         owner-name (:name (get-public-user (:owner quest)))
         context (create-context req)
         tr (:tr context)]
@@ -246,6 +255,7 @@
                       :context context
                       :content
                       (quest/quest {:context context
+                                    :joinable joinable
                                     :quest (atom (assoc quest
                                                         :owner-name owner-name))
                                     :empty-party-member empty-party-member

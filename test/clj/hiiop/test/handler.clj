@@ -792,7 +792,7 @@
                        :quest-id (:id added-quest)
                        :login-cookie login-cookie})
         (is (= true (joinable-open-quest? {:quest-id (:id added-quest)
-                                             :status 200
+                                           :status 200
                                            :with current-app}))))
 
       (testing "quest that ended should not be joinable"
@@ -1219,6 +1219,16 @@
                        :secret-party secret-party
                        :status 200
                        :with current-app}))))
+
+      (testing "secret quest with wrong secret token should be joinable"
+        (accept-quest {:with current-app
+                       :quest-id (:id added-quest)
+                       :login-cookie login-cookie})
+        (is (:errors (joinable-secret-quest?
+                       {:quest-id (:id added-quest)
+                        :secret-party (sc/string->uuid "thisbetternotwork")
+                        :status 400
+                        :with current-app}))))
 
       (testing "secret quest that ended should not be joinable"
         (edit-quest
