@@ -20,7 +20,7 @@
 
 (defn asset-path [{:keys [dev asset-base-url git-ref] :or {dev true}}]
   (if dev
-    ""
+    (or asset-base-url "")
     (str asset-base-url "/" git-ref)))
 
 (def google-maps-url

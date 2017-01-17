@@ -457,10 +457,8 @@
 (rum/defc header [{:keys [hierarchy tr asset-path] :as context}]
   [:header
    {:class "opux-page-section opux-page-section--header"}
-   [:h1
-    {:class "opux-logo opux-logo--header"}
-    [:a
-     {:href (path-for hierarchy :index)}
+   [:h1 {:class "opux-logo opux-logo--header"}
+    [:a {:href (path-for hierarchy :index)}
      (tr [:name])]]
    [:div {:id "top-navigation"}
     (navigation/top-navigation context)]])

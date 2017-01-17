@@ -1,10 +1,12 @@
 (ns hiiop.components.navigation
   (:require [rum.core :as rum]
-            [bidi.bidi :refer [path-for]]))
+            [bidi.bidi :refer [path-for]]
+            [hiiop.config :refer [env]]))
 
 (rum/defcs top-navigation < (rum/local false ::is-active)
   [state {:keys [hierarchy tr current-locale identity]}]
-  (let [is-active (::is-active state)]
+  (let [is-active (::is-active state)
+        site-base-url (:site-base-url env)]
     [:div
      [:div {:class "opux-mobile-hamburger"}
       [:div {:class
@@ -29,13 +31,13 @@
         {:class "opux-menu__item opux-menu__item--main-quest opux-menu__item--main--browse-quest"}
         [:a
          {:class "opux-menu__item-link opux-menu__item-link--main"
-          :href (path-for hierarchy :browse-quests)}
+          :href (str site-base-url (path-for hierarchy :browse-quests))}
          (tr [:actions.quest.browse])]]
        [:li
         {:class "opux-menu__item opux-menu__item--main--quest opux-menu__item--main--create-quest"}
         [:a
          {:class "opux-menu__item-link opux-menu__item-link--main"
-          :href (path-for hierarchy :create-quest)}
+          :href (str site-base-url (path-for hierarchy :create-quest))}
          (tr [:actions.quest.create])]]]
       [:div {:class "opux-menu--right"}
 
@@ -66,13 +68,13 @@
          (if-not identity
            ;; not logged in
            [:a {:class "opux-menu__item-link opux-menu__item-link--login"
-                :href (path-for hierarchy :login)}
+                :href (str site-base-url (path-for hierarchy :login))}
             (tr [:actions.user.login])]
 
            ;; logged in
            (if (:name identity)
              [:a {:class "opux-menu__item-link opux-menu__item-link--login"
-                  :href (path-for hierarchy :profile)}
+                  :href (str site-base-url (path-for hierarchy :profile))}
               (:name identity)]))]
 
         [:li {:class "opux-menu__item opux-menu__item--login"}

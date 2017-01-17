@@ -1,12 +1,15 @@
 (ns hiiop.contentful
   (:require [clojure.core.async :refer [go]]
             [mount.core :refer [defstate]]
+            [rum.core :as rum]
             [clj-http.client :as http]
             [rum.core :refer [render-static-markup]]
             [hiiop.redis :refer [wcar*]]
+            [hiiop.translate :refer [tr-opts]]
             [cheshire.core :refer [parse-string]]
-            [hiiop.config :refer [env]]
+            [hiiop.config :refer [env asset-path]]
             [hiiop.translate :refer [default-locale]]
+            [hiiop.routes.page-hierarchy :refer [hierarchy]]
             [taoensso.carmine :as car]
             [mount.core :refer [defstate]]
             [taoensso.timbre :as log]
@@ -14,7 +17,10 @@
             [hiiop.db.core :as db]
             [hiiop.blog :as blog]
             [hiiop.static-page :as page]
-            [me.raynes.cegdown :as md]))
+            [me.raynes.cegdown :as md]
+            [hiiop.html :as html]
+            [taoensso.tempura :as tempura]
+            [rum.core :as rum]))
 
 (def cf-url "https://cdn.contentful.com/")
 (defstate entries-url :start (str cf-url "spaces/" (:space-id (:contentful env)) "/entries?access_token="
@@ -45,11 +51,38 @@
                         (assoc-in [:fields :leipateksti-rendered :sv]
                                   (md/to-html sv-text)))))))
 
+(defn create-context [locale]
+  {:tr (partial tempura/tr (tr-opts) [locale])
+   :config env
+   :hierarchy hierarchy
+   :asset-path (asset-path env)
+   :identity nil
+   :current-locale locale})
+
+(defn contentful-page-structure [{:keys [locale title content]}]
+  (let [context (create-context locale)
+        tr (:tr context)
+        asset-path (:asset-path context)
+        default-script (str asset-path "/js/app.js")]
+    (rum/render-static-markup
+      (html/page
+        (html/head-content {:title title
+                            :asset-path asset-path})
+        (html/body-content
+          (html/header context)
+          [:div {:id "app"
+                 :class "opux-page-section"}
+           [:div {:class "opux-content"
+                  :dangerouslySetInnerHTML {:__html content}}]]
+          (html/footer context)
+          [:div {:class "script-tags"}
+           (html/script-tag default-script)])))))
+
 (defn render-page [cfobject locale]
   (let [fields (localize-fields (:fields cfobject) locale)]
-    (render-static-markup
-     (page/static-page {:headline (:otsikko fields)
-                        :body-text (md/to-html (:leipateksti fields))}))))
+    (contentful-page-structure {:locale locale
+                                :title (:otsikko fields)
+                                :content (md/to-html (:leipateksti fields))})))
 
 (defn process-page [cfobject]
   (let [id (get-in cfobject [:sys :id])
