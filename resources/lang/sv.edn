@@ -17,6 +17,33 @@
 
  :pages
  {
+  :moderate
+  {:title "Tehtävän hyväksyntä"
+   :unmoderated-quests "Käsittelemättömät tehtävät"
+   :reject-quest "Hylkää"
+   :reject-quest-message-title "Viesti hylättessä"
+   :cancel "Peruuta"
+   :moderate-quest "Hyväksy"
+   }
+
+  :password-reset
+  {:title "Unohditko salasanasi?"
+   :send "Lähetä linkki"
+   :text "Ei hätää! Kirjoita alle sähköpostiosoitteesi. Lähetämme sinulle linkin, jota klikkaamalla pääset muuttamaan salasanasi."
+
+   :check-email
+   {:title "Tarkista sähköpostisi"
+    :text "Lähetimme sinulle linkin, jota klikkaamalla pääset muuttamaan salasanasi."}
+
+   :done
+   {:title "Salanasi on vaihdettu!"
+    :text "Voit nyt kirjautua"}
+
+   :expired
+   {:text "Tilaa täältä uusi."
+    }
+   }
+
   :index
   {:title "Etusivu"
    :banner
@@ -66,11 +93,13 @@
    :upcoming-quests "Tulevat vapaaehtoistehtäväsi"
    :cancel "Peruuta"
    :delete "Poista tapahtuma"
+   :moderation "Moderointi"
    :do-you-want-to-delete "Oletko varma, että haluat poistaa tapahtuman?"
    :no-upcoming-quests "Sinulla ei vielä ole tulevia tehtäviä"
    :my-event "Oma tapahtuma"
    :cancel-enrollment "Peru ilmoittautuminen"
    :pending-approval "Odottaa hyväksymistä"
+   :rejected "Hylätty"
    :published "Julkaistu"}
 
   :activate
@@ -140,10 +169,14 @@ Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit
 
     :name "Vapaaehtoistehtävän nimi"
     :description "Kerro tehtävän sisällöstä"
-    :picture "Lisää kuva"
-    :hashtags "Aihetunnisteet eli hashtagit"
+    :picture
+    {:title "Lisää kuva"
+     :info "Onhan sinulla on oikeudet kuvasi käyttöön? Kuvan käyttöön tarvitset aina kuvaajan nimen. Kuvan tulee olla vähintään 1100 pikseliä leveä ja 500 pikseliä korkea."
+     :remove "Haluatko varmasti poistaa kuvan?"
+     :upload-failed "Kuvan lisääminen epäonnistui."
+     }
 
-    :info{:picture "Onhan sinulla on oikeudet kuvasi käyttöön? Kuvan käyttöön tarvitset aina kuvaajan nimen. Kuvan tulee olla vähintään 1100 pikseliä leveä ja 500 pikseliä korkea."}
+    :hashtags "Aihetunnisteet eli hashtagit"
 
     :organisation
     {:name "Järjestävä yhteisö tai järjestö"
@@ -153,7 +186,7 @@ Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit
     :start-time "Kellonaika"
     :end-time "Kellonaika"
 
-    :location {:label "Paikka"
+    :location {:label "Osoite"
                :placeholder "Anna sijainti"}
     :address "Osoite"
     :town "Paikkakunta"
@@ -311,18 +344,29 @@ Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit
   {:register
    {:fail "Rekisteröinti epäonnistui."
     :success "Rekisteröinti onnistui!"}
+
    :token
-   {:invalid "Rekisteröintiavain ei ole enää voimassa."}}
+   {:invalid "Rekisteröintiavain ei ole enää voimassa."
+    :contact "Jos et saanut luotua tunnusta, ota yhteyttä hiiop@op.fi."}
+   }
+
+  :password
+  {:not-valid "Salasanan täytyy sisältää yksi iso kirjain, yksi numero ja yhteensä vähintään kuusi merkkiä."
+   :not-same  "Salanasanat eivät täsmää."}
 
   :email
   {:not-valid "Sähköposti, kuten erkki@esimerkki.fi"
-   :in-use "Sähköposti on jo käytössä"}
+   :in-use    "Sähköposti on jo käytössä"}
 
   :phone
   {:not-valid "Puhelinnumero ei ole muotoa +358 40 1234567"}
 
   :paticipate-days
   {:not-valid "Voi olla numero nollasta ylöspäin"}
+
+  :date
+  {:needs-to-be-before "Tulee olla aiemmin, kuin %1"
+   :needs-to-be-after "Tulee olla myöhemmin, kuin %1"}
 
   :number
   {:greater-than-one "Tulee olla 1 suurempi"
@@ -335,5 +379,11 @@ Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit
   {:title "Muokkaaminen epäonnistui."
    :content "Hups, muokkaaminen epäonnistui. Tapahtuma ei ole sinun."
    }
+
+  :token
+  {:expired "Linkki vanhentunut!"}
+
+  :login
+  {:check "Tarkista sähköposti ja salasana"}
   }
  }

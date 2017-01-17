@@ -44,11 +44,21 @@
                         {:json-params activation-info}))
           status (:status response)
           body (:body response)]
-      body)))
+      {:success (= status 200)
+       :body body}
+      )))
 
 (defn get-quest [id]
   (go
     (let [response (<! (http/get (str base-path "/quests/" id)))]
+      (when (= (:status response) 200)
+        (:body response)))))
+
+(defn get-moderated-or-unmoderated-quest [id]
+  (go
+    (let [response (<! (http/get (str base-path "/quests"
+                                      "/moderated-or-unmoderated/"
+                                      id)))]
       (when (= (:status response) 200)
         (:body response)))))
 
@@ -65,9 +75,15 @@
       (when (= (:status response) 200)
         (:body response)))))
 
-(defn get-own-quests []
+(defn get-unmoderated-quests []
   (go
-    (let [response (<! (http/get (str base-path "/quests/own")))]
+    (let [response (<! (http/get (str base-path "/quests/unmoderated")))]
+      (when (= (:status response) 200)
+        (:body response)))))
+
+(defn get-user-quests []
+  (go
+    (let [response (<! (http/get (str base-path "/quests/user")))]
       (when (= (:status response) 200)
         (:body response)))))
 
@@ -119,6 +135,24 @@
       {:success (= status 201)
        :body body})))
 
+(defn joinable-open-quest? [quest-id]
+  (go
+    (let [response (<! (http/get
+                         (str base-path "/quests/" quest-id "/joinable")))
+          status (:status response)
+          body (:body response)]
+      (if (= status 200) body false))))
+
+(defn joinable-secret-quest? [quest-id secret-party]
+  (go
+    (let [response (<! (http/get
+                         (str base-path "/quests/" quest-id
+                              "/secret/" secret-party
+                              "/joinable")))
+          status (:status response)
+          body (:body response)]
+      (if (= status 200) body false))))
+
 (defn remove-party-member [{:keys [quest-id member-id]}]
   (log/info "remove-party-member called with" quest-id member-id)
   (go
@@ -130,10 +164,33 @@
       (when (= (:status response) 204)
         true))))
 
-(defn get-user-info [id]
+(defn get-public-user-info [id]
   (go
     (let [response (<! (http/get
-                        (str "/api/v1/users/" id)))
+                        (str base-path
+                             "/users/" id)))
+          status (:status response)
+          body (:body response)]
+      (when (= status 200)
+        body))))
+
+(defn get-private-user-info [id]
+  (go
+    (let [response (<! (http/get
+                        (str base-path
+                             "/users/private/" id)))
+          status (:status response)
+          body (:body response)]
+      (when (= status 200)
+        body))))
+
+(defn get-party-info [{:keys [quest-id]}]
+  (go
+    (let [response (<! (http/get
+                         (str base-path
+                              "/quests/"
+                              quest-id
+                              "/party")))
           status (:status response)
           body (:body response)]
       (when (= status 200)
@@ -151,3 +208,43 @@
       (when (= status 200)
         body))))
 
+(defn moderate-quest [quest-id]
+  (go
+    (let [response (<! (http/post (str base-path
+                                       "/quests/" quest-id
+                                       "/moderate-accept")))
+          status (:status response)
+          body (:body response)]
+      (when (= status 200)
+        body))))
+
+(defn reject-quest [{:keys [quest-id message]}]
+  (go
+    (let [response (<! (http/post (str base-path
+                                       "/quests/" quest-id
+                                       "/moderate-reject")
+                                  {:json-params {:message message}}))
+          status (:status response)
+          body (:body response)]
+      (when (= status 200)
+        body))))
+
+(defn request-reset-password [email]
+  (go
+    (let [response (<! (http/post (str base-path
+                                       "/users/reset-password")
+                                  {:json-params email}))
+          status (:status response)
+          body (:body response)]
+      {:success (= status 200)
+       :body body})))
+
+(defn change-password [{:keys [token password] :as args}]
+  (go
+    (let [response (<! (http/post (str base-path
+                                       "/users/change-password")
+                                  {:json-params args}))
+          status (:status response)
+          body (:body response)]
+      {:success (= status 200)
+       :body body})))

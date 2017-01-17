@@ -12,10 +12,15 @@
             [hiiop.html :as html]
             [hiiop.schema :as hs]))
 
+(defn- sort-quests-by-latest-date [quests]
+  (sort-by #(time/from-string (:start-time %))
+           time/before?
+           quests))
+
 (defn- split-quests-by-months [quests]
-  (let [result (group-by #(time/month
-                            (time/from-string
-                              (:start-time %)))
+  (let [result (group-by #(keyword
+                            (time/to-string
+                              (time/from-string (:start-time %)) time/year-month-format))
                          quests)]
     result))
 
@@ -48,25 +53,35 @@
                  quests)
        :quest-filter quest-filter})))
 
-(defn- filter-by-start-time
+(defn- filter-by-end-time
   [{:keys [quests quest-filter]}]
-  (let [start-time-filter (:start-time quest-filter)]
-    (if (= "" start-time-filter)
+  (let [end-time-filter (:end-time quest-filter)]
+    (if (= "" end-time-filter)
       {:quests quests :quest-filter quest-filter}
       {:quests (filter
                  #(time/after?
-                    (time/from-string (:start-time %))
-                    (time/from-string start-time-filter))
+                    (time/from-string (:end-time %))
+                    (time/from-string end-time-filter))
                  quests)
        :quest-filter quest-filter})))
 
-(defn filters
+(defn filter-past-events [quests]
+  (filter
+    #(time/after?
+       (time/from-string (:end-time %))
+       (time/now))
+    quests))
+
+(defn apply-filters
   [{:keys [quests quest-filter]}]
-  (:quests ((comp filter-by-start-time
-                  filter-by-location
-                  filter-by-categories)
-            {:quests quests
-             :quest-filter quest-filter})))
+  (:quests
+   ((comp filter-by-end-time
+          filter-by-location
+          filter-by-categories)
+    {:quests (if (= "" (:end-time quest-filter))
+               (filter-past-events quests)
+               quests)
+     :quest-filter quest-filter})))
 
 (rum/defc quest-category-icon < rum/reactive
   [{:keys [category categories]}]
@@ -120,32 +135,40 @@
         :context context
         :search-type "geocode"})]))
 
-(defn- quest-start-time-filter
+(defn- quest-end-time-filter
   [{:keys [context cursors-and-schema]}]
   (let [tr (:tr context)
-        start-time (get-in cursors-and-schema [:start-time :value])
-        start-time-object (if (not (= @start-time ""))
-                            (time/from-string @start-time time/transit-format)
-                            nil)
-        start-time-atom (atom start-time-object)]
+        end-time (get-in cursors-and-schema [:end-time :value])
+        end-time-object (if (not (= @end-time ""))
+                          (time/from-string @end-time time/transit-format)
+                          nil)
+        end-time-atom (atom end-time-object)]
 
     (add-watch
-      start-time-atom
-      :filter-start-time
+      end-time-atom
+      :filter-end-time
       (fn [key _ _ new-time]
-        (let [new-start-time (time/time-to @start-time-atom 0 0)]
-          (reset! start-time
+        (let [new-end-time (time/time-to @end-time-atom 0 0)]
+          (reset! end-time
                   (time/to-string
-                    new-start-time
+                    new-end-time
                     time/transit-format)))))
 
     [:div {:class "opux-card-filter__field opux-card-filter__field--datetime"}
      [:div {:class "opux-card-filter__label"}
       (tr [:pages.quest.list.filter.when])]
-      (html/datepicker {:date start-time-atom
-                        :position "bottom left"
-                        :context context
-                        :format time/date-print-format})]))
+     (html/datepicker {:date end-time-atom
+                       :position "bottom left"
+                       :use-value true
+                       :context context
+                       :format time/date-print-format})
+     [:div {:class "opux-card-filter__label"}
+      (if (not-empty @end-time)
+        [:a {:href "#"
+             :on-click (fn [e]
+                         (.preventDefault e)
+                         (reset! end-time ""))}
+         (tr [:pages.quest.list.filter.clear])])]]))
 
 (defn- quest-filters
   [{:keys [tr cursors-and-schema context quest-filter]}]
@@ -156,37 +179,47 @@
 
    (quest-location-filter {:context context
                            :cursors-and-schema cursors-and-schema})
-   (quest-start-time-filter {:context context
-                             :cursors-and-schema cursors-and-schema})])
+   (quest-end-time-filter {:context context
+                           :cursors-and-schema cursors-and-schema})])
+
+(defn- quest-card-list [{:keys [quests context]}]
+  (let [tr (:tr context)]
+    [:ul {:class "opux-card-list"}
+     (map #(quest-card-browse {:context context
+                               :quest %})
+          (sort-quests-by-latest-date quests))]))
 
 (defn- monthly-quest-list
   [{:keys [quests context]}]
-  (let [start-time (time/from-string (:start-time (first quests)))
-        month-name (time/to-string start-time time/month-name-format)]
+  (let [tr (:tr context)
+        start-time (time/from-string (:start-time (first quests)))
+        month-name (nth (tr [:pikaday.months])
+                        (time/month start-time))]
     [:div
-     [:h2 {:class "opux-centered"}
-      month-name]
-
-     [:ul {:class "opux-card-list"}
-      (map #(quest-card-browse {:context context
-                                :quest %})
-           quests)]]))
+     [:h2 {:class "opux-centered"} month-name]
+     (quest-card-list {:quests quests
+                       :context context})]))
 
 (rum/defc list-quests < rum/reactive
-  [{:keys [context quests quest-filter schema errors filtered-quests]}]
+  [{:keys [context quests quest-filter schema errors]}]
   (let [tr (:tr context)
+        filtered-quests (atom (apply-filters
+                                {:quests quests
+                                 :quest-filter @quest-filter}))
         quests-by-months (split-quests-by-months (rum/react filtered-quests))
         cursors-and-schema
         (c/value-and-error-cursors-and-schema {:for quest-filter
                                                :schema schema
                                                :errors errors})]
 
-    (add-watch quest-filter
+    (add-watch
+      quest-filter
       :quest-filter
       (fn [key _ _ new-filter]
         (reset! filtered-quests
-                (filters {:quests quests
-                          :quest-filter new-filter}))
+                (sort-quests-by-latest-date
+                  (apply-filters {:quests quests
+                                  :quest-filter new-filter})))
 
         ;; Update window location hash
         #?(:cljs
@@ -210,14 +243,18 @@
 
      [:div {:class "opux-card-list-container"}
       [:div {:class "opux-content"}
-      (if (empty? (rum/react filtered-quests))
+       (if (empty? (rum/react filtered-quests))
+         [:h1 {:class "opux-content opux-centered"}
+          (tr [:pages.quest.list.not-found])]
 
-        [:h1 {:class "opux-content opux-centered"}
-         (tr [:pages.quest.list.not-found])]
+         (if (empty? (:end-time @quest-filter))
+           ;; Monthly view without end-date filter
+           (map #(monthly-quest-list
+                   {:quests (quests-by-months %)
+                    :context context})
+                (sort
+                  (keys quests-by-months)))
 
-        (map #(monthly-quest-list
-                {:quests (quests-by-months %)
-                 :context context})
-             (reverse
-               (sort
-                 (keys quests-by-months)))))]]]))
+           ;; Continuous list with end-date filter
+           (quest-card-list {:quests (rum/react filtered-quests)
+                             :context context})))]]]))

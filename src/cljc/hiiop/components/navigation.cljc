@@ -61,17 +61,23 @@
 
        [:ul {:class "opux-menu opux-menu--login"}
 
-        (if (nil? identity)
-          [:li {:class "opux-menu__item opux-menu__item--login"}
+        [:li {:class "opux-menu__item opux-menu__item--login"}
+
+         (if-not identity
+           ;; not logged in
            [:a {:class "opux-menu__item-link opux-menu__item-link--login"
                 :href (path-for hierarchy :login)}
-            (tr [:actions.user.login])]])
+            (tr [:actions.user.login])]
 
-        [:li
-         {:class "opux-menu__item opux-menu__item--login"}
-         [:a
-          {:class "opux-menu__item-link opux-menu__item-link--login"
-           :href (path-for hierarchy :profile)}
+           ;; logged in
+           (if (:name identity)
+             [:a {:class "opux-menu__item-link opux-menu__item-link--login"
+                  :href (path-for hierarchy :profile)}
+              (:name identity)]))]
+
+        [:li {:class "opux-menu__item opux-menu__item--login"}
+         [:a {:class "opux-menu__item-link opux-menu__item-link--login"
+              :href (path-for hierarchy :profile)}
           [:i {:class "opux-icon-circled opux-icon-person"}]]]]]]]))
 
 (rum/defc footer-navigation

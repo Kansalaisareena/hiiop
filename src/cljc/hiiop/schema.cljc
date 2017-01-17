@@ -16,7 +16,13 @@
    #"(^[a-zA-Z0-9._+-]+@[^@.]+\.[^@.]+)$"
    #(= % %) :errors.email.not-valid))
 
-(def Password s/Str)
+(def Password
+  (s/constrained
+   s/Str
+   #(and (<= 6 (count %))         ; min 6 characters
+         (re-find #"\d" %)        ; contains digit
+         (re-find #"[A-ZÅÄÖ]" %)) ; contains uppercase character
+   :errors.password.not-valid))
 
 (def Phone
   (s/constrained
@@ -74,7 +80,7 @@
              :id
              :moderator
              :active))
-
+ 
 (defn new-empty-registration-info []
   {:name ""
    :email ""
@@ -85,10 +91,14 @@
   NewGuestUser)
 
 (def UserActivation
-  "Email, password and password token"
-  {:email Email
+  "Validate activation"
+  {:token s/Uuid
    :password Password
-   :confirm-password Password
+   :confirm-password Password})
+
+(def TokenAndPassword
+  "Token and password"
+  {:password Password
    :token s/Uuid})
 
 (defn new-empty-activation-info []
@@ -100,7 +110,7 @@
 (def UserCredentials
   "Email and password"
   {:email Email
-   :password Password})
+   :password s/Str})
 
 (def Category
   (s/enum
@@ -132,7 +142,7 @@
    (s/optional-key :street-number) (s/maybe s/Int)
    (s/optional-key :street) (s/maybe NonEmptyString)
    :town NonEmptyString
-   :postal-code NonEmptyString
+   (s/optional-key :postal-code) (s/maybe NonEmptyString)
    :country NonEmptyString
    (s/optional-key :coordinates) (s/maybe Coordinates)
    (s/optional-key :google-maps-url) (s/maybe NonEmptyString)
@@ -142,12 +152,12 @@
   "Quest listing filter"
   {:categories [Category]
    (s/optional-key :location) (s/maybe Location)
-   (s/optional-key :start-time) (s/maybe DateTime)})
+   (s/optional-key :end-time) (s/maybe DateTime)})
 
 (defn new-empty-quest-filter []
   {:categories []
    :location nil
-   :start-time ""})
+   :end-time ""})
 
 (def QuestCategoryFilter
   "Home page category filter"
@@ -174,7 +184,12 @@
    :owner s/Uuid
    (s/optional-key :organisation) (s/maybe Organisation)
    (s/optional-key :participant-count) (s/maybe NaturalNumber)
+   (s/optional-key :is-rejected) (s/maybe s/Bool)
    (s/optional-key :moderated) (s/maybe s/Bool)})
+
+(def UserQuests
+  {:attending [Quest]
+   :organizing [Quest]})
 
 (def EditQuest
   (st/dissoc Quest :participant-count))

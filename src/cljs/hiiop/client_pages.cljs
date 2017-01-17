@@ -12,18 +12,28 @@
             [hiiop.components.register :as p-r]
             [hiiop.components.quest-single :as quest-single]
             [hiiop.components.quests :as quests]
+            [hiiop.components.moderate :as moderate]
             [hiiop.components.part-party :refer [part-party]]
             [hiiop.components.quests-browse :as quest-browse]
+            [hiiop.components.password-reset :refer [request-password-reset
+                                                     password-reset]]
+            [hiiop.url :as u]
             [hiiop.client-api :refer [get-quest
+                                      get-moderated-or-unmoderated-quest
                                       get-secret-quest
-                                      get-user-info
-                                      get-own-quests
+                                      get-public-user-info
+                                      get-private-user-info
+                                      get-user-quests
                                       get-quest-party
+                                      joinable-open-quest?
+                                      joinable-secret-quest?
                                       get-moderated-quests
-                                      get-party-member]]
+                                      get-unmoderated-quests
+                                      get-party-member
+                                      activate-user
+                                      change-password]]
             [hiiop.context :refer [context]]
             [hiiop.mangling :refer [parse-natural-number same-keys-with-nils]]
-            [hiiop.mangling :refer [same-keys-with-nils]]
             [hiiop.schema :refer [NewQuest
                                   Quest
                                   EditQuest
@@ -42,7 +52,6 @@
             [clojure.string :as string]))
 
 (defn login-page [params]
-  (log/info "login-page")
   (rum/mount
     (p-l/login {:context @context})
     (. js/document (getElementById "app"))))
@@ -59,20 +68,16 @@
       (. js/document (getElementById "app")))))
 
 (defn activate-page [params]
-  (let [activation-info (atom (new-empty-activation-info))
-        errors (atom (same-keys-with-nils @activation-info))]
-    (log/info "register-page" @activation-info (new-empty-activation-info))
-    (rum/mount
-      (p-a/activate {:context @context
-                     :token (last (string/split
-                                    (.-pathname (.-location js/window)) #"/"))
-                     :activation-info activation-info
-                     :schema UserActivation
-                     :errors errors})
-      (. js/document (getElementById "app")))))
+  (rum/mount (password-reset
+              {:context @context
+               :token (get-in params [:route-params :token])
+               :api-fn activate-user
+               :done-title :pages.password-reset.done.title
+               :done-text :pages.password-reset.done.text
+               :done-link (u/url-to "" :login)})
+             (. js/document (getElementById "app"))))
 
 (defn index-page []
-  (log/info "index-page")
   (rum/mount
     (p-i/index-page {:context @context
                      :category-filter (atom
@@ -82,9 +87,15 @@
 
 (defn profile-page [params]
   (go
-    (let [owner (:id (:identity @context))
-          quests (<! (get-own-quests))
-          user-info (<! (get-user-info owner))]
+    (let [user-id (:id (:identity @context))
+          user-info (<! (get-private-user-info user-id))
+          user-quests (<! (get-user-quests))
+          participating-quests (:attending user-quests)
+          own-quests (:organizing user-quests)
+          own-quest-ids (map :id own-quests)
+          quests (into [] (concat own-quests
+                                  (filter #(not (some #{(:id %)} own-quest-ids))
+                                          participating-quests)))]
       (log/info "profile-page")
       (rum/mount
         (p-p/profile {:context @context
@@ -94,10 +105,11 @@
 
 (defn browse-quests-page [params]
   (go
-    (let [quests (<! (get-moderated-quests))
+    (let [quests (filter
+                   :is-open
+                   (<! (get-moderated-quests)))
           quest-filter (atom (new-empty-quest-filter))
           errors (atom (same-keys-with-nils @quest-filter))
-          filtered-quests (atom quests)
           category-queries (-> js/location
                                (.-hash)
                                (clojure.string/replace #"[#\?\&]" "")
@@ -109,36 +121,46 @@
 
       ;; Filter quests categories from url hash
       (when (not-empty category-queries)
-        (swap! quest-filter assoc :categories category-queries)
-        (reset! filtered-quests
-                (quest-browse/filters {:quests quests
-                                       :quest-filter @quest-filter})))
+        (swap! quest-filter assoc :categories category-queries))
 
       (rum/mount
         (quest-browse/list-quests {:quests quests
                                    :context @context
                       :quest-filter quest-filter
-                      :filtered-quests filtered-quests
                       :errors errors
                       :schema QuestFilter})
         (. js/document (getElementById "app"))))))
 
+(defn moderate-page [params]
+  (go
+    (let [moderated-quests (<! (get-moderated-quests))
+          unmoderated-quests (<! (get-unmoderated-quests))]
+      (rum/mount
+        (moderate/moderate-page {:context @context
+                                 :unmoderated-quests (atom unmoderated-quests)
+                                 :moderated-quests (atom moderated-quests)})
+        (. js/document (getElementById "app"))))))
+
 (defn create-quest-page [params]
-  (let [quest (atom (new-empty-quest))
-        errors (atom (same-keys-with-nils @quest))]
-    (rum/mount
-      (quests/edit {:context @context
-                    :quest quest
-                    :errors errors
-                    :schema NewQuest})
-      (. js/document (getElementById "app")))))
+  (go
+    (let [quest (atom (new-empty-quest))
+          user-id (get-in @context [:identity :id])
+          user (<! (get-private-user-info (str user-id)))
+          errors (atom (same-keys-with-nils @quest))]
+      (rum/mount
+        (quests/edit {:context @context
+                      :quest quest
+                      :user user
+                      :errors errors
+                      :schema NewQuest})
+        (. js/document (getElementById "app"))))))
 
 (defn edit-quest-page [params]
   (go
     (let [id (parse-natural-number
               (get-in params [:route-params :quest-id]))
-          quest (<! (get-quest id))
-          user-info (<! (get-user-info (:owner quest)))
+          quest (<! (get-moderated-or-unmoderated-quest id))
+          user-info (<! (get-private-user-info (:owner quest)))
           party (<! (get-quest-party id))]
       (-> quest
           (#(assoc %1
@@ -158,8 +180,7 @@
           (assoc :party (atom party))
           (#(rum/mount
               (quests/edit %1)
-              (. js/document (getElementById "app"))))
-          ))))
+              (. js/document (getElementById "app"))))))))
 
 (defn quest-page [params]
   (let [empty-party-member (atom (new-empty-party-member))
@@ -168,7 +189,8 @@
       (let [id (parse-natural-number
                  (get-in params [:route-params :quest-id]))
             quest (<! (get-quest id))
-            user-info (<! (get-user-info (str (:owner quest))))
+            user-info (<! (get-public-user-info (str (:owner quest))))
+            joinable (<! (joinable-open-quest? (:id quest)))
             owner-name (:name user-info)]
         (-> quest
             (#(assoc %1
@@ -177,7 +199,8 @@
                      :owner-name owner-name))
             (atom)
             ((fn [quest]
-               {:quest quest}))
+               {:quest quest
+                :joinable joinable}))
             (#(assoc %1
                      :errors
                      (-> (:quest %1)
@@ -190,8 +213,7 @@
                    :party-member-schema NewPartyMember)
             (#(rum/mount
                (quest-single/quest %1)
-               (. js/document (getElementById "app"))))
-            )))))
+               (. js/document (getElementById "app")))))))))
 
 (defn secret-quest-page [params]
   (let [empty-party-member (atom (new-empty-party-member))
@@ -202,7 +224,8 @@
             secret-party (get-in params [:route-params :secret-party])
             quest (<! (get-secret-quest {:id id
                                          :secret-party secret-party}))
-            user-info (<! (get-user-info (str (:owner quest))))
+            joinable (<! (joinable-secret-quest? (:id quest) secret-party))
+            user-info (<! (get-public-user-info (str (:owner quest))))
             owner-name (:name user-info)]
         (-> quest
             (#(assoc %1
@@ -211,7 +234,8 @@
                      :owner-name owner-name))
             (atom)
             ((fn [quest]
-               {:quest quest}))
+               {:quest quest
+                :joinable joinable}))
             (#(assoc %1
                      :errors
                      (-> (:quest %1)
@@ -224,9 +248,8 @@
                    :party-member-schema NewPartyMember
                    :secret-party secret-party)
             (#(rum/mount
-                (quest-single/quest %1)
-                (. js/document (getElementById "app"))))
-            )))))
+               (quest-single/quest %1)
+               (. js/document (getElementById "app")))))))))
 
 (defn part-quest-party-page [params]
   (go
@@ -240,8 +263,22 @@
           (assoc :party-member party-member)
           (#(rum/mount
              (part-party %1)
-             (. js/document (getElementById "app")))))
-      )))
+             (. js/document (getElementById "app"))))))))
+
+(defn request-password-reset-page [params]
+  (rum/mount (request-password-reset
+              {:context @context})
+             (. js/document (getElementById "app"))))
+
+(defn password-reset-page [params]
+  (rum/mount (password-reset
+              {:context @context
+               :token (get-in params [:route-params :token])
+               :api-fn change-password
+               :done-title :pages.password-reset.done.title
+               :done-text :pages.password-reset.done.text
+               :done-link (u/url-to "" :login)})
+             (. js/document (getElementById "app"))))
 
 (def handlers
   {:index
@@ -266,4 +303,10 @@
    create-quest-page
    :edit-quest
    edit-quest-page
+   :moderate
+   moderate-page
+   :request-password-reset
+   request-password-reset-page
+   :password-reset
+   password-reset-page
    })

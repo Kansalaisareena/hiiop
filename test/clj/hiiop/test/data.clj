@@ -1,12 +1,13 @@
 (ns hiiop.test.data
   (:require [hiiop.time :as time]
+            [clj-time.core :as t]
             [hiiop.test.util :refer [hash-password]]))
 
-(defn today-at-noon []
-  (hiiop.time/time-to (time/now) 12 00))
+(def today-last-year
+  (-> -365 t/days t/from-now))
 
-(defn today-at-six []
-  (hiiop.time/time-to (time/now) 18 00))
+(def today-next-year
+  (-> 365 t/days t/from-now))
 
 (defn add-organisation [to with-keys]
   (let [organisation {(if with-keys (:name with-keys) :organisation)
@@ -45,8 +46,8 @@
 
 (defn test-quest
   ([{:keys [use-date-string location-to coordinates-to organisation-to]}]
-   (let [start-time (today-at-noon)
-         end-time (today-at-six)]
+   (let [start-time today-last-year
+         end-time today-next-year]
      (-> {:name "Nälkäkeräys"
           :description "LOL"
           :start-time (if use-date-string (time/to-string start-time) start-time)
@@ -68,5 +69,5 @@
   {:name "Test user"
    :email "test@email.com"
    :phone "+358 1234567"
-   :password "password#"
+   :password "Passw0rd#"
    :is_active true})

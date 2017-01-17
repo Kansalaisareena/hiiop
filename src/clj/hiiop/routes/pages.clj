@@ -4,8 +4,10 @@
             [taoensso.timbre :as log]
             [schema.coerce :as sc]
             [bidi.ring :refer (make-handler)]
+            [bidi.bidi :refer [path-for]]
             [hiiop.middleware :refer [authenticated]]
             [hiiop.layout :as layout]
+            [hiiop.components.moderate :as p-m]
             [hiiop.components.profile :as p-p]
             [hiiop.components.quest-single :as quest]
             [hiiop.components.quests :as quests]
@@ -37,11 +39,20 @@
                                   new-empty-activation-info]]
             [hiiop.api-handlers :refer [get-quest
                                         get-secret-quest
-                                        get-user
-                                        get-quests-for-owner
+                                        get-moderated-or-unmoderated-quest
+                                        get-public-user
+                                        get-private-user
+                                        get-user-quests
                                         get-quest-party
+                                        joinable-quest?
                                         get-moderated-quests
-                                        get-party-member]]))
+                                        get-unmoderated-quests
+                                        get-party-member]]
+            [hiiop.components.password-reset :refer [display-message
+                                                     request-password-reset
+                                                     password-reset]]
+            [hiiop.db.core :as db]
+            [hiiop.api-handlers :as api-handlers]))
 
 (defn tr-from-req [req]
   (:tempura/tr req))
@@ -86,10 +97,17 @@
 
 (defn profile [req]
   (let [context (create-context req)
-        owner (:id (:identity context))
-        user-info (get-user owner)
-        quests (get-quests-for-owner (:id (:identity context)))
-        tr (:tr context)]
+        tr (:tr context)
+        user-id (get-in context [:identity :id])
+        user-info (get-private-user {:id (sc/string->uuid user-id)
+                                     :user-id (get-in req [:identity :id])})
+        user-quests (get-user-quests {:user-id user-id})
+        participating-quests (:attending user-quests)
+        own-quests (:organizing user-quests)
+        own-quest-ids (map :id own-quests)
+        quests (into [] (concat own-quests
+                                (filter #(not (some #{(:id %)} own-quest-ids))
+                                        participating-quests)))]
     (layout/render {:title (str (tr [:pages.profile.title]) " " (:name user-info))
                     :context context
                     :content
@@ -100,23 +118,36 @@
 (defn activate [req]
   (let [context (create-context req)
         tr (:tr context)
-        activation-info (atom (new-empty-activation-info))
-        errors (atom (same-keys-with-nils @activation-info))
-        route-params (:route-params req)
-        token (:token route-params)]
-    (layout/render {:context context
-                    :content (p-a/activate {:context context
-                                            :activation-info activation-info
-                                            :token token
-                                            :schema UserActivation
-                                            :errors errors})
-                    :title (tr [:pages.activate.title])})))
+        token (try
+                (schema.coerce/string->uuid
+                 (get-in req [:params :token]))
+                (catch Exception e
+                  (log/error e)))
+        token-info (api-handlers/validate-token token)]
+    (layout/render
+     {:title (tr [:pages.activate.title])
+      :context context
+      :no-script (not-empty (:errors token-info))
+      :content
+      (if (not (:errors token-info))
+        (password-reset
+         {:token-info token-info
+          :token token
+          :context context
+          :api-fn nil})
+        (display-message
+         {:context context
+          :title-key :errors.token.expired
+          :message-key :errors.user.token.contact})
+        )})))
 
 (defn edit-quest-with-schema [{:keys [request schema quest party title-key]}]
   (let [context (create-context request)
         tr (:tr context)
         quest-atom (atom quest)
         party-atom (atom party)
+        user (get-private-user {:id (:owner quest)
+                                :user-id (get-in request [:identity :id])})
         errors (atom (same-keys-with-nils @quest-atom))]
     (layout/render {:title (tr [title-key])
                     :context context
@@ -124,6 +155,7 @@
                     (quests/edit {:context context
                                   :quest quest-atom
                                   :party party-atom
+                                  :user user
                                   :schema schema
                                   :errors errors})
                     :scripts
@@ -133,16 +165,16 @@
 (defn browse-quests [req]
   (let [context (create-context req)
         tr (:tr context)
-        quests (get-moderated-quests)
+        quests (filter
+                 :is-open
+                 (get-moderated-quests))
         quest-filter (atom (new-empty-quest-filter))
-        errors (atom (same-keys-with-nils @quest-filter))
-        filtered-quests (atom quests)]
+        errors (atom (same-keys-with-nils @quest-filter))]
 
     (layout/render {:context context
                     :content
                     (p-b/list-quests {:quests quests
                                       :quest-filter quest-filter
-                                      :filtered-quests filtered-quests
                                       :context context
                                       :schema QuestFilter})
                     :title (tr [:actions.quest.browse])
@@ -160,10 +192,12 @@
 (defn edit-quest [req]
   (let [id (get-in req [:params :quest-id])
         identity (:identity req)
-        quest (get-quest (parse-natural-number id))
+        quest (get-moderated-or-unmoderated-quest
+                {:id (parse-natural-number id)
+                 :user-id (:id identity)})
         owner? (= (:owner quest) (:id identity))
         party (vec (get-quest-party
-                    {:quest-id (:id id)
+                    {:quest-id (:id quest)
                      :user identity}))
         context (create-context req)
         tr (:tr context)]
@@ -181,7 +215,9 @@
         quest (get-quest (parse-natural-number id))
         empty-party-member (atom (new-empty-party-member))
         errors (atom (same-keys-with-nils @empty-party-member))
-        owner-name (:name (get-user (:owner quest)))
+        joinable (= true
+                    (joinable-quest? {:quest-id (:id quest)}))
+        owner-name (:name (get-public-user (:owner quest)))
         context (create-context req)
         tr (:tr context)]
     (if quest
@@ -191,6 +227,7 @@
                       (quest/quest {:context context
                                     :quest (atom (assoc quest
                                                         :owner-name owner-name))
+                                    :joinable joinable
                                     :empty-party-member empty-party-member
                                     :party-member-errors errors
                                     :party-member-schema NewPartyMember})}))))
@@ -205,7 +242,11 @@
                             (-> (new-empty-party-member)
                                 (assoc :secret-party secret-party)))
         errors (atom (same-keys-with-nils @empty-party-member))
-        owner-name (:name (get-user (:owner quest)))
+        joinable (= true
+                    (joinable-quest?
+                      {:quest-id (:id quest)
+                                      :secret-party secret-party}))
+        owner-name (:name (get-public-user (:owner quest)))
         context (create-context req)
         tr (:tr context)]
     (if quest
@@ -213,6 +254,7 @@
                       :context context
                       :content
                       (quest/quest {:context context
+                                    :joinable joinable
                                     :quest (atom (assoc quest
                                                         :owner-name owner-name))
                                     :empty-party-member empty-party-member
@@ -238,6 +280,61 @@
                     :with-params [:quest-id quest-id]})
       )))
 
+(defn moderate [req]
+  (let [context (create-context req)
+        tr (:tr context)
+        id (:id (:identity context))
+        user (get-private-user {:id (sc/string->uuid id)
+                                :user-id id})
+        is-moderator (:moderator user)
+        unmoderated-quests (get-unmoderated-quests {:user-id id})]
+    (if is-moderator
+      (layout/render {:title (tr [:pages.moderate.title])
+                      :context context
+                      :content
+                      (p-m/moderate-page
+                       {:context context
+                        :unmoderated-quests (atom unmoderated-quests)})})
+      (redirect-to {:path-key :index}))))
+
+(defn request-password-reset-page [req]
+  (let [context (create-context req)
+        tr (:tr context)]
+    (layout/render {:title (tr [:pages.password-reset.title])
+                    :context context
+                    :content
+                    (request-password-reset
+                     {:context context})})
+    ))
+
+(defn password-reset-page [req]
+  (let [context (create-context req)
+        tr (:tr context)
+        token (try
+                (schema.coerce/string->uuid
+                 (get-in req [:params :token]))
+                (catch Exception e
+                  (log/error e)))
+        token-info (api-handlers/validate-token token)]
+    (layout/render
+     {:title (tr [:pages.password-reset.title])
+      :context context
+      :no-script (not-empty (:errors token-info))
+      :content
+      (if (not (:errors token-info))
+        (password-reset
+         {:token-info token-info
+          :token token
+          :context context
+          :api-fn nil})
+        (display-message
+         {:context context
+          :title-key :errors.token.expired
+          :message-key :pages.password-reset.expired.text
+          :link-to (path-for hierarchy :request-password-reset)})
+        )})
+    ))
+
 (def handlers
   {:index
    index
@@ -260,7 +357,14 @@
    :create-quest
    (authenticated create-quest)
    :edit-quest
-   (authenticated edit-quest)})
+   (authenticated edit-quest)
+   :moderate
+   (authenticated moderate)
+   :request-password-reset
+   request-password-reset-page
+   :password-reset
+   password-reset-page
+   })
 
 (def ring-handler
   (do

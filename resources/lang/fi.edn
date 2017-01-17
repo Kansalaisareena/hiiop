@@ -17,16 +17,42 @@
 
  :pages
  {
+  :moderate
+  {:title "Tehtävän hyväksyntä"
+   :unmoderated-quests "Käsittelemättömät tehtävät"
+   :reject-quest "Hylkää"
+   :reject-quest-message-title "Viesti hylättessä"
+   :cancel "Peruuta"
+   :moderate-quest "Hyväksy"
+   }
+
+  :password-reset
+  {:title "Unohditko salasanasi?"
+   :send "Lähetä linkki"
+   :text "Ei hätää! Kirjoita alle sähköpostiosoitteesi. Lähetämme sinulle linkin, jota klikkaamalla pääset muuttamaan salasanasi."
+
+   :check-email
+   {:title "Tarkista sähköpostisi"
+    :text "Lähetimme sinulle linkin, jota klikkaamalla pääset muuttamaan salasanasi."}
+
+   :done
+   {:title "Salanasi on vaihdettu!"
+    :text "Voit nyt kirjautua"}
+
+   :expired
+   {:text "Tilaa täältä uusi."
+    }
+   }
+
   :index
   {:title "Etusivu"
    :banner
-   {:header "Vuoden tärkein päivä on päivä vapaaehtoisena!"
-    :content "Jokainen voi lähteä mukaan vapaaehtoistoimintaan. Nyt on itsenäisyyden juhlavuosi. Anna sinäkin Suomelle lahjaksi päivä omasta vuodestasi. #hiiop on hyvä paikka aloittaa."
-    :subtitle "#hiiop"}
+   {:header "Vuoden tärkein päivä on päivä vapaaehtoisena."
+    :content "Jokainen voi lähteä mukaan vapaaehtoistyöhön. Anna sinäkin itsenäisyyden juhlavuoden kunniaksi Suomelle lahjaksi päivä vapaaehtoisena. #hiiop on hyvä paikka aloittaa."}
 
    :category-selector
-   {:title "Tule mukaan vapaaehtoistoimintaan"
-    :subtitle "Hiiop on vapaaehtoistoiminnan tori ja kohtaamispaikka. Täältä löydät helposti itsellesi sopivat tavat ja paikat tehdä vapaaehtoistyötä. Voit myös kutsua apukäsiä mukaan vapaaehtoistoimintaan, jota olet itse järjestämässä. Yhdessä voimme saada aikaan koko Suomea koskettavia hyviä tekoja. Valitse itseäsi kiinnostava aihe ja selaa vapaaehtoismahdollisuuksia."
+   {:title "Tule mukaan vapaaehtoistyöhön"
+    :subtitle "Hiiop on vapaaehtoistyön tori ja kohtaamispaikka. Täältä löydät helposti itsellesi sopivat tavat ja paikat tehdä vapaaehtoistyötä. Voit myös kutsua apukäsiä mukaan vapaaehtoistoimintaan, jota olet itse järjestämässä. Yhdessä voimme saada aikaan koko Suomea koskettavia hyviä tekoja. Valitse itseäsi kiinnostava aihe ja selaa vapaaehtoismahdollisuuksia."
     :search "Näytä tehtävät"}
 
    :index-links
@@ -38,7 +64,7 @@
     :read-stories "Lue tarinoita"}
 
    :social-feed
-   {:title "Jaettu ilo on paras ilo"}
+   {:title "#hiiop jaa kokemuksesi ja kutsu ystäväsi mukaan"}
    }
 
 
@@ -66,11 +92,14 @@
    :upcoming-quests "Tulevat vapaaehtoistehtäväsi"
    :cancel "Peruuta"
    :delete "Poista tapahtuma"
+   :moderation "Moderointi"
    :do-you-want-to-delete "Oletko varma, että haluat poistaa tapahtuman?"
    :no-upcoming-quests "Sinulla ei vielä ole tulevia tehtäviä"
    :my-event "Oma tapahtuma"
    :cancel-enrollment "Peru ilmoittautuminen"
+   :do-you-want-to-cancel-enrollment "Oletko varma, että haluat perua ilmoittautumisen tehtävään?"
    :pending-approval "Odottaa hyväksymistä"
+   :rejected "Hylätty"
    :published "Julkaistu"}
 
   :activate
@@ -117,10 +146,10 @@ Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit
     :not-found "Juuri näillä hakuehdoilla ei löytynyt tapahtumia. Koita valita useampia kiinnostuksen kohteita."
 
     :filter
-    {:category "Kiinnostuksen kohde"
+    {:category "Miten haluat auttaa?"
      :where "Missä?"
      :when "Milloin?"
-     }}
+     :clear "Tyhjennä"}}
 
    :edit
    {:title "Ilmoita vapaaehtoistehtävä"
@@ -129,7 +158,7 @@ Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit
     {:content "1/4 Vapaaehtoistehtävän sisältö"
      :time-place "2/4 Missä ja milloin vapaaehtoistoiminta järjestetään?"
      :related-to "3/4 Mihin vapaaehtoistehtävä liittyy?"
-     :participation "Osallistuminen"
+     :participation "4/4 Osallistuminen"
 
      :info
      {:content "Kerro, mitä haluat saada aikaan yhteisvoimin. Ole innostava! Mitä päivän aikana tapahtuu? Miten vapaaehtoiset voivat osallistua ja auttaa? Millaisia voimia ja kykyjä tarvitset mukaan?"
@@ -140,10 +169,14 @@ Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit
 
     :name "Vapaaehtoistehtävän nimi"
     :description "Kerro tehtävän sisällöstä"
-    :picture "Lisää kuva"
-    :hashtags "Aihetunnisteet eli hashtagit"
+    :picture
+    {:title "Lisää kuva"
+     :info "Onhan sinulla on oikeudet kuvasi käyttöön? Kuvan käyttöön tarvitset aina kuvaajan nimen. Kuvan tulee olla vähintään 1100 pikseliä leveä ja 500 pikseliä korkea."
+     :remove "Haluatko varmasti poistaa kuvan?"
+     :upload-failed "Kuvan lisääminen epäonnistui."
+     }
 
-    :info{:picture "Onhan sinulla on oikeudet kuvasi käyttöön? Kuvan käyttöön tarvitset aina kuvaajan nimen. Kuvan tulee olla vähintään 1100 pikseliä leveä ja 500 pikseliä korkea."}
+    :hashtags "Aihetunnisteet eli hashtagit"
 
     :organisation
     {:name "Järjestävä yhteisö tai järjestö"
@@ -152,8 +185,10 @@ Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit
     :end-date "Lisää päättymispäivämäärä"
     :start-time "Kellonaika"
     :end-time "Kellonaika"
+    :start-date-and-time "Päivämäärä ja kellonaika"
+    :end-date-and-time "Päättymispäivämäärä ja -kellonaika"
 
-    :location {:label "Paikka"
+    :location {:label "Osoite"
                :placeholder "Anna sijainti"}
     :address "Osoite"
     :town "Paikkakunta"
@@ -195,9 +230,7 @@ Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit
     :filter
     {:category "Miten haluat auttaa?"
      :where "Missä?"
-     :when "Milloin?"
-     }
-    }
+     :when "Milloin?"}}
 
    :part
    {:title "Peru ilmoittautuminen"
@@ -235,7 +268,7 @@ Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit
  :actions
  {
   :quest
-  {:create  "Ilmoita vapaaehtoistehtävä"
+  {:create  "Ilmoita tehtävä"
    :browse  "Löydä tehtävä"
    :edit    "Muokkaa tehtävää"
    :signup  "Ilmoittaudu mukaan"
@@ -311,18 +344,29 @@ Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit
   {:register
    {:fail "Rekisteröinti epäonnistui."
     :success "Rekisteröinti onnistui!"}
+
    :token
-   {:invalid "Rekisteröintiavain ei ole enää voimassa."}}
+   {:invalid "Rekisteröintiavain ei ole enää voimassa."
+    :contact "Jos et saanut luotua tunnusta, ota yhteyttä hiiop@op.fi."}
+   }
+
+  :password
+  {:not-valid "Salasanan täytyy sisältää yksi iso kirjain, yksi numero ja yhteensä vähintään kuusi merkkiä."
+   :not-same  "Salanasanat eivät täsmää."}
 
   :email
   {:not-valid "Sähköposti, kuten erkki@esimerkki.fi"
-   :in-use "Sähköposti on jo käytössä"}
+   :in-use    "Sähköposti on jo käytössä"}
 
   :phone
   {:not-valid "Puhelinnumero ei ole muotoa +358 40 1234567"}
 
   :paticipate-days
   {:not-valid "Voi olla numero nollasta ylöspäin"}
+
+  :date
+  {:needs-to-be-before "Tulee olla aiemmin, kuin %1"
+   :needs-to-be-after "Tulee olla myöhemmin, kuin %1"}
 
   :number
   {:greater-than-one "Tulee olla 1 suurempi"
@@ -335,5 +379,11 @@ Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit
   {:title "Muokkaaminen epäonnistui."
    :content "Hups, muokkaaminen epäonnistui. Tapahtuma ei ole sinun."
    }
+
+  :token
+  {:expired "Linkki vanhentunut!"}
+
+  :login
+  {:check "Tarkista sähköposti ja salasana"}
   }
  }

@@ -35,6 +35,18 @@
 @include block('opux-section') {
   display: block;
   width: 100%;
+
+  // opux-section--moderate-overlay
+  @include modifier('moderate-overlay') {
+    position: fixed;
+    width: 100%;
+    overflow: auto;
+    height: 100%;
+    top: 0px;
+    left: 0px;
+    z-index: 999999;
+    background: $OP-white;
+  }
 }
 
 @include block('opux-content') {
@@ -54,6 +66,10 @@
     background-size: cover;
     display: block;
     height: 550px;
+
+    @include modifier('small') {
+      height: 300px;
+    }
   }
 
   @include modifier('quest-header') {
@@ -124,6 +140,7 @@
     position: absolute;
     top: 38px;
     width: 100%;
+    z-index: 9;
 
     .opux-content {
         padding-bottom: 2rem;
@@ -150,6 +167,7 @@
   // opux-card__status
   @include element('status') {
     background: $OP-gray-light;
+    min-height: 1.2rem;
     padding: .5rem;
   }
 
@@ -204,7 +222,7 @@
 
 @include block('opux-line') {
   margin: 2rem auto;
-  border-bottom: 1px solid $OP-gray;
+  border-bottom: 1px solid $OP-gray-medium;
   height: 1px;
   width: 100%;
 }
@@ -252,6 +270,8 @@
   @include element('title') {
     @include flex(0, 0, 100%);
     font-size: 4rem;
+    margin: 0 auto;
+    max-width: $screen-large;
     padding-bottom: 2rem;
   }
 

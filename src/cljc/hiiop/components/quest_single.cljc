@@ -10,7 +10,7 @@
             [taoensso.timbre :as log]))
 
 (rum/defc quest < rum/reactive
-  [{:keys [context quest user empty-party-member party-member-errors party-member-schema secret-party]}]
+  [{:keys [context quest user empty-party-member party-member-errors party-member-schema secret-party joinable]}]
   (let [{:keys [name
                 organisation
                 owner-name
@@ -18,6 +18,7 @@
                 picture-url
                 hashtags
                 max-participants
+                participant-count
                 start-time
                 end-time
                 description]} @quest
@@ -27,6 +28,7 @@
                 postal-code
                 country
                 google-maps-url]} location
+        available-slots (- max-participants participant-count)
         usable-owner (or owner-name (:name user))
         tr (:tr context)
         days-between (time/days-between
@@ -52,7 +54,14 @@
        (html/combine-text ", " street-number street town postal-code)]
       [:p
        [:i {:class "opux-icon opux-icon-calendar"}]
-       (time/to-string (time/from-string start-time) time/date-print-format)]]
+       (time/duration-to-print-str-date
+         (time/from-string start-time)
+         (time/from-string end-time))]
+      [:p
+       [:i {:class "opux-icon opux-icon-clock"}]
+       (time/duration-to-print-str-time
+         (time/from-string start-time)
+         (time/from-string end-time))]]
 
      [:div {:class "opux-content opux-content--medium"} (html/wrap-paragraph description)]
 
@@ -67,26 +76,26 @@
         [:p (string/join " " hashtags)])
       [:p
        [:i {:class "opux-icon opux-icon-personnel"}]
-       (str max-participants " " (tr [:pages.quest.view.participants]))]]
+       (str available-slots " " (tr [:pages.quest.view.participants]))]]
 
      [:div {:class "opux-content"}
       [:div {:class "opux-line"}]]
 
-     (cond
-       (and (:is-open @quest) empty-party-member)
-       (join-quest {:context context
-                    :quest-id (:id @quest)
-                    :party-member empty-party-member
-                    :schema party-member-schema
-                    :days-between days-between
-                    :errors party-member-errors})
+     (if joinable
+       (cond
+         (and (:is-open @quest) empty-party-member)
+         (join-quest {:context context
+                      :quest-id (:id @quest)
+                      :party-member empty-party-member
+                      :schema party-member-schema
+                      :days-between days-between
+                      :errors party-member-errors})
 
-       (and (not (:is-open @quest)) secret-party)
-       (join-quest {:context context
-                    :quest-id (:id @quest)
-                    :party-member empty-party-member
-                    :schema party-member-schema
-                    :days-between days-between
-                    :errors party-member-errors
-                    :secret-party secret-party}))
-       ]))
+         (and (not (:is-open @quest)) secret-party)
+         (join-quest {:context context
+                      :quest-id (:id @quest)
+                      :party-member empty-party-member
+                      :schema party-member-schema
+                      :days-between days-between
+                      :errors party-member-errors
+                      :secret-party secret-party})))]))

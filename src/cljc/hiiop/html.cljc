@@ -25,7 +25,15 @@
                     (str class)
                     "")]
     (if (and error (deref error))
-      (str class " opux-input__label--error")
+      (str class-str " opux-input__label--error")
+      class-str)))
+
+(defn class-label-with-required [required class]
+  (let [class-str (if class
+                    (str class)
+                    "")]
+    (if required
+      (str class-str " opux-input__label--required")
       class-str)))
 
 (defn class-error-or-hide [error]
@@ -45,7 +53,7 @@
 
 (rum/defcs label < rum/reactive
                    (rum/local nil ::error)
-  [state text {:keys [for class error] :as or-content} & content]
+  [state text {:keys [for class error required] :as or-content} & content]
   (let [local-error (::error state)
         also-content (if (sequential? or-content)
                        (into [] or-content)
@@ -56,14 +64,16 @@
         content-vector (into [] (concat more-content also-content))
         default-content [:label
                          {:class
-                          (if (or error (and error (rum/react error)))
-                            (class-label-with-error error class)
-                            class)
+                          (class-label-with-required
+                            required
+                            (if (and error (rum/react error))
+                              (class-label-with-error error class)
+                              class))
                           :for for}
                          text]]
     (when error
       (add-watch
-       error
+        error
        ::label-error
        (fn [key _ _ new]
          (reset! local-error new))))
@@ -92,7 +102,7 @@
      text]))
 
 (rum/defc input < rum/reactive
-  [{:keys [type value schema matcher error class to-value transform-value context error-key value-key]}]
+  [{:keys [type id value schema matcher error class to-value transform-value context error-key value-key]}]
   (let [tr (:tr context)
         usable-value-key (or value-key :default-value)
         usable-matcher (if (not matcher) {schema #(identity %)} matcher)
@@ -106,6 +116,7 @@
       (assoc
        {:type type
         :class class
+        :id id
         :on-change
         (fn [e]
           (-> (value-from-event e usable-transform)
@@ -185,15 +196,19 @@
       html-options))))
 
 (rum/defcs datepicker < pikaday-mixin
-  [state {:keys [date min-date max-date format schema error class transform-value context error-key]}]
-  [:div {:class
-         (str "opux-input__container opux-input__container--date-picker opux-icon "
-              class)}
-   [:input
-    {:type "text"
-     :class "opux-input opux-input--date-picker"
-     :default-value (time/to-string @date format)}]
-   [:div {:class "opux-date-picker-trigger"}]])
+  [state {:keys [date min-date max-date format schema error class transform-value context error-key use-value]}]
+  (let [default-options {:type "text"
+                        :class "opux-input opux-input--date-picker"
+                        :default-value (time/to-string @date format)}
+       options (if use-value
+                 (assoc default-options
+                        :value (time/to-string @date format))
+                 default-options)]
+    [:div {:class (str
+                    "opux-input__container opux-input__container--date-picker opux-icon "
+                    class)}
+     [:input options]
+     [:div {:class "opux-date-picker-trigger"}]]))
 
 (rum/defc timepicker < rum/reactive
   [{:keys [time class time-print-format context]}]
@@ -250,10 +265,10 @@
         is-invalid? (fn [new-datetime]
                       (cond
                         (not (is-after-min? new-datetime))
-                        (tr [:error.date-needs-to-be-before]
+                        (tr [:errors.date.needs-to-be-before]
                             [(time/to-string (min-date-object) print-date-time-format)])
                         (not (is-before-max? new-datetime))
-                        (tr [:error.date-needs-to-be-after]
+                        (tr [:errors.date.needs-to-be-after]
                             [(time/to-string (max-date-object) print-date-time-format)])
                         :else nil))]
     (add-watch

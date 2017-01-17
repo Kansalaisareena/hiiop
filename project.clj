@@ -23,6 +23,7 @@
                  [org.clojure/clojurescript              "1.9.293" :scope "provided"]
                  [org.clojure/tools.cli                  "0.3.5"]
                  [org.clojure/tools.logging              "0.3.1"]
+                 [org.clojure/math.numeric-tower         "0.0.4"]
                  [org.postgresql/postgresql              "9.4.1211"]
                  [org.webjars.bower/tether               "1.3.7"]
                  [org.webjars/bootstrap                  "4.0.0-alpha.5"]
@@ -61,6 +62,7 @@
                  [cljsjs/pikaday                         "1.4.0-1"]
                  [cljsjs/dropzone                        "4.3.0-0"]
                  [clj-http                               "2.3.0"]
+                 [me.raynes/cegdown                      "0.1.1"]
                  ]
 
   :min-lein-version "2.7.1"

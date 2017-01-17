@@ -1,5 +1,6 @@
 (ns hiiop.api-handlers
   (:require [clojure.pprint :as pp]
+            [clojure.math.numeric-tower :as math]
             [taoensso.timbre :as log]
             [ring.util.http-response :refer :all]
             [mount.core :as mount]
@@ -39,10 +40,10 @@
 (defn login
   [{{:keys [email password]} :body-params session :session}]
   (let [password-ok (db/check-password email password)
-        user-id (db/get-user-id {:email email})]
+        user-info (db/get-user-name-and-id {:email email})]
     (if password-ok
       (assoc (ok)
-             :session (assoc session :identity user-id))
+             :session (assoc session :identity user-info))
       (unauthorized))))
 
 (defn register [{:keys [email name phone locale]}]
@@ -65,7 +66,6 @@
       {:errors {:email :errors.email.in-use}})))
 
 (defn validate-token [token-uuid]
-  (log/info "validate-token" token-uuid)
   (try
     (let [token-info (db/get-token-info {:token token-uuid})]
       (if (nil? token-info)
@@ -76,29 +76,72 @@
       {:errors {:token :errors.user.token.invalid}})))
 
 
-(defn activate [{:keys [email password token]}]
+(defn activate [{:keys [password token]}]
   "Attempt to activate user with token. If successful, delete token,
   set password and set user active."
   (let [pwhash (hashers/derive password {:alg :bcrypt+blake2b-512})
-        token-uuid (sc/string->uuid token)]
-    (< 0 (with-transaction [db/*db*]
-           (db/activate-user! {:pass pwhash :email email :token token-uuid})
-           (db/delete-password-token! {:token token-uuid})))))
+        token-info (db/get-token-info {:token token})]
+    (< 0
+       (with-transaction [db/*db*]
+         (db/activate-user!
+          {:pass pwhash
+           :email (:email token-info)
+           :token token})
+         (db/delete-password-token! {:token token})))))
 
+(defn- send-password-reset-email [{:keys [user token] :as args}]
+  (try
+    (assoc args
+           :email-sent
+           (mail/send-password-reset-token-email
+            (:email user)
+            token
+            (keyword (:locale user))))
+    (catch Exception e
+      (log/error e)
+      (assoc args :email-sent false))))
 
 (defn reset-password [email]
-  (db/create-password-token!
-   {:email email :expires (time/add (time/now) time/an-hour)}))
-
-(defn change-password [{:keys [email password token]}]
-  (let [pwhash (hashers/derive password {:alg :bcrypt+blake2b-512})]
-    (= 1 (with-transaction [db/*db*]
-           (db/change-password! {:email email :pass pwhash :token token})
-           (db/delete-password-token! {:token token})))))
-
-(defn get-user [id]
   (try
-    (let [user-info (db/get-user-by-id {:id (sc/string->uuid id)})]
+    (-> (assoc {} :user (db/get-user-by-email {:email email}))
+        (assoc :token
+               (:token (db/create-password-token!
+                        {:email email
+                         :expires (time/add (time/now) time/an-hour)})))
+        (send-password-reset-email)
+        (#(if (:email-sent %1)
+            true
+            {:errors {:password-reset :errors.password-reset.email-sending-failed}})))
+    (catch Exception e
+      (log/error e)
+      {:errors {:password-reset :errors.password-reset.failed}})))
+
+(defn change-password [{:keys [password token]}]
+  (log/info "change-password" password token)
+  (let [pwhash (hashers/derive password {:alg :bcrypt+blake2b-512})
+        token-info (db/get-token-info {:token token})]
+    (if token-info
+      (= 1
+         (with-transaction [db/*db*]
+           (db/change-password! {:email (:email token-info) :pass pwhash :token token})
+           (db/delete-password-token! {:token token})))
+      {:errors {:token :errors.token.expired}})))
+
+(defn get-public-user [id]
+  (try
+    (let [user-info (db/get-public-user-by-id {:id id})]
+      (if (nil? user-info)
+        {:errors {:user :errors.user.not-found}}
+        user-info))
+    (catch Exception e
+      (log/error e)
+      {:errors {:users :errors.user.not-found}})))
+
+(defn get-private-user [{:keys [id user-id]}]
+  (try
+    (let [user-info (db/get-user-by-id
+                     {:id id
+                      :user_id (sc/string->uuid user-id)})]
       (if (nil? user-info)
         {:errors {:user :errors.user.not-found}}
         user-info))
@@ -145,20 +188,27 @@
     (catch Exception e
       (log/error e))))
 
-(defn delete-quest [{:keys [id user]}]
-  ;; TODO: currently only supports deleting moderated quest
+(defn delete-quest [{:keys [id user-id]}]
   (try
-    (let [quest (db/get-moderated-quest-by-id {:id id})
+    (let [quest (db/get-moderated-or-unmoderated-quest-by-id
+                  {:id id :user_id user-id})
           owner (:owner quest)]
-      (if (= (str owner) (str (:id user)))
+      (if (= (str owner) (str user-id))
         (db/delete-quest-by-id! {:id id})
         {:errors {:quest :errors.quest.not-authorised-to-delete-quest}}))
     (catch Exception e
       (log/error e)
       {:errors {:quest :errors.quest.failed-to-delete-quest}})))
 
+(defn get-moderated-or-unmoderated-quest [{:keys [id user-id]}]
+  (try
+    (-> (db/get-moderated-or-unmoderated-quest-by-id
+          {:id id :user_id user-id})
+        (hc/db-quest->api-quest-coercer))
+    (catch Exception e
+      (log/error e))))
+
 (defn get-quest [id]
-  (log/info "quest" id)
   (try
     (-> (db/get-moderated-quest-by-id {:id id})
         (hc/db-quest->api-quest-coercer))
@@ -186,6 +236,7 @@
     (-> quest
         (assoc :owner (:id user))
         (dissoc :organiser-participates)
+        (dissoc :is-rejected)
         (hc/api-quest->db-quest-coercer)
         (db/update-quest!)
         (#(db/get-unmoderated-quest-by-id {:id (:id %) :owner (:id user)}))
@@ -196,7 +247,7 @@
       (log/error e)
       {:errors {:quest "Failed to update"}})))
 
-(defn get-quests-for-owner [owner]
+(defn get-quests-for-owner [{:keys [owner]}]
   (try
     (-> (db/get-all-quests-by-owner {:owner owner})
         ((partial map hc/db-quest->api-quest-coercer)))
@@ -208,6 +259,26 @@
   (try
     (-> (db/get-all-moderated-quests)
         ((partial map hc/db-quest->api-quest-coercer)))
+    (catch Exception e
+      (log/error e)
+      {:errors {:quests :error.quest.unexpected-error}})))
+
+(defn get-participating-quests [{:keys [user-id]}]
+  (try
+    (-> (db/get-all-participating-quests {:user_id user-id})
+        ((partial map hc/db-quest->api-quest-coercer)))
+    (catch Exception e
+      (log/error e)
+      {:errors {:quests :error.quest.unexpected-error}})))
+
+(defn get-user-quests [{:keys [user-id]}]
+  (try
+    (let [own-quests (get-quests-for-owner {:owner user-id})
+          participating-quests (get-participating-quests {:user-id user-id})]
+      (if (and (nil? (:errors own-quests))
+               (nil? (:errors participating-quests)))
+        {:organizing own-quests :attending participating-quests}
+        {:errors {:quests :error.quest.unexpected-error}}))
     (catch Exception e
       (log/error e)
       {:errors {:quests :error.quest.unexpected-error}})))
@@ -331,18 +402,37 @@
              :else
              (check-and-update-user-info existing-user)))))))
 
-(defn join-open-quest! [{:keys [quest_id user_id days] :as args}]
+(defn join-open-quest! [{:keys [quest_id user_id] :as args}]
   (with-transaction [db/*db*]
     (if (:exists (db/can-join-open-quest? args))
       (db/join-quest! args)
-      {:errors {:party :errors.quest.full}})))
+      {:errors
+       {:party [:errors.quest.full :or
+                :errors.quest.ended]}})))
 
 (defn join-secret-quest! [{:keys [quest_id user_id days secret_party] :as args}]
   (log/info "join secret quest!" quest_id user_id days secret_party)
   (with-transaction [db/*db*]
     (if (:exists (db/can-join-secret-quest? args))
       (db/join-quest! args)
-      {:errors {:party [:errors.quest.full :or :errors.quest.join.secret-key.incorrect]}})))
+      {:errors
+       {:party [:errors.quest.full :or
+                :errors.quest.join.secret-key.incorrect :or
+                :errors.quest.ended]}})))
+
+(defn joinable-quest? [{:keys [secret-party quest-id]}]
+  (try
+    (with-transaction [db/*db*]
+      (let [check-fn (if secret-party
+                       db/can-join-secret-quest?
+                       db/can-join-open-quest?)]
+        (:exists (check-fn
+                   {:quest_id quest-id
+                    :secret_party
+                    (sc/string->uuid secret-party)}))))
+    (catch Exception e
+      (log/error e)
+      {:errors {:quest :errors.quest.not-able-to-join}})))
 
 (defn party-member-or-errors [{:keys [quest-id new-member days session-user locale]}]
   (cond
@@ -354,8 +444,8 @@
          (= (:user-id new-member) (:id session-user)))
     (do
       (hc/api-new-member->db-new-member-coercer
-       (-> (conj new-member
-                 {:quest-id quest-id})
+        (-> (conj new-member
+                  {:quest-id quest-id})
            (assoc :days days))))
 
     (and (:user-id new-member)
@@ -419,7 +509,8 @@
           (if (nil? (:errors joined))
             (do
               (log/info joined)
-              (-> (db/get-user-by-id {:id (:user_id party-member)})
+              (-> (db/get-user-by-id {:id (:user_id party-member)
+                                      :user_id (:user_id party-member)})
                   (#(assoc {} :user %1))
                   (assoc :member (db/get-party-member joined))
                   (#(send-join-email
@@ -446,26 +537,40 @@
 
 (defn picture-supported? [file]
   (-> (:content-type file)
-      (#(re-find #"^image/(jpg|jpeg|png|gif)$" %1))))
+      (#(assoc {}
+               :type
+               (not (re-find #"^image/(jpg|jpeg|png|gif)$" %1))))
+      (assoc :size
+             (> (:size file) (* 3 (math/expt 10 6))))
+      (#(cond
+          (:size %1)
+          {:errors {:picture :errors.picture.too-big}}
+
+          (:type %1)
+          {:errors {:picture :errors.picture.type-not-supported
+                    :type (:content-type file)}}
+
+          :else
+          true
+          ))))
 
 (defn add-picture [{:keys [file user]}]
-  (if (picture-supported? file)
-    (try
-      (let [picture-id (:id
-                        (db/add-picture! {:url ""
-                                          :owner (:id user)}))]
-        (log/info picture-id)
-        (-> picture-id
-            (upload-picture file)
-            (#(db/update-picture-url! {:id picture-id
-                                       :url %1}))
-            ((fn [db-reply]
-               (log/info db-reply)
-               {:id picture-id
-                :url (:url db-reply)}))
-            ))
-      (catch Exception e
-        (log/error e)
-        {:errors {:picture :errors.picture.add-failed}}))
-    {:errors {:picture :errors.picture.type-not-supported
-              :type (:content-type file)}}))
+  (let [picture-supported (picture-supported? file)]
+    (if (not (:errors picture-supported))
+      (try
+        (let [picture-id (:id
+                          (db/add-picture! {:url ""
+                                            :owner (:id user)}))]
+          (-> picture-id
+              (upload-picture file)
+              (#(db/update-picture-url! {:id picture-id
+                                         :url %1}))
+              ((fn [db-reply]
+                 (log/info db-reply)
+                 {:id picture-id
+                  :url (:url db-reply)}))
+              ))
+        (catch Exception e
+          (log/error e)
+          {:errors {:picture :errors.picture.add-failed}}))
+      picture-supported)))

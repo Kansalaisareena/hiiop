@@ -7,16 +7,27 @@
             [hiiop.translate :refer [default-locale]]
             [taoensso.carmine :as car]
             [mount.core :refer [defstate]]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [me.raynes.cegdown :as md]))
 
 (def cf-url "https://cdn.contentful.com/")
-(defstate items-url :start (str cf-url "spaces/" (:space-id (:contentful env)) "/entries?access_token="
-                                (:cd-api-key (:contentful env)) "&locale=*"))
+(defstate items-url :start (str cf-url
+                                "spaces/"
+                                (:space-id (:contentful env))
+                                "/entries?access_token="
+                                (:cd-api-key (:contentful env))
+                                "&locale=*"))
 
 (defn process-email [{{{emailkey :fi} :emailkey} :fields :as email-object}]
-  "Store email object in redis."
-  (wcar* (car/set (str "email:" emailkey)
-                  email-object)))
+  "Render body text and store email object in redis."
+  (let [fi-text (get-in email-object [:fields :leipateksti :fi])
+        sv-text (get-in email-object [:fields :leipateksti :sv])]
+    (wcar* (car/set (str "email:" emailkey)
+                    (-> email-object
+                        (assoc-in [:fields :leipateksti-rendered :fi]
+                                  (md/to-html fi-text))
+                        (assoc-in [:fields :leipateksti-rendered :sv]
+                                  (md/to-html sv-text)))))))
 
 (defn process-page [cfobject]
   "Render page and store into aws."

@@ -61,11 +61,23 @@
       (context "/users" []
         :tags ["user"]
         (GET "/:id" []
-          :name ::user
+          :name ::public-user
           :path-params [id :- s/Uuid]
           :summary "Return user object"
           (fn [request]
-            (-> (api-handlers/get-user (:id (:params request)))
+            (-> (api-handlers/get-public-user id)
+                (#(if (:errors %1)
+                    (bad-request %1)
+                    (ok %1))))))
+
+        (GET "/private/:id" []
+          :name ::user
+          :path-params [id :- s/Uuid]
+          :middleware  [api-authenticated]
+          :summary "Return user object"
+          (fn [request]
+            (-> (api-handlers/get-private-user {:id id
+                                                :user-id (get-in request [:identity :id])})
                 (#(if (:errors %1)
                     (bad-request %1)
                     (ok %1))))))
@@ -91,7 +103,7 @@
                     (ok %1))))))
 
         (POST "/activate" []
-          :body [activation UserActivation]
+          :body [activation TokenAndPassword]
           :summary "Activates inactive user"
           (fn [request]
             (if (api-handlers/activate activation)
@@ -113,22 +125,24 @@
                   (unauthorized))))
 
         (POST "/reset-password" []
-              :body [email Email]
-              :summary "Creates a password reset token and sends it to
+          :body [email Email]
+          :summary "Creates a password reset token and sends it to
               the given email address."
-              (fn [request]
-                (try (api-handlers/reset-password email)
-                     (catch Exception e
-                       (log/info e)))
-                (ok)))
+          (fn [request]
+            (try (api-handlers/reset-password email)
+                 (catch Exception e
+                   (log/info e)))
+            (ok)))
 
         (POST "/change-password" []
-          :body [password-reset UserActivation]
-          :summary "Activates inactive user"
+          :body [password-reset TokenAndPassword]
+          :summary "Change password"
           (fn [request]
-            (if (api-handlers/change-password password-reset)
-             (ok)
-             (bad-request {:error "Password change failed."})))))
+            (-> (api-handlers/change-password password-reset)
+                (#(if (not (:errors %1))
+                    (ok)
+                    (bad-request %1))))))
+        )
 
       (context "/pictures" []
         :tags ["picture"]
@@ -164,16 +178,18 @@
       (context "/quests" []
         :tags ["quest"]
 
-        (GET "/own" []
-             :name ::get-own-quests
-             :middleware [api-authenticated]
-             :return [Quest]
-             (fn [request]
-               (let [owner (:id (:identity request))
-                     quests (api-handlers/get-quests-for-owner owner)]
-                 (if (nil? (:errors quests))
-                   (ok quests)
-                   (bad-request quests)))))
+        (GET
+          "/user" []
+          :name ::get-user-quests
+          :middleware [api-authenticated]
+          :return UserQuests
+          (fn [request]
+            (let [user-id (get-in request [:identity :id])
+                  quests (api-handlers/get-user-quests
+                           {:user-id user-id})]
+              (if (nil? (:errors quests))
+                (ok quests)
+                (bad-request quests)))))
 
         (GET
          "/moderated" []
@@ -186,16 +202,16 @@
                (bad-request quests)))))
 
         (GET "/unmoderated" []
-             :name ::get-unmoderated-quests
-             :middleware [api-authenticated]
-             :summary "Get all unmoderated quests"
-             :return [Quest]
-             (fn [request]
-               (let [quests (api-handlers/get-unmoderated-quests
-                             {:user-id (get-in request [:identity :id])})]
-                 (if (nil? (:errors quests))
-                   (ok quests)
-                   (bad-request quests)))))
+          :name ::get-unmoderated-quests
+          :middleware [api-authenticated]
+          :summary "Get all unmoderated quests"
+          :return [Quest]
+          (fn [request]
+            (let [quests (api-handlers/get-unmoderated-quests
+                          {:user-id (get-in request [:identity :id])})]
+              (if (nil? (:errors quests))
+                (ok quests)
+                (bad-request quests)))))
 
         (POST "/add" []
           :name       ::add-quest
@@ -222,6 +238,20 @@
                 (ok quest)
                 (not-found)))))
 
+        (GET "/moderated-or-unmoderated/:id" []
+             :name ::moderated-or-unmoderated-quest
+             :path-params [id :- Long]
+             :middleware  [api-authenticated]
+             :summary "Get moderated or unmoderated quest to be used for quest edit page."
+             :return Quest
+             (fn [request]
+               (let [quest (api-handlers/get-moderated-or-unmoderated-quest
+                             {:id id
+                              :user-id (get-in request [:identity :id])})]
+                 (if quest
+                   (ok quest)
+                   (not-found)))))
+
         (GET "/moderated/:id" []
           :name        ::moderated-quest
           :path-params [id :- Long]
@@ -242,7 +272,7 @@
           (fn [request]
             (let [result (api-handlers/delete-quest
                           {:id id
-                           :user (:identity request)})]
+                           :user-id (get-in request [:identity :id])})]
               (if (nil? (:errors result))
                 (no-content)
                 (bad-request result)))))
@@ -264,8 +294,7 @@
                       (get-in %1 [:errors :unauthorized])
                       (unauthorized %1)
                       :else
-                      (bad-request %1)))))
-            ))
+                      (bad-request %1)))))))
 
         (POST "/:quest-id/moderate-accept" []
              :name        ::quest-moderate-accept
@@ -278,25 +307,22 @@
                                                         :user-id (get-in request [:identity :id])})
                    (#(if (not (:errors %1))
                        (ok %1)
-                       (unauthorized))))
-               ))
+                       (unauthorized))))))
 
         (POST "/:quest-id/moderate-reject" []
-             :name        ::quest-moderate-reject
-             :path-params [quest-id :- Long]
-             :body        [moderation Moderation]
-             :summary     "Reject quest"
-             :middleware  [api-authenticated]
-             :return      Quest
-             (fn [request]
-               (-> (api-handlers/moderate-reject-quest
-                    {:quest-id quest-id
-                     :user-id (get-in request [:identity :id])
-                     :message (:message moderation)})
-                   (#(if (not (:errors %1))
-                       (ok %1)
-                       (unauthorized))))
-               ))
+          :name        ::quest-moderate-reject
+          :path-params [quest-id :- Long]
+          :body        [moderation Moderation]
+          :summary     "Reject quest"
+          :middleware  [api-authenticated]
+          (fn [request]
+            (-> (api-handlers/moderate-reject-quest
+                 {:quest-id quest-id
+                  :user-id (get-in request [:identity :id])
+                  :message (:message moderation)})
+                (#(if (not (:errors %1))
+                    (ok %1)
+                    (unauthorized))))))
 
         (POST "/:quest-id/party" []
           :name        ::quest-join
@@ -316,8 +342,19 @@
                                {:quest-id quest-id
                                 :member-id (str (:id %1))})
                      %1)
-                    (bad-request %1))))
-            ))
+                    (bad-request %1))))))
+
+        (GET "/:quest-id/joinable" []
+             :name ::joinable-quest?
+             :path-params [quest-id :- Long]
+             :summary "Check if a quest is joinable or not"
+             :return s/Bool
+             (fn [request]
+               (-> (api-handlers/joinable-quest?
+                     {:quest-id quest-id})
+                   (#(if (not (:errors %1))
+                       (ok %1)
+                       (bad-request %1))))))
 
         (GET "/:id/secret/:secret-party" []
           :name        ::secret-quest
@@ -333,6 +370,20 @@
                 (ok quest)
                 (not-found)))))
 
+        (GET "/:id/secret/:secret-party/joinable" []
+             :name ::joinable-secret-quest?
+             :path-params [id :- Long
+                           secret-party :- s/Uuid]
+             :summary "Check if a secret quest is joinable or not"
+             :return s/Bool
+             (fn [request]
+               (-> (api-handlers/joinable-quest?
+                     {:quest-id id
+                      :secret-party secret-party})
+                   (#(if (not (:errors %1))
+                       (ok %1)
+                       (bad-request %1))))))
+
         (GET "/:quest-id/party" []
           :name        ::quest-party
           :path-params [quest-id :- Long]
@@ -344,8 +395,7 @@
                   :user (:identity request)})
                 (#(if (not (:errors %1))
                     (ok %1)
-                    (bad-request %1))))
-            ))
+                    (bad-request %1))))))
 
         (GET "/:quest-id/party/:member-id" []
           :name        ::quest-party-member
@@ -357,8 +407,7 @@
             (-> (api-handlers/get-party-member {:member-id member-id})
                 (#(if %1
                     (ok %1)
-                    (bad-request {:errors {:quest "Not found"}}))))
-            ))
+                    (bad-request {:errors {:quest "Not found"}}))))))
 
         (DELETE "/:quest-id/party/:member-id" []
           :name        ::quest-delete-party-member
@@ -373,6 +422,4 @@
                     (no-content)
                     (bad-request
                      {:errors {:party :errors.quest.party.member.remove.failed}}))))
-            ))
-
-        ))))
+            ))))))

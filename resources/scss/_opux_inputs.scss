@@ -18,6 +18,10 @@
     outline: none;
   }
 
+  @include modifier('hidden') {
+    display: none;
+  }
+
   // opux-input--inline
   @include modifier('inline') {
     display: inline-block;
@@ -176,6 +180,13 @@
       color: $OP-red;
     }
 
+    // opux-input__label--required
+    @include modifier('required') {
+      &:after {
+        content: " *";
+      }
+    }
+
     // opux-input__label--multi-select
     @include modifier('multi-select') {
       @include flex(0, 0, 20%);
@@ -186,6 +197,12 @@
       cursor: pointer;
       padding: 1.5rem 0;
       text-align: center;
+    }
+
+    // opux-input__label--categories
+    @include modifier('categories') {
+      font-size: 1.5rem;
+      font-weight: 200;
     }
 
     // opux-input__label--radio

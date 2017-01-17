@@ -14,7 +14,8 @@
             [hiiop.db.core :refer [*db*] :as db]
             [hiiop.test.util :refer [contains-many? hash-password json-request]]
             [hiiop.test.data :refer [test-quest test-user]]
-            [schema-tools.core :as st]))
+            [schema-tools.core :as st]
+            [clj-time.core :as t]))
 
 (def activation-token (atom nil))
 (def password-reset-token (atom nil))
@@ -116,15 +117,15 @@
                     {:cookie set-cookie}))))
 
 (defn create-test-user [{:keys [user-data save-id-to read-token-from]}]
-  (-> (hiiop.api-handlers/register {:email (:email user-data)
-                                    :name "Wat"
-                                    :locale :fi})
+  (-> (hiiop.api-handlers/register
+       {:email (:email user-data)
+        :name "Wat"
+        :locale :fi})
       (#(reset! save-id-to %))
       ((fn [id]
          (hiiop.api-handlers/activate
-          {:email    (:email user-data)
-           :password (:password user-data)
-           :token    @read-token-from})))))
+          {:password (:password user-data)
+           :token    (schema.coerce/string->uuid @read-token-from)})))))
 
 (defn edit-user [{:keys [login-cookie with new-user id]}]
   (let [url (str "/api/v1/users/" id)]
@@ -147,6 +148,18 @@
     (f)
     (db/delete-user! *db* {:id (sc/string->uuid @test-user-id)})))
 
+(defn login-and-get-cookie [{:keys [with user-data]}]
+  (-> (json-request "/api/v1/login"
+                    {:type :post
+                     :body-string
+                     (generate-string
+                       {:email (:email user-data)
+                        :password (:password user-data)})})
+      (with)
+      (get-in [:headers "Set-Cookie"])
+      (first)
+      (session-cookie-string)))
+
 (deftest test-app
   (testing "main route"
     (let [response ((app) (request :get "/"))]
@@ -167,20 +180,57 @@
                     (assoc (request :get "/api/v1/config") :cookies {"lang" {:value "sv"}}))
           config (parse-string (slurp (:body response)) true)
           lang (first (:accept-langs config))]
-      (is (= "sv" lang)))))
+      (is (= "sv" lang))))
 
+  (testing "moderation page should not be accessible by anonymous user"
+    (let [response ((app) (request :get "/tehtavat/hyvaksynta"))]
+      (is (= (:status response) 302))
+      (db/delete-user! *db* {:id @test-user-id})))
 
-(defn login-and-get-cookie [{:keys [with user-data]}]
-  (-> (json-request "/api/v1/login"
-                    {:type :post
-                     :body-string
-                     (generate-string
-                      {:email (:email user-data)
-                       :password (:password user-data)})})
-      (with)
-      (get-in [:headers "Set-Cookie"])
-      (first)
-      (session-cookie-string)))
+  (testing "moderation page should not be accessible by normal user"
+    (let [current-app (app)
+          user-created (create-test-user
+                         {:user-data test-user
+                          :save-id-to test-user-id
+                          :read-token-from activation-token})
+          login-cookie (login-and-get-cookie
+                         {:with current-app
+                          :user-data test-user})
+          response (current-app
+                     (-> (request :get "/tehtavat/hyvaksynta")
+                         (header "cookie" login-cookie)))]
+      (is (= (:status response) 302))
+      (db/delete-user! *db* {:id @test-user-id})))
+
+  (testing "moderation page should be accessible by moderator"
+    (let [current-app (app)
+          user-created (create-test-user
+                         {:user-data test-user
+                          :save-id-to test-user-id
+                          :read-token-from activation-token})
+          made-moderator (db/make-moderator! {:id (sc/string->uuid @test-user-id)})
+          login-cookie (login-and-get-cookie
+                         {:with current-app
+                          :user-data test-user})
+          response (current-app
+                     (-> (request :get "/tehtavat/hyvaksynta")
+                         (header "cookie" login-cookie)))]
+      (is (= (:status response) 200))
+      (db/delete-user! *db* {:id @test-user-id})))
+  )
+
+(defn get-quest [{:keys [quest-id login-cookie with]}]
+  (let [url (str "/api/v1/quests/" quest-id)]
+    (-> (json-request url
+                      {:type :get
+                       :cookies login-cookie})
+        (with)
+        (has-status 200 url)
+        (:body)
+        (check #(is (not (= %1 nil))))
+        (#(when %1 (slurp %1)))
+        (parse-string true)
+        (do-this #(pp/pprint %1)))))
 
 (defn add-quest [{:keys [login-cookie with quest organiser-participates]}]
   (let [url "/api/v1/quests/add"]
@@ -228,6 +278,30 @@
         (has-status 204 url)
         (do-this #(log/info %1))
         )))
+
+(defn joinable-open-quest? [{:keys [quest-id status with]}]
+  (let [url (str "/api/v1/quests/"
+                 quest-id
+                 "/joinable")]
+    (-> (json-request url {:type :get})
+        (with)
+        (has-status (or status 200) url)
+        (do-this #(log/info %1))
+        (:body)
+        (slurp)
+        (parse-string true))))
+
+(defn joinable-secret-quest? [{:keys [quest-id secret-party status with]}]
+  (let [url (str "/api/v1/quests/" quest-id
+                 "/secret/" secret-party
+                 "/joinable")]
+    (-> (json-request url {:type :get})
+        (with)
+        (has-status (or status 200) url)
+        (do-this #(log/info %1))
+        (:body)
+        (slurp)
+        (parse-string true))))
 
 (defn join-quest [{:keys [login-cookie
                           user-id
@@ -297,6 +371,19 @@
         (parse-string true)
         (do-this pp/pprint))))
 
+(defn get-user-quests [{:keys [with login-cookie]}]
+  (let [url (str "/api/v1/quests/user")]
+    (-> (json-request url
+                      {:type :get
+                       :cookies login-cookie})
+        (with)
+        (has-status 200 url)
+        (:body)
+        (check #(is (not (nil? %1))))
+        (#(when %1 (slurp %1)))
+        (parse-string true)
+        (do-this pp/pprint))))
+
 (defn accept-quest [{:keys [with login-cookie quest-id]}]
   (let [url (str "/api/v1/quests/" quest-id "/moderate-accept")]
     (-> (json-request url
@@ -334,6 +421,50 @@
         (check #(is (not (= %1 nil))))
         (#(when %1 (slurp %1)))
         (parse-string true)
+        (do-this #(pp/pprint %1)))))
+
+(defn request-reset-password [{:keys [with email]}]
+  (log/info "request-reset-password" email)
+  (let [url (str "/api/v1/users/reset-password")]
+    (-> (json-request url
+                      {:type :post
+                       :body-string (generate-string email)})
+        (with)
+        (has-status 200 url)
+        (:body)
+        (check #(is (= %1 nil)))
+        (#(when %1 (slurp %1)))
+        (#(when %1 (parse-string %1 true)))
+        (do-this #(pp/pprint %1)))))
+
+(defn change-password [{:keys [with token password]}]
+  (let [url (str "/api/v1/users/change-password")]
+    (-> (json-request url
+                      {:type :post
+                       :body-string (generate-string
+                                     {:token token
+                                      :password password})})
+        (with)
+        (has-status 200 url)
+        (:body)
+        (check #(is (= %1 nil)))
+        (#(when %1 (slurp %1)))
+        (#(when %1 (parse-string %1 true)))
+        (do-this #(pp/pprint %1)))))
+
+(defn get-profile [{:keys [with user-id private login-cookie status is-nil]}]
+  (let [url (str "/api/v1/users/" (when private "private/") user-id)]
+    (-> (json-request url
+                      {:type :get
+                       :cookies login-cookie})
+        (with)
+        (has-status (or status 200) url)
+        (:body)
+        (check #(is (if is-nil
+                      (nil? %1)
+                      (not (nil? %1)))))
+        (#(when %1 (slurp %1)))
+        (#(when %1 (parse-string %1 true)))
         (do-this #(pp/pprint %1)))))
 
 (deftest test-api
@@ -505,11 +636,11 @@
           (just-do #(db/delete-user! *db* {:id (sc/string->uuid @test-user-id)})))
       ))
 
-  (testing "PUT /api/v1/quests/:id"
+  (testing "PUT /api/v1/quests/:id with unmoderated quest"
     (let [current-app (app)
           user-created (create-test-user
-                        {:user-data test-user
-                         :save-id-to test-user-id
+                         {:user-data test-user
+                          :save-id-to test-user-id
                          :read-token-from activation-token})
           login-cookie (login-and-get-cookie
                         {:with current-app
@@ -536,11 +667,11 @@
           (just-do #(db/delete-user! *db* {:id (sc/string->uuid @test-user-id)})))
       ))
 
-  (testing "DELETE /api/v1/quests/:id"
+  (testing "PUT /api/v1/quests/:id with moderated quest"
     (let [current-app (app)
           user-created (create-test-user
-                        {:user-data test-user
-                         :save-id-to test-user-id
+                         {:user-data test-user
+                          :save-id-to test-user-id
                          :read-token-from activation-token})
           made-moderator (db/make-moderator! {:id (sc/string->uuid @test-user-id)})
           login-cookie (login-and-get-cookie
@@ -548,6 +679,190 @@
                          :user-data test-user})
           quest-to-add (test-quest
                         {:use-date-string true
+                         :location-to :location
+                         :coordinates-to :coordinates
+                         :organisation-to {:in :organisation
+                                           :name :name
+                                           :description :description}})]
+      (-> (add-quest
+           {:with current-app
+            :quest quest-to-add
+            :login-cookie login-cookie})
+          (#(accept-quest {:with current-app
+                           :quest-id (:id %1)
+                           :login-cookie login-cookie}))
+          (assoc :name "WAAT"
+                 :description "OMG!")
+          (#(edit-quest {:with current-app
+                         :quest %1
+                         :login-cookie login-cookie}))
+          (check #(is (= "WAAT" (:name %1))))
+          (check #(is (= "OMG!" (:description %1))))
+          (#(db/delete-quest-by-id! {:id (:id %1)}))
+          (just-do #(db/delete-user! *db* {:id (sc/string->uuid @test-user-id)})))
+      ))
+
+  (testing "PUT /api/v1/quests/:id with nil as postal-code"
+    (let [current-app (app)
+          user-created (create-test-user
+                        {:user-data test-user
+                         :save-id-to test-user-id
+                         :read-token-from activation-token})
+          login-cookie (login-and-get-cookie
+                        {:with current-app
+                         :user-data test-user})
+          quest-to-add (test-quest
+                        {:use-date-string true
+                         :location-to :location
+                         :coordinates-to :coordinates
+                         :organisation-to {:in :organisation
+                                           :name :name
+                                           :description :description}})]
+      (-> (add-quest
+           {:with current-app
+            :quest quest-to-add
+            :login-cookie login-cookie})
+          (assoc :name "WAAT"
+                 :description "OMG!")
+          (#(assoc-in %1 [:location :postal-code] nil))
+          (#(edit-quest {:with current-app
+                         :quest %1
+                         :login-cookie login-cookie}))
+          (check #(is (nil? (get-in %1 [:location :postal-code]))))
+          (#(db/delete-quest-by-id! {:id (:id %1)}))
+          (just-do #(db/delete-user! *db* {:id (sc/string->uuid @test-user-id)})))
+      ))
+
+  (testing "PUT /api/v1/quests/:id with without postal-code"
+    (let [current-app (app)
+          user-created (create-test-user
+                        {:user-data test-user
+                         :save-id-to test-user-id
+                         :read-token-from activation-token})
+          login-cookie (login-and-get-cookie
+                        {:with current-app
+                         :user-data test-user})
+          quest-to-add (test-quest
+                        {:use-date-string true
+                         :location-to :location
+                         :coordinates-to :coordinates
+                         :organisation-to {:in :organisation
+                                           :name :name
+                                           :description :description}})]
+      (-> (add-quest
+           {:with current-app
+            :quest quest-to-add
+            :login-cookie login-cookie})
+          (assoc :name "WAAT"
+                 :description "OMG!")
+          (#(assoc %1 :location (dissoc (:location %1) :postal-code)))
+          (#(edit-quest {:with current-app
+                         :quest %1
+                         :login-cookie login-cookie}))
+          (check #(is (nil? (get-in %1 [:location :postal-code]))))
+          (#(db/delete-quest-by-id! {:id (:id %1)}))
+          (just-do #(db/delete-user! *db* {:id (sc/string->uuid @test-user-id)})))
+      ))
+
+  (testing "DELETE /api/v1/quests/:id with unmoderated quest"
+    (let [current-app (app)
+          user-created (create-test-user
+                        {:user-data test-user
+                         :save-id-to test-user-id
+                         :read-token-from activation-token})
+          login-cookie (login-and-get-cookie
+                        {:with current-app
+                         :user-data test-user})
+          quest-to-add (test-quest
+                        {:use-date-string true
+                         :location-to :location
+                         :coordinates-to :coordinates
+                         :organisation-to {:in :organisation
+                                           :name :name
+                                           :description :description}})
+          added-quest (add-quest
+                       {:with current-app
+                        :quest quest-to-add
+                        :login-cookie login-cookie})]
+      (-> {:response
+           (delete-quest {:with current-app
+                          :quest added-quest
+                          :login-cookie login-cookie})
+           :id (:id added-quest)}
+          (check #(is (nil? (db/get-moderated-quest-by-id %1))))
+          (#(db/delete-quest-by-id! {:id (:id %1)}))
+          (just-do #(db/delete-user! *db* {:id (sc/string->uuid @test-user-id)})))
+      ))
+
+  (testing "GET api/v1/quests/:id/joinable"
+    (let [current-app (app)
+          user-created (create-test-user
+                         {:user-data test-user
+                          :save-id-to test-user-id
+                          :read-token-from activation-token})
+          made-moderator (db/make-moderator! {:id (sc/string->uuid @test-user-id)})
+          login-cookie (login-and-get-cookie
+                         {:with current-app
+                          :user-data test-user})
+          quest-to-add (test-quest
+                         {:use-date-string true
+                          :location-to :location
+                          :coordinates-to :coordinates
+                          :organisation-to {:in :organisation
+                                            :name :name
+                                            :description :description}})
+          added-quest (add-quest
+                        {:with current-app
+                         :quest quest-to-add
+                         :login-cookie login-cookie})]
+
+      (testing "unmoderated quest should not be joinable"
+        (is (not (joinable-open-quest?
+                   {:quest-id (:id added-quest)
+                    :with current-app}))))
+
+      (testing "moderated quest should be joinable"
+        (accept-quest {:with current-app
+                       :quest-id (:id added-quest)
+                       :login-cookie login-cookie})
+        (is (joinable-open-quest? {:quest-id (:id added-quest)
+                                   :with current-app})))
+
+      (testing "quest that ended should not be joinable"
+        (edit-quest
+          {:login-cookie login-cookie
+           :with current-app
+           :quest (assoc added-quest
+                         :start-time (-> -365
+                                         t/days
+                                         t/from-now)
+                         :end-time (-> -30
+                                       t/days
+                                       t/from-now))})
+        (accept-quest
+          {:with current-app
+           :quest-id (:id added-quest)
+           :login-cookie login-cookie})
+        (is (not (joinable-open-quest?
+                   {:quest-id (:id added-quest)
+                    :with current-app}))))
+
+      ;; Cleanup
+      (db/delete-quest-by-id! {:id (:id added-quest)})
+      (db/delete-user! {:id (sc/string->uuid @test-user-id)})))
+
+  (testing "DELETE /api/v1/quests/:id with moderated quest"
+    (let [current-app (app)
+          user-created (create-test-user
+                         {:user-data test-user
+                          :save-id-to test-user-id
+                          :read-token-from activation-token})
+          made-moderator (db/make-moderator! {:id (sc/string->uuid @test-user-id)})
+          login-cookie (login-and-get-cookie
+                         {:with current-app
+                          :user-data test-user})
+          quest-to-add (test-quest
+                         {:use-date-string true
                          :location-to :location
                          :coordinates-to :coordinates
                          :organisation-to {:in :organisation
@@ -894,6 +1209,118 @@
           (just-do #(db/delete-user! {:id (sc/string->uuid @test-user-id)})))
       ))
 
+  (testing "GET api/v1/quests/:id/secret/:secret-party/joinable"
+    (let [current-app (app)
+          user-created (create-test-user
+                         {:user-data test-user
+                          :save-id-to test-user-id
+                          :read-token-from activation-token})
+          made-moderator (db/make-moderator! {:id (sc/string->uuid @test-user-id)})
+          login-cookie (login-and-get-cookie
+                         {:with current-app
+                          :user-data test-user})
+          quest-to-add (assoc
+                         (test-quest
+                           {:use-date-string true
+                            :location-to :location
+                            :coordinates-to :coordinates
+                            :organisation-to {:in :organisation
+                                              :name :name
+                                              :description :description}})
+                         :is-open false)
+          added-quest (add-quest
+                        {:with current-app
+                         :quest quest-to-add
+                         :login-cookie login-cookie})
+          secret-party (:secret-party
+                        (db/get-quest-limitations {:id (:id added-quest)}))]
+
+      (testing "unmoderated secret quest should not be joinable"
+        (is (not (joinable-secret-quest?
+                   {:quest-id (:id added-quest)
+                    :secret-party secret-party
+                    :with current-app}))))
+
+      (testing "moderated secret quest should be joinable"
+        (accept-quest {:with current-app
+                       :quest-id (:id added-quest)
+                       :login-cookie login-cookie})
+        (is (joinable-secret-quest?
+              {:quest-id (:id added-quest)
+               :secret-party secret-party
+               :with current-app})))
+
+      (testing "secret quest with wrong secret token should not be joinable"
+        (is (not (joinable-secret-quest?
+                   {:quest-id (:id added-quest)
+                    :secret-party "0327fcb4-1ddd-4a0c-b103-08dcba7da15d"
+                    :with current-app}))))
+
+      (testing "secret quest that ended should not be joinable"
+        (edit-quest
+          {:login-cookie login-cookie
+           :with current-app
+           :quest (assoc
+                    added-quest
+                    :start-time
+                    (-> -365
+                        t/days
+                        t/from-now)
+                    :end-time
+                    (-> -30
+                        t/days
+                        t/from-now))})
+        (accept-quest
+          {:with current-app
+           :quest-id (:id added-quest)
+           :secret-party secret-party
+           :login-cookie login-cookie})
+        (is (not (joinable-open-quest?
+                   {:quest-id (:id added-quest)
+                    :with current-app}))))
+
+      ;; Cleanup
+      (db/delete-quest-by-id! {:id (:id added-quest)})
+      (db/delete-user! {:id (sc/string->uuid @test-user-id)})))
+
+  (testing "GET /api/v1/quests/:id moderated quest shows correct participant-count"
+    (let [current-app (app)
+          user-created (create-test-user
+                         {:user-data test-user
+                          :save-id-to test-user-id
+                          :read-token-from activation-token})
+          made-moderator (db/make-moderator! {:id @test-user-id})
+          login-cookie (login-and-get-cookie
+                         {:with current-app
+                          :user-data test-user})
+          quest-to-add (test-quest
+                         {:use-date-string true
+                          :location-to :location
+                          :coordinates-to :coordinates
+                          :organisation-to {:in :organisation
+                                            :name :name
+                                            :description :description}})
+          added-quest (add-quest
+                        {:with current-app
+                         :quest quest-to-add
+                         :login-cookie login-cookie})
+          accepted-quest (accept-quest {:with current-app
+                                        :quest-id (:id added-quest)
+                                        :login-cookie login-cookie})
+          joined (join-quest {:quest-id (:id added-quest)
+                              :days 1
+                              :user-id @test-user-id
+                              :with current-app
+                              :login-cookie login-cookie})]
+      (-> (:id added-quest)
+          (#(get-quest {:quest-id %1
+                        :login-cookie login-cookie
+                        :with current-app}))
+          (:participant-count)
+          (check #(is (= 1 %1)))
+          (just-do #(db/delete-quest-by-id! {:id (:id added-quest)}))
+          (just-do #(db/delete-user! {:id (sc/string->uuid @test-user-id)})))))
+
   (testing "DELETE /api/v1/quests/:quest-id/party/:member-id"
     (let [current-app (app)
           user-created (create-test-user
@@ -932,6 +1359,69 @@
           (just-do #(db/delete-quest-by-id! {:id (:id added-quest)}))
           (just-do #(db/delete-user! {:id (sc/string->uuid @test-user-id)})))
       ))
+
+  (testing "GET /api/v1/quests/user"
+    (let [current-app (app)
+          moderator (create-test-user
+                      {:user-data test-user
+                       :save-id-to test-user-id
+                       :read-token-from activation-token})
+          made-moderator (db/make-moderator! {:id (sc/string->uuid @test-user-id)})
+          login-cookie (login-and-get-cookie
+                         {:with current-app
+                          :user-data test-user})
+          quest-to-add (test-quest
+                         {:use-date-string true
+                          :location-to :location
+                          :coordinates-to :coordinates
+                          :organisation-to {:in :organisation
+                                            :name :name
+                                            :description :description}})
+          added-quest (add-quest
+                        {:with current-app
+                         :quest quest-to-add
+                         :login-cookie login-cookie})
+          quest-id (:id added-quest)
+          accepted-quest (accept-quest {:with current-app
+                                        :quest-id quest-id
+                                        :login-cookie login-cookie})
+          normal-user-id (atom nil)
+          normal-user-data (assoc test-user :email "normaluser@email.com")
+          user-created (create-test-user
+                         {:user-data normal-user-data
+                          :save-id-to normal-user-id
+                          :read-token-from activation-token})
+          user-login-cookie (login-and-get-cookie
+                              {:with current-app
+                               :user-data normal-user-data})
+          joined (join-quest {:quest-id quest-id
+                              :days 1
+                              :user-id @normal-user-id
+                              :with current-app
+                              :login-cookie user-login-cookie})]
+      (-> (get-user-quests {:with current-app
+                            :login-cookie user-login-cookie})
+          (check #(is (= 1 (count (:attending %1)))))
+          (check #(is (= 0 (count (:organizing %1)))))
+          (check #(is (= 1 (:participant-count (first (:attending %1)))))))
+
+      ;; add new quest under normal user name
+      (let [new-added-quest (add-quest
+                              {:with current-app
+                               :quest quest-to-add
+                               :login-cookie user-login-cookie})
+            new-quest-id (:id new-added-quest)]
+        (-> (get-user-quests {:with current-app
+                              :login-cookie user-login-cookie})
+            (check #(is (= 1 (count (:attending %1)))))
+            (check #(is (= 1 (count (:organizing %1)))))
+            (check #(is (= 1 (:participant-count (first (:attending %1))))))
+            (check #(is (= 0 (:participant-count (first (:organizing %1)))))))
+        (db/delete-quest-by-id! {:id new-quest-id}))
+
+      (db/delete-quest-by-id! {:id quest-id})
+      (db/delete-user! *db* {:id (sc/string->uuid @test-user-id)})
+      (db/delete-user! *db* {:id (sc/string->uuid @normal-user-id)})))
 
   (testing "/api/v1/quests/moderated should be updated after /api/v1/quests/add and /api/v1/quests/:id/moderate"
     (let [current-app (app)
@@ -1038,5 +1528,109 @@
           (#(db/delete-quest-by-id! {:id (:id %1)}))
           (just-do #(db/delete-user! *db* {:id (sc/string->uuid @test-user-id)})))
       ))
+
+  (testing "/api/v1/users/reset-password /api/v1/users/change-password should change password"
+    (let [current-app (app)
+          user-created (create-test-user
+                        {:user-data test-user
+                         :save-id-to test-user-id
+                         :read-token-from activation-token})]
+      (-> {:request-password-reset
+           (request-reset-password
+            {:with current-app
+             :email (:email test-user)})}
+          (assoc :token @password-reset-token)
+          (assoc :password "LOL1234!")
+          (#(assoc %1 :changed-password
+                   (change-password {:with current-app
+                                     :token (:token %1)
+                                     :password (:password %1)})))
+          (#(assoc %1 :login
+                   (login-and-get-cookie {:with current-app
+                                          :user-data
+                                          {:email (:email test-user)
+                                           :password (:password %1)}})))
+          (check #(= (not (nil? (:login %1)))))
+          (just-do #(db/delete-user! *db* {:id (sc/string->uuid @test-user-id)})))
+      ))
+
+  (testing "getting public user should work"
+    (let [current-app (app)
+          user-created (create-test-user
+                        {:user-data test-user
+                         :save-id-to test-user-id
+                         :read-token-from activation-token})]
+      (-> (get-profile {:with current-app
+                        :user-id @test-user-id})
+          (#(assoc {} :public-user %1))
+          (check #(= (not (nil? (:public-user %1)))))
+          (just-do #(db/delete-user! *db* {:id (sc/string->uuid @test-user-id)})))
+      ))
+
+  (testing "getting private user should work"
+    (let [current-app (app)
+          user-created (create-test-user
+                        {:user-data test-user
+                         :save-id-to test-user-id
+                         :read-token-from activation-token})]
+      (-> (assoc {}
+                 :login
+                 (login-and-get-cookie
+                  {:with current-app
+                   :user-data test-user}))
+          (#(assoc %1 :private-user
+                   (get-profile {:with current-app
+                                 :user-id @test-user-id
+                                 :private true
+                                 :login-cookie (:login %1)})))
+          (check #(= (not (nil? (:private-user %1)))))
+          (just-do #(db/delete-user! *db* {:id (sc/string->uuid @test-user-id)})))
+      ))
+
+  (testing "getting private user should't work if not logged in"
+    (let [current-app (app)
+          user-created (create-test-user
+                        {:user-data test-user
+                         :save-id-to test-user-id
+                         :read-token-from activation-token})]
+      (-> (assoc {}
+                 :private-user
+                 (get-profile {:with current-app
+                               :user-id @test-user-id
+                               :private true
+                               :status 401
+                               :is-nil true}))
+          (just-do #(db/delete-user! *db* {:id (sc/string->uuid @test-user-id)})))
+      ))
+
+
+  (testing "getting private user should't work if not logged in"
+    (let [current-app (app)
+          user-created (create-test-user
+                        {:user-data test-user
+                         :save-id-to test-user-id
+                         :read-token-from activation-token})
+          user2-id (atom nil)
+          user2-data (assoc test-user :email "email@foo.bar")
+          user2-created (create-test-user
+                         {:user-data user2-data
+                          :save-id-to user2-id
+                          :read-token-from activation-token})]
+      (-> (assoc {}
+                 :login
+                 (login-and-get-cookie
+                  {:with current-app
+                   :user-data test-user}))
+          (#(assoc %1
+                   :private-user
+                   (get-profile {:with current-app
+                                 :user-id @user2-id
+                                 :login-cookie (:login %1)
+                                 :private true
+                                 :status 400})))
+          (just-do #(db/delete-user! *db* {:id (sc/string->uuid @test-user-id)}))
+          (just-do #(db/delete-user! *db* {:id (sc/string->uuid @user2-id)})))
+      ))
+
   )
 

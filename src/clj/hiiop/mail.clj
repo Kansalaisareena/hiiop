@@ -29,13 +29,16 @@
   (go
     (send-message email-sending-config mail)))
 
-(defn make-mail [{:keys [to subject template template-params locale]}]
+(defn make-mail [{:keys [to subject template plaintext-template template-params locale]}]
   {:from (:sender email-sending-config)
    :to to
    :subject subject
-   :body [{:type "text/html; charset=utf-8"
+   :body [:alternative
+          {:type "text/html; charset=utf-8"
            :content (render-static-markup
-                     (template template-params))}]})
+                     (template template-params))}
+          {:type "text/plain"
+           :content (plaintext-template template-params)}]})
 
 (defn mail-content [emailkey locale]
   (-> (car/get (str "email:" emailkey))
@@ -53,10 +56,12 @@
      (make-mail {:to email
                  :subject (content :otsikko)
                  :template emails/simple-mail
+                 :plaintext-template emails/plaintext-simple-mail
                  :template-params
                  {:button-url (url-to' :activate :token (str token))
                   :title (content :otsikko)
-                  :body-text (content :leipateksti)
+                  :body-text (content :leipateksti-rendered)
+                  :body-text-plaintext (content :leipateksti)
                   :button-text (content :ekanappiteksti)}}))))
 
 (defn send-password-reset-token [email token locale]
@@ -65,11 +70,13 @@
      (make-mail {:to email
                  :subject (content :otsikko)
                  :template emails/simple-mail
+                 :plaintext-template emails/plaintext-simple-mail
                  :template-params
-                 {:button-url (url-to' :index)
-                  :title (content :otsikko)
-                  :body-text (content :leipateksti)
-                  :button-text (content :ekanappiteksti)}}))))
+                 {:title (content :otsikko)
+                  :body-text (content :leipateksti-rendered)
+                  :body-text-plaintext (content :leipateksti)
+                  :button-text (content :ekanappiteksti)
+                  :button-url (url-to' :password-reset :token token)}}))))
 
 (defn send-new-quest [{:keys [email quest locale]}]
   (let [content (mail-content "new-quest" locale)]
@@ -77,10 +84,12 @@
      (make-mail {:to email
                  :subject (content :otsikko)
                  :template emails/simple-mail
+                 :plaintext-template emails/plaintext-simple-mail
                  :template-params
                  {:button-url (url-to' :quest :quest-id (:id quest))
                   :title (content :otsikko)
-                  :body-text (content :leipateksti)
+                  :body-text (content :leipateksti-rendered)
+                  :body-text-plaintext (content :leipateksti)
                   :button-text (content :ekanappiteksti)}}))))
 
 (defn send-edit-quest [email quest-id locale]
@@ -89,10 +98,12 @@
      (make-mail {:to email
                  :subject (content :otsikko)
                  :template emails/simple-mail
+                 :plaintext-template emails/plaintext-simple-mail
                  :template-params
                  {:button-url (url-to' :quest :quest-id quest-id)
                   :title (content :otsikko)
-                  :body-text (content :leipateksti)
+                  :body-text (content :leipateksti-rendered)
+                  :body-text-plaintext (content :leipateksti)
                   :button-text (content :ekanappiteksti)}}))))
 
 (defn send-join-quest [{:keys [email quest locale member-id]}]
@@ -105,11 +116,13 @@
      (make-mail {:to email
                  :subject title
                  :template emails/quest-details-mail
+                 :plaintext-template emails/plaintext-quest-details-mail
                  :template-params
                  {:tr tr
                   :title title
                   :quest quest
-                  :body-text (content :leipateksti)
+                  :body-text (content :leipateksti-rendered)
+                  :body-text-plaintext (content :leipateksti)
                   :button-text (content :ekanappiteksti)
                   :button-url (url-to' :quest :quest-id quest-id)
                   :button2-text (content :tokanappiteksti)
@@ -127,13 +140,13 @@
      (make-mail {:to email
                  :subject title
                  :template emails/quest-details-mail
+                 :plaintext-template emails/plaintext-quest-details-mail
                  :template-params
                  {:tr tr
                   :title title
                   :quest quest
-                  :body-text (content :leipateksti)
-                  :button-text (content :ekanappiteksti)
-                  :button-url (url-to' :edit-quest :quest-id quest-id)
+                  :body-text (content :leipateksti-rendered)
+                  :body-text-plaintext (content :leipateksti)
                   :message message}}))))
 
 (defn send-quest-accepted [{:keys [email quest locale]}]
@@ -146,11 +159,13 @@
      (make-mail {:to email
                  :subject title
                  :template emails/quest-details-mail
+                 :plaintext-template emails/plaintext-quest-details-mail
                  :template-params
                  {:tr tr
                   :title title
                   :quest quest
-                  :body-text (content :leipateksti)
+                  :body-text (content :leipateksti-rendered)
+                  :body-text-plaintext (content :leipateksti)
                   :button-text (content :ekanappiteksti)
                   :button-url (url-to' :quest :quest-id (:id quest))}}))))
 
@@ -165,11 +180,13 @@
      (make-mail {:to email
                  :subject title
                  :template emails/quest-details-mail
+                 :plaintext-template emails/plaintext-quest-details-mail
                  :template-params
                  {:tr tr
                   :title (content :otsikko)
                   :quest quest
-                  :body-text (content :leipateksti)
+                  :body-text (content :leipateksti-rendered)
+                  :body-text-plaintext (content :leipateksti)
                   :button-text (content :ekanappiteksti)
                   :button-url (url-to' :quest :quest-id quest-id)
                   :button2-text (content :tokanappiteksti)
@@ -183,10 +200,12 @@
      (make-mail {:to email
                  :subject (content :otsikko)
                  :template emails/simple-mail
+                 :plaintext-template emails/plaintext-simple-mail
                  :template-params
                  {:button-url (url-to' :quest :quest-id quest-id)
                   :title (content :otsikko)
-                  :body-text (content :leipateksti)
+                  :body-text (content :leipateksti-rendered)
+                  :body-text-plaintext (content :leipateksti)
                   :button-text (content :ekanappiteksti)}}))))
 
 (defstate send-activation-token-email       :start send-activation-token)

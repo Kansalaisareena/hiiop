@@ -13,6 +13,12 @@
     "rekisteroidy/" (param :token)
     (leaf "" :activate))
 
+   (leaf "unohdin-salasanani" :request-password-reset)
+
+   (branch
+    "unohdin-salasanani/" (param :token)
+    (leaf "" :password-reset))
+
    ;; Profile
    (leaf "kayttaja" :profile)
 
@@ -22,6 +28,10 @@
    (leaf "tehtavat" :browse-quests)
 
    (branch
+     "tehtavat/"
+     (leaf "hyvaksynta" :moderate))
+
+  (branch
     "tehtavat/" (param :quest-id)
     (leaf "" :quest)
 
@@ -36,4 +46,5 @@
     (branch
      "/muokkaa/"
      (leaf "" :edit-quest)))
+
    ))
