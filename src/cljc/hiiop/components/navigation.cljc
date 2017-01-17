@@ -1,7 +1,8 @@
 (ns hiiop.components.navigation
   (:require [rum.core :as rum]
             [bidi.bidi :refer [path-for]]
-            [hiiop.config :refer [env]]))
+            #?(:clj [hiiop.config :refer [env]]
+               :cljs [hiiop.client-config :refer [env]])))
 
 (rum/defcs top-navigation < (rum/local false ::is-active)
   [state {:keys [hierarchy tr current-locale identity]}]
