@@ -41,7 +41,12 @@ SET
   name = :name,
   phone = :phone,
   locale = :locale
-WHERE id = :id
+WHERE id = :id AND
+        (id = :user_id OR
+        EXISTS (SELECT FROM users u
+             WHERE u.id = :user_id AND
+                   u.moderator = true))
+
 
 -- :name get-public-user-by-id :? :1 :uuid
 -- :doc retrieve a user given the uuid.

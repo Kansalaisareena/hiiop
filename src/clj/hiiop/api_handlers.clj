@@ -149,13 +149,14 @@
       (log/error e)
       {:errors {:users :errors.user.not-found}})))
 
-(defn edit-user [{:keys [new-user id]}]
+(defn edit-user [{:keys [new-user id request-user-id]}]
   (try
     (-> new-user
         (assoc :id id)
         (hc/api-edit-user->db-edit-user-coercer)
+        (assoc :user_id request-user-id)
         (db/edit-user!)
-        (#(when (= 1 %) (db/get-user-by-id {:id id}))))
+        (#(when (= 1 %) (db/get-user-by-id {:id id :user_id request-user-id}))))
     (catch Exception e
       (log/error e)
       {:errors {:users "Failed to update user"}})))

@@ -118,7 +118,8 @@
               :summary     "Updates a user"
               (fn [request]
                 (if (= id (:id (:identity request)))
-                  (-> (api-handlers/edit-user {:new-user new-user :id id})
+                  (-> (api-handlers/edit-user {:new-user new-user :id
+                                               id :request-user-id (get-in request [:identity :id])})
                       (#(if (not (:errors %1))
                           (ok %1)
                           (bad-request %1))))
