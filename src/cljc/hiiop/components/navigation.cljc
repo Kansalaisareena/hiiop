@@ -85,33 +85,43 @@
 
 (rum/defc footer-navigation
   [{:keys [hierarchy tr current-locale]}]
-  [:nav {:class "opux-nav opux-nav--footer"}
-   [:ul {:class "opux-menu opux-menu--footer"}
+  (let [locale-string (name (or current-locale :fi))
+        blog-url (:hiiop-blog-base-url env)
+        static-page-url (str blog-url "/"
+                             locale-string
+                             "/pages/")]
+    [:nav {:class "opux-nav opux-nav--footer"}
+     [:ul {:class "opux-menu opux-menu--footer"}
 
-    ;; [:li {:class "opux-menu__item"}
-    ;;  [:a {:class "opux-menu__item-link opux-menu__item-link--footer"
-    ;;    :href "#"}
-    ;;   (tr [:footer.rules-and-guidelines])]]
-
-    [:li {:class "opux-menu__item"}
-     [:a {:class "opux-menu__item-link opux-menu__item-link--footer"
-          :target "_blank"
-          :href "/img/faq.pdf"}
-      (tr [:footer.frequently-asked-questions])]]
-
-    ;; [:li {:class "opux-menu__item"}
-    ;;  [:a {:class "opux-menu__item-link opux-menu__item-link--footer"
-    ;;       :href "#"}
-    ;;   (tr [:footer.contact])]]
+      ;; [:li {:class "opux-menu__item"}
+      ;;  [:a {:class "opux-menu__item-link opux-menu__item-link--footer"
+      ;;    :href "#"}
+      ;;   (tr [:footer.rules-and-guidelines])]]
 
     [:li {:class "opux-menu__item"}
      [:a {:class "opux-menu__item-link opux-menu__item-link--footer"
-          :target "_blank"
-          :href "/img/terms-of-service.pdf"}
+          :href (str static-page-url
+                     (tr [:footer.faq-page-key])
+                     ".html")}
+      (tr [:footer.faq])]]
+
+    [:li {:class "opux-menu__item"}
+     [:a {:class "opux-menu__item-link opux-menu__item-link--footer"
+          :href (str static-page-url
+                     (tr [:footer.contact-page-key])
+                     ".html")}
+      (tr [:footer.contact])]]
+
+    [:li {:class "opux-menu__item"}
+     [:a {:class "opux-menu__item-link opux-menu__item-link--footer"
+          :href (str static-page-url
+                     (tr [:footer.terms-of-service-page-key])
+                     ".html")}
       (tr [:footer.terms-of-service])]]
 
     [:li {:class "opux-menu__item"}
      [:a {:class "opux-menu__item-link opux-menu__item-link--footer"
-          :target "_blank"
-          :href "/img/privacy.pdf"}
-      (tr [:footer.privacy])]]]])
+          :href (str static-page-url
+                     (tr [:footer.privacy-page-key])
+                     ".html")}
+      (tr [:footer.privacy])]]]]))

@@ -89,6 +89,8 @@ Create profiles.clj under your git root to place the secrets.
         }
         :hiiop-blog-bucket "hiiop-dev-blog"
         :hiiop-bucket "hiiop-dev"
+        :hiiop-blog-base-url 
+        "http://hiiop-dev-blog.s3-website.eu-central-1.amazonaws.com"
        }
       :profiles/test
       {:env

@@ -48,6 +48,12 @@
   @include modifier('footer') {
     width: 100%;
     height: auto;
+
+    @include block("opux-menu") {
+      @include element("item") {
+        width: 100%;
+      }
+    }
   }
 
   // opux-menu__item

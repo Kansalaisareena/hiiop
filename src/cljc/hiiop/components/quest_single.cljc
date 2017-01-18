@@ -37,7 +37,7 @@
 
     [:div {:class "opux-section"}
 
-     [:div {:class "opux-content opux-content--quest-image-header"
+     [:div {:class "opux-content opux-content--image-header"
             :style {:background-image (str "url('"
                                            (get-quest-image @quest)
                                            "')")}}]

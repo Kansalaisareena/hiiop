@@ -5,18 +5,16 @@
             [clj-http.client :as http]
             [rum.core :refer [render-static-markup]]
             [hiiop.redis :refer [wcar*]]
-            [hiiop.translate :refer [tr-opts]]
             [cheshire.core :refer [parse-string]]
             [hiiop.config :refer [env asset-path]]
-            [hiiop.translate :refer [default-locale]]
+            [hiiop.translate :refer [default-locale tr-opts]]
             [hiiop.routes.page-hierarchy :refer [hierarchy]]
+            [hiiop.contentful-page :refer [contentful-page-structure]]
             [taoensso.carmine :as car]
             [mount.core :refer [defstate]]
             [taoensso.timbre :as log]
             [hiiop.file-upload :refer [upload-story upload-page get-and-upload-asset]]
             [hiiop.db.core :as db]
-            [hiiop.blog :as blog]
-            [hiiop.static-page :as page]
             [me.raynes.cegdown :as md]
             [hiiop.html :as html]
             [taoensso.tempura :as tempura]
@@ -51,42 +49,6 @@
                         (assoc-in [:fields :leipateksti-rendered :sv]
                                   (md/to-html sv-text)))))))
 
-(defn create-context [locale]
-  {:tr (partial tempura/tr (tr-opts) [locale])
-   :config env
-   :hierarchy hierarchy
-   :asset-path (asset-path env)
-   :identity nil
-   :current-locale locale})
-
-(defn- image-header [image-url]
-  (if image-url
-    [:div {:class "opux-content opux-content__image-header"
-           :style {:background-image
-                   (str "url(" image-url ")")}}]))
-
-(defn contentful-page-structure
-  [{:keys [locale title content image-url]}]
-  (let [context (create-context locale)
-        tr (:tr context)
-        asset-path (:asset-path context)]
-    (render-static-markup
-      (html/page
-        (html/head-content {:title title
-                            :asset-path asset-path})
-        (html/body-content
-          (html/header context)
-          [:div {:id "app"
-                 :class "opux-page-section"}
-           (if image-url (image-header image-url))
-           [:h1 title]
-           [:div {:class "opux-content"
-                  :dangerouslySetInnerHTML {:__html content}}]]
-          (html/footer context)
-          [:div {:class "script-tags"}]
-          ;;  (html/script-tag default-script)]
-          )))))
-
 (defn render-page [cfobject locale]
   (let [fields (localize-fields (:fields cfobject) locale)]
     (contentful-page-structure
@@ -118,12 +80,15 @@
   (let [id (get-in cfobject [:sys :id])
         topic-fi (get-in cfobject [:fields :otsikko :fi])
         topic-sv (get-in cfobject [:fields :otsikko :sv])
-        youtube-id nil
-        image-id nil]
-    (log/info "processing story:" id)
+        image-id (get-in cfobject [:fields :kuva :fi :sys :id])]
+    (log/info "processing story: " id)
     (try
       (doseq [locale locales]
-        (let [image-url (str "/" (name locale) "/kuvat/" image-id)]
+        (let [image-url (if image-id
+                          (str "/" (name locale) "/kuvat/" image-id)
+                          nil)
+
+              youtube-id (get-in cfobject [:fields :youtubeUrl :fi])]
           (->> (render-story cfobject locale image-url youtube-id)
                  (upload-story (str (name locale) "/blog/" id ".html")))))
       (db/add-or-update-story! {:id id :topic-fi topic-fi :topic-sv topic-sv})

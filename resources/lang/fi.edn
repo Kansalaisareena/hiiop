@@ -8,10 +8,14 @@
 
  :footer
  {:rules-and-guidelines "Ohjeet ja säännöt"
-  :frequently-asked-questions "Usein kysyttyjä kysymyksiä"
+  :faq "Usein kysyttyjä kysymyksiä"
+  :faq-page-key "faq"
   :contact "Ota yhteyttä"
+  :contact-page-key "otayhteytta"
   :terms-of-service "Käyttäjäehdot"
+  :terms-of-service-page-key "kayttoehdot"
   :privacy "Henkilötietojen käsittely"
+  :privacy-page-key "tietosuoja"
   :follow-us "Hiiop! Seuraa meitä"
   :copyright "© OP Ryhmä"}
 
