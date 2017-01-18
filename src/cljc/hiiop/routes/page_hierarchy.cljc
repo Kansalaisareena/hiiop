@@ -20,7 +20,11 @@
     (leaf "" :password-reset))
 
    ;; Profile
-   (leaf "kayttaja" :profile)
+   (branch
+      "kayttaja"
+   (leaf ""         :profile)
+   (leaf "/"        :profile)
+   (leaf "/muokkaa" :edit-profile))
 
    (leaf "luo-tehtava" :create-quest)
 

@@ -52,9 +52,10 @@
                             (set! (.-location js/window)
                                   (path-for hierarchy :login))))))}
         (tr [:actions.profile.sign-out])]
-
-       ;;[:span {:class "opux-button opux-button--spacing opux-button--highlight"}
-       ;; (tr [:actions.profile.edit])]
+        
+       [:a {:class "opux-button opux-button--spacing opux-button--highlight"
+            :href (path-for hierarchy :edit-profile)}
+        (tr [:actions.profile.edit])]
 
        (if moderator
          [:a {:class "opux-button opux-button--spacing opux-button--highlight"
@@ -87,3 +88,61 @@
                                      :quests quests})
                past-quests)])
        ]]]))
+
+(rum/defc edit-profile < rum/reactive
+  [{:keys [context user-info user-edit schema errors]}]
+  (let [{:keys [name phone]} user-info
+        tr (:tr context)
+        cursors-and-schema (c/value-and-error-cursors-and-schema
+                            {:for user-edit
+                             :schema schema
+                             :errors errors})]
+    [:form
+     {:class "opux-form"
+      :on-submit
+      (fn [e]
+        (.preventDefault e)
+        (println @user-edit)
+        #?(:cljs
+           (go
+             (<! (api/edit-user (:id user-info) @user-edit)))))}
+     
+     [:div {:class "opux-form-section"}
+      [:div {:class "opux-content opux-content--small"}
+      [:div {:class "opux-fieldset opux-form-section__fieldset"}
+       
+       [:div {:class "opux-fieldset__item"}
+        (html/label
+         (tr [:pages.edit-profile.name])
+         {:class "opux-input__label name-label"})
+        (html/input
+         {:schema (get-in cursors-and-schema [:name :schema])
+          :value (get-in cursors-and-schema [:name :value])
+          :error (atom nil)
+          :type "text"
+          :class "opux-input opux-input--text name"
+          :context context})]
+
+       [:div {:class "opux-fieldset__item"}
+        (html/label
+         (tr [:pages.edit-profile.phone])
+         {:class "opux-input__label phone-label"})
+        (html/input
+         {:schema (get-in cursors-and-schema [:phone :schema])
+          :value (get-in cursors-and-schema [:phone :value])
+          :error (atom nil)
+          :type "text"
+          :class "opux-input opux-input--text phone"
+          :context context})]
+
+       [:div {:class "opux-section opux-centered"}
+        [:a {:class "opux-button opux-button--spacing opux-button--dull"
+             :href (path-for hierarchy :profile)}
+        (tr [:actions.profile.cancel-editing])]
+
+       (html/button
+        (tr [:actions.profile.save-profile])
+        {:class "opux-button opux-button--spacing opux-button--highlight"
+         :type "submit"
+         :active (atom true)}
+       )]]]]]))

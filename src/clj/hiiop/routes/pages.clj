@@ -27,6 +27,7 @@
                                   EditQuest
                                   NewQuest
                                   RegistrationInfo
+                                  EditUser
                                   UserActivation
                                   QuestFilter
                                   QuestCategoryFilter
@@ -114,6 +115,21 @@
                     (p-p/profile {:context context
                                   :user-info user-info
                                   :quests (atom quests)})})))
+
+(defn edit-profile [req]
+  (let [context (create-context req)
+        tr (:tr context)
+        user-id (get-in context [:identity :id])
+        user-info (get-private-user {:id (sc/string->uuid user-id)
+                                     :user-id (get-in req [:identity :id])})
+        user-edit (atom {:name (:name user-info) :phone (:phone user-info)})
+        errors (atom (same-keys-with-nils @user-edit))]
+    (layout/render {:context context
+                    :content (p-p/edit-profile {:context context
+                                                :user-info user-info
+                                                :user-edit user-edit
+                                                :schema EditUser
+                                                :errors errors})})))
 
 (defn activate [req]
   (let [context (create-context req)
@@ -346,6 +362,8 @@
    activate
    :profile
    (authenticated profile)
+   :edit-profile
+   (authenticated edit-profile)
    :quest
    quest
    :secret-quest

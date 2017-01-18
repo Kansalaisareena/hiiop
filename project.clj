@@ -219,7 +219,8 @@
                   [[com.jakemccrary/lein-test-refresh  "0.18.0"]
                    [lein-doo                           "0.1.7"]
                    [lein-figwheel                      "0.5.8"]
-                   [org.clojure/clojurescript          "1.9.293"]]
+                   [org.clojure/clojurescript          "1.9.293"]
+                   [lein-autoreload                    "0.1.1"]]
 
                   :prep-tasks ["git-version"]
 
