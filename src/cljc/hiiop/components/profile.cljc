@@ -131,7 +131,6 @@
          {:schema (get-in cursors-and-schema [:phone :schema])
           :value (get-in cursors-and-schema [:phone :value])
           :error (get-in cursors-and-schema [:phone :error])
-          :error-key :errors.phone.not-valid})]
           :type "text"
           :class "opux-input opux-input--text phone"
           :context context})]
