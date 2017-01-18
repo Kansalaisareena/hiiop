@@ -122,3 +122,12 @@
 (def api-signup->db-user-coercer
   (stc/coercer hs/NewGuestUser
                {dbs/DBGuestUser api-quest-signup->db-guest-user}))
+
+
+(defn api-edit-user->db-edit-user [user]
+  (-> user
+      (assoc :locale (name (:locale user)))))
+
+(def api-edit-user->db-edit-user-coercer
+  (stc/coercer dbs/DBEditUser
+               {dbs/DBEditUser api-edit-user->db-edit-user}))

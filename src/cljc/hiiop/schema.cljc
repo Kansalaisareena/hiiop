@@ -55,22 +55,29 @@
   {(s/optional-key :name) (s/maybe s/Str)
    (s/optional-key :description) (s/maybe s/Str)})
 
+(def Locale (s/enum :fi :sv))
+
 (def User
   "Registered or virtual user"
   {:id s/Uuid
    :email Email
    :name NonEmptyString
    (s/optional-key :phone) (s/maybe Phone)
-   ;;(s/optional-key :organisation) (s/maybe Organisation)
    ;;(s/optional-key :phone) (s/maybe Phone)
    :moderator s/Bool
    :active s/Bool})
+
+(def EditUser
+  "Editable fields of a user"
+  (-> User
+      (st/dissoc :id :moderator :active :email)
+      (st/assoc :phone Phone)
+      (st/assoc :locale Locale)))
 
 (def NewGuestUser
   "New guest"
   (st/dissoc User
              :id
-             :organisation
              :moderator
              :active))
  
@@ -301,4 +308,3 @@
   {:sys s/Any
    :fields s/Any})
 
-(def Locale)

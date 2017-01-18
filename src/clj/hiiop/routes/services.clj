@@ -110,6 +110,21 @@
               (ok)
               (bad-request))))
 
+        (PUT  "/:id" []
+              :name        ::edit-user
+              :path-params [id :- s/Uuid]
+              :body        [new-user EditUser]
+              :middleware  [api-authenticated]
+              :summary     "Updates a user"
+              (fn [request]
+                (if (= id (:id (:identity request)))
+                  (-> (api-handlers/edit-user {:new-user new-user :id
+                                               id :request-user-id (get-in request [:identity :id])})
+                      (#(if (not (:errors %1))
+                          (ok %1)
+                          (bad-request %1))))
+                  (unauthorized))))
+
         (POST "/reset-password" []
           :body [email Email]
           :summary "Creates a password reset token and sends it to
