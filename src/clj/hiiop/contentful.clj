@@ -59,12 +59,18 @@
    :identity nil
    :current-locale locale})
 
-(defn contentful-page-structure [{:keys [locale title content]}]
+(defn- image-header [image-url]
+  (if image-url
+    [:div {:class "opux-content opux-content__image-header"
+           :style {:background-image
+                   (str "url(" image-url ")")}}]))
+
+(defn contentful-page-structure
+  [{:keys [locale title content image-url]}]
   (let [context (create-context locale)
         tr (:tr context)
-        asset-path (:asset-path context)
-        default-script (str asset-path "/js/app.js")]
-    (rum/render-static-markup
+        asset-path (:asset-path context)]
+    (render-static-markup
       (html/page
         (html/head-content {:title title
                             :asset-path asset-path})
@@ -72,17 +78,21 @@
           (html/header context)
           [:div {:id "app"
                  :class "opux-page-section"}
+           (if image-url (image-header image-url))
+           [:h1 title]
            [:div {:class "opux-content"
                   :dangerouslySetInnerHTML {:__html content}}]]
           (html/footer context)
-          [:div {:class "script-tags"}
-           (html/script-tag default-script)])))))
+          [:div {:class "script-tags"}]
+          ;;  (html/script-tag default-script)]
+          )))))
 
 (defn render-page [cfobject locale]
   (let [fields (localize-fields (:fields cfobject) locale)]
-    (contentful-page-structure {:locale locale
-                                :title (:otsikko fields)
-                                :content (md/to-html (:leipateksti fields))})))
+    (contentful-page-structure
+      {:locale locale
+       :title (:otsikko fields)
+       :content (md/to-html (:leipateksti fields))})))
 
 (defn process-page [cfobject]
   (let [id (get-in cfobject [:sys :id])
@@ -95,27 +105,30 @@
       (catch Exception e
         (log/info "Exception in processing page " pagekey ":" e)))))
 
-
 (defn render-story [cfobject locale image-url youtube-id]
   (let [fields (localize-fields (:fields cfobject) locale)]
-    (render-static-markup
-     (blog/blog-post {:headline (:otsikko fields)
-                      :body-text (md/to-html (:leipteksti fields))
-                      :picture image-url
-                      :youtube-id youtube-id }))))
+    (contentful-page-structure
+      {:locale locale
+       :title (:otsikko fields)
+       :content (md/to-html (:leipteksti fields))
+       :youtube-id youtube-id
+       :image-url image-url})))
 
 (defn process-story [cfobject]
   (let [id (get-in cfobject [:sys :id])
         topic-fi (get-in cfobject [:fields :otsikko :fi])
         topic-sv (get-in cfobject [:fields :otsikko :sv])
-        youtube-id (get-in cfobject [:fields :youtubeUrl :fi])
-        image-id (get-in cfobject [:fields :kuva :fi :sys :id])]
+        youtube-id nil
+        image-id nil]
+    (log/info "processing story:" id)
     (try
       (doseq [locale locales]
         (let [image-url (str "/" (name locale) "/kuvat/" image-id)]
-            (->> (render-story cfobject locale image-url youtube-id)
+          (->> (render-story cfobject locale image-url youtube-id)
                  (upload-story (str (name locale) "/blog/" id ".html")))))
-      (db/add-or-update-story! {:id id :topic-fi topic-fi :topic-sv topic-sv}))))
+      (db/add-or-update-story! {:id id :topic-fi topic-fi :topic-sv topic-sv})
+      (catch Exception e
+        (log/error e)))))
 
 (defn process-asset [cfobject]
   (let [id (get-in cfobject [:sys :id])
