@@ -158,11 +158,12 @@
   (fn [request]
     (let [host (get-in request [:headers "host"])
           proto (get-in request [:headers "X-Forwarded-Proto"])
-          host-redirect? (not= host (:redirect-host env))
-          https-redirect? (and (:redirect-https env) (not= "https"))
+          redirect-host (:redirect-host env)
+          host-redirect?  (and redirect-host (not= host redirect-host))
+          https-redirect? (and (:redirect-https env) (not= "https" proto))
           need-redirect? (or host-redirect? https-redirect?)
           target-proto (if https-redirect? "https" (or proto "http"))
-          target-url (str target-proto "://" (:redirect-host env) (:uri request))]
+          target-url (str target-proto "://" redirect-host (:uri request))]
       (if need-redirect?
         (response/redirect target-url 301)
         (handler request)))))
