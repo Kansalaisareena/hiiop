@@ -102,10 +102,10 @@
       :on-submit
       (fn [e]
         (.preventDefault e)
-        (println @user-edit)
         #?(:cljs
            (go
-             (<! (api/edit-user (:id user-info) @user-edit)))))}
+             (let [response (<! (api/edit-user (:id user-info) @user-edit))
+                   success (:success response)]))))}
      
      [:div {:class "opux-form-section"}
       [:div {:class "opux-content opux-content--small"}
@@ -118,7 +118,7 @@
         (html/input
          {:schema (get-in cursors-and-schema [:name :schema])
           :value (get-in cursors-and-schema [:name :value])
-          :error (atom nil)
+          :error (get-in cursors-and-schema [:name :error])
           :type "text"
           :class "opux-input opux-input--text name"
           :context context})]
@@ -130,7 +130,8 @@
         (html/input
          {:schema (get-in cursors-and-schema [:phone :schema])
           :value (get-in cursors-and-schema [:phone :value])
-          :error (atom nil)
+          :error (get-in cursors-and-schema [:phone :error])
+          :error-key :errors.phone.not-valid})]
           :type "text"
           :class "opux-input opux-input--text phone"
           :context context})]

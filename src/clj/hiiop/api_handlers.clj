@@ -178,10 +178,9 @@
 (defn edit-user [{:keys [new-user id request-user-id locale]}]
   (try
     (-> new-user
-        ((fn [v] (log/info "test") v))
         (assoc :id (sc/string->uuid id)
                :user_id (sc/string->uuid request-user-id)
-               :locale "fi")
+               :locale (clojure.core/name locale))
         (db/edit-user!)
         (#(when (= 1 %) (db/get-user-by-id {:id id :user_id request-user-id}))))
     (catch Exception e
