@@ -154,6 +154,7 @@
                     nil)
         youtube-id (get-in cfobject [:fields :youtubeUrl :fi])
         title (:otsikko fields)
+        excerpt (:excerpt fields)
         content (md/to-html (:leipteksti fields))]
     {:id id
      :url (str (:hiiop-blog-base-url env) "/"
@@ -162,6 +163,7 @@
      :image-url image-url
      :youtube-id youtube-id
      :content content
+     :excerpt excerpt
      :title title
      :locale locale}))
 

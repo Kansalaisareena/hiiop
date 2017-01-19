@@ -51,17 +51,14 @@
             [:div {:class "opux-content"
                    :dangerouslySetInnerHTML {:__html content}}]]]
           (html/footer context)
-          [:div {:class "script-tags"}]
-          ;;  (html/script-tag default-script)]
-          )))))
+          [:div {:class "script-tags"}])))))
 
 (defn- story-card [{:keys [context story]}]
   (let [{:keys [title
-               url
-               id
-               content
-               image-url
-                ]} story]
+                url
+                id
+                excerpt
+                image-url]} story]
 
     [:div {:class "opux-card-container"}
      [:div {:class "opux-card"}
@@ -77,8 +74,7 @@
             :href url}
         title]
 
-       [:div {:class "opux-content"
-              :dangerouslySetInnerHTML {:__html content}}]]]]))
+       [:div {:class "opux-content"} excerpt]]]]))
 
 (defn- stories-card-list [{:keys [stories context]}]
   (let [tr (:tr context)]
