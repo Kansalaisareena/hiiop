@@ -127,6 +127,21 @@
           {:password (:password user-data)
            :token    (schema.coerce/string->uuid @read-token-from)})))))
 
+(defn edit-user [{:keys [login-cookie with new-user id]}]
+  (let [url (str "/api/v1/users/" id)]
+    (log/info "--------------------------edit-user" new-user)
+    (-> (generate-string new-user)
+        (#(json-request url
+           {:type :put
+            :body-string %1
+            :cookies login-cookie}))
+        (with)
+        (has-status 200 url)
+        (do-this #(log/info %1))
+        (:body)
+        (slurp)
+        (parse-string true))))
+
 (use-fixtures
   :once
   (fn [f]
@@ -544,6 +559,25 @@
             response (app-with-session request)]
         (is (= 400 (:status response)))))
     )
+
+  (testing "PUT /api/v1/users/:id"
+    (let [current-app (app)
+          user-created (create-test-user
+                        {:user-data test-user
+                         :save-id-to test-user-id
+                         :read-token-from activation-token})
+          login-cookie (login-and-get-cookie
+                        {:with current-app
+                         :user-data test-user})
+          edit-response (edit-user {:login-cookie login-cookie
+                                  :id @test-user-id
+                                  :with current-app
+                                  :new-user
+                                  {:name "Edited User"
+                                   :phone "+358 1234567"
+                                   :locale :sv}})]
+      (is (= "Edited User" (:name  edit-response)))
+      (db/delete-user! *db* {:id (sc/string->uuid @test-user-id)})))
 
   (testing "/api/v1/quests/add"
     (let [current-app (app)

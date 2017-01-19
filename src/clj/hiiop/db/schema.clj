@@ -66,11 +66,15 @@
 
 (def DBUser
   {:id s/Uuid
-   :emal hs/Email
+   :email hs/Email
    :name (s/maybe hs/NonEmptyString)
    :phone (s/maybe hs/Phone)
    :moderator s/Bool
-   :is_active s/Bool})
+   :is_active s/Bool
+   :locale hs/NonEmptyString})
 
 (def DBGuestUser
-  (st/dissoc DBUser :id :moderator :is_active))
+  (st/dissoc DBUser :moderator :is_active))
+
+(def DBEditUser
+  (st/dissoc DBUser :moderator :is_active :email))
