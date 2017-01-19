@@ -220,11 +220,7 @@ FROM
   quests q
 WHERE
   q.id = :id AND
-<<<<<<< HEAD
-  q.name IS NOT NULL;
-=======
   q.name IS NOT NULL
->>>>>>> master
 
 -- :name get-moderated-secret-quest :? :1
 -- :doc get quest by id
