@@ -114,6 +114,19 @@
         (catch Exception e
           (log/error "Sending quest deletion email to" (:email user) "failed" e))))))
 
+(defn- send-quest-edited-emails [quest-id user-id]
+  (let [party-members (db/get-quest-party-members
+                       {:quest_id quest-id
+                        :user_id user-id})]
+    (doseq [user party-members]
+      (try
+        (mail/send-edit-quest-email
+         (:email user)
+         quest-id
+         (:locale user))
+        (catch Exception e
+          (log/error "Sending quest deletion email to" (:email user) "failed" e))))))
+
 (defn reset-password [email]
   (try
     (-> (assoc {} :user (db/get-user-by-email {:email email}))
@@ -244,7 +257,9 @@
         (db/update-quest!)
         (#(db/get-unmoderated-quest-by-id {:id (:id %) :owner (:id user)}))
         (#(if %1
-            (hc/db-quest->api-quest-coercer %1)
+            (do
+              (send-quest-edited-emails (:id quest) (:id user))
+              (hc/db-quest->api-quest-coercer %1))
             {:errors {:unauthorized :errors.unauthorized.title}})))
     (catch Exception e
       (log/error e)
