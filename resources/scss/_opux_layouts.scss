@@ -30,6 +30,13 @@
     width: 100%;
     z-index: 9999;
   }
+
+  // opux-page-section--contentful
+  @include modifier('contentful') {
+    h2, h3, h4, h5 {
+      text-align: left;
+    }
+  }
 }
 
 @include block('opux-section') {

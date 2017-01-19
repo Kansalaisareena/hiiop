@@ -43,7 +43,7 @@
         (html/body-content
           (html/header context)
           [:div {:id "app"
-                 :class "opux-page-section"}
+                 :class "opux-page-section opux-page-section--contentful"}
            [:div {:class "opux-section"}
             (if image-url (image-header image-url))
             (if youtube-id (youtube-header youtube-id))
@@ -54,3 +54,62 @@
           [:div {:class "script-tags"}]
           ;;  (html/script-tag default-script)]
           )))))
+
+(defn- story-card [{:keys [context story]}]
+  (let [{:keys [title
+               url
+               id
+               content
+               image-url
+                ]} story]
+
+    [:div {:class "opux-card-container"}
+     [:div {:class "opux-card"}
+      (if image-url
+        [:div {:class "opux-card__image-container"}
+         [:a {:href url}
+          [:div {:class "opux-card__image"
+                 :style {:background
+                         (str "url(" image-url ")")}}]]])
+
+      [:div {:class "opux-card__content"}
+       [:a {:class "opux-card__title opux-sectino"
+            :href url}
+        title]
+
+       [:div {:class "opux-content"
+              :dangerouslySetInnerHTML {:__html content}}]]]]))
+
+(defn- stories-card-list [{:keys [stories context]}]
+  (let [tr (:tr context)]
+    [:ul {:class "opux-card-list"}
+     (map #(story-card {:context context
+                        :story %})
+          stories)]))
+
+(defn story-index-page-structure
+  [{:keys [stories locale]}]
+  (let [context (create-context locale)
+        tr (:tr context)
+        asset-path (:asset-path context)]
+    (rum/render-static-markup
+      (html/page
+        (html/head-content {:title "Tarina"
+                           :asset-path asset-path})
+        (html/body-content
+          (html/header context)
+          [:div {:id "app"
+                 :class "opux-page-section"}
+           [:div {:class "opux-section"}
+            [:div {:class "opux-content"}
+             [:h1 {:class "opux-centered"}
+              (tr [:pages.static.stories-index-header])]
+             [:p (tr [:pages.static.stories-index-subtitle])]]
+
+            [:div {:class "opux-section"}
+             [:div {:class "opux-section opux-card-list-container"}
+              [:div {:class "opux-content"}
+               (stories-card-list {:stories stories
+                                   :context context})]]]]]
+          (html/footer context)
+          [:div {:class "script-tags"}])))))

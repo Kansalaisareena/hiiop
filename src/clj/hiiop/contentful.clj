@@ -9,7 +9,8 @@
             [hiiop.config :refer [env asset-path]]
             [hiiop.translate :refer [default-locale tr-opts]]
             [hiiop.routes.page-hierarchy :refer [hierarchy]]
-            [hiiop.contentful-page :refer [contentful-page-structure]]
+            [hiiop.contentful-page :refer [contentful-page-structure
+                                           story-index-page-structure]]
             [taoensso.carmine :as car]
             [mount.core :refer [defstate]]
             [taoensso.timbre :as log]
@@ -87,7 +88,6 @@
         (let [image-url (if image-id
                           (str "/" (name locale) "/kuvat/" image-id)
                           nil)
-
               youtube-id (get-in cfobject [:fields :youtubeUrl :fi])]
           (->> (render-story cfobject locale image-url youtube-id)
                  (upload-story (str (name locale) "/blog/" id ".html")))))
@@ -136,9 +136,58 @@
        (concat prev-items new-items)
        (recur new-fetched-count (concat prev-items new-items))))))
 
+(defn- filter-stories [items]
+  (filter
+    (fn [item]
+      (let [type (if (= (get-in item [:sys :type]) "Entry")
+                   (get-in item [:sys :contentType :sys :id])
+                   (get-in item [:sys :type]))]
+        (= type "tarina")))
+    items))
+
+(defn- story-list-item-data [cfobject locale]
+  (let [fields (localize-fields (:fields cfobject) locale)
+        id (get-in cfobject [:sys :id])
+        image-id (get-in cfobject [:fields :kuva :fi :sys :id])
+        image-url (if image-id
+                    (str "/" (name locale) "/kuvat/" image-id)
+                    nil)
+        youtube-id (get-in cfobject [:fields :youtubeUrl :fi])
+        title (:otsikko fields)
+        content (md/to-html (:leipteksti fields))]
+    {:id id
+     :url (str (:hiiop-blog-base-url env) "/"
+               (name locale) "/blog/"
+               id ".html")
+     :image-url image-url
+     :youtube-id youtube-id
+     :content content
+     :title title
+     :locale locale}))
+
+(defn render-stories-index [stories locale]
+  (story-index-page-structure
+    {:stories stories
+     :locale locale}))
+
+(defn process-stories-indexes []
+  (let [stories (filter-stories (get-all-items))]
+    (doseq [locale locales]
+      (let [stories-data
+            (map
+              #(story-list-item-data % locale)
+              stories)]
+        (->> (story-index-page-structure
+               {:stories stories-data
+                :locale locale})
+             (upload-page (str (name locale)
+                               "/blog/index.html")))))))
+
+
 (defn refresh-items [items]
   (doseq [i items]
-    (process-item i)))
+    (process-item i))
+  (process-stories-indexes))
 
 (defn update-all-items []
   "Fetch all items from the contentful and do relevant processing and caching."

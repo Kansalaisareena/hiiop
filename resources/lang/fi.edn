@@ -90,6 +90,10 @@
    :check-your-email "Hiiop - tarkista sähköpostisi"
    :email-sent "Lähetimme sinulle sähköpostia. Viestissä on linkki, jota klikkaamalla pääset luomaan salasanasi ja kirjautumaan palveluun. Tähän saattaa mennä pari minuuttia."}
 
+  :static
+  {:stories-index-header "Tarinoita vapaaehtoistyöstä"
+   :stories-index-subtitle "Täältä löydät vinkkejä ja ideoita oman vapaaehtoistehtväsi järjestämiseen, voit lukea suomalaisesta vapaaehtoistoiminnasta, auttajista ja autetuista."}
+
   :profile
   {:title "Käyttäjä"
    :past-quests "Menneet vapaaehtoistehtäväsi"
