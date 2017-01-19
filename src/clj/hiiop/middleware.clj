@@ -18,7 +18,6 @@
             [taoensso.timbre :as log :refer [info]]
             [taoensso.tempura :as tempura]
             [taoensso.carmine.ring :refer [carmine-store]]
-            [mount.core :refer [defstate start]]
             [bidi.bidi :as bidi]
             [cuerdas.core :as str]
             [hiiop.routes.page-hierarchy :refer [hierarchy]]
@@ -154,8 +153,24 @@
             (assoc-in [:cookies "lang" :max-age] (* 3600 30)))
         (handler req)))))
 
+
+(defn redirect-to-https [handler]
+  (fn [request]
+    (let [host (get-in request [:headers "host"])
+          proto (get-in request [:headers "X-Forwarded-Proto"])
+          redirect-host (:redirect-host env)
+          host-redirect?  (and redirect-host (not= host redirect-host))
+          https-redirect? (and (:redirect-https env) (not= "https" proto))
+          need-redirect? (or host-redirect? https-redirect?)
+          target-proto (if https-redirect? "https" (or proto "http"))
+          target-url (str target-proto "://" redirect-host (:uri request))]
+      (if need-redirect?
+        (response/redirect target-url 301)
+        (handler request)))))
+
 (defn wrap-base [handler]
   (-> ((:middleware defaults) handler)
+      (redirect-to-https)
       wrap-webjars
       (wrap-authentication auth-backend)
       override-lang
