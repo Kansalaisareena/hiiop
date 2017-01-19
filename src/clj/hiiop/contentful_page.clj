@@ -32,7 +32,7 @@
      :frameborder 0}]])
 
 (defn contentful-page-structure
-  [{:keys [locale title content image-url youtube-id]}]
+  [{:keys [locale title content image-url youtube-id author]}]
   (let [context (create-context locale)
         tr (:tr context)
         asset-path (:asset-path context)]
@@ -45,11 +45,19 @@
           [:div {:id "app"
                  :class "opux-page-section opux-page-section--contentful"}
            [:div {:class "opux-section"}
+
             (if image-url (image-header image-url))
             (if youtube-id (youtube-header youtube-id))
-            [:h1 {:class "opux-centered"} title]
-            [:div {:class "opux-content"
-                   :dangerouslySetInnerHTML {:__html content}}]]]
+
+            [:div {:class "opux-content"}
+             [:h1 {:class "opux-contentful-title"} title]
+             (when author
+               [:h3 {:class "opux-contentful-author"}
+                author])]
+
+            (when (not-empty content)
+              [:div {:class "opux-content"
+                     :dangerouslySetInnerHTML {:__html content}}])]]
           (html/footer context)
           [:div {:class "script-tags"}])))))
 
@@ -58,11 +66,12 @@
                 url
                 id
                 excerpt
+                author
                 image-url]} story]
 
     [:div {:class "opux-card-container"}
      [:div {:class "opux-card"}
-      (if image-url
+      (when image-url
         [:div {:class "opux-card__image-container"}
          [:a {:href url}
           [:div {:class "opux-card__image"
@@ -74,7 +83,9 @@
             :href url}
         title]
 
-       [:div {:class "opux-content"} excerpt]]]]))
+       [:div {:class "opux-content"} excerpt]
+       (when author
+         [:div {:class "opux-content"} author])]]]))
 
 (defn- stories-card-list [{:keys [stories context]}]
   (let [tr (:tr context)]

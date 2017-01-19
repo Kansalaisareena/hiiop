@@ -73,7 +73,10 @@
     (contentful-page-structure
       {:locale locale
        :title (:otsikko fields)
-       :content (md/to-html (:leipteksti fields))
+       :author (get-in cfobject [:fields :author :fi])
+       :content (if (not-empty (:leipteksti fields))
+                  (md/to-html (:leipteksti fields))
+                  nil)
        :youtube-id youtube-id
        :image-url image-url})))
 
@@ -153,17 +156,17 @@
                     (str "/" (name locale) "/kuvat/" image-id)
                     nil)
         youtube-id (get-in cfobject [:fields :youtubeUrl :fi])
+        author (get-in cfobject [:fields :author :fi])
         title (:otsikko fields)
-        excerpt (:excerpt fields)
-        content (md/to-html (:leipteksti fields))]
+        excerpt (:excerpt fields)]
     {:id id
      :url (str (:hiiop-blog-base-url env) "/"
                (name locale) "/blog/"
                id ".html")
      :image-url image-url
      :youtube-id youtube-id
-     :content content
      :excerpt excerpt
+     :author author
      :title title
      :locale locale}))
 
