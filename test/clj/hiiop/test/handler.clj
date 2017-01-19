@@ -53,10 +53,6 @@
       (receive-log-and-put-args-to
        new-quest-args "received new quest participant")
 
-      #'hiiop.mail/send-new-quest-participant-email
-      (receive-log-and-put-args-to
-       new-quest-args "received new quest participant")
-
       #'hiiop.mail/send-edit-quest-email
       (receive-log-and-put-args-to
        edit-quest-args "receive edit quest")
