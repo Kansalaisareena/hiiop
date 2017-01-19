@@ -101,6 +101,19 @@
       (log/error e)
       (assoc args :email-sent false))))
 
+(defn- send-quest-deleted-emails [quest-id user-id]
+  (let [party-members (db/get-quest-party-members
+                       {:quest_id quest-id
+                        :user_id user-id})]
+    (doseq [user party-members]
+      (try
+        (mail/send-quest-deleted-email
+         (:email user)
+         quest-id
+         (:locale user))
+        (catch Exception e
+          (log/error "Sending quest deletion email to" (:email user) "failed" e))))))
+
 (defn reset-password [email]
   (try
     (-> (assoc {} :user (db/get-user-by-email {:email email}))
@@ -183,7 +196,8 @@
                   {:id id :user_id user-id})
           owner (:owner quest)]
       (if (= (str owner) (str user-id))
-        (db/delete-quest-by-id! {:id id})
+        (do (db/delete-quest-by-id! {:id id})
+            (send-quest-deleted-emails id user-id))
         {:errors {:quest :errors.quest.not-authorised-to-delete-quest}}))
     (catch Exception e
       (log/error e)

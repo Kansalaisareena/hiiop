@@ -709,7 +709,8 @@ SELECT
   p.id as member_id,
   u.name as name,
   u.email as email,
-  u.phone as phone
+  u.phone as phone,
+  u.locale as locale
 FROM
   quests q,
   parties p,
