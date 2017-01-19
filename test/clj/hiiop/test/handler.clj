@@ -574,9 +574,9 @@
                                   :with current-app
                                   :new-user
                                   {:name "Edited User"
-                                   :phone "+358 1234567"
-                                   :locale :sv}})]
-      (is (= "Edited User" (:name  edit-response)))
+                                   :phone "+358 1234567"}})
+          user-id (sc/string->uuid @test-user-id)]
+      (is (= "Edited User" (:name (db/get-user-by-id {:id user-id :user_id user-id}))))
       (db/delete-user! *db* {:id (sc/string->uuid @test-user-id)})))
 
   (testing "/api/v1/quests/add"
