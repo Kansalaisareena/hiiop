@@ -156,16 +156,30 @@
   :profiles
   {:uberjar {:omit-source true
              ;;:prep-tasks ["git-version" "compile" ["cljsbuild" "once" "min"] "resource" "minify-assets"]
-             :prep-tasks ["git-version" "compile" ["cljsbuild" "once" "min"] "resource"]
+             :prep-tasks ["git-version"
+                          "compile"
+                          ["cljsbuild" "once" "min"]
+                          ["cljsbuild" "once" "static"]
+                          "resource"]
              :cljsbuild
              {:builds
               {:min
-               {:source-paths ["src/cljc" "src/cljs" "env/prod/cljs"]
+               {:source-paths ["src/cljc" "src/cljs/hiiop" "env/prod/cljs"]
                 :compiler
                 {:output-to "target/cljsbuild/public/js/app.js"
                  ;;:output-dir "target/cljsbuild/public/js/"
                  ;;:source-map "target/cljsbuild/public/js/app.js.map"
                  :externs ["react/externs/react.js"]
+                 :optimizations :simple
+                 :pretty-print false
+                 :closure-warnings
+                 {:externs-validation :off :non-standard-jsdoc :off}}}
+               :static
+               {:source-paths ["src/cljs/hiiop_static"]
+                :compiler
+                {:output-to "target/cljsbuild/public/js/static.js"
+                 ;;:output-dir "target/cljsbuild/public/js/"
+                 ;;:source-map "target/cljsbuild/public/js/app.js.map"
                  :optimizations :simple
                  :pretty-print false
                  :closure-warnings
@@ -212,7 +226,7 @@
                   :cljsbuild
                   {:builds
                    {:app
-                    {:source-paths ["src/cljs" "src/cljc" "env/dev/cljs"]
+                    {:source-paths ["src/cljs/hiiop" "src/cljc" "env/dev/cljs"]
                      :compiler
                      {:main "hiiop.app"
                       :asset-path "/js/out"
@@ -220,9 +234,14 @@
                       :output-dir "target/cljsbuild/public/js/out"
                       :source-map true
                       :optimizations :none
+                      :pretty-print true}}
+                    :static
+                    {:source-paths ["src/cljs/hiiop_static"]
+                     :compiler
+                     {:main "hiiop.static"
+                      :output-to "target/cljsbuild/public/js/static.js"
+                      :optimizations :whitespace
                       :pretty-print true}}}}
-
-
 
                   :doo {:build "test"}
                   :source-paths ["env/dev/clj" "test/clj"]
