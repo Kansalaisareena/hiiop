@@ -54,8 +54,8 @@
                                   (path-for hierarchy :login))))))}
         (tr [:actions.profile.sign-out])]
 
-       [:span {:class "opux-button opux-button--spacing opux-button--highlight"}
-        (tr [:actions.profile.edit])]
+       ;;[:span {:class "opux-button opux-button--spacing opux-button--highlight"}
+       ;; (tr [:actions.profile.edit])]
 
        (if moderator
          [:a {:class "opux-button opux-button--spacing opux-button--highlight"
