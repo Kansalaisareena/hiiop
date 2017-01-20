@@ -131,7 +131,8 @@
                   :body-text (content :leipateksti-rendered)
                   :body-text-plaintext (content :leipateksti)
                   :button-text (content :ekanappiteksti)
-                  :button-url (url-to' :quest :quest-id quest-id)}}))))
+                  :button-url (str (url-to' :quest-id quest-id :edit-quest)
+                                   "#edit-party-members")}}))))
 
 (defn- send-quest-declined [{:keys [email quest message locale]}]
   (log/info email quest message locale)
