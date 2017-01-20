@@ -98,11 +98,12 @@
 
 (defn process-asset [cfobject]
   (let [id (get-in cfobject [:sys :id])
-        fi-url (str "http:" (get-in cfobject [:fields :file :fi :url]))
-        sv-url (str "http:" (get-in cfobject [:fields :file :sv :url]))]
+        fi-url (get-in cfobject [:fields :file :fi :url])
+        sv-url (or (get-in cfobject [:fields :file :sv :url])
+                   fi-url)]
     (go
-      (get-and-upload-asset fi-url (str "fi/kuvat/" id))
-      (get-and-upload-asset sv-url (str "sv/kuvat/" id)))))
+      (get-and-upload-asset (str "http:" fi-url) (str "fi/kuvat/" id))
+      (get-and-upload-asset (str "http:" sv-url) (str "sv/kuvat/" id)))))
 
 (def handlers
   {"sahkopostiviesti" process-email
