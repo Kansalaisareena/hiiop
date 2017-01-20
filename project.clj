@@ -156,7 +156,11 @@
   :profiles
   {:uberjar {:omit-source true
              ;;:prep-tasks ["git-version" "compile" ["cljsbuild" "once" "min"] "resource" "minify-assets"]
-             :prep-tasks ["git-version" "compile" ["cljsbuild" "once" "min"] "resource"]
+             :prep-tasks ["git-version"
+                          "compile"
+                          ["cljsbuild" "once" "min"]
+                          ["cljsbuild" "once" "static"]
+                          "resource"]
              :cljsbuild
              {:builds
               {:min
@@ -166,6 +170,16 @@
                  ;;:output-dir "target/cljsbuild/public/js/"
                  ;;:source-map "target/cljsbuild/public/js/app.js.map"
                  :externs ["react/externs/react.js"]
+                 :optimizations :simple
+                 :pretty-print false
+                 :closure-warnings
+                 {:externs-validation :off :non-standard-jsdoc :off}}}
+               :static
+               {:source-paths ["src/cljs/hiiop_static"]
+                :compiler
+                {:output-to "target/cljsbuild/public/js/static.js"
+                 ;;:output-dir "target/cljsbuild/public/js/"
+                 ;;:source-map "target/cljsbuild/public/js/app.js.map"
                  :optimizations :simple
                  :pretty-print false
                  :closure-warnings
@@ -221,15 +235,12 @@
                       :source-map true
                       :optimizations :none
                       :pretty-print true}}
-                    :static-pages
+                    :static
                     {:source-paths ["src/cljs/hiiop_static"]
                      :compiler
                      {:main "hiiop.static"
-                      :asset-path "/js/static-out"
                       :output-to "target/cljsbuild/public/js/static.js"
-                      :output-dir "target/cljsbuild/public/static-out"
-                      :source-map true
-                      :optimizations :none
+                      :optimizations :whitespace
                       :pretty-print true}}}}
 
                   :doo {:build "test"}

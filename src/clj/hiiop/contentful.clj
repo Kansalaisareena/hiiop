@@ -15,7 +15,6 @@
             [mount.core :refer [defstate]]
             [taoensso.timbre :as log]
             [hiiop.file-upload :refer [upload-story upload-page get-and-upload-asset]]
-            [hiiop.db.core :as db]
             [me.raynes.cegdown :as md]
             [hiiop.html :as html]
             [taoensso.tempura :as tempura]
@@ -94,7 +93,6 @@
               youtube-id (get-in cfobject [:fields :youtubeUrl :fi])]
           (->> (render-story cfobject locale image-url youtube-id)
                  (upload-story (str (name locale) "/blog/" id ".html")))))
-      (db/add-or-update-story! {:id id :topic-fi topic-fi :topic-sv topic-sv})
       (catch Exception e
         (log/error e)))))
 

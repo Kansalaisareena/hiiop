@@ -59,7 +59,9 @@
               [:div {:class "opux-content"
                      :dangerouslySetInnerHTML {:__html content}}])]]
           (html/footer context)
-          [:div {:class "script-tags"}])))))
+          [:div {:class "script-tags"}
+           [:script {:src (str asset-path "/js/static.js")
+                     :type "text/javascript"}]])))))
 
 (defn- story-card [{:keys [context story]}]
   (let [{:keys [title
