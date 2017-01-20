@@ -196,7 +196,7 @@ Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit
     :start-date-and-time "Päivämäärä ja kellonaika"
     :end-date-and-time "Päättymispäivämäärä ja -kellonaika"
 
-    :location {:label "Osoite"
+    :location {:label "Osoite (valitse osoite alasvetovalikosta)"
                :placeholder "Anna sijainti"}
     :address "Osoite"
     :town "Paikkakunta"

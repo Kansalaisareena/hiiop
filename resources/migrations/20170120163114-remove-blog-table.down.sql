@@ -1,0 +1,4 @@
+CREATE TABLE IF NOT EXISTS blog
+(id TEXT PRIMARY KEY,
+topic_fi TEXT,
+topic_sv TEXT);

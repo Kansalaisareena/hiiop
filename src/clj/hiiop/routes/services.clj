@@ -52,7 +52,7 @@
         (wrap-simple-auth {:username (get-in env [:contentful :webhook-user])
                            :password (get-in env [:contentful :webhook-password])}
                           (fn [request]
-                            (try (do (cf/process-item cfobject)
+                            (try (do (cf/update-all-items)
                                      (ok))
                                  (catch Exception e
                                    (log/info "Contentful hook failed: " e)
