@@ -61,8 +61,6 @@
    :email Email
    :name NonEmptyString
    (s/optional-key :phone) (s/maybe Phone)
-   ;;(s/optional-key :organisation) (s/maybe Organisation)
-   ;;(s/optional-key :phone) (s/maybe Phone)
    :moderator s/Bool
    :active s/Bool})
 
@@ -77,7 +75,6 @@
   "New guest"
   (st/dissoc User
              :id
-             :organisation
              :moderator
              :active))
  
@@ -307,5 +304,3 @@
   "Contentful object"
   {:sys s/Any
    :fields s/Any})
-
-(def Locale)
