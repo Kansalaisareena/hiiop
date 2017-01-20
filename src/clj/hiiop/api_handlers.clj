@@ -101,6 +101,32 @@
       (log/error e)
       (assoc args :email-sent false))))
 
+(defn- send-quest-deleted-emails [quest-id user-id]
+  (let [party-members (db/get-quest-party-members
+                       {:quest_id quest-id
+                        :user_id user-id})]
+    (doseq [user party-members]
+      (try
+        (mail/send-quest-deleted-email
+         (:email user)
+         quest-id
+         (:locale user))
+        (catch Exception e
+          (log/error "Sending quest deletion email to" (:email user) "failed" e))))))
+
+(defn- send-quest-edited-emails [quest-id user-id]
+  (let [party-members (db/get-quest-party-members
+                       {:quest_id quest-id
+                        :user_id user-id})]
+    (doseq [user party-members]
+      (try
+        (mail/send-edit-quest-email
+         (:email user)
+         quest-id
+         (:locale user))
+        (catch Exception e
+          (log/error "Sending quest deletion email to" (:email user) "failed" e))))))
+
 (defn reset-password [email]
   (try
     (-> (assoc {} :user (db/get-user-by-email {:email email}))
@@ -195,7 +221,8 @@
                   {:id id :user_id user-id})
           owner (:owner quest)]
       (if (= (str owner) (str user-id))
-        (db/delete-quest-by-id! {:id id})
+        (do (db/delete-quest-by-id! {:id id})
+            (send-quest-deleted-emails id user-id))
         {:errors {:quest :errors.quest.not-authorised-to-delete-quest}}))
     (catch Exception e
       (log/error e)
@@ -242,7 +269,9 @@
         (db/update-quest!)
         (#(db/get-unmoderated-quest-by-id {:id (:id %) :owner (:id user)}))
         (#(if %1
-            (hc/db-quest->api-quest-coercer %1)
+            (do
+              (send-quest-edited-emails (:id quest) (:id user))
+              (hc/db-quest->api-quest-coercer %1))
             {:errors {:unauthorized :errors.unauthorized.title}})))
     (catch Exception e
       (log/error e)
@@ -470,12 +499,21 @@
 
 (defn- send-join-email [{:keys [user quest member] :as args}]
   (try
-    (assoc args :email
-           (mail/send-join-quest-email
-            {:email (:email user)
-             :quest (hc/db-quest->api-quest-coercer quest)
-             :locale (keyword (:locale user))
-             :member-id (:member-id member)}))
+    (mail/send-join-quest-email
+     {:email (:email user)
+      :quest (hc/db-quest->api-quest-coercer quest)
+      :locale (keyword (:locale user))
+      :member-id (:member-id member)})
+    (catch Exception e
+      (log/error e)
+      (assoc args :email false))))
+
+(defn- send-join-email-to-owner [{:keys [user quest] :as args}]
+  (try
+    (mail/send-new-quest-participant-email
+     {:email (:email user)
+      :quest (hc/db-quest->api-quest-coercer quest)
+      :locale (keyword (:locale user))})
     (catch Exception e
       (log/error e)
       (assoc args :email false))))
@@ -506,20 +544,23 @@
         (let [join-with (if is-open
                           join-open-quest!
                           join-secret-quest!)
-              joined (join-with party-member)]
+              joined (join-with party-member)
+              user (db/get-user-by-id {:id (:user_id party-member)
+                                       :user_id (:user_id party-member)})
+              member (db/get-party-member joined)
+              quest-owner (db/get-quest-owner {:id quest-id})
+              ]
           (if (nil? (:errors joined))
             (do
               (log/info joined)
-              (-> (db/get-user-by-id {:id (:user_id party-member)
-                                      :user_id (:user_id party-member)})
-                  (#(assoc {} :user %1))
-                  (assoc :member (db/get-party-member joined))
-                  (#(send-join-email
-                     {:user (:user %1)
-                      :quest quest
-                      :member (:member %1)}))
-                  (:member)
-                  (hc/db-party-member->api-party-member-coercer)))
+              (send-join-email
+               {:user user
+                :quest quest
+                :member member})
+              (send-join-email-to-owner
+               {:user quest-owner
+                :quest quest})
+              (hc/db-party-member->api-party-member-coercer member))
             joined))
         party-member))
     (catch Exception e

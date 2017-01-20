@@ -50,7 +50,7 @@
 (defn quest-email-title [title quest-name]
   (str title " " quest-name))
 
-(defn send-activation-token [email token locale]
+(defn- send-activation-token [email token locale]
   (let [content (mail-content "activation" locale)]
     (send-mail
      (make-mail {:to email
@@ -64,7 +64,7 @@
                   :body-text-plaintext (content :leipateksti)
                   :button-text (content :ekanappiteksti)}}))))
 
-(defn send-password-reset-token [email token locale]
+(defn- send-password-reset-token [email token locale]
   (let [content (mail-content "password-reset" locale)]
     (send-mail
      (make-mail {:to email
@@ -78,21 +78,7 @@
                   :button-text (content :ekanappiteksti)
                   :button-url (url-to' :password-reset :token token)}}))))
 
-(defn send-new-quest [{:keys [email quest locale]}]
-  (let [content (mail-content "new-quest" locale)]
-    (send-mail
-     (make-mail {:to email
-                 :subject (content :otsikko)
-                 :template emails/simple-mail
-                 :plaintext-template emails/plaintext-simple-mail
-                 :template-params
-                 {:button-url (url-to' :quest :quest-id (:id quest))
-                  :title (content :otsikko)
-                  :body-text (content :leipateksti-rendered)
-                  :body-text-plaintext (content :leipateksti)
-                  :button-text (content :ekanappiteksti)}}))))
-
-(defn send-edit-quest [email quest-id locale]
+(defn- send-edit-quest [email quest-id locale]
   (let [content (mail-content "edit-quest" locale)]
     (send-mail
      (make-mail {:to email
@@ -106,7 +92,7 @@
                   :body-text-plaintext (content :leipateksti)
                   :button-text (content :ekanappiteksti)}}))))
 
-(defn send-join-quest [{:keys [email quest locale member-id]}]
+(defn- send-join-quest [{:keys [email quest locale member-id]}]
   (log/info "send-join-quest" email quest locale member-id)
   (let [tr (ht/tr-with [locale])
         quest-id (:id quest)
@@ -130,7 +116,24 @@
                                         :quest-id quest-id
                                         :member-id member-id)}}))))
 
-(defn send-quest-declined [{:keys [email quest message locale]}]
+(defn- send-new-quest-participant [{:keys [email quest locale]}]
+  (log/info "send-quest-new-participant" email quest)
+  (let [quest-id (:id quest)
+        content (mail-content "new-quest-participant" locale)
+        title (quest-email-title (content :otsikko) (quest :name))]
+    (send-mail
+     (make-mail {:to email
+                 :subject title
+                 :template emails/simple-mail
+                 :plaintext-template emails/plaintext-simple-mail
+                 :template-params
+                 {:title title
+                  :body-text (content :leipateksti-rendered)
+                  :body-text-plaintext (content :leipateksti)
+                  :button-text (content :ekanappiteksti)
+                  :button-url (url-to' :quest :quest-id quest-id)}}))))
+
+(defn- send-quest-declined [{:keys [email quest message locale]}]
   (log/info email quest message locale)
   (let [tr (ht/tr-with [locale])
         quest-id (:id quest)
@@ -149,7 +152,7 @@
                   :body-text-plaintext (content :leipateksti)
                   :message message}}))))
 
-(defn send-quest-accepted [{:keys [email quest locale]}]
+(defn- send-quest-accepted [{:keys [email quest locale]}]
   (log/info "send-quest-accepted" email quest locale)
   (let [tr (ht/tr-with [locale])
         quest-id (:id quest)
@@ -169,7 +172,7 @@
                   :button-text (content :ekanappiteksti)
                   :button-url (url-to' :quest :quest-id (:id quest))}}))))
 
-(defn send-private-quest-accepted [{:keys [email quest locale]}]
+(defn- send-private-quest-accepted [{:keys [email quest locale]}]
   (log/info "send-private-quest-accepted" email quest locale)
   (let [tr (ht/tr-with [locale])
         quest-id (:id quest)
@@ -194,7 +197,7 @@
                                         :quest-id quest-id
                                         :secret-party secret-party)}}))))
 
-(defn send-quest-deleted [email quest-id locale]
+(defn- send-quest-deleted [email quest-id locale]
   (let [content (mail-content "quest-deleted" locale)]
     (send-mail
      (make-mail {:to email
@@ -210,7 +213,7 @@
 
 (defstate send-activation-token-email       :start send-activation-token)
 (defstate send-password-reset-token-email   :start send-password-reset-token)
-(defstate send-new-quest-email              :start send-new-quest)
+(defstate send-new-quest-participant-email  :start send-new-quest-participant)
 (defstate send-edit-quest-email             :start send-edit-quest)
 (defstate send-join-quest-email             :start send-join-quest)
 (defstate send-quest-declined-email         :start send-quest-declined)

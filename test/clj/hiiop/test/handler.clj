@@ -49,9 +49,9 @@
       (receive-token-log-and-update
        password-reset-token "received password-token")
 
-      #'hiiop.mail/send-new-quest-email
+      #'hiiop.mail/send-new-quest-participant-email
       (receive-log-and-put-args-to
-       new-quest-args "received new quest")
+       new-quest-args "received new quest participant")
 
       #'hiiop.mail/send-edit-quest-email
       (receive-log-and-put-args-to
