@@ -15,7 +15,6 @@
             [hiiop.html :as html]
             [hiiop.components.quest-card :refer [quest-card-profile]]
             [hiiop.schema :as hs]))
-
 (defn get-past-quests
   [quests]
   (let [today (time/today)]

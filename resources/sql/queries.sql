@@ -32,7 +32,6 @@ SET
   locale = :locale
 WHERE id = :id
 
-
 -- :name edit-user! :! :1
 -- :doc update user fields editable by user
 UPDATE
@@ -46,7 +45,6 @@ WHERE id = :id AND
         EXISTS (SELECT FROM users u
              WHERE u.id = :user_id AND
                    u.moderator = true))
-
 
 -- :name get-public-user-by-id :? :1 :uuid
 -- :doc retrieve a user given the uuid.
@@ -750,3 +748,23 @@ WHERE
 UPDATE users
 SET moderator = true
 WHERE id = :id
+
+-- :name add-or-update-story! :! :1
+-- :doc "Add story entry or update if it already exists"
+INSERT INTO blog (id, topic_fi, topic_sv)
+VALUES (:id, :topic-fi, :topic-sv)
+ON CONFLICT (id) DO
+  UPDATE
+    SET id = :id,
+        topic_fi = :topic-fi,
+        topic_sv = :topic-sv
+
+-- :name delete-story! :! :1
+-- :doc "Delete a story entry by id"
+DELETE FROM blog
+WHERE id = :id
+
+-- :name get-all-blog-entries? :? :*
+-- :doc "Get all blog entries"
+SELECT *
+FROM blog

@@ -30,6 +30,13 @@
     width: 100%;
     z-index: 9999;
   }
+
+  // opux-page-section--contentful
+  @include modifier('contentful') {
+    h1, h2, h3, h4, h5 {
+      text-align: left;
+    }
+  }
 }
 
 @include block('opux-section') {
@@ -60,12 +67,21 @@
     max-width: 620px;
   }
 
-  @include modifier('quest-image-header') {
+  @include modifier('image-header') {
     background-color: $OP-gray-light;
     background-position: center;
     background-size: cover;
     display: block;
+    position: relative;
     height: 550px;
+
+    iframe {
+      height: 100% !important;
+      left: 0px;
+      position: absolute;
+      top: 0px;
+      width: 100% !important;
+    }
 
     @include modifier('small') {
       height: 300px;
@@ -433,4 +449,12 @@
   a.j-paginate.juicer-button {
     display: none;
   }
+}
+
+@include block("opux-contentful-title") {
+  padding-bottom: 0;
+}
+
+@include block("opux-contentful-author") {
+  padding-top: 0px;
 }

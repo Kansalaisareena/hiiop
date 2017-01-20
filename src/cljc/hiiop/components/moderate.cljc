@@ -51,7 +51,7 @@
         [:i {:class "opux-icon opux-icon-ellipses"}]]]
 
       [:div {:class "opux-section"}
-       [:div {:class "opux-content opux-content--small opux-content--quest-image-header opux-content--quest-image-header--small"
+       [:div {:class "opux-content opux-content--small opux-content--image-header opux-content--image-header--small"
               :style {:background-image (str "url('" (get-quest-image quest) "')")}}]
 
        [:div {:class "opux-content opux-content--medium"}

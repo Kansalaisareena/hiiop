@@ -4,6 +4,8 @@
             [clojure.string :as string]
             [schema.core :as s]
             #?(:cljs [schema.core :refer [EnumSchema]])
+            #?(:clj [hiiop.config :refer [env]]
+               :cljs [hiiop.client-config :refer [env]])
             [schema-tools.core :as st]
             [schema-tools.coerce :as stc]
             [bidi.bidi :refer [path-for]]
@@ -455,15 +457,13 @@
    content])
 
 (rum/defc header [{:keys [hierarchy tr asset-path] :as context}]
-  [:header
-   {:class "opux-page-section opux-page-section--header"}
-   [:h1
-    {:class "opux-logo opux-logo--header"}
-    [:a
-     {:href (path-for hierarchy :index)}
-     (tr [:name])]]
-   [:div {:id "top-navigation"}
-    (navigation/top-navigation context)]])
+  (let [site-base-url (:site-base-url env)]
+    [:header {:class "opux-page-section opux-page-section--header"}
+     [:h1 {:class "opux-logo opux-logo--header"}
+      [:a {:href (str site-base-url (path-for hierarchy :index))}
+       (tr [:name])]]
+     [:div {:id "top-navigation"}
+      (navigation/top-navigation context)]]))
 
 (rum/defc body-content [header content footer scripts]
   [:body
