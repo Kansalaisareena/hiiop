@@ -89,14 +89,18 @@
                past-quests)])
        ]]]))
 
-(rum/defc edit-profile < rum/reactive
-  [{:keys [context user-info user-edit schema errors]}]
+(rum/defcs edit-profile-form < rum/reactive
+                             < (rum/local true ::is-valid)
+  [state
+   {:keys [context
+           cursors-and-schema
+           schema
+           user-edit
+           user-info
+          ]}]
   (let [{:keys [name phone]} user-info
-        tr (:tr context)
-        cursors-and-schema (c/value-and-error-cursors-and-schema
-                            {:for user-edit
-                             :schema schema
-                             :errors errors})]
+        tr (:tr context)]
+
     [:form
      {:class "opux-form"
       :on-submit
@@ -104,8 +108,11 @@
         (.preventDefault e)
         #?(:cljs
            (go
-             (let [response (<! (api/edit-user (:id user-info) @user-edit))
-                   success (:success response)]))))}
+            (let [response (<! (api/edit-user (:id user-info) @user-edit))
+                  success (:success response)]
+             (when success
+               #?(:cljs (set! (.-location js/window)
+                              (path-for hierarchy :profile))))))))}
      
      [:div {:class "opux-form-section"}
       [:div {:class "opux-content opux-content--small"}
@@ -146,3 +153,17 @@
          :type "submit"
          :active (atom true)}
        )]]]]]))
+
+(rum/defc edit-profile < rum/reactive
+  [{:keys [context user-info user-edit schema errors]}]
+  (let [cursors-and-schema (c/value-and-error-cursors-and-schema
+                            {:for user-edit
+                             :schema schema
+                             :errors errors})]
+
+  (edit-profile-form
+   {:context context
+    :cursors-and-schema cursors-and-schema
+    :schema schema
+    :user-edit user-edit
+    :user-info user-info})))
