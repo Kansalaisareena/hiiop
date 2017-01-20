@@ -447,7 +447,7 @@
          {:class "opux-table opux-centered opux-content"}
          (into [:tbody {:class "opux-table__body"}] (map edit-member @party))]
         [:div {:class "opux-content"}
-         [:a {:href (str "mailto:?bcc=" (clojure.string/join "," (map (fn [p] (:email p)) @party)))}
+         [:a {:href (str "mailto:?bcc=" (clojure.string/join "," (map :email @party)))}
           [:span {:class "opux-icon opux-icon-mail"}]
           (tr [:pages.quest.edit.party.mail-participants])]]]
        [:p {:class "opux-content opux-centered"} (tr [:pages.quest.edit.party.empty])])]))
