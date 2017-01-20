@@ -218,6 +218,7 @@ Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit
     {:confirmation "Oletko varma, että haluat poistaa tehtävän? Jos vapaaehtoistehtävä on jo julkinen, siihen ilmoittautuneet vapaaehtoiset saavat automaattisesti viestin peruutuksesta."}
     :party
     {:title "Tehtävääsi ilmoittautuneet"
+     :mail-participants "Lähetä sähköpostiviesti osallistujille"
      :confirm-remove "Poista ilmoittautuminen?"
      :cancel-remove "Peruuta"
      :empty "Kerro muillekin tehtävästäsi!"}
