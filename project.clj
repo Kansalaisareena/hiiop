@@ -160,7 +160,7 @@
              :cljsbuild
              {:builds
               {:min
-               {:source-paths ["src/cljc" "src/cljs" "env/prod/cljs"]
+               {:source-paths ["src/cljc" "src/cljs/hiiop" "env/prod/cljs"]
                 :compiler
                 {:output-to "target/cljsbuild/public/js/app.js"
                  ;;:output-dir "target/cljsbuild/public/js/"
@@ -212,7 +212,7 @@
                   :cljsbuild
                   {:builds
                    {:app
-                    {:source-paths ["src/cljs" "src/cljc" "env/dev/cljs"]
+                    {:source-paths ["src/cljs/hiiop" "src/cljc" "env/dev/cljs"]
                      :compiler
                      {:main "hiiop.app"
                       :asset-path "/js/out"
@@ -220,9 +220,17 @@
                       :output-dir "target/cljsbuild/public/js/out"
                       :source-map true
                       :optimizations :none
+                      :pretty-print true}}
+                    :static-pages
+                    {:source-paths ["src/cljs/hiiop_static"]
+                     :compiler
+                     {:main "hiiop.static"
+                      :asset-path "/js/static-out"
+                      :output-to "target/cljsbuild/public/js/static.js"
+                      :output-dir "target/cljsbuild/public/static-out"
+                      :source-map true
+                      :optimizations :none
                       :pretty-print true}}}}
-
-
 
                   :doo {:build "test"}
                   :source-paths ["env/dev/clj" "test/clj"]

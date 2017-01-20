@@ -119,4 +119,6 @@
                (stories-card-list {:stories stories
                                    :context context})]]]]]
           (html/footer context)
-          [:div {:class "script-tags"}])))))
+          [:div {:class "script-tags"}
+           [:script {:src (str asset-path "/js/static.js")
+                     :type "text/javascript"}]])))))

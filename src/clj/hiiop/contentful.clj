@@ -188,7 +188,6 @@
              (upload-page (str (name locale)
                                "/blog/index.html")))))))
 
-
 (defn refresh-items [items]
   (doseq [i items]
     (process-item i))
