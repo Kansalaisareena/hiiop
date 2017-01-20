@@ -52,7 +52,7 @@
                         :key key
                         :file (:tempfile picture-file)
                         :metadata
-                        {:content-type {:content-type picture-file}})
+                        {:content-type (:content-type picture-file)})
          key
          ))
       (#(str bucket-base-url "/" %1))
