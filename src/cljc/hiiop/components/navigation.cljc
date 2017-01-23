@@ -5,7 +5,7 @@
                :cljs [hiiop.client-config :refer [env]])))
 
 (rum/defcs top-navigation < (rum/local false ::is-active)
-  [state {:keys [hierarchy tr current-locale identity]}]
+  [state {:keys [hierarchy tr current-locale identity show-user-name]}]
   (let [is-active (::is-active state)
         site-base-url (:site-base-url env)]
     [:div
@@ -68,9 +68,12 @@
 
          (if-not identity
            ;; not logged in
-           [:a {:class "opux-menu__item-link opux-menu__item-link--login"
-                :href (str site-base-url (path-for hierarchy :login))}
-            (tr [:actions.user.login])]
+           (if show-user-name
+             ;; hide username on static pages since we don't have the session
+             ;; info there. (static pages are on a different domain)
+             [:a {:class "opux-menu__item-link opux-menu__item-link--login"
+                  :href (str site-base-url (path-for hierarchy :login))}
+              (tr [:actions.user.login])])
 
            ;; logged in
            (if (:name identity)
@@ -80,7 +83,7 @@
 
         [:li {:class "opux-menu__item opux-menu__item--login"}
          [:a {:class "opux-menu__item-link opux-menu__item-link--login"
-              :href (path-for hierarchy :profile)}
+              :href (str site-base-url (path-for hierarchy :profile))}
           [:i {:class "opux-icon-circled opux-icon-person"}]]]]]]]))
 
 (rum/defc footer-navigation
