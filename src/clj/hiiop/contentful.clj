@@ -15,16 +15,22 @@
             [mount.core :refer [defstate]]
             [taoensso.timbre :as log]
             [hiiop.file-upload :refer [upload-story upload-page get-and-upload-asset]]
-            [me.raynes.cegdown :as md]
             [hiiop.html :as html]
             [taoensso.tempura :as tempura]
-            [rum.core :as rum]))
+            [rum.core :as rum])
+  (:import org.commonmark.parser.Parser
+           org.commonmark.renderer.html.HtmlRenderer))
 
 (def cf-url "https://cdn.contentful.com/")
 (defstate entries-url :start (str cf-url "spaces/" (:space-id (:contentful env)) "/entries?access_token="
                                   (:cd-api-key (:contentful env)) "&locale=*"))
 
 (def locales [:fi :sv])
+
+(def md-parser (.. Parser (builder) (build)))
+(def md-renderer (.. HtmlRenderer (builder) (build)))
+(defn md-to-html [md]
+  (. md-renderer (render (. md-parser (parse md) ))))
 
 (defn localize-fields [fields locale]
   "Given the :fields part of a multi-locale contentful object, returns
@@ -45,16 +51,16 @@
     (wcar* (car/set (str "email:" emailkey)
                     (-> email-object
                         (assoc-in [:fields :leipateksti-rendered :fi]
-                                  (md/to-html fi-text))
+                                  (md-to-html fi-text))
                         (assoc-in [:fields :leipateksti-rendered :sv]
-                                  (md/to-html sv-text)))))))
+                                  (md-to-html sv-text)))))))
 
 (defn render-page [cfobject locale]
   (let [fields (localize-fields (:fields cfobject) locale)]
     (contentful-page-structure
       {:locale locale
        :title (:otsikko fields)
-       :content (md/to-html (:leipateksti fields))})))
+       :content (md-to-html (:leipateksti fields))})))
 
 (defn process-page [cfobject]
   (let [id (get-in cfobject [:sys :id])
@@ -74,7 +80,7 @@
        :title (:otsikko fields)
        :author (get-in cfobject [:fields :author :fi])
        :content (if (not-empty (:leipteksti fields))
-                  (md/to-html (:leipteksti fields))
+                  (md-to-html (:leipteksti fields))
                   nil)
        :youtube-id youtube-id
        :image-url image-url})))
