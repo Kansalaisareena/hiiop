@@ -27,6 +27,7 @@
           client-time (time/now-utc)
           server-time (time/from-string (:now conf))
           time-zone (:time-zone conf)
+          hiiop-blog-base-url (:hiiop-blog-base-url conf)
           locale (:current-locale conf)
           diff (time/diff-in-ms server-time client-time)]
 
@@ -41,7 +42,7 @@
       (time/set-server-client-diff-seconds diff)
       (this conf))))
 
-(defn route! [{:keys [accept-langs langs identity] :as conf}]
+(defn route! [{:keys [accept-langs langs identity hiiop-blog-base-url] :as conf}]
   (let [tr (tr-with (tr-opts langs) accept-langs)
         routes page-routes/hierarchy
         handler-route-key (match-route routes (.-pathname js/location))
@@ -49,6 +50,7 @@
         context {:tr tr
                  :conf conf
                  :hierarchy hiiop.routes.page-hierarchy/hierarchy
+                 :hiiop-blog-base-url (:hiiop-blog-base-url conf)
                  :current-locale (keyword (:current-locale conf))
                  :identity (:identity conf)}]
     (set-context! context)
