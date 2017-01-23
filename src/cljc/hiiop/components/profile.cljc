@@ -99,12 +99,21 @@
            user-info
           ]}]
   (let [{:keys [name phone]} user-info
+        local-is-valid (::is-valid state)
+        checker (partial hs/select-schema-either schema)
         tr (:tr context)]
+
+    (add-watch user-edit ::see-if-valid
+           (fn [_ _ _ new]
+            (let [value-or-error (checker new)]
+             (cond
+              (:--value value-or-error) (reset! local-is-valid true)
+              (:--error value-or-error) (reset! local-is-valid false)))))
 
     [:form
      {:class "opux-form"
       :on-submit
-      (fn [e]
+       (fn [e]
         (.preventDefault e)
         #?(:cljs
            (go
@@ -151,7 +160,7 @@
         (tr [:actions.profile.save-profile])
         {:class "opux-button opux-button--spacing opux-button--highlight"
          :type "submit"
-         :active (atom true)}
+         :active local-is-valid}
        )]]]]]))
 
 (rum/defc edit-profile < rum/reactive

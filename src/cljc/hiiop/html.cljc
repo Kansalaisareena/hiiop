@@ -45,13 +45,10 @@
 
 (defn save-value-or-error [coercer value error new-value]
   (let [value-or-error (hs/either coercer new-value)
-        coerced-value (:--value value-or-error)
         coerced-error (:--error value-or-error)]
-    (if coerced-value
-      (do
-        (reset! value coerced-value)
-        (reset! error nil))
-      (reset! error coerced-error))))
+
+    (reset! value new-value)
+    (reset! error coerced-error)))
 
 (rum/defcs label < rum/reactive
                    (rum/local nil ::error)
