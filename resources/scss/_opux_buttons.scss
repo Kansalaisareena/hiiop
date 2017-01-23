@@ -8,7 +8,9 @@
   cursor: pointer;
   display: inline-block;
   font-size: 1rem;
-  min-height: 50px;
+  font-weight: 200;
+  height: 50px;
+  line-height: 48px;
   min-width: 180px;
   outline: 0;
   padding: 12px 18px;
@@ -47,6 +49,10 @@
   @include modifier('white') {
     border-color: $OP-white;
     color: $OP-white;
+    &:hover {
+      background: rgba($OP-white, 0.3);
+      border-color: $OP-white;
+    }
   }
 
   @include modifier('small') {
