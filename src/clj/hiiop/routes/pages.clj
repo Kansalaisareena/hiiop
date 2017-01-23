@@ -10,6 +10,7 @@
             [hiiop.components.moderate :as p-m]
             [hiiop.components.profile :as p-p]
             [hiiop.components.quest-single :as quest]
+            [hiiop.components.quest-card :refer [get-quest-image]]
             [hiiop.components.quests :as quests]
             [hiiop.components.index :as index-page]
             [hiiop.components.quests-browse :as p-b]
@@ -79,6 +80,22 @@
                                                      :schema schema
                                                      :category-filter category-filter})
                     :title (tr [:pages.index.title])
+                    :metas [{:property "og:title"
+                             :content (tr [:pages.index.title])}
+                            {:property "og:content"
+                             :content (tr [:pages.index.banner.content])}
+                            {:property "og:type"
+                             :content "article"}
+                            {:property "og:url"
+                             :content (:site-base-url env)}
+                            {:property "fb:app_id"
+                             :content (get-in env [:social :facebook-app-id])}
+                            {:property "og:image"
+                             :content (str (:asset-base-url env) "/img/banner.jpg")}
+                            {:name "twitter:creator"
+                             :content (get-in env [:social :twitter-account])}
+                            {:name "twitter:card"
+                             :content (tr [:pages.index.banner.content])}]
                     :scripts ["//assets.juicer.io/embed.js"]})))
 
 (defn login [req]
@@ -198,6 +215,23 @@
                                       :context context
                                       :schema QuestFilter})
                     :title (tr [:actions.quest.browse])
+                    :metas [{:property "og:title"
+                             :content (tr [:action.quest.browse])}
+                            {:property "og:content"
+                             :content (tr [:pages.index.banner.content])}
+                            {:property "og:type"
+                             :content "article"}
+                            {:property "og:url"
+                             :content (str (:site-base-url env)
+                                           (:url req))}
+                            {:property "fb:app_id"
+                             :content (get-in env [:social :facebook-app-id])}
+                            {:property "og:image"
+                             :content (str (:asset-base-url env) "/img/banner.jpg")}
+                            {:name "twitter:creator"
+                             :content (get-in env [:social :twitter-account])}
+                            {:name "twitter:card"
+                             :content (tr [:pages.index.banner.content])}]
                     :scripts
                     [google-maps-url]
                     })))
@@ -243,10 +277,30 @@
     (if quest
       (layout/render {:title (:name quest)
                       :context context
+                      :metas [{:property "og:title"
+                               :content (:name quest)}
+                              {:property "og:content"
+                               :content (:description quest)}
+                              {:property "og:type"
+                               :content "article"}
+                              {:property "og:url"
+                               :content (str (:site-base-url env)
+                                             (:uri req))}
+                              {:property "fb:app_id"
+                               :content (get-in env [:social :facebook-app-id])}
+                              {:property "og:image"
+                               :content (str (:asset-base-url env)
+                                             (get-quest-image quest))}
+                              {:name "twitter:creator"
+                               :content (get-in env [:social :twitter-account])}
+                              {:name "twitter:card"
+                               :content (:description quest)}]
                       :content
                       (quest/quest {:context context
                                     :quest (atom (assoc quest
                                                         :owner-name owner-name))
+                                    :url (str (:site-base-url env)
+                                              (:uri env))
                                     :joinable joinable
                                     :empty-party-member empty-party-member
                                     :party-member-errors errors

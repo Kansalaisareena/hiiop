@@ -7,12 +7,13 @@
             [hiiop.time :as time]
             [hiiop.components.join-quest :refer [join-quest]]
             [hiiop.components.autolink :refer [autolink-mixin]]
+            [hiiop.components.social-buttons :refer [social-buttons]]
             [hiiop.components.quest-card :refer [get-quest-image]]
             [taoensso.timbre :as log]))
 
 (rum/defc quest < rum/reactive
                   autolink-mixin
-  [{:keys [context quest user empty-party-member party-member-errors party-member-schema secret-party joinable]}]
+  [{:keys [context quest user empty-party-member party-member-errors party-member-schema secret-party joinable url]}]
   (let [{:keys [name
                 organisation
                 owner-name
@@ -89,6 +90,11 @@
        [:i {:class "opux-icon opux-icon-personnel"}]
        (str available-slots " / " max-participants
             " " (tr [:pages.quest.view.participants]))]]
+
+     [:div {:class "opux-content"}
+      (social-buttons {:title name
+                       :url url
+                       :tr tr})]
 
      [:div {:class "opux-content"}
       [:div {:class "opux-line"}]]

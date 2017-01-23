@@ -14,7 +14,8 @@
 
 (defn render
   "renders the HTML given"
-  [{:keys [context content title scripts no-script] :or [params]}]
+  [{:keys [context content title scripts no-script metas] :or [params]}]
+  (log/info "METAS----------" metas)
   (let [final-content (if content (rum/render-html content) "")]
     (content-type
      (ok
@@ -25,7 +26,8 @@
                        :title title
                        :content final-content
                        :csrf-token *anti-forgery-token*
-                       :servlet-context *app-context* })))
+                       :servlet-context *app-context*
+                       :metas metas})))
      "text/html; charset=utf-8")))
 
 (defn error-page

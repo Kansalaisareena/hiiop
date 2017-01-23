@@ -135,7 +135,9 @@ $opux-icon-cross-name-collection: (eyeglasses, law, sound, globe, handicap, chil
 }
 
 @include block('opux-icon-social') {
-  background: url(/img/sharebadges_sprite.png) no-repeat;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
   display: inline-block;
   height: 30px;
   margin-right: .2rem;
@@ -143,31 +145,51 @@ $opux-icon-cross-name-collection: (eyeglasses, law, sound, globe, handicap, chil
 
   // opux-icon-social--fb
   @include modifier('fb') {
-    background-position: 0 -90px;
-    //background-position: 0 0;
+    background-image: url(/img/share/share_fb_disabled.svg);
 
     // opux-icon-social--fb.is-disabled
     @include state('disabled') {
-      background-position: 0 -90px !important;
+      background-image: url(/img/share/share_fb_disabled.svg);
+    }
+  }
+
+  // opux-icon-social--fb-share
+  @include modifier('fb-share') {
+    background-image: url(/img/share/share_fb.svg);
+    height: 40px;
+    width: 40px;
+
+    // opux-icon-social--fb.is-disabled
+    @include state('disabled') {
+      background-image: url(/img/share/share_fb_disabled.svg);
     }
   }
 
   // opux-icon-social--twitter
   @include modifier('twitter') {
-    background-position: -30px -90px;
-    //background-position: -30px -30px;
-    //background-position: -60px 0;
+    background-image: url(/img/share/share_twitter_disabled.svg);
 
     // opux-icon-social--twitter.is-disabled
     @incude state('disabled') {
-      background-position: -60px -90px!important;
+      background-image: url(/img/share/share_twitter_disabled.svg);
+    }
+  }
+
+  // opux-icon-social--twitter-share
+  @include modifier('twitter-share') {
+    background-image: url(/img/share/share_twitter.svg);
+    height: 40px;
+    width: 40px;
+
+    // opux-icon-social--twitter.is-disabled
+    @incude state('disabled') {
+      background-image: url(/img/share/share_twitter_disabled.svg);
     }
   }
 
   // opux-icon-social--instagram
   @include modifier('instagram') {
-    background-position: -90px -90px;
-    //background-position: -90px -30px;
+    background-image: url(/img/share/share_instagram_disabled.svg);
 
     // opux-icon-social--instagram.is-disabled
     @incude state('disabled') {
