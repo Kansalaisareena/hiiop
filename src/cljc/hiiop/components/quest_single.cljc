@@ -9,6 +9,7 @@
             [hiiop.components.autolink :refer [autolink-mixin]]
             [hiiop.components.social-buttons :refer [social-buttons]]
             [hiiop.components.autolink :refer [autolink-mixin]]
+            [hiiop.components.social-buttons :refer [social-buttons]]
             [hiiop.components.quest-card :refer [get-quest-image]]
             [taoensso.timbre :as log]))
 
