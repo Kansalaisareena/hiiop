@@ -38,19 +38,17 @@
   ([param-langs] {:dict param-langs :default-locale default-locale}))
 
 (defn supported-lang [accept-langs]
-  (if (not (empty? accept-langs))
-    (let [keyword-accepted-langs (into [] (map keyword accept-langs))
+  (if-not (empty? accept-langs)
+    (let [keyword-accepted-langs (into []
+                                       (map #(keyword (subs % 0 2))
+                                            accept-langs))
           accept-langs-set (into #{} keyword-accepted-langs)
           langs-set (into #{} (keys langs))
           lang-intersection (intersection langs-set accept-langs-set)
-          lang-match (reduce
-                      (fn [chosen current]
-                        (cond
-                          (and chosen (chosen lang-intersection)) chosen
-                          (and current (current lang-intersection)) current
-                          :else nil)
-                        )
-                      keyword-accepted-langs)]
+          lang-match (first
+                       (filter
+                         #(contains? lang-intersection %)
+                         keyword-accepted-langs))]
       (or lang-match default-locale))
     default-locale))
 
