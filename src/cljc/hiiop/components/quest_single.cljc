@@ -51,7 +51,10 @@
        (html/combine-text ", " usable-owner (:name organisation))]
       [:p
        [:i {:class "opux-icon opux-icon-location"}]
-       (html/combine-text ", " street-number street town postal-code)]
+       (html/combine-text
+         ", "
+         (str street " " street-number)
+         town postal-code)]
       [:p
        [:i {:class "opux-icon opux-icon-calendar"}]
        (time/duration-to-print-str-date
@@ -76,7 +79,8 @@
         [:p (string/join " " hashtags)])
       [:p
        [:i {:class "opux-icon opux-icon-personnel"}]
-       (str available-slots " " (tr [:pages.quest.view.participants]))]]
+       (str available-slots " / " max-participants
+            " " (tr [:pages.quest.view.participants]))]]
 
      [:div {:class "opux-content"}
       [:div {:class "opux-line"}]]
