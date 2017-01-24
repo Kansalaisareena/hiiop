@@ -50,7 +50,8 @@
                  :conf conf
                  :hierarchy hiiop.routes.page-hierarchy/hierarchy
                  :current-locale (keyword (:current-locale conf))
-                 :identity (:identity conf)}]
+                 :identity (:identity conf)
+                 :path-key handler-key}]
     (set-context! context)
     (mount-top-navigation context)
     (log/info handler-route-key handler-key)

@@ -5,9 +5,11 @@
                :cljs [hiiop.client-config :refer [env]])))
 
 (rum/defcs top-navigation < (rum/local false ::is-active)
-  [state {:keys [hierarchy tr current-locale identity show-user-name]}]
+  [state {:keys [hierarchy tr current-locale identity show-user-name path-key]}]
   (let [is-active (::is-active state)
-        site-base-url (:site-base-url env)]
+        site-base-url (:site-base-url env)
+        active? (fn [p] (if (= path-key p) " opux-menu--item-active" " opux-menu__item-link"))]
+
     [:div
      [:div {:class "opux-mobile-hamburger"}
       [:div {:class
@@ -31,13 +33,13 @@
        [:li
         {:class "opux-menu__item opux-menu__item--main-quest opux-menu__item--main--browse-quest"}
         [:a
-         {:class "opux-menu__item-link opux-menu__item-link--main"
+         {:class (str "opux-menu__item-link--main" (active? :browse-quests))
           :href (str site-base-url (path-for hierarchy :browse-quests))}
          (tr [:actions.quest.browse])]]
        [:li
         {:class "opux-menu__item opux-menu__item--main--quest opux-menu__item--main--create-quest"}
         [:a
-         {:class "opux-menu__item-link opux-menu__item-link--main"
+         {:class (str "opux-menu__item-link--main" (active? :create-quest))
           :href (str site-base-url (path-for hierarchy :create-quest))}
          (tr [:actions.quest.create])]]]
       [:div {:class "opux-menu--right"}
@@ -71,19 +73,19 @@
            (if show-user-name
              ;; hide username on static pages since we don't have the session
              ;; info there. (static pages are on a different domain)
-             [:a {:class "opux-menu__item-link opux-menu__item-link--login"
+             [:a {:class (str "opux-menu__item-link--login" (active? :login))
                   :href (str site-base-url (path-for hierarchy :login))}
               (tr [:actions.user.login])])
 
            ;; logged in
            (if (:name identity)
-             [:a {:class "opux-menu__item-link opux-menu__item-link--login"
+             [:a {:class (str "opux-menu__item-link--login" (active? :profile))
                   :href (str site-base-url (path-for hierarchy :profile))}
               (:name identity)]))]
 
         [:li {:class "opux-menu__item opux-menu__item--login"}
-         [:a {:class "opux-menu__item-link opux-menu__item-link--login"
-              :href (str site-base-url (path-for hierarchy :profile))}
+         [:a {:class (str "opux-menu__item-link--login" (if identity (active? :profile) (active? :login)))
+              :href (str site-base-url (path-for hierarchy (if identity :profile :login)))}
           [:i {:class "opux-icon-circled opux-icon-person"}]]]]]]]))
 
 (rum/defc footer-navigation
