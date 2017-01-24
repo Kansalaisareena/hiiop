@@ -59,7 +59,7 @@
           ", "
           (str street
                (when street-number
-                 " " street-number))
+                 (str " " street-number)))
           town postal-code)]]
       [:p
        [:i {:class "opux-icon opux-icon-calendar"}]

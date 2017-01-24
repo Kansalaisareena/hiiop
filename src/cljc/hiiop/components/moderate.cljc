@@ -63,7 +63,12 @@
         [:p [:i {:class "opux-icon opux-icon-person"}]
          (html/combine-text ", " (rum/react usable-owner) (:name organisation))]
         [:p [:i {:class "opux-icon opux-icon-location"}]
-         (html/combine-text ", " street-number street town postal-code)]
+         (html/combine-text
+           ", "
+           (str street
+                (when street-number
+                  (str " " street-number)))
+           town postal-code)]
         [:p
          [:i {:class "opux-icon opux-icon-calendar"}]
          (time/duration-to-print-str-date
