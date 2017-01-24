@@ -12,11 +12,13 @@
             #?(:cljs [cljs.core.async :refer [<!]])
             [hiiop.html :as html]
             [hiiop.time :as time]
+            [hiiop.components.autolink :refer [autolink-mixin]]
             [hiiop.components.quest-card :refer [get-quest-image quest-card-moderate]]))
 
 (rum/defcs quest-overlay < rum/reactive
                            (rum/local nil ::usable-owner)
                            (rum/local false ::processing)
+                           autolink-mixin
   [state {:keys [context quest on-close-fn quests]}]
   (let [usable-owner (::usable-owner state)
         processing (::processing state)
@@ -73,10 +75,11 @@
            (time/from-string start-time)
            (time/from-string end-time))]]
 
-       [:div {:class "opux-content opux-content--medium"} (html/wrap-paragraph description)]
+       [:div {:class "opux-content opux-content--medium opux-auto-link"}
+        (html/wrap-paragraph description)]
 
        (if (not (nil? organisation))
-         [:div {:class "opux-content opux-content--medium"}
+         [:div {:class "opux-content opux-content--medium opux-auto-link"}
           [:h3 (:name organisation)]
           (if (not (nil? (:description organisation)))
             (html/wrap-paragraph (:description organisation)))])

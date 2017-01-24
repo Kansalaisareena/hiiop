@@ -54,6 +54,9 @@
             [hiiop.db.core :as db]
             [hiiop.api-handlers :as api-handlers]))
 
+(def autolink-url
+  "//cdnjs.cloudflare.com/ajax/libs/autolinker/1.4.0/Autolinker.min.js")
+
 (defn tr-from-req [req]
   (:tempura/tr req))
 
@@ -159,7 +162,8 @@
                                   :schema schema
                                   :errors errors})
                     :scripts
-                    [google-maps-url]
+                    [google-maps-url
+                     autolink-url]
                     })))
 
 (defn browse-quests [req]
@@ -170,7 +174,6 @@
                  (get-moderated-quests))
         quest-filter (atom (new-empty-quest-filter))
         errors (atom (same-keys-with-nils @quest-filter))]
-
     (layout/render {:context context
                     :content
                     (p-b/list-quests {:quests quests
@@ -230,7 +233,8 @@
                                     :joinable joinable
                                     :empty-party-member empty-party-member
                                     :party-member-errors errors
-                                    :party-member-schema NewPartyMember})}))))
+                                    :party-member-schema NewPartyMember})
+                      :scripts [autolink-url]}))))
 
 (defn secret-quest [req]
   (let [id (get-in req [:params :quest-id])
@@ -294,7 +298,8 @@
                       :content
                       (p-m/moderate-page
                        {:context context
-                        :unmoderated-quests (atom unmoderated-quests)})})
+                        :unmoderated-quests (atom unmoderated-quests)})
+                      :scripts [autolink-url]})
       (redirect-to {:path-key :index}))))
 
 (defn request-password-reset-page [req]
