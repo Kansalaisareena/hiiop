@@ -90,18 +90,22 @@
          :on-click reset-card-state}
         (tr [:pages.profile.cancel])]])))
 
-(defn- quest-card-image [{:keys [quest]}]
+(defn- quest-card-image [{:keys [quest is-own-quest]}]
   (let [quest-image (get-quest-image quest)
         quest-id (:id quest)
-        quest-link (path-for hierarchy :quest :quest-id quest-id)
+        page-key (if is-own-quest
+                   :edit-quest
+                   :quest)
+        quest-link (path-for hierarchy page-key
+                             :quest-id quest-id)
         moderated (:moderated quest)]
-    (if moderated
-      [:a {:href quest-link}
+    [:a {:href quest-link}
+     (if moderated
        [:div {:class "opux-card__image"
-              :style {:background-image (str "url('" quest-image "')")}}]]
+              :style {:background-image (str "url('" quest-image "')")}}]
 
-      [:div {:class "opux-card__image"
-             :style {:background-image (str "url('" quest-image "')")}}])))
+       [:div {:class "opux-card__image"
+              :style {:background-image (str "url('" quest-image "')")}}])]))
 
 (defn- quest-card-title [{:keys [quest]}]
   (let [quest-id (:id quest)
@@ -109,7 +113,7 @@
         quest-link (path-for hierarchy :quest :quest-id quest-id)
         moderated (:moderated quest)]
 
-    (if moderated 
+    (if moderated
       [:a {:class "opux-card__title" :href quest-link} name]
       [:div {:class "opux-card__title"} name])))
 
@@ -148,7 +152,8 @@
                  (if (not moderated)
                    (tr [:pages.profile.pending-approval])
                    (tr [:pages.profile.published])))))]
-       (quest-card-image {:quest quest})]
+       (quest-card-image {:quest quest
+                          :is-own-quest is-own-quest})]
 
       [:div {:class "opux-card__content"}
 
