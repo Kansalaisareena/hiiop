@@ -157,13 +157,11 @@
 (defn redirect-to-https [handler]
   (fn [request]
     (let [host (get-in request [:headers "host"])
-          proto (get-in request [:headers "X-Forwarded-Proto"])
-          redirect-host (:redirect-host env)
-          host-redirect?  (and redirect-host (not= host redirect-host))
-          https-redirect? (and (:redirect-https env) (not= "https" proto))
-          need-redirect? (or host-redirect? https-redirect?)
-          target-proto (if https-redirect? "https" (or proto "http"))
-          target-url (str target-proto "://" redirect-host (:uri request))]
+          proto (get-in request [:headers "x-forwarded-proto"])
+          need-redirect? (and (:redirect-https env) (not= "https" proto))
+          target-url (str "https://" host (:uri request))]
+      (log/info (str (:headers request)))
+      (log/info "needs redirection:" need-redirect? "x-forwarded-proto:" proto)
       (if need-redirect?
         (response/redirect target-url 301)
         (handler request)))))
