@@ -51,8 +51,8 @@
      default-content
      (if (not (rum/react local-picture-url))
        [(html/label
-         (tr [:pages.quest.edit.picture.title])
-         {:class "opux-input__label opux-input__label--picture-label"
+          (tr [:pages.quest.edit.picture.title])
+          {:class "opux-input__label opux-input__label--picture-label"
           :error (get-in cursors-and-schema [:picture-id :error])})
         (html/file-input
          {:value (get-in cursors-and-schema [:picture-id :value])
@@ -60,7 +60,7 @@
           :url picture-url
           :context context
           :tr (partial tr [:pages.quest.edit.picture.upload-failed])})
-        [:p {:class "opux-info opux-centered"} (tr [:pages.quest.edit.picture.info])]
+        [:p {:class "opux-input__info"} (tr [:pages.quest.edit.picture.info])]
         ]
        [[:img {:src @picture-url
                :on-click
@@ -255,26 +255,28 @@
 
 (rum/defc edit-participation-settings < rum/reactive
   [{:keys [quest is-valid cursors-and-schema context tr]}]
-  (html/form-section
-    [:div {:class "opux-section"}
+  [:div {:class "opux-section opux-form-section"}
+   [:fieldset
+    {:class "opux-fieldset opux-form-section__fieldset"}
+    [:h3 {:class "opux-form-section__title"}
      (html/label
        (tr [:pages.quest.edit.subtitles.related-to])
        {:class "opux-input__label opux-input__label--categories"
-        :required true})
-     (html/multi-selector-for-schema
-       {:schema (get-in cursors-and-schema [:categories :schema])
-        :value (get-in cursors-and-schema [:categories :value])
-        :error (get-in cursors-and-schema [:categories :error])
-        :choice-name-fn hs/category-choice
-        :context context})])
+        :required true})]
+    (html/multi-selector-for-schema
+      {:schema (get-in cursors-and-schema [:categories :schema])
+       :value (get-in cursors-and-schema [:categories :value])
+       :error (get-in cursors-and-schema [:categories :error])
+       :choice-name-fn hs/category-choice
+       :context context})]]
   (html/form-section
-   (tr [:pages.quest.edit.subtitles.participation])
-   (html/max-participants
-    {:schema (get-in cursors-and-schema [:max-participants :schema])
-     :value (get-in cursors-and-schema [:max-participants :value])
-     :error (get-in cursors-and-schema [:max-participants :error])
-     :context context})
-   (html/radio-binary
+    (tr [:pages.quest.edit.subtitles.participation])
+    (html/max-participants
+      {:schema (get-in cursors-and-schema [:max-participants :schema])
+       :value (get-in cursors-and-schema [:max-participants :value])
+       :error (get-in cursors-and-schema [:max-participants :error])
+       :context context})
+    (html/radio-binary
     {:class "is-open opux-fieldset__item"
      :schema (get-in cursors-and-schema [:is-open :schema])
      :value (get-in cursors-and-schema [:is-open :value])
@@ -512,27 +514,29 @@
        })
      [:div {:class "opux-line opux-content"}]
 
-     (html/form-section
-       [:div {:class "opux-section"}
+     [:div {:class "opux-section opux-form-section"}
+      [:fieldset
+       {:class "opux-fieldset opux-form-section__fieldset"}
+       [:h3 {:class "opux-form-section__title"}
         (html/label
           (tr [:pages.quest.edit.subtitles.related-to])
           {:class "opux-input__label opux-input__label--categories"
            :required true
-           :error (get-in cursors-and-schema [:categories :error])})
-        (html/multi-selector-for-schema
-          {:schema (get-in cursors-and-schema [:categories :schema])
-           :value (get-in cursors-and-schema [:categories :value])
-           :error (get-in cursors-and-schema [:categories :error])
-           :choice-name-fn hs/category-choice
-           :context context})])
+           :error (get-in cursors-and-schema [:categories :error])})]
+       (html/multi-selector-for-schema
+         {:schema (get-in cursors-and-schema [:categories :schema])
+          :value (get-in cursors-and-schema [:categories :value])
+          :error (get-in cursors-and-schema [:categories :error])
+          :choice-name-fn hs/category-choice
+          :context context})]]
      [:div {:class "opux-line opux-content"}]
 
      (edit-participation-settings
-      {:cursors-and-schema cursors-and-schema
-       :is-valid is-valid
-       :context context
-       :quest quest
-       :tr tr
+       {:cursors-and-schema cursors-and-schema
+        :is-valid is-valid
+        :context context
+        :quest quest
+        :tr tr
        })
      (when (:id (rum/react quest))
        (edit-party {:quest @quest
