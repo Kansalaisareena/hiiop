@@ -60,7 +60,7 @@
           :url picture-url
           :context context
           :tr (partial tr [:pages.quest.edit.picture.upload-failed])})
-        [:p {:class "opux-input__info"} (tr [:pages.quest.edit.picture.info])]
+        [:p {:class "opux-input__info opux-centered"} (tr [:pages.quest.edit.picture.info])]
         ]
        [[:img {:src @picture-url
                :on-click
