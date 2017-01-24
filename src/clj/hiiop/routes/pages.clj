@@ -4,7 +4,7 @@
             [taoensso.timbre :as log]
             [schema.coerce :as sc]
             [bidi.ring :refer (make-handler)]
-            [bidi.bidi :refer [path-for]]
+            [bidi.bidi :refer [path-for match-route]]
             [hiiop.middleware :refer [authenticated]]
             [hiiop.layout :as layout]
             [hiiop.components.moderate :as p-m]
@@ -65,6 +65,7 @@
    :config env
    :hierarchy hierarchy
    :identity (:identity req)
+   :path-key (:handler (match-route hierarchy (:path-info req)))
    :current-locale (keyword (:current-locale req))})
 
 (defn index [req]
