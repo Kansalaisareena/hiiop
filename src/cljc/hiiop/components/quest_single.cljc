@@ -50,11 +50,15 @@
        [:i {:class "opux-icon opux-icon-person"}]
        (html/combine-text ", " usable-owner (:name organisation))]
       [:p
-       [:i {:class "opux-icon opux-icon-location"}]
-       (html/combine-text
-         ", "
-         (str street " " street-number)
-         town postal-code)]
+       [:a {:href google-maps-url
+            :target "_blank"}
+        [:i {:class "opux-icon opux-icon-location"}]
+        (html/combine-text
+          ", "
+          (str street
+               (when street-number
+                 " " street-number))
+          town postal-code)]]
       [:p
        [:i {:class "opux-icon opux-icon-calendar"}]
        (time/duration-to-print-str-date
