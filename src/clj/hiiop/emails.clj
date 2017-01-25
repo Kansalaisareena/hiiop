@@ -95,7 +95,7 @@
    [:h1 title]
    [:p body-text]
    (when message
-     [:p {:class "message" :dangerouslySetInnerHTML {:__html message}}])
+     [:div {:class "message" :dangerouslySetInnerHTML {:__html message}}])
    [:a {:href button-url
         :class "button-1"
         :id "button-1"} button-text]
