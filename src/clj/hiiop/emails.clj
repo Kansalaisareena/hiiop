@@ -12,8 +12,8 @@
                  h1 { font-size: 2.3rem; }
                  a { color: #ff6a10; text-decoration: none; }
                  .button-2 { margin-left: 10px; }
-                 #footer-image-1 { width: 75px; height: 75px; float: left; margin: 5px; }
-                 #footer-image-2 { width: 75px; height: 75px; float: right; margin: 5px; }
+                 #footer-image-1 { height: 37px; float: left; margin: 5px; }
+                 #footer-image-2 { height: 37px; float: right; margin: 5px; }
                  </style>")
 
 (def footer-images
