@@ -8,7 +8,7 @@
   [state {:keys [hierarchy tr current-locale identity show-user-name path-key]}]
   (let [is-active (::is-active state)
         site-base-url (:site-base-url env)
-        active? (fn [p] (if (= path-key p) " opux-menu--item-active" " opux-menu__item-link"))]
+        active? (fn [p] (if (= path-key p) " opux-menu__item-link--active" " opux-menu__item-link"))]
 
     [:div
      [:div {:class "opux-mobile-hamburger"}
