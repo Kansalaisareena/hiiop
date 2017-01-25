@@ -2,7 +2,9 @@
   (:require [taoensso.timbre :as log]
             [rum.core :as rum]
             [hiiop.time :as time]
-            [hiiop.mangling :as mangling]))
+            [hiiop.mangling :as mangling]
+            [hiiop.config :refer [load-env]]
+            [rum.server-render :refer [escape-html]]))
 
 (def mail-style "<style>
                  * { font-family: Calibri, sans-serif;
@@ -17,9 +19,9 @@
 (def footer-images
   [:div {:style {:clear "both" }}
     [:img {:id "footer-image-1"
-           :src (str "data:image/svg+xml;utf8," (rum.server-render/escape-html (slurp "resources/public/img/logo_with_text.svg")))}]
+           :src (str "data:image/svg+xml;utf8," (escape-html (slurp (str (:asset-base-url (load-env)) "/img/logo_with_text.svg"))))}]
     [:img {:id "footer-image-2"
-           :src (str "data:image/svg+xml;utf8," (rum.server-render/escape-html (slurp "resources/public/img/suomi100.svg")))}]])
+           :src (str "data:image/svg+xml;utf8," (escape-html (slurp (str (:asset-base-url (load-env)) "/img/suomi100.svg"))))}]])
 
 (defn quest-details-mail [{:keys [tr
                                   title
