@@ -616,3 +616,10 @@
           (log/error e)
           {:errors {:picture :errors.picture.add-failed}}))
       picture-supported)))
+
+(defn get-the-counter-value []
+  (try
+    (db/get-counter-days)
+    (catch Exception e
+      (log/error e)
+      {:errors {:counter :errors.counter.get-failed}})))

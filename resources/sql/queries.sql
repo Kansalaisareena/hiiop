@@ -750,9 +750,9 @@ SET moderator = true
 WHERE id = :id
 
 
--- :name get-counter-days
+-- :name get-counter-days :? :1
 -- :doc Get total days worked
-SELECT sum(days)
+SELECT sum(days) as days
 FROM
   parties p,
   quests q
