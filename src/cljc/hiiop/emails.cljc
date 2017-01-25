@@ -4,6 +4,23 @@
             [hiiop.time :as time]
             [hiiop.mangling :as mangling]))
 
+(def mail-style "<style>
+                 * { font-family: Calibri, sans-serif;
+                     color: #323232; font-weight: 200; }
+                 h1 { font-size: 2.3rem; }
+                 a { color: #ff6a10; text-decoration: none; }
+                 .button-2 { margin-left: 10px; }
+                 #footer-image-1 { width: 75px; height: 75px; float: left; margin: 5px; }
+                 #footer-image-2 { width: 75px; height: 75px; float: right; margin: 5px; }
+                 </style>")
+
+(def footer-images
+  [:div {:style {:clear "both" }}
+    [:img {:id "footer-image-1"
+           :src (str "data:image/svg+xml;utf8," (rum.server-render/escape-html (slurp "resources/public/img/logo_with_text.svg")))}]
+    [:img {:id "footer-image-2"
+           :src (str "data:image/svg+xml;utf8," (rum.server-render/escape-html (slurp "resources/public/img/suomi100.svg")))}]])
+
 (defn quest-details-mail [{:keys [tr
                                   title
                                   quest
@@ -16,6 +33,7 @@
   (let [start-time (time/from-string (:start-time quest))
         end-time (time/from-string (:end-time quest))]
     [:html
+     [:head {:dangerouslySetInnerHTML {:__html mail-style }}]
      [:body
       [:h1 title]
       [:dl
@@ -36,7 +54,8 @@
         [:br]
         [:a {:href button2-url
              :class "button-2"
-             :id "button-2"} button2-text])]]))
+             :id "button-2"} button2-text])
+      footer-images]]))
 
 (defn plaintext-quest-details-mail [{:keys [tr
                                             title
@@ -70,6 +89,7 @@
                            button2-text
                            button2-url]}]
   [:html
+   [:head {:dangerouslySetInnerHTML {:__html mail-style }}]
    [:h1 title]
    [:p body-text]
    (when message
@@ -81,7 +101,8 @@
      [:br]
      [:a {:href button-url
           :class "button-2"
-          :id "button-2"} button2-text])])
+          :id "button-2"} button2-text])
+   footer-images])
 
 (defn plaintext-simple-mail [{:keys [title
                                      body-text-plaintext
