@@ -39,15 +39,15 @@
      [:body
       [:h1 title]
       [:dl
+       [:div {:class "body-text" :dangerouslySetInnerHTML {:__html body-text}}]
+        (when message
+         [:p {:class "message"} message])
        [:dt (tr [:email.quest.time])]
        [:dd {:class "time"}
         (time/duration-to-print-str start-time end-time)]
        [:dt (tr [:email.quest.place])]
        [:dd {:class "place"}
         (mangling/readable-address (:location quest))]]
-      [:div {:class "body-text" :dangerouslySetInnerHTML {:__html body-text}}]
-      (when message
-        [:p {:class "message"} message])
       (when button-text
         [:a {:href button-url
              :class "button-1"
@@ -93,9 +93,9 @@
   [:html
    [:head {:dangerouslySetInnerHTML {:__html mail-style }}]
    [:h1 title]
-   [:p body-text]
+   [:div {:class "body-text" :dangerouslySetInnerHTML {:__html body-text}}]
    (when message
-     [:div {:class "message" :dangerouslySetInnerHTML {:__html message}}])
+     [:p {:class "message" :dangerouslySetInnerHTML {:__html message}}])
    [:a {:href button-url
         :class "button-1"
         :id "button-1"} button-text]
