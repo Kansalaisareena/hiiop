@@ -100,8 +100,8 @@
       color: $OP-orange;
     }
 
-    // opux-menu__item-link--active
-    @include modifier('active') {
+    // opux-menu__item-link.is-active
+    @include state('active') {
       color: #323232;
     }
 
