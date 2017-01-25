@@ -129,4 +129,4 @@
 (redef-invalidate-cache join-quest! :all-moderated-quests)
 (redef-invalidate-cache moderate-accept-quest! :all-moderated-quests)
 
-(redef-with-cache get-counter-days :counter 10)
+(redef-with-cache get-counter-days :counter (* 60 60)) ;update counter every hour
