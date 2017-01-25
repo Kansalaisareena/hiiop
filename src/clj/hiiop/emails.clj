@@ -19,9 +19,9 @@
 (def footer-images
   [:div {:style {:clear "both" }}
     [:img {:id "footer-image-1"
-           :src (str "data:image/svg+xml;utf8," (escape-html (slurp (str (:asset-base-url (load-env)) "/img/logo_with_text.svg"))))}]
+           :src (str (:asset-base-url (load-env)) "/img/logo_with_text.png")}]
     [:img {:id "footer-image-2"
-           :src (str "data:image/svg+xml;utf8," (escape-html (slurp (str (:asset-base-url (load-env)) "/img/suomi100.svg"))))}]])
+           :src (str (:asset-base-url (load-env)) "/img/suomi100.png")}]])
 
 (defn quest-details-mail [{:keys [tr
                                   title
