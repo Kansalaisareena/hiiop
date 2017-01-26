@@ -45,6 +45,7 @@
                  [bidi                                   "2.0.14"]
                  [metosin/schema-tools                   "0.9.0"]
                  [com.novemberain/pantomime              "2.8.0"]
+                 [com.cemerick/url                       "0.1.1"]
                  [amazonica                              "0.3.78"
                   :exclusions [com.amazonaws/aws-java-sdk
                                com.amazonaws/amazon-kinesis-client

@@ -449,19 +449,23 @@
     width: 100%;
     margin: 0px !important;
     .j-stacker {
-      width: 100%;
-    }
-  }
-
-  a.j-paginate.juicer-button {
-    display: none;
-  }
-}
-
+      width: 100%;}} a.j-paginate.juicer-button {display: none;}} 
 @include block("opux-contentful-title") {
   padding-bottom: 0;
 }
 
 @include block("opux-contentful-author") {
   padding-top: 0px;
+}
+
+@include block("opux-social-sharing-buttons") {
+  box-sizing: content-box;
+  display: block;
+  height: 40px;
+  line-height: 40px;
+  padding: 0px;
+
+  @include block("opux-icon-social") {
+    margin-bottom: -15px;
+  }
 }

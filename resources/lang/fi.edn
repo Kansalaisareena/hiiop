@@ -91,7 +91,8 @@
    :email-sent "Lähetimme sinulle sähköpostia. Viestissä on linkki, jota klikkaamalla pääset luomaan salasanasi ja kirjautumaan palveluun. Tähän saattaa mennä pari minuuttia."}
 
   :static
-  {:stories-index-header "Tarinoita vapaaehtoistyöstä"
+  {:stories-title "Tarina"
+   :stories-index-header "Tarinoita vapaaehtoistyöstä"
    :stories-index-subtitle "Täältä löydät vinkkejä ja ideoita oman vapaaehtoistehtväsi järjestämiseen, voit lukea suomalaisesta vapaaehtoistoiminnasta, auttajista ja autetuista."}
 
   :profile
@@ -294,6 +295,8 @@ Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit
    :save-password "Tallenna salasana"}
 
   :cancel "Peruuta"
+
+  :share "Kerro kavereille"
 
   :profile
   {:sign-out "Kirjaudu ulos"

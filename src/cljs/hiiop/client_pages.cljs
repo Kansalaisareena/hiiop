@@ -226,7 +226,8 @@
             (assoc :context @context
                    :empty-party-member empty-party-member
                    :party-member-errors errors
-                   :party-member-schema NewPartyMember)
+                   :party-member-schema NewPartyMember
+                   :url (.-URL js/document))
             (#(rum/mount
                (quest-single/quest %1)
                (. js/document (getElementById "app")))))))))

@@ -468,12 +468,14 @@
     header content footer scripts
     ]])
 
-(rum/defc head-content [{:keys [title asset-path]}]
+(rum/defc head-content [{:keys [title asset-path metas]}]
   [:head
    [:title title]
    [:meta {:charset "UTF-8"}]
    [:meta {:name "viewport"
            :content "width=device-width,initial-scale=1.0,minimum-scale=1.0"}]
+   (when metas
+     (map (fn [meta] [:meta meta]) metas))
    [:link {:href "//assets.juicer.io/embed.css" :rel "stylesheet" :type "text/css"}]
    [:link {:href (str asset-path "/css/screen.css") :rel "stylesheet" :type "text/css"}]
    [:link {:href "img/favicons/favicon.svg" :rel "icon" :sizes "any" :type "image/svg"}]
@@ -512,13 +514,15 @@
     (tr [:footer.copyright])]])
 
 (defn app-structure
-  [{:keys [context title content csrf-token servlet-context scripts no-script]}]
+  [{:keys [context title content csrf-token servlet-context scripts no-script metas]}]
   (let [tr (:tr context)
         asset-path (:asset-path context)
         default-script (str asset-path "/js/app.js")
         script-tags (vec (map script-tag (conj scripts default-script)))]
     (page
-     (head-content {:title (tr [:title] [title]) :asset-path asset-path})
+      (head-content {:title (tr [:title] [title])
+                     :asset-path asset-path
+                     :metas metas})
      (body-content
       (header context)
       [:div {:id "app" :class "opux-page-section" :dangerouslySetInnerHTML {:__html content}}]
