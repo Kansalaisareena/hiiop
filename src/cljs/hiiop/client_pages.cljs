@@ -37,6 +37,7 @@
             [hiiop.schema :refer [NewQuest
                                   Quest
                                   EditQuest
+                                  EditUser
                                   RegistrationInfo
                                   UserActivation
                                   QuestFilter
@@ -101,6 +102,21 @@
         (p-p/profile {:context @context
                       :user-info user-info
                       :quests (atom quests)})
+        (. js/document (getElementById "app"))))))
+
+(defn edit-profile-page [params]
+  (go
+    (let [user-id (:id (:identity @context))
+          user-info (<! (get-private-user-info user-id))
+          user-edit (atom {:name (:name user-info) :phone (:phone user-info)})
+          errors (atom (same-keys-with-nils @user-edit))]
+      (log/info "edit-profile-page")
+      (rum/mount
+        (p-p/edit-profile {:context @context
+                           :user-info user-info
+                           :user-edit user-edit
+                           :schema EditUser
+                           :errors errors})
         (. js/document (getElementById "app"))))))
 
 (defn browse-quests-page [params]
@@ -287,6 +303,8 @@
    login-page
    :profile
    profile-page
+   :edit-profile
+   edit-profile-page
    :register
    register-page
    :activate

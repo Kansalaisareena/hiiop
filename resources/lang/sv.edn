@@ -102,6 +102,10 @@
    :rejected "Hylätty"
    :published "Julkaistu"}
 
+  :edit-profile
+  {:phone "Puhelinnumero (ei pakollinen)"
+   :name "Nimi"}
+
   :activate
   {:title "Luo salasana"
    :password "Salasana"
@@ -285,7 +289,9 @@ Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit
 
   :profile
   {:sign-out "Kirjaudu ulos"
-   :edit "Muokkaa"}
+   :edit "Muokkaa"
+   :save-profile "Tallenna"
+   :cancel-editing "Peruuta"}
   }
 
  :pikaday
