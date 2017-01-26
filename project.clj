@@ -154,36 +154,53 @@
             }}
 
   :profiles
-  {:uberjar {:omit-source true
-             ;;:prep-tasks ["git-version" "compile" ["cljsbuild" "once" "min"] "resource" "minify-assets"]
-             :prep-tasks ["git-version"
-                          "compile"
-                          ["cljsbuild" "once" "min"]
-                          ["cljsbuild" "once" "static"]
-                          "resource"]
-             :cljsbuild
-             {:builds
-              {:min
-               {:source-paths ["src/cljc" "src/cljs/hiiop" "env/prod/cljs"]
-                :compiler
-                {:output-to "target/cljsbuild/public/js/app.js"
-                 ;;:output-dir "target/cljsbuild/public/js/"
-                 ;;:source-map "target/cljsbuild/public/js/app.js.map"
-                 :externs ["react/externs/react.js"]
-                 :optimizations :simple
+  {:uberjar
+   {:omit-source true
+    ;;:prep-tasks ["git-version" "compile" ["cljsbuild" "once" "min"] "resource" "minify-assets"]
+    :prep-tasks ["git-version"
+                 "compile"
+                 ["cljsbuild" "once" "min"]
+                 ["cljsbuild" "once" "static"]
+                 "resource"]
+    :cljsbuild
+    {:builds
+     {:min
+      {:source-paths ["src/cljc" "src/cljs/hiiop" "env/prod/cljs"]
+       :compiler
+       {:output-to "target/cljsbuild/public/js/app.js"
+        :externs ["externs/react.js"
+                  "externs/react-dom.js"
+                  "externs/react-dom-server.js"
+                  "externs/pikaday.js"
+                  "externs/google_maps_api_v3.js"
+                  "externs/moment.js"]
+        :optimizations :advanced
+        :parallel-build true
+        :compiler-stats true
+        :pretty-print false
+        :verbose true
+        :language-in  :ecmascript5
+        :language-out :ecmascript5
+        :source-map false}}
+
+      :static
+      {:source-paths ["src/cljs/hiiop_static"]
+       :compiler
+       {:output-to "target/cljsbuild/public/js/static.js"
+        :externs ["externs/react.js"
+                  "externs/react-dom.js"
+                  "externs/react-dom-server.js"
+                  "externs/pikaday.js"
+                           "externs/google_maps_api_v3.js"
+                           "externs/moment.js"]
+                 :optimizations :advanced
+                 :parallel-build true
+                 :verbose true
+                 :compiler-stats true
                  :pretty-print false
-                 :closure-warnings
-                 {:externs-validation :off :non-standard-jsdoc :off}}}
-               :static
-               {:source-paths ["src/cljs/hiiop_static"]
-                :compiler
-                {:output-to "target/cljsbuild/public/js/static.js"
-                 ;;:output-dir "target/cljsbuild/public/js/"
-                 ;;:source-map "target/cljsbuild/public/js/app.js.map"
-                 :optimizations :simple
-                 :pretty-print false
-                 :closure-warnings
-                 {:externs-validation :off :non-standard-jsdoc :off}}}}}
+                 :language-in  :ecmascript5
+                 :language-out :ecmascript5
+                 :source-map false}}}}
 
              ;; :minify-assets
              ;; {:assets
@@ -191,8 +208,8 @@
              ;;         (apply str (clojure.string/trim
              ;;                      (:out (clojure.java.shell/sh
              ;;                              "git" "rev-parse" "--verify" "HEAD"))))
-             ;;         "/css/screen.css")
-             ;;   "resources/public/css"
+             ;;         "/js/app.js")
+             ;;   "resources/public/app.js"
              ;;   }
              ;;  :options {:optimizations :none}
              ;;  }
