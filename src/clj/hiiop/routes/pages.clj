@@ -289,8 +289,7 @@
                               {:property "fb:app_id"
                                :content (get-in env [:social :facebook-app-id])}
                               {:property "og:image"
-                               :content (str (:asset-base-url env)
-                                             (get-quest-image quest))}
+                               :content (get-quest-image quest)}
                               {:name "twitter:creator"
                                :content (get-in env [:social :twitter-account])}
                               {:name "twitter:card"
