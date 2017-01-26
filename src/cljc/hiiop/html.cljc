@@ -539,8 +539,8 @@
     ""))
 
 (defn combine-text [separator first-text & args]
-  (if (nil? first-text)
-    (if args
+  (if (empty? first-text)
+    (if (not-empty args)
       (let [[new-first & rest] args]
         (recur separator new-first rest))
       "")

@@ -93,6 +93,9 @@
     p {
       margin-bottom: .5rem;
     }
+    a {
+      color: $basic-text-colour;
+    }
   }
 
   @include modifier('quest-footer') {
@@ -139,6 +142,7 @@
   position: relative;
   width: 100%;
 
+  // opux-card--with-actions
   @include modifier('with-actions') {
     padding-bottom: 80px;
   }
@@ -158,11 +162,13 @@
     width: 100%;
     z-index: 9;
 
-    .opux-content {
+    // opux-card__overlay opux-content
+    @include block('opux-content') {
         padding-bottom: 2rem;
     }
 
-    .opux-button {
+    // opux-card__overlay opux-button
+    @include block('opux-button') {
       margin-left: auto;
       margin-right: auto;
     }

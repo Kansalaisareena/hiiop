@@ -90,6 +90,12 @@
     }
   }
 
+  // opux-input__info
+  @include element('info') {
+    font-size: .8rem;
+    margin-top: .2rem;
+  }
+
   // opux-input__container
   @include element('container') {
     box-sizing: border-box;
@@ -303,5 +309,24 @@
       }
     }
 
+  }
+}
+
+.dropzone.dz-clickable {
+  border-radius: 3px;
+  border: 1px solid $OP-gray-medium;
+  min-height: 70px;
+  padding: 2rem 0;
+
+  .dz-message {
+    margin: 0px;
+    * {
+      &:before {
+        @extend %opux-icon-base;
+        content: "";
+        margin-bottom: 7px;
+        margin-right: 4px;
+      }
+    }
   }
 }
