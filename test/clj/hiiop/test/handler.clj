@@ -1209,6 +1209,62 @@
           (just-do #(db/delete-user! {:id (sc/string->uuid @test-user-id)})))
       ))
 
+  (testing "GET /api/v1/counter"
+    (let [current-app (app)
+          user-created (create-test-user
+                        {:user-data test-user
+                         :save-id-to test-user-id
+                         :read-token-from activation-token})
+          made-moderator (db/make-moderator! {:id @test-user-id})
+          login-cookie (login-and-get-cookie
+                        {:with current-app
+                         :user-data test-user})
+          quest-to-add  (-> (test-quest
+                             {:location-to :location
+                              :coordinates-to :coordinates
+                              :organisation-to {:in :organisation
+                                                :name :name
+                                                :description :description}})
+                            (assoc :start-time (-> 1 t/days t/from-now))
+                            (assoc :end-time (-> 2 t/days t/from-now)))
+
+          added-quest (add-quest
+                       {:with current-app
+                        :use-date-string false
+                        :quest quest-to-add
+                        :login-cookie login-cookie
+                        :organiser-participates true})
+           
+          quest-in-the-past (assoc added-quest
+                                   :start-time (-> -2
+                                                   t/days
+                                                   t/from-now)
+                                   :end-time (-> -1
+                                                 t/days
+                                                 t/from-now))]
+      (hiiop.redis/clear-from-cache :counter)
+
+      ;; quest in the future
+      (is (= 0 (:days (hiiop.api-handlers/get-the-counter-value))))
+      (hiiop.redis/clear-from-cache :counter)
+
+      ;; quest in the past but unmoderated
+      (edit-quest {:with current-app
+                   :quest quest-in-the-past
+                   :login-cookie login-cookie})
+      (is (= 0 (:days (hiiop.api-handlers/get-the-counter-value))))
+      (hiiop.redis/clear-from-cache :counter)
+
+      ;; quest in the past, moderated
+      (accept-quest {:with current-app
+                     :quest-id (:id added-quest)
+                     :login-cookie login-cookie})
+      (is (= 2 (:days (hiiop.api-handlers/get-the-counter-value))))
+      (hiiop.redis/clear-from-cache :counter)
+      
+      (db/delete-quest-by-id! {:id (:id added-quest)})
+      (db/delete-user! {:id (sc/string->uuid @test-user-id)})))
+
   (testing "GET api/v1/quests/:id/secret/:secret-party/joinable"
     (let [current-app (app)
           user-created (create-test-user
