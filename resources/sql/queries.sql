@@ -717,6 +717,19 @@ SELECT EXISTS(
                             parties
                           WHERE quest_id = :quest_id))
 
+-- :name get-party-member-info :? :1
+-- :doc get party member info for user and quest
+SELECT
+  p.id as member_id,
+  p.quest_id,
+  p.user_id,
+  p.days
+FROM
+  parties p
+WHERE
+  p.quest_id = :quest_id AND
+  p.user_id = :user_id
+
 -- :name get-quest-party-members :? :*
 -- :doc get quest party
 SELECT

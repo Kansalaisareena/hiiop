@@ -72,9 +72,9 @@
                      (reset! processing true)
                      #?(:cljs
                         (go
-                          (let [party-info (first (<! (api/get-party-info {:quest-id (:id quest)})))
+                          (let [member-info (<! (api/get-party-member-info {:quest-id (:id quest)}))
                                 resp (<! (api/remove-party-member
-                                           {:member-id (:member-id party-info)
+                                           {:member-id (:member-id member-info)
                                             :quest-id (:id quest)}))
                                 user-quests (<! (api/get-user-quests))
                                 new-own-quests (:organizing user-quests)
