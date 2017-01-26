@@ -15,7 +15,6 @@
 (defn render
   "renders the HTML given"
   [{:keys [context content title scripts no-script metas] :or [params]}]
-  (log/info "METAS----------" metas)
   (let [final-content (if content (rum/render-html content) "")]
     (content-type
      (ok
