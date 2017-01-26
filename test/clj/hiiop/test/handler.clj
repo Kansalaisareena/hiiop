@@ -350,6 +350,19 @@
         (parse-string true)
         (do-this #(pp/pprint %1)))))
 
+(defn get-party-member-info [{:keys [with quest-id login-cookie status]}]
+  (let [url (str "/api/v1/quests/" quest-id "/get-member-info")]
+    (-> (json-request url
+         {:type :get
+          :cookies login-cookie})
+        (with)
+        (has-status (or status 200) url)
+        (:body)
+        (check #(is (not (= %1 nil))))
+        (#(when %1 (slurp %1)))
+        (parse-string true)
+        (do-this #(pp/pprint %1)))))
+
 (defn remove-party-member [{:keys [with quest-id member-id login-cookie status]}]
   (let [url (str "/api/v1/quests/" quest-id "/party/" member-id)]
     (-> (json-request url
@@ -1346,14 +1359,14 @@
                         :organiser-participates true})
           ]
       (-> added-quest
-          (#(get-party-members {:with current-app
-                                :quest-id (:id %1)
-                                :login-cookie login-cookie}))
+          (#(get-party-member-info {:with current-app
+                                    :quest-id (:id %1)
+                                    :login-cookie login-cookie}))
           (check #(is (not (nil? %1))))
-          (check #(is (= 1 (count %1))))
+          (check #(is (= 4 (count %1))))
           (#(remove-party-member {:with current-app
                                   :login-cookie login-cookie
-                                  :member-id (:member-id (first %1))
+                                  :member-id (:member-id %1)
                                   :quest-id (:id added-quest)
                                   }))
           (just-do #(db/delete-quest-by-id! {:id (:id added-quest)}))

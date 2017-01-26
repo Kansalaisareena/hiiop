@@ -389,9 +389,8 @@
           :name        ::quest-party-member-info
           :path-params [quest-id :- Long]
           :return      PartyMember
-          :summary     "Get party member info for user"
+          :summary     "Get party member info for current user"
           (fn [request]
-            (log/info (:id (:identity request)))
             (-> (api-handlers/get-party-member-info-for-user {:quest-id quest-id
                                                               :user-id (get-in request [:identity :id])})
                 (#(if %1
@@ -410,7 +409,7 @@
                 (#(if (not (:errors %1))
                     (ok %1)
                     (bad-request %1))))))
-        
+
         (GET "/:quest-id/party/:member-id" []
           :name        ::quest-party-member
           :path-params [quest-id :- Long
