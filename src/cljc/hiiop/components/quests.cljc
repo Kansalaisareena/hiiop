@@ -131,7 +131,7 @@
      (if (not (rum/react organisation-enabled))
        (html/button
         (tr [:pages.quest.edit.button.add-organisation])
-        {:class "opux-button"
+        {:class "opux-button opux-button--long-text"
          :on-click
          (fn [e]
            (enable-organisation organisation-enabled)
