@@ -26,7 +26,7 @@
 
 (def Phone
   (s/constrained
-   #"^(([^\.\-\,a-wy-z]([\(]?(\+|[x])?\d+[\)]?)?[\s\.\-\,]?([\(]?\d+[\)]?)?[\s\.\-\,]?(\d+[\s\.\-\,]?)+[^\.\-\,a-z])|((\+|[x])?\d+))$"
+   #"^(\s*|([^\.\-\,a-wy-z]([\(]?(\+|[x])?\d+[\)]?)?[\s\.\-\,]?([\(]?\d+[\)]?)?[\s\.\-\,]?(\d+[\s\.\-\,]?)+[^\.\-\,a-z])|((\+|[x])?\d+))$"
    (fn [val] (not (nil? val))) :errors.phone.not-valid))
 
 (def Agreement
@@ -55,24 +55,21 @@
   {(s/optional-key :name) (s/maybe s/Str)
    (s/optional-key :description) (s/maybe s/Str)})
 
-(def Locale (s/enum :fi :sv))
-
 (def User
   "Registered or virtual user"
   {:id s/Uuid
    :email Email
    :name NonEmptyString
    (s/optional-key :phone) (s/maybe Phone)
-   ;;(s/optional-key :phone) (s/maybe Phone)
    :moderator s/Bool
    :active s/Bool})
 
 (def EditUser
-  "Editable fields of a user"
-  (-> User
-      (st/dissoc :id :moderator :active :email)
-      (st/assoc :phone Phone)
-      (st/assoc :locale Locale)))
+  "Edit user"
+  (st/dissoc User :id
+                  :email
+                  :moderator
+                  :active))
 
 (def NewGuestUser
   "New guest"
@@ -307,4 +304,3 @@
   "Contentful object"
   {:sys s/Any
    :fields s/Any})
-

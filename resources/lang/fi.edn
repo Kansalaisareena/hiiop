@@ -12,7 +12,7 @@
   :faq-page-key "faq"
   :contact "Ota yhteyttä"
   :contact-page-key "otayhteytta"
-  :terms-of-service "Käyttäjäehdot"
+  :terms-of-service "Käyttöehdot"
   :terms-of-service-page-key "kayttoehdot"
   :privacy "Henkilötietojen käsittely"
   :privacy-page-key "tietosuoja"
@@ -91,7 +91,8 @@
    :email-sent "Lähetimme sinulle sähköpostia. Viestissä on linkki, jota klikkaamalla pääset luomaan salasanasi ja kirjautumaan palveluun. Tähän saattaa mennä pari minuuttia."}
 
   :static
-  {:stories-index-header "Tarinoita vapaaehtoistyöstä"
+  {:stories-title "Tarina"
+   :stories-index-header "Tarinoita vapaaehtoistyöstä"
    :stories-index-subtitle "Täältä löydät vinkkejä ja ideoita oman vapaaehtoistehtväsi järjestämiseen, voit lukea suomalaisesta vapaaehtoistoiminnasta, auttajista ja autetuista."}
 
   :profile
@@ -109,6 +110,10 @@
    :pending-approval "Odottaa hyväksymistä"
    :rejected "Hylätty"
    :published "Julkaistu"}
+
+  :edit-profile
+  {:phone "Puhelinnumero (ei pakollinen)"
+   :name "Nimi"}
 
   :activate
   {:title "Luo salasana"
@@ -291,9 +296,13 @@ Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit
 
   :cancel "Peruuta"
 
+  :share "Kerro kavereille"
+
   :profile
   {:sign-out "Kirjaudu ulos"
-   :edit "Muokkaa"}
+   :edit "Muokkaa"
+   :save-profile "Tallenna"
+   :cancel-editing "Peruuta"}
   }
 
  :pikaday

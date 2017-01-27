@@ -4,7 +4,8 @@
             [hiiop.config :refer [env asset-path]]
             [hiiop.routes.page-hierarchy :refer [hierarchy]]
             [hiiop.translate :refer [tr-opts default-locale]]
-            [taoensso.tempura :as tempura]))
+            [taoensso.tempura :as tempura]
+            [hiiop.components.social-buttons :refer [social-buttons]]))
 
 (defn- create-context [locale]
   {:tr (partial tempura/tr (tr-opts) [locale])
@@ -33,14 +34,35 @@
      :frameborder 0}]])
 
 (defn contentful-page-structure
-  [{:keys [locale title content image-url youtube-id author]}]
+  [{:keys [locale title content image-url youtube-id author excerpt url show-social-metas]}]
   (let [context (create-context locale)
         tr (:tr context)
-        asset-path (:asset-path context)]
+        asset-path (:asset-path context)
+        metas (if-not show-social-metas
+                nil
+                [{:property "og:title"
+                  :content title}
+                 {:property "og:content"
+                  :content excerpt}
+                 {:property "og:type"
+                  :content "article"}
+                 {:property "og:url"
+                  :content url}
+                 {:property "og:app_id"
+                  :content (get-in env [:social :facebook-app-id])}
+                 {:property "og:image"
+                  :content (if image-url
+                             (str (:hiiop-blog-base-url env) image-url)
+                             (str (:asset-base-url env) "/img/banner.jpg"))}
+                 {:name "twitter:creator"
+                  :content (get-in env [:social :twitter-account])}
+                 {:name "twitter:card"
+                  :content excerpt}])]
     (rum/render-static-markup
       (html/page
         (html/head-content {:title title
-                            :asset-path asset-path})
+                            :asset-path asset-path
+                            :metas metas})
         (html/body-content
           (html/header context)
           [:div {:id "app"
@@ -58,7 +80,13 @@
 
             (when (not-empty content)
               [:div {:class "opux-content"
-                     :dangerouslySetInnerHTML {:__html content}}])]]
+                     :dangerouslySetInnerHTML {:__html content}}])
+
+            (when show-social-metas
+              [:div {:class "opux-content"}
+               (social-buttons {:title title
+                                :url url
+                                :tr tr})])]]
           (html/footer context)
           [:div {:class "script-tags"}
            [:script {:src (str asset-path "/js/static.js")
@@ -98,14 +126,32 @@
           stories)]))
 
 (defn story-index-page-structure
-  [{:keys [stories locale]}]
+  [{:keys [stories locale url]}]
   (let [context (create-context locale)
         tr (:tr context)
-        asset-path (:asset-path context)]
+        asset-path (:asset-path context)
+        metas [{:property "og:title"
+                :content (tr [:pages.static.stories-index-header])}
+               {:property "og:content"
+                :content (tr [:pages.static.stories-index-subtitle])}
+               {:property "og:type"
+                :content "article"}
+               {:property "og:url"
+                :content url}
+               {:property "og:app_id"
+                :content (get-in env [:social :facebook-app-id])}
+               {:property "og:image"
+                :content (str (:asset-base-url env)
+                              "/img/banner.jpg")}
+               {:name "twitter:creator"
+                :content (get-in env [:social :twitter-account])}
+               {:name "twitter:card"
+                :content (tr [:pages.static.stories-index-subtitle])}]]
     (rum/render-static-markup
       (html/page
-        (html/head-content {:title "Tarina"
-                           :asset-path asset-path})
+        (html/head-content {:title (tr [:pages.static.stories-title])
+                            :asset-path asset-path
+                            :metas metas})
         (html/body-content
           (html/header context)
           [:div {:id "app"

@@ -52,9 +52,10 @@
                             (set! (.-location js/window)
                                   (path-for hierarchy :login))))))}
         (tr [:actions.profile.sign-out])]
-
-       ;;[:span {:class "opux-button opux-button--spacing opux-button--highlight"}
-       ;; (tr [:actions.profile.edit])]
+        
+       [:a {:class "opux-button opux-button--spacing opux-button--highlight"
+            :href (path-for hierarchy :edit-profile)}
+        (tr [:actions.profile.edit])]
 
        (if moderator
          [:a {:class "opux-button opux-button--spacing opux-button--highlight"
@@ -87,3 +88,91 @@
                                      :quests quests})
                past-quests)])
        ]]]))
+
+(rum/defcs edit-profile-form < rum/reactive
+                             < (rum/local true ::is-valid)
+  [state
+   {:keys [context
+           cursors-and-schema
+           schema
+           user-edit
+           user-info
+          ]}]
+  (let [{:keys [name phone]} user-info
+        local-is-valid (::is-valid state)
+        checker (partial hs/select-schema-either schema)
+        tr (:tr context)]
+
+    (add-watch user-edit ::see-if-valid
+           (fn [_ _ _ new]
+            (let [value-or-error (checker new)]
+             (cond
+              (:--value value-or-error) (reset! local-is-valid true)
+              (:--error value-or-error) (reset! local-is-valid false)))))
+
+    [:form
+     {:class "opux-form"
+      :on-submit
+       (fn [e]
+        (.preventDefault e)
+        #?(:cljs
+           (go
+            (let [response (<! (api/edit-user (:id user-info) @user-edit))
+                  success (:success response)]
+             (when success
+               #?(:cljs (set! (.-location js/window)
+                              (path-for hierarchy :profile))))))))}
+     
+     [:div {:class "opux-form-section"}
+      [:div {:class "opux-content opux-content--small"}
+      [:div {:class "opux-fieldset opux-form-section__fieldset"}
+       
+       [:div {:class "opux-fieldset__item"}
+        (html/label
+         (tr [:pages.edit-profile.name])
+         {:class "opux-input__label name-label"})
+        (html/input
+         {:schema (get-in cursors-and-schema [:name :schema])
+          :value (get-in cursors-and-schema [:name :value])
+          :error (get-in cursors-and-schema [:name :error])
+          :type "text"
+          :class "opux-input opux-input--text name"
+          :context context})]
+
+       [:div {:class "opux-fieldset__item"}
+        (html/label
+         (tr [:pages.edit-profile.phone])
+         {:class "opux-input__label phone-label"})
+        (html/input
+         {:schema (get-in cursors-and-schema [:phone :schema])
+          :value (get-in cursors-and-schema [:phone :value])
+          :error (get-in cursors-and-schema [:phone :error])
+          :type "text"
+          :class "opux-input opux-input--text phone"
+          :context context})]
+
+       [:div {:class "opux-section opux-centered"}
+        [:a {:class "opux-button opux-button--spacing opux-button--dull"
+             :href (path-for hierarchy :profile)}
+        (tr [:actions.profile.cancel-editing])]
+
+       (html/button
+        (tr [:actions.profile.save-profile])
+        {:class "opux-button opux-button--spacing opux-button--highlight"
+         :type "submit"
+         :active local-is-valid}
+       )]]]]]))
+
+(rum/defc edit-profile < rum/reactive
+  [{:keys [context user-info user-edit schema errors]}]
+  (let [cursors-and-schema (c/value-and-error-cursors-and-schema
+                            {:for user-edit
+                             :schema schema
+                             :errors errors})]
+
+  (edit-profile-form
+   {:context context
+    :cursors-and-schema cursors-and-schema
+    :schema schema
+    :user-edit user-edit
+    :user-info user-info})))

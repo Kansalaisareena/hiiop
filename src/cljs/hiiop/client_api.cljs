@@ -196,6 +196,16 @@
       (when (= status 200)
         body))))
 
+(defn edit-user [user-id user]
+  (log/info "edit-user called with" user)
+  (go
+    (let [response (<! (http/put (str base-path "/users/" user-id)
+                                  {:json-params user}))
+          status (:status response)
+          body (:body response)]
+      {:success (= status 200)
+       :body body})))
+
 (defn get-party-info [{:keys [quest-id]}]
   (go
     (let [response (<! (http/get

@@ -175,12 +175,12 @@
       (log/error e)
       {:errors {:users :errors.user.not-found}})))
 
-(defn edit-user [{:keys [new-user id request-user-id]}]
+(defn edit-user [{:keys [new-user id request-user-id locale]}]
   (try
     (-> new-user
-        (assoc :id id)
-        (hc/api-edit-user->db-edit-user-coercer)
-        (assoc :user_id request-user-id)
+        (assoc :id (sc/string->uuid id)
+               :user_id (sc/string->uuid request-user-id)
+               :locale (clojure.core/name locale))
         (db/edit-user!)
         (#(when (= 1 %) (db/get-user-by-id {:id id :user_id request-user-id}))))
     (catch Exception e

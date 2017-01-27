@@ -10,6 +10,7 @@
             [hiiop.components.moderate :as p-m]
             [hiiop.components.profile :as p-p]
             [hiiop.components.quest-single :as quest]
+            [hiiop.components.quest-card :refer [get-quest-image]]
             [hiiop.components.quests :as quests]
             [hiiop.components.index :as index-page]
             [hiiop.components.quests-browse :as p-b]
@@ -27,6 +28,7 @@
                                   EditQuest
                                   NewQuest
                                   RegistrationInfo
+                                  EditUser
                                   UserActivation
                                   QuestFilter
                                   QuestCategoryFilter
@@ -54,6 +56,9 @@
             [hiiop.db.core :as db]
             [hiiop.api-handlers :as api-handlers]))
 
+(def autolink-url
+  "//cdnjs.cloudflare.com/ajax/libs/autolinker/1.4.0/Autolinker.min.js")
+
 (defn tr-from-req [req]
   (:tempura/tr req))
 
@@ -75,6 +80,22 @@
                                                      :schema schema
                                                      :category-filter category-filter})
                     :title (tr [:pages.index.title])
+                    :metas [{:property "og:title"
+                             :content (tr [:pages.index.title])}
+                            {:property "og:content"
+                             :content (tr [:pages.index.banner.content])}
+                            {:property "og:type"
+                             :content "article"}
+                            {:property "og:url"
+                             :content (:site-base-url env)}
+                            {:property "fb:app_id"
+                             :content (get-in env [:social :facebook-app-id])}
+                            {:property "og:image"
+                             :content (str (:asset-base-url env) "/img/banner.jpg")}
+                            {:name "twitter:creator"
+                             :content (get-in env [:social :twitter-account])}
+                            {:name "twitter:card"
+                             :content (tr [:pages.index.banner.content])}]
                     :scripts ["//assets.juicer.io/embed.js"]})))
 
 (defn login [req]
@@ -115,6 +136,21 @@
                     (p-p/profile {:context context
                                   :user-info user-info
                                   :quests (atom quests)})})))
+
+(defn edit-profile [req]
+  (let [context (create-context req)
+        tr (:tr context)
+        user-id (get-in context [:identity :id])
+        user-info (get-private-user {:id (sc/string->uuid user-id)
+                                     :user-id (get-in req [:identity :id])})
+        user-edit (atom {:name (:name user-info) :phone (:phone user-info)})
+        errors (atom (same-keys-with-nils @user-edit))]
+    (layout/render {:context context
+                    :content (p-p/edit-profile {:context context
+                                                :user-info user-info
+                                                :user-edit user-edit
+                                                :schema EditUser
+                                                :errors errors})})))
 
 (defn activate [req]
   (let [context (create-context req)
@@ -160,7 +196,8 @@
                                   :schema schema
                                   :errors errors})
                     :scripts
-                    [google-maps-url]
+                    [google-maps-url
+                     autolink-url]
                     })))
 
 (defn browse-quests [req]
@@ -171,7 +208,6 @@
                  (get-moderated-quests))
         quest-filter (atom (new-empty-quest-filter))
         errors (atom (same-keys-with-nils @quest-filter))]
-
     (layout/render {:context context
                     :content
                     (p-b/list-quests {:quests quests
@@ -179,6 +215,23 @@
                                       :context context
                                       :schema QuestFilter})
                     :title (tr [:actions.quest.browse])
+                    :metas [{:property "og:title"
+                             :content (tr [:action.quest.browse])}
+                            {:property "og:content"
+                             :content (tr [:pages.index.banner.content])}
+                            {:property "og:type"
+                             :content "article"}
+                            {:property "og:url"
+                             :content (str (:site-base-url env)
+                                           (:url req))}
+                            {:property "fb:app_id"
+                             :content (get-in env [:social :facebook-app-id])}
+                            {:property "og:image"
+                             :content (str (:asset-base-url env) "/img/banner.jpg")}
+                            {:name "twitter:creator"
+                             :content (get-in env [:social :twitter-account])}
+                            {:name "twitter:card"
+                             :content (tr [:pages.index.banner.content])}]
                     :scripts
                     [google-maps-url]
                     })))
@@ -224,14 +277,34 @@
     (if quest
       (layout/render {:title (:name quest)
                       :context context
+                      :metas [{:property "og:title"
+                               :content (:name quest)}
+                              {:property "og:content"
+                               :content (:description quest)}
+                              {:property "og:type"
+                               :content "article"}
+                              {:property "og:url"
+                               :content (str (:site-base-url env)
+                                             (:uri req))}
+                              {:property "fb:app_id"
+                               :content (get-in env [:social :facebook-app-id])}
+                              {:property "og:image"
+                               :content (get-quest-image quest)}
+                              {:name "twitter:creator"
+                               :content (get-in env [:social :twitter-account])}
+                              {:name "twitter:card"
+                               :content (:description quest)}]
                       :content
                       (quest/quest {:context context
                                     :quest (atom (assoc quest
                                                         :owner-name owner-name))
+                                    :url (str (:site-base-url env)
+                                              (:uri env))
                                     :joinable joinable
                                     :empty-party-member empty-party-member
                                     :party-member-errors errors
-                                    :party-member-schema NewPartyMember})}))))
+                                    :party-member-schema NewPartyMember})
+                      :scripts [autolink-url]}))))
 
 (defn secret-quest [req]
   (let [id (get-in req [:params :quest-id])
@@ -295,7 +368,8 @@
                       :content
                       (p-m/moderate-page
                        {:context context
-                        :unmoderated-quests (atom unmoderated-quests)})})
+                        :unmoderated-quests (atom unmoderated-quests)})
+                      :scripts [autolink-url]})
       (redirect-to {:path-key :index}))))
 
 (defn request-password-reset-page [req]
@@ -347,6 +421,8 @@
    activate
    :profile
    (authenticated profile)
+   :edit-profile
+   (authenticated edit-profile)
    :quest
    quest
    :secret-quest

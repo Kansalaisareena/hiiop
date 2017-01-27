@@ -59,6 +59,9 @@
   (let [fields (localize-fields (:fields cfobject) locale)]
     (contentful-page-structure
       {:locale locale
+       :url (str (:hiiop-blog-base-url env)
+                 (name locale) "/blog/"
+                 (get-in cfobject [:sys :id]) ".html")
        :title (:otsikko fields)
        :content (md-to-html (:leipateksti fields))})))
 
@@ -77,8 +80,13 @@
   (let [fields (localize-fields (:fields cfobject) locale)]
     (contentful-page-structure
       {:locale locale
+       :url (str (:hiiop-blog-base-url env)
+                 (name locale) "/blog/"
+                 (get-in cfobject [:sys :id]) ".html")
        :title (:otsikko fields)
        :author (get-in cfobject [:fields :author :fi])
+       :excerpt (:excerpt fields)
+       :show-social-metas true
        :content (if (not-empty (:leipteksti fields))
                   (md-to-html (:leipteksti fields))
                   nil)
@@ -178,6 +186,9 @@
 (defn render-stories-index [stories locale]
   (story-index-page-structure
     {:stories stories
+     :url (str (:hiiop-blog-base-url env)
+               (name locale)
+               "/blog/index.html")
      :locale locale}))
 
 (defn process-stories-indexes []

@@ -45,6 +45,7 @@
                  [bidi                                   "2.0.14"]
                  [metosin/schema-tools                   "0.9.0"]
                  [com.novemberain/pantomime              "2.8.0"]
+                 [com.cemerick/url                       "0.1.1"]
                  [amazonica                              "0.3.78"
                   :exclusions [com.amazonaws/aws-java-sdk
                                com.amazonaws/amazon-kinesis-client
@@ -219,7 +220,8 @@
                   [[com.jakemccrary/lein-test-refresh  "0.18.0"]
                    [lein-doo                           "0.1.7"]
                    [lein-figwheel                      "0.5.8"]
-                   [org.clojure/clojurescript          "1.9.293"]]
+                   [org.clojure/clojurescript          "1.9.293"]
+                   [lein-autoreload                    "0.1.1"]]
 
                   :prep-tasks ["git-version"]
 

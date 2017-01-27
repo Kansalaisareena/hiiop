@@ -77,4 +77,4 @@
   (st/dissoc DBUser :moderator :is_active))
 
 (def DBEditUser
-  (st/dissoc DBUser :moderator :is_active :email))
+  (st/dissoc DBUser :id :moderator :is_active :email :locale))
