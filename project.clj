@@ -165,7 +165,9 @@
     :cljsbuild
     {:builds
      {:min
-      {:source-paths ["src/cljc" "src/cljs/hiiop" "env/prod/cljs"]
+      {:source-paths ["src/cljc/hiiop"
+                      "src/cljs/hiiop"
+                      "env/prod/cljs/hiiop"]
        :compiler
        {:output-to "target/cljsbuild/public/js/app.js"
         :externs ["externs/react.js"
