@@ -2,7 +2,26 @@
   (:require [taoensso.timbre :as log]
             [rum.core :as rum]
             [hiiop.time :as time]
-            [hiiop.mangling :as mangling]))
+            [hiiop.mangling :as mangling]
+            [hiiop.config :refer [load-env]]
+            [rum.server-render :refer [escape-html]]))
+
+(def mail-style "<style>
+                 * { font-family: Calibri, sans-serif;
+                     color: #323232; font-weight: 200; }
+                 h1 { font-size: 2.3rem; }
+                 a { color: #ff6a10; text-decoration: none; }
+                 .button-2 { margin-left: 10px; }
+                 #footer-image-1 { height: 70px; float: left; margin: 5px; }
+                 #footer-image-2 { height: 70px; float: right; margin: 5px; }
+                 </style>")
+
+(def footer-images
+  [:div {:style {:clear "both" }}
+    [:img {:id "footer-image-1"
+           :src (str (:asset-base-url (load-env)) "/img/logo_with_text.png")}]
+    [:img {:id "footer-image-2"
+           :src (str (:asset-base-url (load-env)) "/img/suomi100.png")}]])
 
 (defn quest-details-mail [{:keys [tr
                                   title
@@ -16,18 +35,19 @@
   (let [start-time (time/from-string (:start-time quest))
         end-time (time/from-string (:end-time quest))]
     [:html
+     [:head {:dangerouslySetInnerHTML {:__html mail-style }}]
      [:body
       [:h1 title]
       [:dl
+       [:div {:class "body-text" :dangerouslySetInnerHTML {:__html body-text}}]
+        (when message
+         [:p {:class "message"} message])
        [:dt (tr [:email.quest.time])]
        [:dd {:class "time"}
         (time/duration-to-print-str start-time end-time)]
        [:dt (tr [:email.quest.place])]
        [:dd {:class "place"}
         (mangling/readable-address (:location quest))]]
-      [:div {:class "body-text" :dangerouslySetInnerHTML {:__html body-text}}]
-      (when message
-        [:p {:class "message"} message])
       (when button-text
         [:a {:href button-url
              :class "button-1"
@@ -36,7 +56,8 @@
         [:br]
         [:a {:href button2-url
              :class "button-2"
-             :id "button-2"} button2-text])]]))
+             :id "button-2"} button2-text])
+      footer-images]]))
 
 (defn plaintext-quest-details-mail [{:keys [tr
                                             title
@@ -70,8 +91,9 @@
                            button2-text
                            button2-url]}]
   [:html
+   [:head {:dangerouslySetInnerHTML {:__html mail-style }}]
    [:h1 title]
-   [:p body-text]
+   [:div {:class "body-text" :dangerouslySetInnerHTML {:__html body-text}}]
    (when message
      [:p {:class "message" :dangerouslySetInnerHTML {:__html message}}])
    [:a {:href button-url
@@ -81,7 +103,8 @@
      [:br]
      [:a {:href button-url
           :class "button-2"
-          :id "button-2"} button2-text])])
+          :id "button-2"} button2-text])
+   footer-images])
 
 (defn plaintext-simple-mail [{:keys [title
                                      body-text-plaintext
