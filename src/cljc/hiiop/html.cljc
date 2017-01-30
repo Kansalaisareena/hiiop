@@ -492,10 +492,10 @@
   [:footer {:class "opux-footer-container opux-section"}
    [:div {:class "opux-footer opux-content"}
     [:div {:class "opux-footer__column opux-footer__column--left"}
-     [:span {:class "opux-suomi-100"}]]
+     [:a {:href "http://suomifinland100.fi/"} [:span {:class "opux-suomi-100"}]]]
 
     [:div {:class "opux-footer__column opux-footer__column--right"}
-     [:span {:class "opux-op-logo"}]]
+     [:a {:href "http://www.op.fi/"} [:span {:class "opux-op-logo"}]]]
 
     [:div {:class "opux-footer__column"}
      (navigation/footer-navigation context)]
