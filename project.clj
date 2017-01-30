@@ -65,7 +65,7 @@
                  [com.atlassian.commonmark/commonmark    "0.8.0"]
                  [com.cemerick/url                       "0.1.1"]]
 
-  :min-lein-version "2.7.1"
+  :min-lein-version "2.5.3"
   :jvm-opts ["-server" "-Dconf=.lein-env" "-Duser.timezone=Europe/Helsinki"]
   :source-paths ["src/clj" "src/cljc"]
   :resource-paths ["resources" "target/cljsbuild"]
