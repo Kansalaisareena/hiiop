@@ -466,7 +466,8 @@
   [:body
    [:div {:class "opux-wrapper"}
     header content footer scripts
-    ]])
+    ]
+   (if-let [url (get-in env [:analytics :body-script])] [:script {:src url}])])
 
 (rum/defc head-content [{:keys [title asset-path metas]}]
   [:head
@@ -482,7 +483,9 @@
    [:link {:href "img/favicons/favicon-96x96.png" :rel "icon" :sizes "96x96" :type "image/png"}]
    [:link {:href "img/favicons/favicon-32x32.png" :rel "icon" :type "image/png"}]
    [:link {:href "img/favicons/favicon-16x16.png" :rel "icon" :type "image/png"}]
-   [:link {:href "img/favicons/favicon.ico" :rel "icon" :type "image/x-icon"}]])
+   [:link {:href "img/favicons/favicon.ico" :rel "icon" :type "image/x-icon"}]
+   (if-let [url (get-in env [:analytics :head-script])] [:script {:src url}])
+   ])
 
 (defn script-tag [url]
   [:script
