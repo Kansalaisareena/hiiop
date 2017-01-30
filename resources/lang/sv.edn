@@ -175,7 +175,7 @@ Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit
     :description "Kerro tehtävän sisällöstä"
     :picture
     {:title "Lisää kuva"
-     :info "Onhan sinulla on oikeudet kuvasi käyttöön? Kuvan käyttöön tarvitset aina kuvaajan nimen. Kuvan tulee olla vähintään 1100 pikseliä leveä ja 500 pikseliä korkea."
+     :info "Onhan sinulla on oikeudet kuvasi käyttöön? Kuvan käyttöön tarvitset aina kuvaajan nimen. Kuvan tulee olla vähintään 1100 pikseliä leveä ja 500 pikseliä korkea ja maksimissaan 3 MiB."
      :remove "Haluatko varmasti poistaa kuvan?"
      :upload-failed "Kuvan lisääminen epäonnistui."
      }
