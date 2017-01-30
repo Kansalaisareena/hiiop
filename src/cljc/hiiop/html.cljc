@@ -492,10 +492,10 @@
   [:footer {:class "opux-footer-container opux-section"}
    [:div {:class "opux-footer opux-content"}
     [:div {:class "opux-footer__column opux-footer__column--left"}
-     [:span {:class "opux-suomi-100"}]]
+     [:a {:href "http://suomifinland100.fi/" :target "_blank"} [:span {:class "opux-suomi-100"}]]]
 
     [:div {:class "opux-footer__column opux-footer__column--right"}
-     [:span {:class "opux-op-logo"}]]
+     [:a {:href "http://www.op.fi/" :target "_blank"} [:span {:class "opux-op-logo"}]]]
 
     [:div {:class "opux-footer__column"}
      (navigation/footer-navigation context)]
@@ -504,10 +504,13 @@
      (tr [:footer.follow-us])
      [:div {:class "opux-section"}
       [:a {:class "opux-footer__social-link opux-icon-social opux-icon-social--fb"
+           :target "_blank"
            :href "https://www.facebook.com/Hiiop/"}]
       [:a {:class "opux-footer__social-link opux-icon-social opux-icon-social--twitter"
+           :target "_blank"
            :href "https://twitter.com/Hiiop100"}]
       [:a {:class "opux-footer__social-link opux-icon-social opux-icon-social--instagram"
+           :target "_blank"
            :href "https://www.instagram.com/hiiop100/"}]]]]
 
    [:div {:class "opux-copyright opux-centered"}
