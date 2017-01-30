@@ -47,6 +47,8 @@
   @include modifier('white') {
     border-color: $OP-white;
     color: $OP-white;
+    height: 50px;
+    line-height: 48px;
     &:hover {
       background: rgba($OP-white, 0.3);
       border-color: $OP-white;
