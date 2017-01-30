@@ -102,7 +102,7 @@
 
     // opux-menu__item-link.is-active
     @include state('active') {
-      color: #323232;
+      color: $OP-dark-gray;
     }
 
     // opux-menu__item-link--main
