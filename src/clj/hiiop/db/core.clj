@@ -12,7 +12,7 @@
    [clj-time.jdbc]
    [hiiop.config :refer [env]]
    [hiiop.time :as time]
-   [hiiop.redis :refer [redef-with-cache redef-invalidate-cache]])
+   [hiiop.redis :refer [redef-with-cache redef-refresh-cache]])
   (:import org.postgresql.util.PGobject
            java.sql.Array
            clojure.lang.IPersistentMap
@@ -122,9 +122,9 @@
         unmoderated (get-unmoderated-quests-by-owner {:owner owner})]
     (concat moderated unmoderated)))
 
+(redef-refresh-cache add-unmoderated-quest! get-all-moderated-quests :all-moderated-quests)
+(redef-refresh-cache update-quest!          get-all-moderated-quests :all-moderated-quests)
+(redef-refresh-cache delete-quest-by-id!    get-all-moderated-quests :all-moderated-quests)
+(redef-refresh-cache join-quest!            get-all-moderated-quests :all-moderated-quests)
+(redef-refresh-cache moderate-accept-quest! get-all-moderated-quests :all-moderated-quests)
 (redef-with-cache get-all-moderated-quests :all-moderated-quests)
-(redef-invalidate-cache add-unmoderated-quest! :all-moderated-quests)
-(redef-invalidate-cache update-quest! :all-moderated-quests)
-(redef-invalidate-cache delete-quest-by-id! :all-moderated-quests)
-(redef-invalidate-cache join-quest! :all-moderated-quests)
-(redef-invalidate-cache moderate-accept-quest! :all-moderated-quests)

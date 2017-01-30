@@ -18,10 +18,10 @@
   [& body]
   `(car/wcar (conj {:pool {}} redis-connection-options) ~@body))
 
-(defmacro get-in-cache-or [key expr]
+(defmacro get-in-cache-or [key val]
   `(let [cached-result# (wcar* (car/get ~key))]
      (if-not cached-result#
-       (let [result# ~expr]
+       (let [result# ~val]
          (wcar* (car/set ~key (car/serialize result#)))
          result#)
        cached-result#)))
@@ -35,6 +35,15 @@
   `(let [old-fun# ~fun]
      (defn ~fun []
        (get-in-cache-or ~key (old-fun#)))))
+
+(defmacro redef-refresh-cache [fun refresh-expr key]
+  "Redefine function so that it refreshes key in redis on call."
+    `(let [old-fun# ~fun]
+       (defn ~fun [& args#]
+         (let [ret# (apply old-fun# args#)]
+           (wcar* (car/del ~key)
+                  (car/set ~key (car/serialize (~refresh-expr))))
+           ret#))))
 
 (defmacro redef-invalidate-cache [fun key]
   "Redefine function so that it deletes with key from redis on call."
