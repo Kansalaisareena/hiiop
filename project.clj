@@ -170,12 +170,7 @@
                       "env/prod/cljs/hiiop"]
        :compiler
        {:output-to "target/cljsbuild/public/js/app.js"
-        :externs ["externs/react.js"
-                  "externs/react-dom.js"
-                  "externs/react-dom-server.js"
-                  "externs/pikaday.js"
-                  "externs/google_maps_api_v3.js"
-                  "externs/moment.js"]
+        :externs ["externs/google_maps_api_v3.js"]
         :optimizations :advanced
         :parallel-build true
         :compiler-stats true
@@ -189,16 +184,11 @@
       {:source-paths ["src/cljs/hiiop_static"]
        :compiler
        {:output-to "target/cljsbuild/public/js/static.js"
-        :externs ["externs/react.js"
-                  "externs/react-dom.js"
-                  "externs/react-dom-server.js"
-                  "externs/pikaday.js"
-                           "externs/google_maps_api_v3.js"
-                           "externs/moment.js"]
-                 :optimizations :advanced
-                 :parallel-build true
-                 :verbose true
-                 :compiler-stats true
+        :externs ["externs/google_maps_api_v3.js"]
+        :optimizations :advanced
+        :parallel-build true
+        :verbose true
+        :compiler-stats true
                  :pretty-print false
                  :language-in  :ecmascript5
                  :language-out :ecmascript5
