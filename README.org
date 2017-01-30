@@ -91,6 +91,10 @@ Create profiles.clj under your git root to place the secrets.
         :hiiop-bucket "hiiop-dev"
         :hiiop-blog-base-url 
         "http://hiiop-dev-blog.s3-website.eu-central-1.amazonaws.com"
+
+      :analytics
+        {:head-script "analytics head url"
+         :body-script "analytics body url"}
        }
       :profiles/test
       {:env
