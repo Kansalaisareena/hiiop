@@ -51,7 +51,14 @@
     }
 
     blockquote {
-      
+      text-indent: 2em;
+      font-style: italic;
+      &:before {
+        content: open-quote;
+      }
+      &:after {
+        content: close-quote;
+      }
     }
   }
 }
