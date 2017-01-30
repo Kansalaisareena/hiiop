@@ -30,7 +30,7 @@
            (let [current-locale (:current-locale req)]
              (ok
               (conj
-               (select-keys env [:time-zone :dev :git-ref :langs])
+               (select-keys env [:time-zone :dev :git-ref :langs :hiiop-blog-base-url])
                {:accept-langs (:tempura/accept-langs req)
                 :now (time/now-utc)
                 :current-locale (keyword current-locale)

@@ -4,7 +4,8 @@
             [hiiop.html :as html]
             [hiiop.routes.page-hierarchy :refer [hierarchy]]
             [hiiop.schema :as hs]
-            [rum.core :as rum]))
+            [rum.core :as rum]
+            [taoensso.timbre :as log]))
 
 (defn- banner [{:keys [tr]}]
   [:div {:class "opux-banner"}
@@ -24,6 +25,10 @@
 (defn- index-links
   [{:keys [context]}]
   (let [tr    (:tr context)
+        blog-base-url (:hiiop-blog-base-url context)
+        locale-string (name (:current-locale context))
+        static-page-url (str blog-base-url "/"
+                             locale-string "/blog/index.html")
         items [{:class       "opux-index-links__item--browse-quests"
                 :content     (tr [:pages.index.index-links.browse-quests-text])
                 :button-text (tr [:pages.index.index-links.browse-quests])
@@ -34,11 +39,10 @@
                 :button-text (tr [:pages.index.index-links.create-quest])
                 :button-link (path-for hierarchy :create-quest)}
 
-               ;; {:class       "opux-index-links__item--read-stories"
-               ;;  :content     (tr [:pages.index.index-links.read-stories-text])
-               ;;  :button-text (tr [:pages.index.index-links.read-stories])
-               ;;  :button-link "#"}
-               ]]
+               {:class       "opux-index-links__item--read-stories"
+                :content     (tr [:pages.index.index-links.read-stories-text])
+                :button-text (tr [:pages.index.index-links.read-stories])
+                :button-link static-page-url}]]
     [:div {:class "opux-section opux-index-links opux-centered"}
      (map #(index-link-item %) items)]))
 
