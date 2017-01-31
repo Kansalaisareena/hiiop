@@ -38,7 +38,8 @@
     }
 
     ul, ol {
-      padding-left: 19px;
+      padding-left: 1rem;
+      margin-bottom: 1rem;
       list-style: circle;
     }
 
@@ -51,7 +52,7 @@
     }
 
     blockquote {
-      text-indent: 2em;
+      text-indent: 1rem;
       font-style: italic;
       &:before {
         content: open-quote;
