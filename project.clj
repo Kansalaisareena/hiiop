@@ -32,7 +32,9 @@
                  [ring-middleware-format                 "0.7.0"]
                  [ring-webjars                           "0.1.1"]
                  [ring/ring-defaults                     "0.2.1"]
-                 [rum                                    "0.10.7"]
+                 [cljsjs/react-with-addons               "15.4.2-1"]
+                 [rum                                    "0.10.7"
+                  :exclusions [cljsjs/react]]
                  [selmer                                 "1.10.0"]
                  [clj-time                               "0.12.2"]
                  [buddy/buddy-auth                       "1.2.0"]
@@ -80,7 +82,7 @@
   [[lein-resource "16.9.1"]
    [lein-cprop "1.0.1"]
    [migratus-lein "0.4.3"]
-   [lein-cljsbuild "1.1.4"]
+   [lein-cljsbuild "1.1.5"]
    [lein-immutant "2.1.0"]
    [lein-sassc "0.10.4"]
    [lein-auto "0.1.2"]
@@ -97,6 +99,31 @@
      org.apache.commons/commons-compress
      com.fasterxml.jackson.core/jackson-core]]]
 
+  :cljsbuild
+  {:builds
+   {:min
+    {:source-paths ["src/cljc/hiiop"
+                    "src/cljs/hiiop"
+                    "env/prod/cljs/hiiop"]
+     :compiler
+     {:output-to "target/cljsbuild/public/js/app.js"
+      :externs ["externs/google_maps_api_v3.js"]
+      :optimizations :advanced
+      :parallel-build true
+      :pretty-print false
+      :verbose true
+      :source-map false}}
+
+    :static
+    {:source-paths ["src/cljs/hiiop_static"]
+     :compiler
+     {:output-to "target/cljsbuild/public/js/static.js"
+      :externs ["externs/google_maps_api_v3.js"]
+      :optimizations :advanced
+      :parallel-build true
+      :verbose true
+      :pretty-print false
+      :source-map false}}}}
 
   :sassc
   [{:src "resources/scss/screen.scss"
@@ -176,8 +203,6 @@
         :compiler-stats true
         :pretty-print false
         :verbose true
-        :language-in  :ecmascript5
-        :language-out :ecmascript5
         :source-map false}}
 
       :static
@@ -190,8 +215,6 @@
         :verbose true
         :compiler-stats true
         :pretty-print false
-        :language-in  :ecmascript5
-        :language-out :ecmascript5
         :source-map false}}}}
 
     ;; :minify-assets
