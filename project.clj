@@ -130,21 +130,21 @@
                       :target-path
                       ~(str "resources/public/"
                             (apply
-                              str
-                              (clojure.string/trim
-                                (:out
-                                 (clojure.java.shell/sh
-                                   "git" "rev-parse" "--verify" "HEAD"))))
+                             str
+                             (clojure.string/trim
+                              (:out
+                               (clojure.java.shell/sh
+                                "git" "rev-parse" "--verify" "HEAD"))))
                             "/js")}]
                     ["resources/public/css"
                      {:target-path
                       ~(str "resources/public/"
                             (apply
-                              str
-                              (clojure.string/trim
-                                (:out
-                                 (clojure.java.shell/sh
-                                   "git" "rev-parse" "--verify" "HEAD"))))
+                             str
+                             (clojure.string/trim
+                              (:out
+                               (clojure.java.shell/sh
+                                "git" "rev-parse" "--verify" "HEAD"))))
                             "/css")}]]}
 
   :essthree
@@ -189,27 +189,27 @@
         :parallel-build true
         :verbose true
         :compiler-stats true
-                 :pretty-print false
-                 :language-in  :ecmascript5
-                 :language-out :ecmascript5
-                 :source-map false}}}}
+        :pretty-print false
+        :language-in  :ecmascript5
+        :language-out :ecmascript5
+        :source-map false}}}}
 
-             ;; :minify-assets
-             ;; {:assets
-             ;;  {~(str "resources/public/"
-             ;;         (apply str (clojure.string/trim
-             ;;                      (:out (clojure.java.shell/sh
-             ;;                              "git" "rev-parse" "--verify" "HEAD"))))
-             ;;         "/js/app.js")
-             ;;   "resources/public/app.js"
-             ;;   }
-             ;;  :options {:optimizations :none}
-             ;;  }
+    ;; :minify-assets
+    ;; {:assets
+    ;;  {~(str "resources/public/"
+    ;;         (apply str (clojure.string/trim
+    ;;                      (:out (clojure.java.shell/sh
+    ;;                              "git" "rev-parse" "--verify" "HEAD"))))
+    ;;         "/js/app.js")
+    ;;   "resources/public/app.js"
+    ;;   }
+    ;;  :options {:optimizations :none}
+    ;;  }
 
-             :aot :all
-             :uberjar-name "hiiop.jar"
-             :source-paths ["env/prod/clj"]
-             :resource-paths ["env/prod/resources"]}
+    :aot :all
+    :uberjar-name "hiiop.jar"
+    :source-paths ["env/prod/clj"]
+    :resource-paths ["env/prod/resources"]}
 
    :dev           [:project/dev :profiles/dev]
    :test          [:project/dev :project/test :profiles/test]
