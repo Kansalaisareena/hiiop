@@ -32,9 +32,7 @@
                  [ring-middleware-format                 "0.7.0"]
                  [ring-webjars                           "0.1.1"]
                  [ring/ring-defaults                     "0.2.1"]
-                 [cljsjs/react-with-addons               "15.4.2-1"]
-                 [rum                                    "0.10.7"
-                  :exclusions [cljsjs/react]]
+                 [rum                                    "0.10.7"]
                  [selmer                                 "1.10.0"]
                  [clj-time                               "0.12.2"]
                  [buddy/buddy-auth                       "1.2.0"]
@@ -98,32 +96,6 @@
     [commons-codec
      org.apache.commons/commons-compress
      com.fasterxml.jackson.core/jackson-core]]]
-
-  :cljsbuild
-  {:builds
-   {:min
-    {:source-paths ["src/cljc/hiiop"
-                    "src/cljs/hiiop"
-                    "env/prod/cljs/hiiop"]
-     :compiler
-     {:output-to "target/cljsbuild/public/js/app.js"
-      :externs ["externs/google_maps_api_v3.js"]
-      :optimizations :advanced
-      :parallel-build true
-      :pretty-print false
-      :verbose true
-      :source-map false}}
-
-    :static
-    {:source-paths ["src/cljs/hiiop_static"]
-     :compiler
-     {:output-to "target/cljsbuild/public/js/static.js"
-      :externs ["externs/google_maps_api_v3.js"]
-      :optimizations :advanced
-      :parallel-build true
-      :verbose true
-      :pretty-print false
-      :source-map false}}}}
 
   :sassc
   [{:src "resources/scss/screen.scss"
