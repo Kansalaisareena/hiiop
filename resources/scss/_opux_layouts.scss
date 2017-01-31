@@ -36,6 +36,31 @@
     h1, h2, h3, h4, h5 {
       text-align: left;
     }
+
+    ul, ol {
+      padding-left: 1rem;
+      margin-bottom: 1rem;
+      list-style: circle;
+    }
+
+    em {
+      font-style: italic;
+    }
+
+    b, strong {
+      font-weight: bold;
+    }
+
+    blockquote {
+      text-indent: 1rem;
+      font-style: italic;
+      &:before {
+        content: open-quote;
+      }
+      &:after {
+        content: close-quote;
+      }
+    }
   }
 }
 
