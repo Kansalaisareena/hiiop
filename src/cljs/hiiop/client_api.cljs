@@ -248,3 +248,9 @@
           body (:body response)]
       {:success (= status 200)
        :body body})))
+
+(defn get-the-counter-value []
+  (go
+    (let [response (<! (http/get (str base-path "/counter")))]
+      (when (= (:status response) 200)
+        (:body response)))))

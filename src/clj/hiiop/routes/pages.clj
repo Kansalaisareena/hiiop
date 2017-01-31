@@ -47,7 +47,8 @@
                                         joinable-quest?
                                         get-moderated-quests
                                         get-unmoderated-quests
-                                        get-party-member]]
+                                        get-party-member
+                                        get-the-counter-value]]
             [hiiop.components.password-reset :refer [display-message
                                                      request-password-reset
                                                      password-reset]]
@@ -72,7 +73,8 @@
     (layout/render {:context context
                     :content (index-page/index-page {:context context
                                                      :schema schema
-                                                     :category-filter category-filter})
+                                                     :category-filter category-filter
+                                                     :counter-days (:days (get-the-counter-value))})
                     :title (tr [:pages.index.title])
                     :scripts ["//assets.juicer.io/embed.js"]})))
 
