@@ -18,9 +18,10 @@
 
 (defn- image-header [image-url]
   (if image-url
-    [:div {:class "opux-content opux-content--image-header"
+    [:div {:class "opux-section"}
+     [:div {:class "opux-banner opux-content--image-header opux-banner--contain"
            :style {:background-image
-                   (str "url(" image-url ")")}}]))
+                   (str "url(" image-url ")")}}]]))
 
 (defn- youtube-header [youtube-id]
   [:div {:class "opux-content opux-content--image-header"}
@@ -106,7 +107,7 @@
         [:div {:class "opux-card__image-container"}
          [:a {:href url}
           [:div {:class "opux-card__image"
-                 :style {:background
+                 :style {:background-image
                          (str "url(" image-url ")")}}]]])
 
       [:div {:class "opux-card__content"}

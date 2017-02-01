@@ -95,10 +95,11 @@
   @include modifier('image-header') {
     background-color: $OP-gray-light;
     background-position: center;
+    background-repeat: no-repeat;
     background-size: cover;
     display: block;
-    position: relative;
     height: 550px;
+    position: relative;
 
     iframe {
       height: 100% !important;
@@ -312,6 +313,11 @@
     right: 0px;
     text-shadow: 1px 1px 15px $OP-gray-medium;
     top: 0px;
+  }
+
+  // opux-banner--contain
+  @include modifier('contain') {
+    background-size: contain;
   }
 
   // opux-banner__title
