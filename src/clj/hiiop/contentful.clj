@@ -171,6 +171,7 @@
         youtube-id (get-in cfobject [:fields :youtubeUrl :fi])
         author (get-in cfobject [:fields :author :fi])
         title (:otsikko fields)
+        categories (:categories fields)
         excerpt (:excerpt fields)]
     {:id id
      :url (str (:hiiop-blog-base-url env) "/"
@@ -180,6 +181,7 @@
      :youtube-id youtube-id
      :excerpt excerpt
      :author author
+     :categories categories
      :title title
      :locale locale}))
 

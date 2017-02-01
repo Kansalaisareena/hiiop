@@ -5,7 +5,8 @@
             [hiiop.routes.page-hierarchy :refer [hierarchy]]
             [hiiop.translate :refer [tr-opts default-locale]]
             [taoensso.tempura :as tempura]
-            [hiiop.components.social-buttons :refer [social-buttons]]))
+            [hiiop.components.social-buttons :refer [social-buttons]]
+            [cemerick.url :refer [url-encode]]))
 
 (defn- create-context [locale]
   {:tr (partial tempura/tr (tr-opts) [locale])
@@ -99,9 +100,13 @@
                 id
                 excerpt
                 author
-                image-url]} story]
+                image-url
+                categories]} story
+        categories-attr (url-encode
+                         (clojure.string/join "," categories))]
 
-    [:div {:class "opux-card-container"}
+    [:div {:class "opux-card-container"
+           :categories categories-attr}
      [:div {:class "opux-card"}
       (when image-url
         [:div {:class "opux-card__image-container"}
@@ -119,9 +124,20 @@
        (when author
          [:div {:class "opux-content"} author])]]]))
 
+(defn- category-filter [category]
+  [:span {:class "opux-category-filter"
+          :filter-data (url-encode category)}
+   category])
+
+(defn- stories-filters [{:keys [stories context]}]
+  (let [categories (-> (map :categories stories)
+                       (flatten)
+                       (distinct))]
+    (map category-filter categories)))
+
 (defn- stories-card-list [{:keys [stories context]}]
   (let [tr (:tr context)]
-    [:ul {:class "opux-card-list"}
+    [:div {:class "opux-card-list"}
      (map #(story-card {:context context
                         :story %})
           stories)]))
@@ -148,27 +164,33 @@
                 :content (get-in env [:social :twitter-account])}
                {:name "twitter:card"
                 :content (tr [:pages.static.stories-index-subtitle])}]]
-    (rum/render-static-markup
+    (str
+     "<!doctype html>"
+     (rum/render-static-markup
       (html/page
-        (html/head-content {:title (tr [:pages.static.stories-title])
-                            :asset-path asset-path
-                            :metas metas})
-        (html/body-content
-          (html/header context)
-          [:div {:id "app"
-                 :class "opux-page-section"}
-           [:div {:class "opux-section"}
-            [:div {:class "opux-content"}
-             [:h1 {:class "opux-centered"}
-              (tr [:pages.static.stories-index-header])]
-             [:p (tr [:pages.static.stories-index-subtitle])]]
+       (html/head-content {:title (tr [:pages.static.stories-title])
+                           :asset-path asset-path
+                           :metas metas})
+       (html/body-content
+        (html/header context)
+        [:div {:id "app"
+               :class "opux-page-section"}
+         [:div {:class "opux-section"}
+          [:div {:class "opux-content"}
+           [:h1 {:class "opux-centered"}
+            (tr [:pages.static.stories-index-header])]
+           [:p (tr [:pages.static.stories-index-subtitle])]]
 
-            [:div {:class "opux-section"}
-             [:div {:class "opux-section opux-card-list-container"}
-              [:div {:class "opux-content"}
-               (stories-card-list {:stories stories
-                                   :context context})]]]]]
-          (html/footer context)
-          [:div {:class "script-tags"}
-           [:script {:src (str asset-path "/js/static.js")
-                     :type "text/javascript"}]])))))
+          [:div {:class "opux-section"}
+           
+           [:div {:class "opux-section opux-card-list-container"
+                  :id "opux-stories-list"}
+            [:div {:class "opux-content"}
+             (stories-filters {:stories stories
+                               :context context})
+             (stories-card-list {:stories stories
+                                 :context context})]]]]]
+        (html/footer context)
+        [:div {:class "script-tags"}
+         [:script {:src (str asset-path "/js/static.js")
+                   :type "text/javascript"}]]))))))
