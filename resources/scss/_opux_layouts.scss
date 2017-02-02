@@ -154,12 +154,42 @@
   }
 }
 
+@include block('opux-category-filters-container') {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+@include block('opux-category-filter') {
+  @include opux-color-transition();
+  background: $OP-white;
+  border-radius: 25px;
+  box-sizing: border-box;
+  cursor: pointer;
+  display: inline-block;
+  font-weigth: normal;
+  height: 50px;
+  line-height: 50px;
+  margin: 0.5rem;
+  padding: 0 2rem;
+
+  @include state('active') {
+    background: $OP-orange;
+    color: $OP-white;
+  }
+}
+
 @include block('opux-card-container') {
   @include flex(0, 0, calc(100% * (1/3) - 1rem));
   @include flexbox;
   box-sizing: border-box;
   margin: .5rem;
+
+  // opux-card-container.is-hidden
+  @include state('hidden') {
+    display: none;
+  }
 }
+
 
 @include block('opux-card') {
   background: $OP-white;

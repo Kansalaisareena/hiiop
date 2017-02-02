@@ -133,7 +133,8 @@
   (let [categories (-> (map :categories stories)
                        (flatten)
                        (distinct))]
-    (map category-filter categories)))
+    [:div {:class "opux-category-filters-container"}
+     (map category-filter categories)]))
 
 (defn- stories-card-list [{:keys [stories context]}]
   (let [tr (:tr context)]
