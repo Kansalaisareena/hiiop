@@ -761,3 +761,14 @@ WHERE
 UPDATE users
 SET moderator = true
 WHERE id = :id
+
+-- :name get-counter-days :? :1
+-- :doc Get total days worked
+SELECT COALESCE(sum(days), 0) as days
+FROM
+  parties p,
+  quests q
+WHERE
+  q.id = p.quest_id AND
+  q.end_time < NOW() AND
+  q.name IS NOT NULL  

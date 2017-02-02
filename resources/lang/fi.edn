@@ -53,6 +53,14 @@
    :banner
    {:header "Vuoden tärkein päivä on päivä vapaaehtoisena."
     :content "Jokainen voi lähteä mukaan vapaaehtoistyöhön. Anna sinäkin itsenäisyyden juhlavuoden kunniaksi Suomelle lahjaksi päivä vapaaehtoisena. #hiiop on hyvä paikka aloittaa."}
+   
+   :counter
+   {:title "Tehdään yhdessä 100 vuotta vapaaehtoistyötä Suomen hyväksi!"
+    :subtitle "Hiiop on vapaaehtoistoiminnan kohtaamispaikka. Täältä löydät itsellesi sopivan tehtävän tai voit kutsua apukäsiä järjestämääsi toimintaan. Kutsumme kaikki mukaan rakentamaan hyvää huomiosta - sadan vuoden edestä"
+    :hundred-years "100 v"
+    :days "%1 p"
+    :months "%1 kk"
+    :years "%1 v"}
 
    :category-selector
    {:title "Tule mukaan vapaaehtoistyöhön"
