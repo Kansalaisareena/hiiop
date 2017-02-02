@@ -39,11 +39,11 @@
                 :button-text (tr [:pages.index.index-links.create-quest])
                 :button-link (path-for hierarchy :create-quest)}
 
-               ;; {:class       "opux-index-links__item--read-stories"
-               ;;  :content     (tr [:pages.index.index-links.read-stories-text])
-               ;;  :button-text (tr [:pages.index.index-links.read-stories])
-               ;;  :button-link static-page-url}
-               ]]
+               {:class       "opux-index-links__item--read-stories"
+                :content     (tr [:pages.index.index-links.read-stories-text])
+                :button-text (tr [:pages.index.index-links.read-stories])
+                :button-link static-page-url}]]
+    
     [:div {:class "opux-section opux-index-links opux-centered"}
      (map #(index-link-item %) items)]))
 

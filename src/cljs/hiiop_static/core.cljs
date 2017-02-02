@@ -111,13 +111,14 @@
   (let [story-filters (.querySelectorAll
                        js/document
                        ".opux-category-filter")]
-    (set-filtered-categories!)
-    (add-story-filter-listeners story-filters)
+    (when (> (.-length story-filters) 0)
+      (set-filtered-categories!)
+      (add-story-filter-listeners story-filters)
 
-    (add-watch
-     filtered-categories :filtered-categories
-     (fn [_ _ old new-filters]
-       (update-visible-stories new-filters)))))
+      (add-watch
+       filtered-categories :filtered-categories
+       (fn [_ _ old new-filters]
+         (update-visible-stories new-filters))))))
 
 
 (init-stories-filters)
