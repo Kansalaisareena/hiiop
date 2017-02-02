@@ -122,9 +122,10 @@
         unmoderated (get-unmoderated-quests-by-owner {:owner owner})]
     (concat moderated unmoderated)))
 
-(redef-refresh-cache add-unmoderated-quest! get-all-moderated-quests :all-moderated-quests)
-(redef-refresh-cache update-quest!          get-all-moderated-quests :all-moderated-quests)
-(redef-refresh-cache delete-quest-by-id!    get-all-moderated-quests :all-moderated-quests)
-(redef-refresh-cache join-quest!            get-all-moderated-quests :all-moderated-quests)
-(redef-refresh-cache moderate-accept-quest! get-all-moderated-quests :all-moderated-quests)
+(redef-refresh-cache add-unmoderated-quest!    get-all-moderated-quests :all-moderated-quests)
+(redef-refresh-cache update-quest!             get-all-moderated-quests :all-moderated-quests)
+(redef-refresh-cache delete-quest-by-id!       get-all-moderated-quests :all-moderated-quests)
+(redef-refresh-cache join-quest!               get-all-moderated-quests :all-moderated-quests)
+(redef-refresh-cache moderate-accept-quest!    get-all-moderated-quests :all-moderated-quests)
+(redef-refresh-cache remove-member-from-party! get-all-moderated-quests :all-moderated-quests)
 (redef-with-cache get-all-moderated-quests :all-moderated-quests)
