@@ -38,6 +38,15 @@
      (defn ~fun []
        (get-in-cache-or ~key (old-fun#) ~expires))))
 
+(defmacro redef-refresh-cache [fun refresh-expr key]
+  "Redefine function so that it refreshes key in redis on call."
+    `(let [old-fun# ~fun]
+       (defn ~fun [& args#]
+         (let [ret# (apply old-fun# args#)]
+           (wcar* (car/del ~key)
+                  (car/set ~key (car/serialize (~refresh-expr))))
+           ret#))))
+
 (defmacro redef-invalidate-cache [fun key]
   "Redefine function so that it deletes with key from redis on call."
   `(let [old-fun# ~fun]
