@@ -137,7 +137,6 @@
 }
 
 @include block('opux-card-list') {
-  @include align-items(start);
   @include flex-direction(row);
   @include flex-wrap(wrap);
   @include flexbox;
@@ -180,6 +179,7 @@
 
 @include block('opux-card-container') {
   @include flex(0, 0, calc(100% * (1/3) - 1rem));
+  @include flex-basis(calc(100% * (1/3) - 1rem));
   @include flexbox;
   box-sizing: border-box;
   margin: .5rem;

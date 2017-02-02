@@ -105,6 +105,10 @@
 
      [:span {:class "opux-icon opux-icon-plus opux-category-filter-switch"
              :on-click #(swap! is-active not)}]
+     
+     [:div {:class (str "opux-category-filter-overlay"
+                        (if (rum/react is-active) " is-active"))
+            :on-click #(reset! is-active false)}]
 
      (if (not-empty (rum/react categories))
        (map #(quest-category-icon {:category %

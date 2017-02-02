@@ -64,7 +64,8 @@
       (html/page
         (html/head-content {:title title
                             :asset-path asset-path
-                            :metas metas})
+                            :metas metas
+                            :locale (:current-locale context)})
         (html/body-content
           (html/header context)
           [:div {:id "app"
@@ -169,29 +170,29 @@
      "<!doctype html>"
      (rum/render-static-markup
       (html/page
-       (html/head-content {:title (tr [:pages.static.stories-title])
-                           :asset-path asset-path
-                           :metas metas})
-       (html/body-content
-        (html/header context)
-        [:div {:id "app"
-               :class "opux-page-section"}
-         [:div {:class "opux-section"}
-          [:div {:class "opux-content"}
-           [:h1 {:class "opux-centered"}
-            (tr [:pages.static.stories-index-header])]
-           [:p (tr [:pages.static.stories-index-subtitle])]]
-
-          [:div {:class "opux-section"}
-           
-           [:div {:class "opux-section opux-card-list-container"
-                  :id "opux-stories-list"}
+        (html/head-content {:title (tr [:pages.static.stories-title])
+                            :asset-path asset-path
+                            :metas metas
+                            :locale (:current-locale context)})
+        (html/body-content
+          (html/header context)
+          [:div {:id "app"
+                 :class "opux-page-section"}
+           [:div {:class "opux-section"}
             [:div {:class "opux-content"}
-             (stories-filters {:stories stories
-                               :context context})
-             (stories-card-list {:stories stories
-                                 :context context})]]]]]
-        (html/footer context)
-        [:div {:class "script-tags"}
-         [:script {:src (str asset-path "/js/static.js")
-                   :type "text/javascript"}]]))))))
+             [:h1 {:class "opux-centered"}
+              (tr [:pages.static.stories-index-header])]
+             [:p (tr [:pages.static.stories-index-subtitle])]]
+
+            [:div {:class "opux-section"}
+             [:div {:class "opux-card-list-container"}
+              [:div {:class "opux-content"}
+               (stories-filters {:stories stories
+                                 :context context})
+               (stories-card-list {:stories stories
+                                   :context context})]]]]]
+          (html/footer context)
+          [:div {:class "script-tags"}
+           [:script {:src (str asset-path "/js/static.js")
+                     :type "text/javascript"}]])))))
+  
