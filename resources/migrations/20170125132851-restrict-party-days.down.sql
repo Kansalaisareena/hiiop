@@ -1,0 +1,2 @@
+ALTER TABLE parties
+  DROP CONSTRAINT IF EXISTS days_at_least_1;
