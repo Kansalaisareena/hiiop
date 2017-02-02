@@ -30,11 +30,17 @@
            (let [current-locale (:current-locale req)]
              (ok
               (conj
-               (select-keys env [:time-zone :dev :git-ref :langs])
+               (select-keys env [:time-zone :dev :git-ref :langs :hiiop-blog-base-url])
                {:accept-langs (:tempura/accept-langs req)
                 :now (time/now-utc)
                 :current-locale (keyword current-locale)
                 :identity (:identity req)}))))
+
+      (GET "/counter" []
+           (let [counter-value (api-handlers/get-the-counter-value)]
+             (if (:errors counter-value)
+               (internal-server-error counter-value)
+               (ok counter-value))))
 
       (POST "/logout" []
         :summary "Logs the user out."
@@ -386,6 +392,18 @@
                    (#(if (not (:errors %1))
                        (ok %1)
                        (bad-request %1))))))
+
+        (GET "/:quest-id/get-member-info" []
+          :name        ::quest-party-member-info
+          :path-params [quest-id :- Long]
+          :return      PartyMember
+          :summary     "Get party member info for current user"
+          (fn [request]
+            (-> (api-handlers/get-party-member-info-for-user {:quest-id quest-id
+                                                              :user-id (get-in request [:identity :id])})
+                (#(if %1
+                    (ok %1)
+                    (bad-request {:errors {:user-id "Not in quest"}}))))))
 
         (GET "/:quest-id/party" []
           :name        ::quest-party

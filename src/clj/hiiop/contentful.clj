@@ -171,6 +171,7 @@
         youtube-id (get-in cfobject [:fields :youtubeUrl :fi])
         author (get-in cfobject [:fields :author :fi])
         title (:otsikko fields)
+        categories (:categories fields)
         excerpt (:excerpt fields)]
     {:id id
      :url (str (:hiiop-blog-base-url env) "/"
@@ -180,6 +181,7 @@
      :youtube-id youtube-id
      :excerpt excerpt
      :author author
+     :categories categories
      :title title
      :locale locale}))
 
@@ -191,8 +193,8 @@
                "/blog/index.html")
      :locale locale}))
 
-(defn process-stories-indexes []
-  (let [stories (filter-stories (get-all-items))]
+(defn process-stories-indexes [all-items]
+  (let [stories (filter-stories all-items)]
     (doseq [locale locales]
       (let [stories-data
             (map
@@ -207,7 +209,7 @@
 (defn refresh-items [items]
   (doseq [i items]
     (process-item i))
-  (process-stories-indexes))
+  (process-stories-indexes items))
 
 (defn update-all-items []
   "Fetch all items from the contentful and do relevant processing and caching."

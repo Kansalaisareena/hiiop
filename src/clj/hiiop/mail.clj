@@ -34,11 +34,11 @@
    :to to
    :subject subject
    :body [:alternative
+          {:type "text/plain"
+           :content (plaintext-template template-params)}
           {:type "text/html; charset=utf-8"
            :content (render-static-markup
-                     (template template-params))}
-          {:type "text/plain"
-           :content (plaintext-template template-params)}]})
+                     (template template-params))}]})
 
 (defn mail-content [emailkey locale]
   (-> (car/get (str "email:" emailkey))

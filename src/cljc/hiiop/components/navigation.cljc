@@ -105,6 +105,7 @@
 
     [:li {:class "opux-menu__item"}
      [:a {:class "opux-menu__item-link opux-menu__item-link--footer"
+          :target "_blank"
           :href (str static-page-url
                      (tr [:footer.faq-page-key])
                      ".html")}
@@ -112,6 +113,7 @@
 
     [:li {:class "opux-menu__item"}
      [:a {:class "opux-menu__item-link opux-menu__item-link--footer"
+          :target "_blank"
           :href (str static-page-url
                      (tr [:footer.contact-page-key])
                      ".html")}
@@ -119,6 +121,7 @@
 
     [:li {:class "opux-menu__item"}
      [:a {:class "opux-menu__item-link opux-menu__item-link--footer"
+          :target "_blank"
           :href (str static-page-url
                      (tr [:footer.terms-of-service-page-key])
                      ".html")}
@@ -126,6 +129,7 @@
 
     [:li {:class "opux-menu__item"}
      [:a {:class "opux-menu__item-link opux-menu__item-link--footer"
+          :target "_blank"
           :href (str static-page-url
                      (tr [:footer.privacy-page-key])
                      ".html")}

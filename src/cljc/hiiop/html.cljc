@@ -466,7 +466,8 @@
   [:body
    [:div {:class "opux-wrapper"}
     header content footer scripts
-    ]])
+    ]
+   (if (:analytics-script env) [:script {:type "text/javascript"} "_satellite.pageBottom();"])])
 
 (rum/defc head-content [{:keys [title asset-path metas]}]
   [:head
@@ -482,7 +483,9 @@
    [:link {:href "img/favicons/favicon-96x96.png" :rel "icon" :sizes "96x96" :type "image/png"}]
    [:link {:href "img/favicons/favicon-32x32.png" :rel "icon" :type "image/png"}]
    [:link {:href "img/favicons/favicon-16x16.png" :rel "icon" :type "image/png"}]
-   [:link {:href "img/favicons/favicon.ico" :rel "icon" :type "image/x-icon"}]])
+   [:link {:href "img/favicons/favicon.ico" :rel "icon" :type "image/x-icon"}]
+   (if-let [url (:analytics-script env)] [:script {:src url}])
+   ])
 
 (defn script-tag [url]
   [:script
@@ -492,10 +495,10 @@
   [:footer {:class "opux-footer-container opux-section"}
    [:div {:class "opux-footer opux-content"}
     [:div {:class "opux-footer__column opux-footer__column--left"}
-     [:span {:class "opux-suomi-100"}]]
+     [:a {:href "http://suomifinland100.fi/" :target "_blank"} [:span {:class "opux-suomi-100"}]]]
 
     [:div {:class "opux-footer__column opux-footer__column--right"}
-     [:span {:class "opux-op-logo"}]]
+     [:a {:href "http://www.op.fi/" :target "_blank"} [:span {:class "opux-op-logo"}]]]
 
     [:div {:class "opux-footer__column"}
      (navigation/footer-navigation context)]
@@ -504,10 +507,13 @@
      (tr [:footer.follow-us])
      [:div {:class "opux-section"}
       [:a {:class "opux-footer__social-link opux-icon-social opux-icon-social--fb"
+           :target "_blank"
            :href "https://www.facebook.com/Hiiop/"}]
       [:a {:class "opux-footer__social-link opux-icon-social opux-icon-social--twitter"
+           :target "_blank"
            :href "https://twitter.com/Hiiop100"}]
       [:a {:class "opux-footer__social-link opux-icon-social opux-icon-social--instagram"
+           :target "_blank"
            :href "https://www.instagram.com/hiiop100/"}]]]]
 
    [:div {:class "opux-copyright opux-centered"}
