@@ -125,16 +125,20 @@
          [:div {:class "opux-content"} author])]]]))
 
 (defn- category-filter [category]
-  [:span {:class "opux-category-filter"
-          :filter-data (url-encode category)}
-   category])
+  (when (not (nil? category))
+    [:span {:class "opux-category-filter"
+            :filter-data (url-encode category)}
+     category]))
 
 (defn- stories-filters [{:keys [stories context]}]
-  (let [categories (-> (map :categories stories)
-                       (flatten)
-                       (distinct))]
-    [:div {:class "opux-category-filters-container"}
-     (map category-filter categories)]))
+  (let [categories (if (:categories stories)
+                     (-> (map :categories stories)
+                         (flatten)
+                         (distinct))
+                     [])]
+    (when (not-empty categories)
+      [:div {:class "opux-category-filters-container"}
+       (map category-filter categories)])))
 
 (defn- stories-card-list [{:keys [stories context]}]
   (let [tr (:tr context)]
