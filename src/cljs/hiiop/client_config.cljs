@@ -7,5 +7,7 @@
 (defstate env
   :start
   (go
-    (let [response (<! (http/get "/api/v1/config"))]
+    (let [epoch (.getTime (new js/Date))
+          response (<! (http/get
+                        (str "/api/v1/config?t=" epoch)))]
       (merge (:body response) (args)))))

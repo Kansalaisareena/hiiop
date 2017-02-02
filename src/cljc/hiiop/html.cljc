@@ -468,9 +468,14 @@
     header content footer scripts
     ]])
 
-(rum/defc head-content [{:keys [title asset-path metas]}]
+(rum/defc head-content [{:keys [title asset-path metas locale]}]
   [:head
    [:title title]
+   
+   (when locale
+     [:meta {:http-equiv "Content-Language"
+             :content (name locale)}])
+   
    [:meta {:charset "UTF-8"}]
    [:meta {:name "viewport"
            :content "width=device-width,initial-scale=1.0,minimum-scale=1.0"}]
@@ -525,7 +530,8 @@
     (page
       (head-content {:title (tr [:title] [title])
                      :asset-path asset-path
-                     :metas metas})
+                     :metas metas
+                     :locale (:current-locale context)})
      (body-content
       (header context)
       [:div {:id "app" :class "opux-page-section" :dangerouslySetInnerHTML {:__html content}}]

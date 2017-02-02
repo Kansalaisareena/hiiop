@@ -62,7 +62,8 @@
       (html/page
         (html/head-content {:title title
                             :asset-path asset-path
-                            :metas metas})
+                            :metas metas
+                            :locale (:current-locale context)})
         (html/body-content
           (html/header context)
           [:div {:id "app"
@@ -151,7 +152,8 @@
       (html/page
         (html/head-content {:title (tr [:pages.static.stories-title])
                             :asset-path asset-path
-                            :metas metas})
+                            :metas metas
+                            :locale (:current-locale context)})
         (html/body-content
           (html/header context)
           [:div {:id "app"
@@ -163,7 +165,7 @@
              [:p (tr [:pages.static.stories-index-subtitle])]]
 
             [:div {:class "opux-section"}
-             [:div {:class "opux-section opux-card-list-container"}
+             [:div {:class "opux-card-list-container"}
               [:div {:class "opux-content"}
                (stories-card-list {:stories stories
                                    :context context})]]]]]

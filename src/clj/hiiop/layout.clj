@@ -18,15 +18,17 @@
   (let [final-content (if content (rum/render-html content) "")]
     (content-type
      (ok
-      (rum/render-static-markup
-       (app-structure {:context (conj context {:asset-path (asset-path env)})
-                       :no-script (or no-script false)
-                       :scripts (or scripts [])
-                       :title title
-                       :content final-content
-                       :csrf-token *anti-forgery-token*
-                       :servlet-context *app-context*
-                       :metas metas})))
+      (str
+       "<!doctype html>"
+       (rum/render-static-markup
+        (app-structure {:context (conj context {:asset-path (asset-path env)})
+                        :no-script (or no-script false)
+                        :scripts (or scripts [])
+                        :title title
+                        :content final-content
+                        :csrf-token *anti-forgery-token*
+                        :servlet-context *app-context*
+                        :metas metas}))))
      "text/html; charset=utf-8")))
 
 (defn error-page
