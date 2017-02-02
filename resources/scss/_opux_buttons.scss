@@ -71,6 +71,9 @@
     &:hover {
       color: $OP-orange;
     }
+    @include modifier('height-auto') {
+      height: auto;
+    }
   }
 
   // opux-button--dull

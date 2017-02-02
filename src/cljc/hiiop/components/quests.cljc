@@ -10,7 +10,7 @@
             #?(:cljs [cljs.core.async :refer [<!]])
             #?(:cljs [hiiop.client-api :as api])
             #?(:cljs [hiiop.scroll :refer [scroll-top]])
-            [hiiop.url :refer [redirect-to]]
+            [hiiop.url :refer [redirect-to url-to]]
             [hiiop.time :as time]
             [hiiop.components.core :as c]
             [hiiop.components.quest-single :as qs]
@@ -324,16 +324,22 @@
   (let [tr (:tr context)]
     [:div {:class "opux-fieldset__item opux-fieldset__item--inline-container"}
      (html/button
-       (tr [:pages.quest.edit.button.remove])
-       {:class "opux-button opux-button--dull opux-form__button opux-fieldset__inline-item"
-        :on-click
-        (fn []
-          (reset! ask-remove true))})
+      (tr [:actions.quest.cancel])
+      {:class "opux-button opux-button--dull opux-form__button opux-fieldset__inline-item"
+       :on-click
+       (fn []
+         (redirect-to {:path-key :profile}))})
      (html/button
-       (tr [:pages.quest.edit.button.preview])
-       {:class "opux-button opux-form__button opux-fieldset__inline-item opux-button--highlight"
-        :type "submit"
-        :active is-valid})]))
+      (tr [:pages.quest.edit.button.remove])
+      {:class "opux-button opux-button--dull opux-form__button opux-fieldset__inline-item"
+       :on-click
+       (fn []
+         (reset! ask-remove true))})
+     (html/button
+      (tr [:pages.quest.edit.button.preview])
+      {:class "opux-button opux-form__button opux-fieldset__inline-item opux-button--highlight"
+       :type "submit"
+       :active is-valid})]))
 
 (defn delete-or-buttons!
   [{:keys [ask-remove remove-confirmed quest is-valid context]}]
@@ -413,7 +419,7 @@
           :member-id member-id
           :processing processing})
         [:button
-         {:class "opux-button opux-button--icon opux-icon opux-icon-trashcan opux-button--spacing"
+         {:class "opux-button opux-button--icon opux-icon opux-icon-trashcan opux-button--icon--height-auto"
           :type "button"
           :on-click
           (fn [e]
@@ -444,6 +450,41 @@
           [:span {:class "opux-icon opux-icon-mail"}]
           (tr [:pages.quest.edit.party.mail-participants])]]]
        [:p {:class "opux-content opux-centered"} (tr [:pages.quest.edit.party.empty])])]))
+
+(rum/defc show-secret-link < rum/reactive
+  [{:keys [quest-id secret-party context]}]
+  (let [tr (:tr context)
+        base-url (or (get-in context [:config :site-base-url])
+                     (:site-base-url context))
+        secret-link (url-to
+                     base-url
+                     :secret-quest
+                     :quest-id
+                     quest-id
+                     :secret-party
+                     secret-party)]
+    [:div
+     {:class
+      (clojure.string/join
+       " "
+       ["opux-form-section"
+        "opux-form-section--no-border"
+        "opux-form-section__secret-link"])}
+     [:h2 {:class "opux-centered"}
+      (tr [:pages.quest.edit.secret-link.title])]
+     [:fieldset {:class "opux-fieldset opux-form-section__fieldset"}
+      [:div {:class "opux-fieldset__item"}
+       [:textarea
+        {:class "opux-input opux-input--text"
+         :type "text"
+         :value secret-link
+         :on-focus
+         (fn [e]
+           (let [target (.-target e)]
+             (.setSelectionRange
+              target
+              0 (.. target -value -length)))
+           )}]]]]))
 
 (rum/defcs edit-form < rum/reactive
                        (rum/local false ::ask-remove)
@@ -517,25 +558,29 @@
        [:p {:class "opux-content opux-content--small opux-centered"}
         (tr [:pages.quest.edit.subtitles.info.related-to])]
        (html/multi-selector-for-schema
-         {:schema (get-in cursors-and-schema [:categories :schema])
-          :value (get-in cursors-and-schema [:categories :value])
-          :error (get-in cursors-and-schema [:categories :error])
-          :choice-name-fn hs/category-choice
-          :context context})]]
+        {:schema (get-in cursors-and-schema [:categories :schema])
+         :value (get-in cursors-and-schema [:categories :value])
+         :error (get-in cursors-and-schema [:categories :error])
+         :choice-name-fn hs/category-choice
+         :context context})]]
      [:div {:class "opux-line opux-content"}]
 
      (edit-participation-settings
-       {:cursors-and-schema cursors-and-schema
-        :is-valid is-valid
-        :context context
-        :quest quest
-        :tr tr
+      {:cursors-and-schema cursors-and-schema
+       :is-valid is-valid
+       :context context
+       :quest quest
+       :tr tr
        })
+     (when (and (:id (rum/react quest))
+                (not (:is-open (rum/react quest))))
+       (show-secret-link {:context context
+                          :quest-id (:id @quest)
+                          :secret-party (:secret-party @quest)}))
      (when (:id (rum/react quest))
        (edit-party {:quest @quest
                     :party party
                     :context context}))
-
      (html/form-section
       ""
       buttons

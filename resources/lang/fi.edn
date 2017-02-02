@@ -340,6 +340,10 @@
      :cancel "Peruuta"
      :confirm "Poista tehtävä"
      :title "Oletko varma, että haluat poistaa tehtävän? Jos vapaaehtoistehtävä on jo julkinen, siihen ilmoittautuneet vapaaehtoiset saavat automaattisesti viestin peruutuksesta."
+     }
+    :secret-link
+    {
+     :title "Salainen linkki"
     }
     :start-date "Päivämäärä"
     :start-date-and-time "Päivämäärä ja kellonaika"
