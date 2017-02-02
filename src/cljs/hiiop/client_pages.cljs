@@ -32,7 +32,7 @@
                                       get-party-member
                                       activate-user
                                       change-password
-                                      get-the-counter-days]]
+                                      get-the-counter-value]]
             [hiiop.context :refer [context]]
             [hiiop.mangling :refer [parse-natural-number same-keys-with-nils]]
             [hiiop.schema :refer [NewQuest
@@ -80,7 +80,7 @@
 
 (defn index-page []
   (go
-    (let [counter-days (:days (<! get-the-counter-days))]
+    (let [counter-days (:days (<! (get-the-counter-value)))]
     (rum/mount
       (p-i/index-page {:context @context
                        :category-filter (atom

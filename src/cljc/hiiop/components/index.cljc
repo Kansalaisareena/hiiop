@@ -52,7 +52,7 @@
         (clojure.string/join "&categories[]=" (map name categories))))))
 
 (defn- counter [{:keys [tr counter-days]}]
-  (let [workdays-in-month 20
+  (let [workdays-in-month 18.5
         months-in-year 12
         goal-years 100
         percentage (float (* 100 (/ counter-days
@@ -73,14 +73,15 @@
     [:div {:class "opux-content opux-centered"}
       [:h1 (tr [:pages.index.counter.title])]
       [:h3 (tr [:pages.index.counter.subtitle])]
-      [:div {:class "counter-wrapper" }
-        [:div {:class "counter"}
-          [:div {:class "counter-pin-goal"} [:div {:class "counter-pin-goal-label"} (tr [:pages.index.counter.hundred-years])]]
-          [:div {:class "counter-count-wrapper"}
-            [:div {:class (str "counter-count" (if goal-achieved " full"))
+      [:div {:class "opux-counter-wrapper" }
+        [:div {:class "opux-counter"}
+          [:div {:class "opux-counter__goal-pin"}
+           [:div {:class "opux-counter__goal-pin-label"} (tr [:pages.index.counter.hundred-years])]]
+          [:div {:class "opux-counter__progress-wrapper"}
+            [:div {:class (str "opux-counter__progress" (if goal-achieved " is-full"))
                    :style {:width (if goal-achieved "100%" (str percentage "%"))}}
-              [:div {:class "counter-pin-current"}
-                [:div {:class "counter-pin-current-label"} label]]]]]]]]))
+              [:div {:class (str "opux-counter__progress__current-pin" (if goal-achieved " is-hidden"))}
+                [:div {:class "opux-counter__progress__current-pin-label"} label]]]]]]]]))
 
 (rum/defcs category-selector < rum/reactive
   (rum/local (path-for hierarchy :browse-quests) ::search-link)
