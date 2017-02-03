@@ -73,8 +73,9 @@
   }
 
   @include block('opux-content') {
-    @include modifier('quest-image-header') {
+    @include modifier('image-header') {
       height: 350px;
+      padding: 0;
     }
   }
 }
@@ -97,8 +98,9 @@
   }
 
   @include block('opux-content') {
-    @include modifier('quest-image-header') {
+    @include modifier('image-header') {
       height: 250px;
+      padding: 0;
     }
   }
 

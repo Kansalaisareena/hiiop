@@ -99,6 +99,8 @@
     background-size: cover;
     display: block;
     height: 550px;
+    min-height: 0px;
+    padding: 0;
     position: relative;
 
     iframe {

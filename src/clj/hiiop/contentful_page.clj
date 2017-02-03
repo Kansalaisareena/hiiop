@@ -186,7 +186,8 @@
             [:div {:class "opux-content"}
              [:h1 {:class "opux-centered"}
               (tr [:pages.static.stories-index-header])]
-             [:p (tr [:pages.static.stories-index-subtitle])]]
+             [:div {:class "opux-centered"}
+              (tr [:pages.static.stories-index-subtitle])]]
 
             [:div {:class "opux-section"}
              [:div {:class "opux-card-list-container"}
