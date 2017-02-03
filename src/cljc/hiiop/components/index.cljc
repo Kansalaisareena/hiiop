@@ -107,7 +107,7 @@
 
     [:div {:class "opux-section"}
      [:div {:class "opux-content opux-centered"}
-      [:h1 (tr [:pages.index.category-selector.title])]
+      [:h1 (tr [:pages.index.category-selector.title])]]
 
      [:div {:class "opux-content opux-centered"}
       (html/form-section

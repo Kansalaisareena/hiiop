@@ -55,7 +55,7 @@
     :content "Hiiop on vapaaehtoistyön kohtaamispaikka. Täältä löydät sopivan tavan ja paikan tehdä vapaaehtoistyötä. Anna sinäkin itsenäisyyden juhlavuoden kunniaksi päivä vapaaehtoisena."}
    
    :counter
-   {:title "Tule mukaan! Vapaaehtoistyötä on tehty satavuotiaan Suomen kunniaksi yhteensä jo:"x
+   {:title "Tule mukaan! Vapaaehtoistyötä on tehty satavuotiaan Suomen kunniaksi yhteensä jo:"
     :hundred-years "100 v"
     :days "%1 p"
     :months "%1 kk"
