@@ -92,9 +92,19 @@ Create profiles.clj under your git root to place the secrets.
         :hiiop-blog-base-url 
         "http://hiiop-dev-blog.s3-website.eu-central-1.amazonaws.com"
 
-      :analytics-script "script src"
-      
-       }
+        :analytics-script "script src"
+
+        ;; these are used for testing static site generator in
+        ;; local development
+        :asset-base-url "http://localhost:3000"
+        :hiiop-blog-base-url "http://hiiop-local-dev-blog.s3-website-eu-west-1.amazonaws.com"
+        :hiiop-blog-bucket "hiiop-local-dev-blog"
+
+        :social
+        {:facebook-app-id "180814445730558"
+         :twitter-account "hiiop100"
+         :twitter-site "https://www.hiiop100.fi"}
+        }}
       :profiles/test
       {:env
        {:database-url "postgresql://localhost/hiiop_test?user=youruser"

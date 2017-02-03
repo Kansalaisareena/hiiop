@@ -19,7 +19,7 @@
 
   // opux-page-section--header
   @include modifier('header') {
-    @include box-shadow(-5px, 0px, 5px, rgba(122, 122, 122, 0.5))
+    @include box-shadow(-5px, 0px, 5px, rgba(122, 122, 122, 0.5));
     background: $OP-white;
     box-sizing: border-box;
     font-size: 20px;
@@ -99,6 +99,8 @@
     background-size: cover;
     display: block;
     height: 550px;
+    min-height: 0px;
+    padding: 0;
     position: relative;
 
     iframe {
@@ -189,7 +191,6 @@
     display: none;
   }
 }
-
 
 @include block('opux-card') {
   background: $OP-white;
@@ -348,6 +349,7 @@
   // opux-banner--contain
   @include modifier('contain') {
     background-size: contain;
+    padding: 0;
   }
 
   // opux-banner__title

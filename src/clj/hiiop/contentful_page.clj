@@ -14,7 +14,7 @@
    :hierarchy hierarchy
    :asset-path (asset-path env)
    :identity nil
-   :show-user-name false
+   :is-static-page true
    :current-locale locale})
 
 (defn- image-header [image-url]
@@ -132,11 +132,9 @@
      category]))
 
 (defn- stories-filters [{:keys [stories context]}]
-  (let [categories (if (:categories stories)
-                     (-> (map :categories stories)
-                         (flatten)
-                         (distinct))
-                     [])]
+  (let [categories (-> (map :categories stories)
+                       (flatten)
+                       (distinct))]
     (when (not-empty categories)
       [:div {:class "opux-category-filters-container"}
        (map category-filter categories)])))
@@ -186,7 +184,8 @@
             [:div {:class "opux-content"}
              [:h1 {:class "opux-centered"}
               (tr [:pages.static.stories-index-header])]
-             [:p (tr [:pages.static.stories-index-subtitle])]]
+             [:div {:class "opux-centered"}
+              (tr [:pages.static.stories-index-subtitle])]]
 
             [:div {:class "opux-section"}
              [:div {:class "opux-card-list-container"}
