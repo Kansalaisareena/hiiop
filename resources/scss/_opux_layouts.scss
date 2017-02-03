@@ -19,7 +19,7 @@
 
   // opux-page-section--header
   @include modifier('header') {
-    @include box-shadow(-5px, 0px, 5px, rgba(122, 122, 122, 0.5))
+    @include box-shadow(-5px, 0px, 5px, rgba(122, 122, 122, 0.5));
     background: $OP-white;
     box-sizing: border-box;
     font-size: 20px;
@@ -192,7 +192,6 @@
   }
 }
 
-
 @include block('opux-card') {
   background: $OP-white;
   font-size: .9rem;
@@ -350,6 +349,7 @@
   // opux-banner--contain
   @include modifier('contain') {
     background-size: contain;
+    padding: 0;
   }
 
   // opux-banner__title

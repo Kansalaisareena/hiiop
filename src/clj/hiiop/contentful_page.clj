@@ -14,7 +14,7 @@
    :hierarchy hierarchy
    :asset-path (asset-path env)
    :identity nil
-   :show-user-name false
+   :is-static-page true
    :current-locale locale})
 
 (defn- image-header [image-url]
