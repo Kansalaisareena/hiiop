@@ -132,11 +132,9 @@
      category]))
 
 (defn- stories-filters [{:keys [stories context]}]
-  (let [categories (if (:categories stories)
-                     (-> (map :categories stories)
-                         (flatten)
-                         (distinct))
-                     [])]
+  (let [categories (-> (map :categories stories)
+                       (flatten)
+                       (distinct))]
     (when (not-empty categories)
       [:div {:class "opux-category-filters-container"}
        (map category-filter categories)])))
