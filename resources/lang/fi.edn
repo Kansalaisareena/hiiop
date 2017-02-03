@@ -217,7 +217,7 @@ Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit
      :amount-of-people "henkilöä"}
 
     :open "Tehtävä on avoin kaikille"
-    :closed "Tehtävä on yksityinen ja siihen voi osallistua ainoastaan järjestäjältä saadun yksityisen linkin kautta."
+    :closed "Tehtävä on yksityinen ja siihen voi osallistua ainoastaan järjestäjältä saadun yksityisen linkin kautta. Tehtävä ei näy hakutuloksessa."
     :organiser-will-participate "Osallistun lisäksi itse tehtävään"
 
     :button
