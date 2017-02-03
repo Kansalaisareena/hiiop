@@ -56,8 +56,7 @@
         [:br]
         [:a {:href button2-url
              :class "button-2"
-             :id "button-2"} button2-text])
-      footer-images]]))
+             :id "button-2"} button2-text])]]))
 
 (defn plaintext-quest-details-mail [{:keys [tr
                                             title
@@ -103,8 +102,7 @@
      [:br]
      [:a {:href button-url
           :class "button-2"
-          :id "button-2"} button2-text])
-   footer-images])
+          :id "button-2"} button2-text])])
 
 (defn plaintext-simple-mail [{:keys [title
                                      body-text-plaintext
