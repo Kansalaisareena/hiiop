@@ -8,15 +8,15 @@
 
  :footer
  {:rules-and-guidelines "Ohjeet ja säännöt"
-  :faq "Vanliga frågor"
+  :faq "Info"
   :faq-page-key "faq"
   :contact "Ta kontakt"
   :contact-page-key "otayhteytta"
-  :terms-of-service "Käyttäjäehdot"
+  :terms-of-service "Användarvillkor"
   :terms-of-service-page-key "kayttoehdot"
   :privacy "Behandling av personuppgifter"
   :privacy-page-key "tietosuoja"
-  :follow-us "Hiiop Följ oss"
+  :follow-us "Hiiop! Följ oss"
   :copyright "© OP Ryhmä"}
 
  :pages
@@ -36,16 +36,16 @@
 
   :password-reset
   {:title "Har du glömt ditt lösenord?"
-   :send "Utsända"
+   :send "Sänd länk"
    :text "Ingen fara! Skriv din e-postadress här. Vi sänder dig en länk som du kan använda för att byta lösenord."
 
    :check-email
-   {:title "Tarkista sähköpostisi"
-    :text "Lähetimme sinulle linkin, jota klikkaamalla pääset muuttamaan salasanasi."}
+   {:title "Kontrollera din e-post"
+    :text "Vi har sänt dig en länk som du kan använda för att byta lösenord. "}
 
    :done
-   {:title "Salanasi on vaihdettu!"
-    :text "Voit nyt kirjautua"}
+   {:title "Ditt lösenord har bytts!"
+    :text "Du kan nu logga in"}
 
    :expired
    {:text "Tilaa täältä uusi."
@@ -56,31 +56,29 @@
   {:title "Etusivu"
    :banner
    {:header "Årets viktigaste dag är dagen som frivillig!"
-    :content "Vi kan alla delta i frivilligarbete. Nu är det självständighetens jubileumsår. Ge också du en dag av ditt år som gåva till Finland. #hiiop är ett bra ställe att börja."}
+    :content "Hiiop är en träffpunkt för frivilligarbete. Här hittar du lätt de sätt och platser för frivilligarbete som passar just dig. Vi kan alla delta i frivilligarbete. Ge också du en dag av ditt år som gåva till självständighetens jubileumsår och Finland."}
    
    :counter
-   {:title "Tehdään yhdessä 100 vuotta vapaaehtoistyötä Suomen hyväksi!"
-    :subtitle "Hiiop on vapaaehtoistoiminnan kohtaamispaikka. Täältä löydät itsellesi sopivan tehtävän tai voit kutsua apukäsiä järjestämääsi toimintaan. Kutsumme kaikki mukaan rakentamaan hyvää huomiosta - sadan vuoden edestä"
+   {:title "Kom med! Frivilligt arbete har gjorts för att hedra självständighetens jubileumsår totalt:"
     :hundred-years "100 v"
     :days "%1 p"
     :months "%1 kk"
     :years "%1 v"}
 
    :category-selector
-   {:title "Delta i frivilligarbete"
-    :subtitle "Hiiop är ett torg och en träffpunkt för frivilligarbete. Här hittar du lätt de sätt och platser för frivilligarbete som passar just dig. Du kan också be om hjälp i frivilligverksamhet som du själv ordnar. Tillsammans kan vi göra goda gärningar som berör hela Finland. Välj ett tema som intresserar dig och se vilka möjligheter till frivilligarbete där finns."
+   {:title "Välja tema och delta i frivilligarbete"
     :search "Visa uppdrag"}
 
    :index-links
-   {:browse-quests-text "Bli volontär och finn ditt sätt att hjälpa"
+   {:browse-quests-text "Hitta ditt sätt att hjälpa"
     :browse-quests "Hitta uppdrag"
     :create-quest-text "Arrangera frivilligarbete och bjud in vänner"
     :create-quest "Lägg till uppdrag"
-    :read-stories-text "Läs om erfarenheter av frivilligarbete."
+    :read-stories-text "Berättelser om frivilligarbete"
     :read-stories "Läs berättelser"}
 
    :social-feed
-   {:title "Använda hashtaggen #hiiop och bjud in dina vänner"}
+   {:title "Dela dina erfarenheter och bjud in vänner #hiiop"}
    }
 
 
@@ -88,24 +86,24 @@
   {:title "Logga in i tjänsten"
    :email "E-postadress"
    :password "Lösenord"
-   :login-subtitle "Kirjautuneena käyttäjänä voit ilmoittaa ja muokata tapahtumia. Näet myös kaikki vapaaehtoistehtävät, joihin olet osallistunut Hiiop100.fi -sivuston kautta."
+   :login-subtitle "Som inloggad användare kan du lägga till och ändra uppdrag. Du ser också alla frivilliguppdrag som du har deltagit i via Hiiop100.fi."
    :forget-password "Jag har glömt mitt lösenord"
    :register "Skapa kod"
    :remember-me "Kom ihåg mig"}
 
   :register
   {:title "Välkommen – skapa kod"
-   :register-subtitle "Kirjautuneena käyttäjänä voit ilmoittaa ja muokata tapahtumia. Näet myös kaikki vapaaehtoistehtävät, joihin olet osallistunut Hiiop100.fi -sivuston kautta."
+   :register-subtitle "Som inloggad användare kan du lägga till och ändra uppdrag. Du ser också alla frivilliguppdrag som du har deltagit i via Hiiop100.fi."
    :name "Namn"
    :email "E-postadress"
    :phone "Telefonnummer"
    :check-your-email "Hiiop – kontrollera din e-post"
-   :email-sent "Vi har sänt e-post till dig. I meddelandet finns en länk till tjänsten, där du kan skapa ditt lösenord och logga in. Det här kan tar ett par minuter."}
+   :email-sent "Vi har sänt e-post till dig. I meddelandet finns en länk till tjänsten, där du kan skapa ditt lösenord och logga in. Det här kan ta några minuter."}
 
   :static
   {:stories-title "Tarina"
-   :stories-index-header "Tarinoita vapaaehtoistyöstä"
-   :stories-index-subtitle "Täältä löydät vinkkejä ja ideoita oman vapaaehtoistehtväsi järjestämiseen, voit lukea suomalaisesta vapaaehtoistoiminnasta, auttajista ja autetuista."}
+   :stories-index-header "Berättelser om frivilligarbete"
+   :stories-index-subtitle "Idéer och inspiration, berättelser om volontärer."}
 
   :profile
   {:title "Käyttäjä"
@@ -115,10 +113,10 @@
    :delete "Ta bort uppdraget"
    :moderation "Moderointi"
    :do-you-want-to-delete "Är du säker på att du vill ta bort uppdraget?"
-   :no-upcoming-quests "Sinulla ei vielä ole tulevia tehtäviä"
+   :no-upcoming-quests "Du har inte ännu kommande uppdrag"
    :my-event "Oma tapahtuma"
    :cancel-enrollment "Peru ilmoittautuminen"
-   :do-you-want-to-cancel-enrollment "Oletko varma, että haluat perua ilmoittautumisen tehtävään?"
+   :do-you-want-to-cancel-enrollment "Är du säker på att du vill ta tillbaka dina anmälan till uppdraget?"
    :pending-approval "Odottaa hyväksymistä"
    :rejected "Hylätty"
    :published "Julkaistu"}
@@ -128,7 +126,7 @@
    :name "Nimi"}
 
   :activate
-  {:title "Lösenord"
+  {:title "Skapa lösenord"
    :password "Lösenord"
    :confirm-password "Lösenordet på nytt"
    :done
@@ -138,7 +136,7 @@
   :quest
   {:title "Löydä tehtävä"
    :view
-   {:participants "vapaata paikkaa"
+   {:participants "lediga platser"
     :signup
     {:subtitle "Välkommen som volontär!"
      :name "Namn"
@@ -164,7 +162,7 @@
 
    :edited
    {:title "Ditt uppdrag har ändrats"
-    :content "Uppdraget är fortfarande offentligt. Dina ändringar blir synliga inom 1–2 dagar."}
+    :content "Uppdraget är fortfarande offentligt. Dina ändringar granskas och blir synliga inom 1–2 dagar."}
 
    :list
    {:title "Löydä itsellesi vapaaehtoistehtävä"
@@ -196,7 +194,7 @@
     :description "Beskriv uppdragets innehåll"
     :picture
     {:title "Lägg till bild"
-     :info "Onhan sinulla on oikeudet kuvasi käyttöön? Kuvan käyttöön tarvitset aina kuvaajan nimen. Kuvan tulee olla vähintään 1100 pikseliä leveä ja 500 pikseliä korkea."
+     :info "Du har väl rätt att använda din bild? Då du använder en bild måste du alltid ha fotografens namn, som du kan lägga till i slutet av beskrivningen av uppdraget. Bilden måste vara minst 1100 pixlar bred och 500 pixlar hög samt mindre än 3 mega."
      :remove "Haluatko varmasti poistaa kuvan?"
      :upload-failed "Kuvan lisääminen epäonnistui."
      }
@@ -211,11 +209,11 @@
     :end-date "Lägg till slutdatum"
     :start-time "Klockslag"
     :end-time "End time"
-    :start-date-and-time "Päivämäärä ja kellonaika"
-    :end-date-and-time "Päättymispäivämäärä ja -kellonaika"
+    :start-date-and-time "Datum och klockslag*"
+    :end-date-and-time "Slutdatum och klockslag"
 
-    :location {:label "Osoite (valitse osoite alasvetovalikosta)"
-               :placeholder "Anna sijainti"}
+    :location {:label "Adress (välj adress i rullgardinsmenyn)*"
+               :placeholder "Ange plats"}
     :address "Adress"
     :town "Ort"
 
@@ -224,7 +222,7 @@
      :amount-of-people "personer delta"}
 
     :open "Uppdraget är öppet för alla"
-    :closed "Uppdraget är privat och man kan anmäla sig endast via en privat länk som fås av arrangören."
+    :closed "Uppdraget är privat och man kan anmäla sig endast via en privat länk som fås av arrangören. Uppdraget syns inte i sökresultatet."
     :organiser-will-participate "Jag deltar också själv i uppdraget."
 
     :button
@@ -245,14 +243,14 @@
     :party
     {:title "Anmälda till ditt uppdrag"
      :mail-participants "Sänd e-post till deltagarna"
-     :confirm-remove "Är du säker på att du vill ta bort den här volontären?"
+     :confirm-remove "Ta bort anmälan?"
      :cancel-remove "Avbryt"
      :empty "Kerro muillekin tehtävästäsi!"}
     }
 
    :browse
    {:title "Hiiop! Hitta ett frivilliguppdrag som passar dig"
-    :not-found "Vi hittade inte just nu uppdrag som motsvarar din sökning. Du kan bredda dina sökkriterier eller arrangera frivilligarbete."
+    :not-found "Vi hittade inte just nu uppdrag som motsvarar din sökning. Du kan bredda sökkriterierna eller lägga till ett frivilliguppdrag."
 
     :filter
     {:category "Hur vill du hjälpa?"
@@ -261,10 +259,10 @@
 
    :part
    {:title "Ta tillbaka anmälan"
-    :text "Är du säker på att du inte kan delta i uppdraget?"
+    :text "Är du säker på att du vill ta tillbaka din anmälan till uppdraget %1?"
     :confirm "Ta tillbaka anmälan"
-    :success "Peruminen onnistui!"
-    :to-quest "Tillbaka i uppdraget"}
+    :success "Anmälan togs tillbaka"
+    :to-quest "Tillbaka till uppdraget"}
 
 
    :preview
@@ -276,7 +274,7 @@
    }
 
   :ideas
-  {:title "Kokemuksia vapaaehtoistyöstä"}
+  {:title "Erfarenheter av frivilligarbete"}
   }
 
  :category
@@ -309,7 +307,7 @@
 
   :cancel "Avbryt"
 
-  :share "Kerro kavereille"
+  :share "Berätta för en kompis:"
 
   :profile
   {:sign-out "Kirjaudu ulos"
@@ -384,11 +382,11 @@
    }
 
   :password
-  {:not-valid "Salasanan täytyy sisältää yksi iso kirjain, yksi numero ja yhteensä vähintään kuusi merkkiä."
-   :not-same  "Salanasanat eivät täsmää."}
+  {:not-valid "Lösenordet måste innehålla en stor bokstav, en siffra och totalt minst sex tecken."
+   :not-same  "Lösenorden stämmer inte"}
 
   :email
-  {:not-valid "Sähköposti, kuten erkki@esimerkki.fi"
+  {:not-valid "E-post, t.ex. emil@exempel.fi"
    :in-use    "Sähköposti on jo käytössä"}
 
   :phone

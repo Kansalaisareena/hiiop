@@ -7,8 +7,8 @@
  {:title "Hiiop"}
 
  :footer
- {:rules-and-guidelines "Ohjeet ja säännöt"
-  :faq "Usein kysyttyjä kysymyksiä"
+ {:rules-and-guidelines "Käyttöehdot"
+  :faq "Info"
   :faq-page-key "faq"
   :contact "Ota yhteyttä"
   :contact-page-key "otayhteytta"
@@ -51,32 +51,30 @@
   :index
   {:title "Etusivu"
    :banner
-   {:header "Vuoden tärkein päivä on päivä vapaaehtoisena."
-    :content "Jokainen voi lähteä mukaan vapaaehtoistyöhön. Anna sinäkin itsenäisyyden juhlavuoden kunniaksi Suomelle lahjaksi päivä vapaaehtoisena. #hiiop on hyvä paikka aloittaa."}
+   {:header "Vuoden tärkein päivä on päivä vapaaehtoisena"
+    :content "Hiiop on vapaaehtoistyön kohtaamispaikka. Täältä löydät sopivan tavan ja paikan tehdä vapaaehtoistyötä. Anna sinäkin itsenäisyyden juhlavuoden kunniaksi päivä vapaaehtoisena."}
    
    :counter
-   {:title "Tehdään yhdessä 100 vuotta vapaaehtoistyötä Suomen hyväksi!"
-    :subtitle "Hiiop on vapaaehtoistoiminnan kohtaamispaikka. Täältä löydät itsellesi sopivan tehtävän tai voit kutsua apukäsiä järjestämääsi toimintaan. Kutsumme kaikki mukaan rakentamaan hyvää huomiosta - sadan vuoden edestä"
+   {:title "Tule mukaan! Vapaaehtoistyötä on tehty satavuotiaan Suomen kunniaksi yhteensä jo:"
     :hundred-years "100 v"
     :days "%1 p"
     :months "%1 kk"
     :years "%1 v"}
 
    :category-selector
-   {:title "Tule mukaan vapaaehtoistyöhön"
-    :subtitle "Hiiop on vapaaehtoistyön tori ja kohtaamispaikka. Täältä löydät helposti itsellesi sopivat tavat ja paikat tehdä vapaaehtoistyötä. Voit myös kutsua apukäsiä mukaan vapaaehtoistoimintaan, jota olet itse järjestämässä. Yhdessä voimme saada aikaan koko Suomea koskettavia hyviä tekoja. Valitse itseäsi kiinnostava aihe ja selaa vapaaehtoismahdollisuuksia."
+   {:title "Valitse teema ja selaa vapaaehtoistehtäviä"
     :search "Näytä tehtävät"}
 
    :index-links
-   {:browse-quests-text "Ryhdy vapaaehtoiseksi ja löydä oma tapasi auttaa"
+   {:browse-quests-text "Löydä oma tapasi auttaa"
     :browse-quests "Löydä tehtävä"
-    :create-quest-text "Järjestä vapaaehtoistehtävä ja kutsu kaverisi mukaan"
+    :create-quest-text "Kutsu apukäsiä vapaaehtoistyöhön"
     :create-quest "Ilmoita tehtävä"
-    :read-stories-text "Tutustu kokemuksiin vapaaehtoistoiminnasta."
-    :read-stories "Lue tarinoita"}
+    :read-stories-text "Tekijöiden tarinoita vapaaehtoistyöstä"
+    :read-stories "Tekijöiden tarinoita"}
 
    :social-feed
-   {:title "#hiiop jaa kokemuksesi ja kutsu ystäväsi mukaan"}
+   {:title "Jaa kokemuksesi ja kutsu ystäväsi mukaan #hiiop"}
    }
 
 
@@ -100,8 +98,8 @@
 
   :static
   {:stories-title "Tarina"
-   :stories-index-header "Tarinoita vapaaehtoistyöstä"
-   :stories-index-subtitle "Täältä löydät vinkkejä ja ideoita oman vapaaehtoistehtväsi järjestämiseen, voit lukea suomalaisesta vapaaehtoistoiminnasta, auttajista ja autetuista."}
+   :stories-index-header "Tekijöiden tarinoita vapaaehtoistyöstä"
+   :stories-index-subtitle "Ideoita ja inspiraatiota, tarinoita ja tekijöitä vapaaehtoistyön arjesta."}
 
   :profile
   {:title "Käyttäjä"
@@ -192,7 +190,7 @@ Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit
     :description "Kerro tehtävän sisällöstä"
     :picture
     {:title "Lisää kuva"
-     :info "Onhan sinulla on oikeudet kuvasi käyttöön? Kuvan käyttöön tarvitset aina kuvaajan nimen. Kuvan tulee olla vähintään 1100 pikseliä leveä, 500 pikseliä korkea ja maksimissaan 3 MiB."
+     :info "Onhan sinulla oikeudet kuvasi käyttöön? Kuvan käyttöön tarvitset aina kuvaajan nimen, jonka  voit lisätä tapahtuman kuvauksen loppuun. Kuvan on oltava vähintään 1100 pikseliä leveä ja 500 korkea ja sen on oltava pienempi kuin 3 megaa."
      :remove "Haluatko varmasti poistaa kuvan?"
      :upload-failed "Kuvan lisääminen epäonnistui."
      }
@@ -219,7 +217,7 @@ Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit
      :amount-of-people "henkilöä"}
 
     :open "Tehtävä on avoin kaikille"
-    :closed "Tehtävä on yksityinen ja siihen voi osallistua ainoastaan järjestäjältä saadun yksityisen linkin kautta."
+    :closed "Tehtävä on yksityinen ja siihen voi osallistua ainoastaan järjestäjältä saadun yksityisen linkin kautta. Tehtävä ei näy hakutuloksessa."
     :organiser-will-participate "Osallistun lisäksi itse tehtävään"
 
     :button
@@ -246,8 +244,8 @@ Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit
     }
 
    :browse
-   {:title "Hiiop! Löydä sinulle sopiva vapaaehtoistehtävä"
-    :not-found "Emme juuri nyt löytäneet täysin hakuasi vastaavia tehtäviä. Voit ilmoittaa vapaaehtoistehtävän tai laajentaa hakuehtoja."
+   {:title "Hiiop! Löydä sopiva vapaaehtoistehtävä"
+    :not-found "Emme juuri nyt löytäneet täysin hakuasi vastaavia tehtäviä. Voit laajentaa hakuehtoja tai ilmoittaa vapaaehtoistehtävän."
 
     :filter
     {:category "Miten haluat auttaa?"
