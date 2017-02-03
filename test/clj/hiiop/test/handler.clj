@@ -350,6 +350,19 @@
         (parse-string true)
         (do-this #(pp/pprint %1)))))
 
+(defn get-party-member-info [{:keys [with quest-id login-cookie status]}]
+  (let [url (str "/api/v1/quests/" quest-id "/get-member-info")]
+    (-> (json-request url
+         {:type :get
+          :cookies login-cookie})
+        (with)
+        (has-status (or status 200) url)
+        (:body)
+        (check #(is (not (= %1 nil))))
+        (#(when %1 (slurp %1)))
+        (parse-string true)
+        (do-this #(pp/pprint %1)))))
+
 (defn remove-party-member [{:keys [with quest-id member-id login-cookie status]}]
   (let [url (str "/api/v1/quests/" quest-id "/party/" member-id)]
     (-> (json-request url
@@ -1209,6 +1222,62 @@
           (just-do #(db/delete-user! {:id (sc/string->uuid @test-user-id)})))
       ))
 
+  (testing "GET /api/v1/counter"
+    (let [current-app (app)
+          user-created (create-test-user
+                        {:user-data test-user
+                         :save-id-to test-user-id
+                         :read-token-from activation-token})
+          made-moderator (db/make-moderator! {:id @test-user-id})
+          login-cookie (login-and-get-cookie
+                        {:with current-app
+                         :user-data test-user})
+          quest-to-add  (-> (test-quest
+                             {:location-to :location
+                              :coordinates-to :coordinates
+                              :organisation-to {:in :organisation
+                                                :name :name
+                                                :description :description}})
+                            (assoc :start-time (-> 1 t/days t/from-now))
+                            (assoc :end-time (-> 2 t/days t/from-now)))
+
+          added-quest (add-quest
+                       {:with current-app
+                        :use-date-string false
+                        :quest quest-to-add
+                        :login-cookie login-cookie
+                        :organiser-participates true})
+           
+          quest-in-the-past (assoc added-quest
+                                   :start-time (-> -2
+                                                   t/days
+                                                   t/from-now)
+                                   :end-time (-> -1
+                                                 t/days
+                                                 t/from-now))]
+      (hiiop.redis/clear-from-cache :counter)
+
+      ;; quest in the future
+      (is (= 0 (:days (hiiop.api-handlers/get-the-counter-value))))
+      (hiiop.redis/clear-from-cache :counter)
+
+      ;; quest in the past but unmoderated
+      (edit-quest {:with current-app
+                   :quest quest-in-the-past
+                   :login-cookie login-cookie})
+      (is (= 0 (:days (hiiop.api-handlers/get-the-counter-value))))
+      (hiiop.redis/clear-from-cache :counter)
+
+      ;; quest in the past, moderated
+      (accept-quest {:with current-app
+                     :quest-id (:id added-quest)
+                     :login-cookie login-cookie})
+      (is (= 2 (:days (hiiop.api-handlers/get-the-counter-value))))
+      (hiiop.redis/clear-from-cache :counter)
+      
+      (db/delete-quest-by-id! {:id (:id added-quest)})
+      (db/delete-user! {:id (sc/string->uuid @test-user-id)})))
+
   (testing "GET api/v1/quests/:id/secret/:secret-party/joinable"
     (let [current-app (app)
           user-created (create-test-user
@@ -1346,14 +1415,14 @@
                         :organiser-participates true})
           ]
       (-> added-quest
-          (#(get-party-members {:with current-app
-                                :quest-id (:id %1)
-                                :login-cookie login-cookie}))
+          (#(get-party-member-info {:with current-app
+                                    :quest-id (:id %1)
+                                    :login-cookie login-cookie}))
           (check #(is (not (nil? %1))))
-          (check #(is (= 1 (count %1))))
+          (check #(is (= 4 (count %1))))
           (#(remove-party-member {:with current-app
                                   :login-cookie login-cookie
-                                  :member-id (:member-id (first %1))
+                                  :member-id (:member-id %1)
                                   :quest-id (:id added-quest)
                                   }))
           (just-do #(db/delete-quest-by-id! {:id (:id added-quest)}))

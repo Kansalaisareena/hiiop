@@ -184,6 +184,18 @@
       (when (= status 200)
         body))))
 
+(defn get-party-member-info [{:keys [quest-id]}]
+  (go
+    (let [response (<! (http/get
+                         (str base-path
+                              "/quests/"
+                              quest-id
+                              "/get-member-info")))
+          status (:status response)
+          body (:body response)]
+      (when (= status 200)
+        body))))
+
 (defn edit-user [user-id user]
   (log/info "edit-user called with" user)
   (go
@@ -258,3 +270,9 @@
           body (:body response)]
       {:success (= status 200)
        :body body})))
+
+(defn get-the-counter-value []
+  (go
+    (let [response (<! (http/get (str base-path "/counter")))]
+      (when (= (:status response) 200)
+        (:body response)))))

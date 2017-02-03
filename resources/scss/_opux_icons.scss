@@ -114,6 +114,22 @@ $opux-icon-cross-name-collection: (eyeglasses, law, sound, globe, handicap, chil
   }
 }
 
+@include block('opux-category-filter-overlay') {
+  background: #000;
+  background: transparent;
+  display: none;
+  height: 100%;
+  left: 0px;
+  position: fixed;
+  top: 0px;
+  width: 100%;
+  z-index: 2;
+
+  @include state('active') {
+    display: block;
+  }
+}
+
 .opux-content--quest-header,
 .opux-content--quest-footer {
   @include block('opux-icon') {

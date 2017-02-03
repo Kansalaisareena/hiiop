@@ -64,9 +64,9 @@
                  [cljsjs/dropzone                        "4.3.0-0"]
                  [clj-http                               "2.3.0"]
                  [com.atlassian.commonmark/commonmark    "0.8.0"]
-                 ]
+                 [com.cemerick/url                       "0.1.1"]]
 
-  :min-lein-version "2.7.1"
+  :min-lein-version "2.5.3"
   :jvm-opts ["-server" "-Dconf=.lein-env" "-Duser.timezone=Europe/Helsinki"]
   :source-paths ["src/clj" "src/cljc"]
   :resource-paths ["resources" "target/cljsbuild"]
@@ -81,7 +81,7 @@
   [[lein-resource "16.9.1"]
    [lein-cprop "1.0.1"]
    [migratus-lein "0.4.3"]
-   [lein-cljsbuild "1.1.4"]
+   [lein-cljsbuild "1.1.5"]
    [lein-immutant "2.1.0"]
    [lein-sassc "0.10.4"]
    [lein-auto "0.1.2"]
@@ -97,7 +97,6 @@
     [commons-codec
      org.apache.commons/commons-compress
      com.fasterxml.jackson.core/jackson-core]]]
-
 
   :sassc
   [{:src "resources/scss/screen.scss"
@@ -131,21 +130,21 @@
                       :target-path
                       ~(str "resources/public/"
                             (apply
-                              str
-                              (clojure.string/trim
-                                (:out
-                                 (clojure.java.shell/sh
-                                   "git" "rev-parse" "--verify" "HEAD"))))
+                             str
+                             (clojure.string/trim
+                              (:out
+                               (clojure.java.shell/sh
+                                "git" "rev-parse" "--verify" "HEAD"))))
                             "/js")}]
                     ["resources/public/css"
                      {:target-path
                       ~(str "resources/public/"
                             (apply
-                              str
-                              (clojure.string/trim
-                                (:out
-                                 (clojure.java.shell/sh
-                                   "git" "rev-parse" "--verify" "HEAD"))))
+                             str
+                             (clojure.string/trim
+                              (:out
+                               (clojure.java.shell/sh
+                                "git" "rev-parse" "--verify" "HEAD"))))
                             "/css")}]]}
 
   :essthree
@@ -155,53 +154,58 @@
             }}
 
   :profiles
-  {:uberjar {:omit-source true
-             ;;:prep-tasks ["git-version" "compile" ["cljsbuild" "once" "min"] "resource" "minify-assets"]
-             :prep-tasks ["git-version"
-                          "compile"
-                          ["cljsbuild" "once" "min"]
-                          ["cljsbuild" "once" "static"]
-                          "resource"]
-             :cljsbuild
-             {:builds
-              {:min
-               {:source-paths ["src/cljc" "src/cljs/hiiop" "env/prod/cljs"]
-                :compiler
-                {:output-to "target/cljsbuild/public/js/app.js"
-                 ;;:output-dir "target/cljsbuild/public/js/"
-                 ;;:source-map "target/cljsbuild/public/js/app.js.map"
-                 :externs ["react/externs/react.js"]
-                 :optimizations :simple
-                 :pretty-print false
-                 :closure-warnings
-                 {:externs-validation :off :non-standard-jsdoc :off}}}
-               :static
-               {:source-paths ["src/cljs/hiiop_static"]
-                :compiler
-                {:output-to "target/cljsbuild/public/js/static.js"
-                 ;;:output-dir "target/cljsbuild/public/js/"
-                 ;;:source-map "target/cljsbuild/public/js/app.js.map"
-                 :optimizations :simple
-                 :pretty-print false
-                 :closure-warnings
-                 {:externs-validation :off :non-standard-jsdoc :off}}}}}
+  {:uberjar
+   {:omit-source true
+    ;;:prep-tasks ["git-version" "compile" ["cljsbuild" "once" "min"] "resource" "minify-assets"]
+    :prep-tasks ["git-version"
+                 "compile"
+                 ["cljsbuild" "once" "min"]
+                 ["cljsbuild" "once" "static"]
+                 "resource"]
+    :cljsbuild
+    {:builds
+     {:min
+      {:source-paths ["src/cljc/hiiop"
+                      "src/cljs/hiiop"
+                      "env/prod/cljs/hiiop"]
+       :compiler
+       {:output-to "target/cljsbuild/public/js/app.js"
+        :externs ["externs/google_maps_api_v3.js"]
+        :optimizations :advanced
+        :parallel-build true
+        :compiler-stats true
+        :pretty-print false
+        :verbose true
+        :source-map false}}
 
-             ;; :minify-assets
-             ;; {:assets
-             ;;  {~(str "resources/public/"
-             ;;         (apply str (clojure.string/trim
-             ;;                      (:out (clojure.java.shell/sh
-             ;;                              "git" "rev-parse" "--verify" "HEAD"))))
-             ;;         "/css/screen.css")
-             ;;   "resources/public/css"
-             ;;   }
-             ;;  :options {:optimizations :none}
-             ;;  }
+      :static
+      {:source-paths ["src/cljs/hiiop_static"]
+       :compiler
+       {:output-to "target/cljsbuild/public/js/static.js"
+        :externs ["externs/google_maps_api_v3.js"]
+        :optimizations :advanced
+        :parallel-build true
+        :verbose true
+        :compiler-stats true
+        :pretty-print false
+        :source-map false}}}}
 
-             :aot :all
-             :uberjar-name "hiiop.jar"
-             :source-paths ["env/prod/clj"]
-             :resource-paths ["env/prod/resources"]}
+    ;; :minify-assets
+    ;; {:assets
+    ;;  {~(str "resources/public/"
+    ;;         (apply str (clojure.string/trim
+    ;;                      (:out (clojure.java.shell/sh
+    ;;                              "git" "rev-parse" "--verify" "HEAD"))))
+    ;;         "/js/app.js")
+    ;;   "resources/public/app.js"
+    ;;   }
+    ;;  :options {:optimizations :none}
+    ;;  }
+
+    :aot :all
+    :uberjar-name "hiiop.jar"
+    :source-paths ["env/prod/clj"]
+    :resource-paths ["env/prod/resources"]}
 
    :dev           [:project/dev :profiles/dev]
    :test          [:project/dev :project/test :profiles/test]

@@ -57,6 +57,14 @@
    :banner
    {:header "Årets viktigaste dag är dagen som frivillig!"
     :content "Vi kan alla delta i frivilligarbete. Nu är det självständighetens jubileumsår. Ge också du en dag av ditt år som gåva till Finland. #hiiop är ett bra ställe att börja."}
+   
+   :counter
+   {:title "Tehdään yhdessä 100 vuotta vapaaehtoistyötä Suomen hyväksi!"
+    :subtitle "Hiiop on vapaaehtoistoiminnan kohtaamispaikka. Täältä löydät itsellesi sopivan tehtävän tai voit kutsua apukäsiä järjestämääsi toimintaan. Kutsumme kaikki mukaan rakentamaan hyvää huomiosta - sadan vuoden edestä"
+    :hundred-years "100 v"
+    :days "%1 p"
+    :months "%1 kk"
+    :years "%1 v"}
 
    :category-selector
    {:title "Delta i frivilligarbete"

@@ -398,6 +398,16 @@
 (defn check-and-update-user-info [user-info]
   user-info)
 
+(defn get-party-member-info-for-user [{:keys [quest-id user-id]}]
+  (try
+    (->
+     (db/get-party-member-info
+      (db/->snake_case_keywords {:quest_id quest-id
+                                 :user_id user-id}))
+      (hc/db-party-member->api-party-member-coercer))
+    (catch Exception e
+      (log/error e))))
+
 (defn get-party-member [{:keys [member-id]}]
   (try
     (-> (db/get-party-member {:id member-id})
@@ -616,3 +626,10 @@
           (log/error e)
           {:errors {:picture :errors.picture.add-failed}}))
       picture-supported)))
+
+(defn get-the-counter-value []
+  (try
+    (db/get-counter-days)
+    (catch Exception e
+      (log/error e)
+      {:errors {:counter :errors.counter.get-failed}})))
