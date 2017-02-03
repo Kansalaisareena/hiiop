@@ -2,7 +2,8 @@
   (:require [rum.core :as rum]
             [bidi.bidi :refer [path-for]]
             #?(:clj [hiiop.config :refer [env]]
-               :cljs [hiiop.client-config :refer [env]])))
+               :cljs [hiiop.client-config :refer [env]])
+            [taoensso.timbre :as log]))
 
 (defn- lang-switcher [{:keys [is-static-page hiiop-blog-base-url current-locale]}]
   [:ul
@@ -63,15 +64,17 @@
                     (path-for hierarchy (if identity :profile :login)))}
      [:i {:class "opux-icon-circled opux-icon-person"}]]]])
 
-(defn- main-menu [{:keys [tr is-active active? hierarchy lang-param site-base-url]}]
+(defn- main-menu [{:keys [tr is-active active? hierarchy lang-param site-base-url hiiop-blog-base-url current-locale]}]
   [:ul
    {:class "opux-menu opux-menu--main"}
-   ;; [:li
-   ;;  {:class "opux-menu__item opux-menu__item--main"}
-   ;;  [:a
-   ;;   {:class "opux-menu__item-link opux-menu__item-link--main"
-   ;;    :href "http://tarinat.hiiop100.fi"}
-   ;;   (tr [:pages.ideas.title])]]
+   [:li
+    {:class "opux-menu__item opux-menu__item--main"}
+    [:a
+     {:class "opux-menu__item-link opux-menu__item-link--main"
+      :href (str hiiop-blog-base-url "/"
+                 (name current-locale)
+                 "/blog/index.html")}
+     (tr [:pages.ideas.title])]]
    [:li
     {:class "opux-menu__item opux-menu__item--main-quest opux-menu__item--main--browse-quest"}
     [:a
@@ -92,10 +95,11 @@
      (tr [:actions.quest.create])]]])
 
 (rum/defcs top-navigation < (rum/local false ::is-active)
-  [state {:keys [hierarchy tr current-locale identity is-static-page path-key]}]
+  [state {:keys [hierarchy tr current-locale identity is-static-page path-key hiiop-blog-base-url]}]
   (let [is-active (::is-active state)
         site-base-url (:site-base-url env)
-        hiiop-blog-base-url (:hiiop-blog-base-url env)
+        hiiop-blog-base-url (or hiiop-blog-base-url
+                                (:hiiop-blog-base-url env))
         active? (fn [p] (if (= path-key p) " is-active"))
         lang-param (when is-static-page
                      (str "?lang=" (name current-locale)))]
@@ -113,11 +117,12 @@
       {:class
        (str "opux-nav opux-nav--header"
             (cond @is-active " is-active"))}
-
       (main-menu {:is-active is-active
                   :active? active?
                   :hierarchy hierarchy
+                  :current-locale current-locale
                   :lang-param lang-param
+                  :hiiop-blog-base-url hiiop-blog-base-url
                   :site-base-url site-base-url
                   :tr tr})
       
