@@ -27,8 +27,7 @@
    (fn [state]
      (log/trace state)
      (let [args (first (:rum/args state))
-           ;;current-locale (keyword (get-in args [:context :conf :current-locale]))
-           current-locale :fi
+           current-locale (keyword (get-in args [:context :conf :current-locale]))
            translations (get-in args [:context :conf :langs current-locale :pikaday])
            date (:date args)
            format (:format args)
