@@ -77,7 +77,6 @@
    [:div {:class "opux-section"}
     [:div {:class "opux-content opux-centered"}
       [:h1 (tr [:pages.index.counter.title])]
-      [:h3 (tr [:pages.index.counter.subtitle])]
       [:div {:class "opux-counter-wrapper" }
         [:div {:class "opux-counter"}
           [:div {:class "opux-counter__goal-pin"}
@@ -109,7 +108,6 @@
     [:div {:class "opux-section"}
      [:div {:class "opux-content opux-centered"}
       [:h1 (tr [:pages.index.category-selector.title])]
-      [:h3 (tr [:pages.index.category-selector.subtitle])]]
 
      [:div {:class "opux-content opux-centered"}
       (html/form-section
