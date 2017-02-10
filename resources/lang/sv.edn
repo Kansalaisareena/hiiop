@@ -1,420 +1,448 @@
 {
- :missing ":sv teksti puuttuu"
- :name "Hiiop"
- :title "Hiiop – %1"
-
- :header
- {:title "Hiiop"}
-
- :footer
- {:rules-and-guidelines "Ohjeet ja säännöt"
-  :faq "Info"
-  :faq-page-key "faq"
-  :contact "Ta kontakt"
-  :contact-page-key "otayhteytta"
-  :terms-of-service "Användarvillkor"
-  :terms-of-service-page-key "kayttoehdot"
-  :privacy "Behandling av personuppgifter"
-  :privacy-page-key "tietosuoja"
-  :follow-us "Hiiop! Följ oss"
-  :copyright "© OP Ryhmä"}
-
- :pages
- {
-  :404
-  {:title "Hups - 404"
-   :content "Täältä ei löytynyt mitään."}
-
-  :moderate
-  {:title "Tehtävän hyväksyntä"
-   :unmoderated-quests "Käsittelemättömät tehtävät"
-   :reject-quest "Hylkää"
-   :reject-quest-message-title "Viesti hylättessä"
-   :cancel "Avbryt"
-   :moderate-quest "Hyväksy"
-   }
-
-  :password-reset
-  {:title "Har du glömt ditt lösenord?"
-   :send "Sänd länk"
-   :text "Ingen fara! Skriv din e-postadress här. Vi sänder dig en länk som du kan använda för att byta lösenord."
-
-   :check-email
-   {:title "Kontrollera din e-post"
-    :text "Vi har sänt dig en länk som du kan använda för att byta lösenord. "}
-
-   :done
-   {:title "Ditt lösenord har bytts!"
-    :text "Du kan nu logga in"}
-
-   :expired
-   {:text "Tilaa täältä uusi."
-    }
-   }
-
-  :index
-  {:title "Etusivu"
-   :banner
-   {:header "Årets viktigaste dag är dagen som frivillig!"
-    :content "Hiiop är en träffpunkt för frivilligarbete. Här hittar du lätt de sätt och platser för frivilligarbete som passar just dig. Vi kan alla delta i frivilligarbete. Ge också du en dag av ditt år som gåva till självständighetens jubileumsår och Finland."}
-   
-   :counter
-   {:title "Kom med! Frivilligt arbete har gjorts för att hedra självständighetens jubileumsår totalt:"
-    :hundred-years "100 v"
-    :days "%1 p"
-    :months "%1 kk"
-    :years "%1 v"}
-
-   :category-selector
-   {:title "Välja tema och delta i frivilligarbete"
-    :search "Visa uppdrag"}
-
-   :index-links
-   {:browse-quests-text "Hitta ditt sätt att hjälpa"
-    :browse-quests "Hitta uppdrag"
-    :create-quest-text "Arrangera frivilligarbete och bjud in vänner"
-    :create-quest "Lägg till uppdrag"
-    :read-stories-text "Berättelser om frivilligarbete"
-    :read-stories "Läs berättelser"}
-
-   :social-feed
-   {:title "Dela dina erfarenheter och bjud in vänner #hiiop"}
-   }
-
-
-  :login
-  {:title "Logga in i tjänsten"
-   :email "E-postadress"
-   :password "Lösenord"
-   :login-subtitle "Som inloggad användare kan du lägga till och ändra uppdrag. Du ser också alla frivilliguppdrag som du har deltagit i via Hiiop100.fi."
-   :forget-password "Jag har glömt mitt lösenord"
-   :register "Skapa kod"
-   :remember-me "Kom ihåg mig"}
-
-  :register
-  {:title "Välkommen – skapa kod"
-   :register-subtitle "Som inloggad användare kan du lägga till och ändra uppdrag. Du ser också alla frivilliguppdrag som du har deltagit i via Hiiop100.fi."
-   :name "Namn"
-   :email "E-postadress"
-   :phone "Telefonnummer"
-   :check-your-email "Hiiop – kontrollera din e-post"
-   :email-sent "Vi har sänt e-post till dig. I meddelandet finns en länk till tjänsten, där du kan skapa ditt lösenord och logga in. Det här kan ta några minuter."}
-
-  :static
-  {:stories-title "Tarina"
-   :stories-index-header "Berättelser om frivilligarbete"
-   :stories-index-subtitle "Idéer och inspiration, berättelser om volontärer."}
-
-  :profile
-  {:title "Käyttäjä"
-   :past-quests "Dina tidigare frivilliguppdrag"
-   :upcoming-quests "Dina kommande frivilliguppdrag"
-   :cancel "Avbryt"
-   :delete "Ta bort uppdraget"
-   :moderation "Moderointi"
-   :do-you-want-to-delete "Är du säker på att du vill ta bort uppdraget?"
-   :no-upcoming-quests "Du har inte ännu kommande uppdrag"
-   :my-event "Oma tapahtuma"
-   :cancel-enrollment "Peru ilmoittautuminen"
-   :do-you-want-to-cancel-enrollment "Är du säker på att du vill ta tillbaka dina anmälan till uppdraget?"
-   :pending-approval "Odottaa hyväksymistä"
-   :rejected "Hylätty"
-   :published "Julkaistu"}
-
-  :edit-profile
-  {:phone "Puhelinnumero (ei pakollinen)"
-   :name "Nimi"}
-
-  :activate
-  {:title "Skapa lösenord"
-   :password "Lösenord"
-   :confirm-password "Lösenordet på nytt"
-   :done
-   {:title "Käyttäjä luotu!"
-    :text "Voit nyt kirjautua."}}
-
-  :quest
-  {:title "Löydä tehtävä"
-   :view
-   {:participants "lediga platser"
-    :signup
-    {:subtitle "Välkommen som volontär!"
-     :name "Namn"
-     :email "Din e-postadress"
-     :phone "Telefonnummer"
-     :days "Hur många dagar vill du delta?"
-     :agree-to-terms-and-conditions "Jag har läst villkoren för tjänsten och godkänner dem. Anmälan är bindande. Vid förhinder kan du ta tillbaka din anmälan."}
-    :join
-    {:success "Fint att du deltar – tack för din anmälan! Du kommer att få mer information om uppdraget till din e-post."
-     :fail    "Hoppsan, din anmälan misslyckades. Kontrollera din e-postadress eller om du redan tidigare har anmält dig till uppdraget."
-     :to-front-page "Stäng"}
-    }
-
-   :created
-   {:title "Ditt uppdrag har upprättats"
-    :public
-    "Grattis! Du har upprättat ett offentligt frivilliguppdrag. Du kan nu se på ditt frivilliguppdrag på din profilsida. Alla frivilliguppdrag kontrolleras och efter det ser du ditt uppdrag också i listan över alla frivilliguppdrag. Det här tar ungefär 1–2 dagar."
-    :private
-    "Grattis! Du har upprättat ett privat frivilliguppdrag. Du kan nu se på ditt uppdrag på din profilsida. Alla frivilliguppdrag kontrolleras och efter det ser du ditt uppdrag som privat också i listan över alla frivilliguppdrag. Det här tar ungefär 1–2 dagar.
-
-    Du kan bjuda in deltagare till ett privat frivilliguppdrag endast genom att sända dem en länk som du får till din e-post när uppdraget har offentliggjorts."
-    }
-
-   :edited
-   {:title "Ditt uppdrag har ändrats"
-    :content "Uppdraget är fortfarande offentligt. Dina ändringar granskas och blir synliga inom 1–2 dagar."}
-
-   :list
-   {:title "Löydä itsellesi vapaaehtoistehtävä"
-    :not-found "Juuri näillä hakuehdoilla ei löytynyt tapahtumia. Koita valita useampia kiinnostuksen kohteita."
-
-    :filter
-    {:category "Miten haluat auttaa?"
-     :where "Missä?"
-     :when "Milloin?"
-     :clear "Tyhjennä"}}
-
-   :edit
-   {:title "Ilmoita vapaaehtoistehtävä"
-
-    :subtitles
-    {:content "1/4 Frivilliguppdragets innehåll"
-     :time-place "2/4 Var och när ordnas frivilligverksamheten?"
-     :related-to "3/4 Till vad ansluter sig frivilliguppdraget?"
-     :participation "4/4 Deltagande"
-
-     :info
-     {:content "Berätta vad du vill åstadkomma med gemensamma krafter. Var inspirerande! Vad kommer att hända under dagen? Hur kan volontärerna delta och hjälpa? Hurdana resurser och talanger behöver du?"
-      :related-to "Välj ett eller flera teman som bäst beskriver ditt frivilliguppdrag."
-      :participation "Berätta hur många som kan delta i verksamheten och om det finns begränsningar för att delta."
-     }
-    }
-
-    :name "Frivilliguppdragets namn"
-    :description "Beskriv uppdragets innehåll"
-    :picture
-    {:title "Lägg till bild"
-     :info "Du har väl rätt att använda din bild? Då du använder en bild måste du alltid ha fotografens namn, som du kan lägga till i slutet av beskrivningen av uppdraget. Bilden måste vara minst 1100 pixlar bred och 500 pixlar hög samt mindre än 3 mega."
-     :remove "Haluatko varmasti poistaa kuvan?"
-     :upload-failed "Kuvan lisääminen epäonnistui."
-     }
-
-    :hashtags "Hashtaggar"
-
-    :organisation
-    {:name "Arrangerande sammanslutning eller organisation"
-     :description "Berätta om er verksamhet"}
-
-    :start-date "Datum"
-    :end-date "Lägg till slutdatum"
-    :start-time "Klockslag"
-    :end-time "End time"
-    :start-date-and-time "Datum och klockslag*"
-    :end-date-and-time "Slutdatum och klockslag"
-
-    :location {:label "Adress (välj adress i rullgardinsmenyn)*"
-               :placeholder "Ange plats"}
-    :address "Adress"
-    :town "Ort"
-
-    :max-participants
-    {:can-join "I frivilliguppdraget kan"
-     :amount-of-people "personer delta"}
-
-    :open "Uppdraget är öppet för alla"
-    :closed "Uppdraget är privat och man kan anmäla sig endast via en privat länk som fås av arrangören. Uppdraget syns inte i sökresultatet."
-    :organiser-will-participate "Jag deltar också själv i uppdraget."
-
-    :button
-    {:add-organisation "Vill du lägga till information om din sammanslutning eller organisation i uppdraget?"
-     :reveal-end-time "Lisää päättymisaika"
-     :preview "Förhandsgranska och publicera"
-     :submit "Publicera"
-     :cancel "Avbryt"
-     :remove "Ta bort uppdraget"}
-
-    :remove
-    {:title "Är du säker på att du vill ta bort uppdraget? Om uppdraget redan är offentligt, får de volontärer som har anmält sig till det automatiskt ett meddelande om att uppdraget har ställts in."
-     :confirm "Ta bort uppdraget"
-     :cancel "Avbryt"}
-
-    :cancel
-    {:confirmation "Oletko varma, että haluat poistaa tehtävän? Jos vapaaehtoistehtävä on jo julkinen, siihen ilmoittautuneet vapaaehtoiset saavat automaattisesti viestin peruutuksesta."}
-    :party
-    {:title "Anmälda till ditt uppdrag"
-     :mail-participants "Sänd e-post till deltagarna"
-     :confirm-remove "Ta bort anmälan?"
-     :cancel-remove "Avbryt"
-     :empty "Kerro muillekin tehtävästäsi!"}
-    }
-
-   :browse
-   {:title "Hiiop! Hitta ett frivilliguppdrag som passar dig"
-    :not-found "Vi hittade inte just nu uppdrag som motsvarar din sökning. Du kan bredda sökkriterierna eller lägga till ett frivilliguppdrag."
-
-    :filter
-    {:category "Hur vill du hjälpa?"
-     :where "Var"
-     :when "När"}}
-
-   :part
-   {:title "Ta tillbaka anmälan"
-    :text "Är du säker på att du vill ta tillbaka din anmälan till uppdraget %1?"
-    :confirm "Ta tillbaka anmälan"
-    :success "Anmälan togs tillbaka"
-    :to-quest "Tillbaka till uppdraget"}
-
-
-   :preview
-   {:title "Förhandsgranska uppdraget"
-    :check "Kontrollera uppgifterna om ditt uppdrag och att du har rätt att använda den bild som du har lagt till."
-    :buttons {:edit "Ändra"
-              :publish "Publicera uppdraget"}
-    }
-   }
-
-  :ideas
-  {:title "Erfarenheter av frivilligarbete"}
-  }
-
- :category
- {:kids-and-youngsters "Barn och unga"
-  :elderly "Seniorer"
-  :disabilities "Handikapparbete och psykisk hälsovård "
-  :peer-support "Kamratstöd och rådgivning"
-  :inequality "Utslagning och fattigdom"
-  :foreign-aid "U-hjälp och katastrofhjälp"
-  :culture "Kultur och konst"
-  :equality "Kulturell mångfald och jämställdhet"
-  :well-being "Motion och hälsa"
-  :environment "Djur och miljö"
-  }
-
  :actions
  {
-  :quest
-  {:create  "Lägg till frivilliguppdrag"
-   :browse  "Hitta uppdrag"
-   :edit    "Ändra uppdrag"
-   :signup  "Ilmoittaudu mukaan"
-   :cancel  "Avbryt"}
-
-  :user
-  {:login    "Logga in"
-   :register "Rekisteröidy"
-   :logout   "Logga ut"
-   :save-password "Spara lösenordet"}
-
   :cancel "Avbryt"
-
-  :share "Berätta för en kompis:"
-
   :profile
-  {:sign-out "Kirjaudu ulos"
+  {
+   :cancel-editing "Avbryt"
    :edit "Ändra"
-   :save-profile "Tallenna"
-   :cancel-editing "Avbryt"}
+   :save-profile "Spara"
+   :sign-out "Logga ut"
   }
-
- ;;
-
- :pikaday
- {:previous-month "Edellinen"
-  :next-month     "Seuraava"
-  :months         ["Januari"
-                   "Februari"
-                   "Mars"
-                   "April"
-                   "Maj"
-                   "Juni"
-                   "Juli"
-                   "Augusti"
-                   "September"
-                   "Oktober"
-                   "November"
-                   "December"],
-  :weekdays       ["sunnuntai"
-                   "maanantai"
-                   "tiistai"
-                   "keskiviikko"
-                   "torstai"
-                   "perjantai"
-                   "lauantai"],
-  :weekdays-short ["su" "ma" "ti" "ke" "to" "pe" "la"]
-  :first-day      1
+  :quest
+  {
+   :browse "Hitta uppdrag"
+   :cancel "Avbryt"
+   :create "Lägg till frivilliguppdrag"
+   :edit "Ändra uppdrag"
+   :signup "Anmäl dig"
   }
-
- :dropzone
- {:dict-default-message            "Lägg till bild"
-  :dict-fallback-message           "Selaimesi ei ole tuettu"
-  :dict-invalid-file-type          "Kuvatyyppi ei ole tuettu"
-  :dict-file-too-big               "Kuva on liian iso"
-  :dict-response-error             "Kuvan lisäys ei onnistunut"
-  :dict-cancel-upload              "Avbryt kuvan lisäys"
-  :dict-cancel-upload-confirmation "Haluatko varmasti peruuttaa lisäyksen?"
-  :dict-remove-file                "Poista kuva"
-  :dict-max-files-exceeded         "Et voi lisätä enempää kuvia"
-  }
-
- :email
- {:quest
-  {:time "Aika"
-   :place "Paikka"}}
-
- :errors
- {
-  :general "Hupsis! Jotain hassua sattui."
-  :non-empty-string "Tyhjä arvo ei käy"
-  :hashtag "Hashtag alkaa risuaidalla, eikä voi sisältää viivoja."
-  :date-needs-to-be-before "Ajan pitää olla ennen %1"
-
-  :picture
-  {:type-not-supported "Kuvatyyppi %1 ei ole tuettu"}
-
+  :share "Hiiop! Dela sidan"
   :user
-  {:register
-   {:fail "Rekisteröinti epäonnistui."
-    :success "Rekisteröinti onnistui!"}
-
-   :token
-   {:invalid "Rekisteröintiavain ei ole enää voimassa."
-    :contact "Jos et saanut luotua tunnusta, ota yhteyttä hiiop@op.fi."}
-   }
-
-  :password
-  {:not-valid "Lösenordet måste innehålla en stor bokstav, en siffra och totalt minst sex tecken."
-   :not-same  "Lösenorden stämmer inte"}
-
-  :email
-  {:not-valid "E-post, t.ex. emil@exempel.fi"
-   :in-use    "Sähköposti on jo käytössä"}
-
-  :phone
-  {:not-valid "Puhelinnumero ei ole muotoa +358 40 1234567"}
-
-  :paticipate-days
-  {:not-valid "Voi olla numero nollasta ylöspäin"}
-
-  :date
-  {:needs-to-be-before "Tulee olla aiemmin, kuin %1"
-   :needs-to-be-after "Tulee olla myöhemmin, kuin %1"}
-
-  :number
-  {:greater-than-one "Tulee olla 1 suurempi"
-   :greater-than-zero "Tulee olla 0 suurempi"}
-
-  :agreement
-  {:please-agree "Please agree to the terms and conditions"}
-
-  :unauthorized
-  {:title "Muokkaaminen epäonnistui."
-   :content "Hups, muokkaaminen epäonnistui. Tapahtuma ei ole sinun."
-   }
-
-  :token
-  {:expired "Linkki vanhentunut!"}
-
-  :login
-  {:check "Tarkista sähköposti ja salasana"}
+  {
+   :login "Logga in"
+   :logout "Logga ut"
+   :register "Registrera dig"
+   :save-password "Spara lösenordet"
   }
  }
+ :category
+ {
+  :culture "Kultur och konst"
+  :disabilities "Handikapparbete och psykisk hälsovård "
+  :elderly "Seniorer"
+  :environment "Djur och miljö"
+  :equality "Kulturell mångfald och jämställdhet"
+  :foreign-aid "U-hjälp och katastrofhjälp"
+  :inequality "Utslagning och fattigdom"
+  :kids-and-youngsters "Barn och unga"
+  :peer-support "Kamratstöd och rådgivning"
+  :well-being "Motion och hälsa"
+ }
+ :dropzone
+ {
+  :dict-cancel-upload "Ångra tillägg av bild"
+  :dict-cancel-upload-confirmation "Vill du säkert ångra tillägget?"
+  :dict-default-message "Lägg till bild"
+  :dict-fallback-message "Din webbläsare stöds inte"
+  :dict-file-too-big "Bilden är för stor"
+  :dict-invalid-file-type "Bildtypen stöds inte"
+  :dict-max-files-exceeded "Du kan inte lägga till fler bilder"
+  :dict-remove-file "Ta bort bild"
+  :dict-response-error "Hoppsan! Bilden kunde inte läggas till."
+ }
+ :email
+ {
+  :quest
+  {
+   :place "Ort"
+   :time "Tid"
+  }
+ }
+ :errors
+ {
+  :agreement
+  {
+   :please-agree "Godkänn användarvillkoren"
+  }
+  :date
+  {
+   :needs-to-be-after "Måste vara senare än %1"
+   :needs-to-be-before "Måste vara tidigare än %1"
+  }
+  :date-needs-to-be-before "Tiden måste vara före %1"
+  :email
+  {
+   :in-use "E-posten är redan i bruk"
+   :not-valid "E-post, t.ex. emil@exempel.fi"
+  }
+  :general "Hoppsan! Något lustigt hände. "
+  :hashtag "En hashtag börjar med fyrkant och kan inte innehåll streck."
+  :login
+  {
+   :check "Kontrollera e-posten och lösenordet"
+  }
+  :non-empty-string "Kan inte lämnas tomt"
+  :number
+  {
+   :greater-than-one "Måste vara större än 1"
+   :greater-than-zero "Måste vara större än 0"
+  }
+  :password
+  {
+   :not-same "Lösenorden stämmer inte."
+   :not-valid "Lösenordet måste innehålla en stor bokstav, en siffra och totalt minst sex tecken."
+  }
+  :paticipate-days
+  {
+   :not-valid "Kan vara en siffra från noll uppåt"
+  }
+  :phone
+  {
+   :not-valid "Kontrollera telefonnumret"
+  }
+  :picture
+  {
+   :type-not-supported "Bildtypen %1 stöds inte"
+  }
+  :token
+  {
+   :expired "Länken har föråldrats!"
+  }
+  :unauthorized
+  {
+   :content "Hoppsan! Redigeringen misslyckades."
+   :title "Redigeringen misslyckades."
+  }
+  :user
+  {
+   :register
+   {
+    :fail "Registreringen misslyckades."
+    :success "Registreringen lyckades!"
+   }
+   :token
+   {
+    :contact "Om du inte kunde skapa en kod, kontakta hiiop@op.fi."
+    :invalid "Registreringsnyckeln är inte längre i kraft."
+   }
+  }
+ }
+ :footer
+ {
+  :contact "Kontakta oss"
+  :contact-page-key "Kontakta oss"
+  :copyright "© OP Gruppen"
+  :faq "Vanliga frågor"
+  :faq-page-key "Info"
+  :follow-us "Hiiop! Följ oss"
+  :privacy "Behandling av personuppgifter"
+  :privacy-page-key "Behandling av personuppgifter"
+  :rules-and-guidelines "Info"
+  :terms-of-service "Användarvillkor"
+  :terms-of-service-page-key "Användarvillkor"
+ }
+ :header
+ {
+  :title "Hiiop"
+ }
+ :missing ":fi text saknas"
+ :name "Hiiop"
+ :pages
+ {
+  :activate
+  {
+   :confirm-password "Lösenordet på nytt"
+   :done
+   {
+    :text "Du kan nu logga in."
+    :title "Användaren har skapats!"
+   }
+   :password "Lösenord"
+   :title "Skapa lösenord"
+  }
+  :edit-profile
+  {
+   :name "Namn"
+   :phone "Telefonnummer (inte obligatoriskt)"
+  }
+  :ideas
+  {
+   :title "Erfarenheter av frivilligarbete"
+  }
+  :index
+  {
+   :banner
+   {
+    :content "Hiiop är en träffpunkt för frivilligarbete. Här hittar du lätt de sätt och platser för frivilligarbete som passar just dig. Ge också du en dag av ditt år som gåva till självständighetens jubileumsår och Finland. "
+    :header "Årets viktigaste dag är dagen som frivillig"
+   }
+   :category-selector
+   {
+    :search "Visa uppdrag"
+    :subtitle "Välj tema och delta i frivilligarbete"
+    :title "Delta i frivilligarbete"
+   }
+   :counter
+   {
+    :days "%1 d"
+    :hundred-years "100 år"
+    :months "%1 mån."
+    :subtitle "Kom med! Frivilligarbete för att hedra det hundraåriga Finland har sammanlagt redan utförts:"
+    :title "Kom med! Frivilligarbete för att hedra det hundraåriga Finland har sammanlagt redan utförts:"
+    :years "%1 år"
+   }
+   :index-links
+   {
+    :browse-quests "Hitta uppdrag"
+    :browse-quests-text "Bli volontär och finn ditt sätt att hjälpa"
+    :create-quest "Lägg till uppdrag"
+    :create-quest-text "Arrangera frivilligarbete och bjud in vänner"
+    :read-stories "Läs berättelser"
+    :read-stories-text "Läs om erfarenheter av frivilligarbete."
+   }
+   :social-feed
+   {
+    :title "Dela dina erfarenheter och bjud in vänner #hiiop"
+   }
+   :title "Ingångssida"
+  }
+  :login
+  {
+   :email "E-postadress"
+   :forget-password "Jag har glömt mitt lösenord"
+   :login-subtitle "Som inloggad användare kan du lägga till och ändra uppdrag samt administrera deltagare i uppdrag. Du ser också alla frivilliguppdrag som du har deltagit i via Hiiop100.fi."
+   :password "Lösenord"
+   :register "Skapa kod"
+   :remember-me "Kom ihåg mig"
+   :title "Logga in i tjänsten"
+  }
+  :moderate
+  {
+   :cancel "Avbryt"
+   :moderate-quest "Godkänn"
+   :reject-quest "Avvisa"
+   :reject-quest-message-title "Meddelande då uppdrag avvisas"
+   :title "Godkänn uppdrag"
+   :unmoderated-quests "Dina obehandlade uppdrag"
+  }
+  :password-reset
+  {
+   :check-email
+   {
+    :text "Hiiop! Vi har sänt dig en länk som du kan använda för att byta lösenord."
+    :title "Kontrollera din e-post"
+   }
+   :done
+   {
+    :text "Du kan nu logga in"
+    :title "Ditt lösenord har bytts!"
+   }
+   :expired
+   {
+    :text "Beställ nytt lösenord här"
+   }
+   :send "Sänd länk"
+   :text "Ingen fara! Skriv din e-postadress här. Vi sänder dig en länk som du kan använda för att byta lösenord."
+   :title "Har du glömt ditt lösenord?"
+  }
+  :profile
+  {
+   :cancel "Avbryt"
+   :cancel-enrollment "Ta tillbaka anmälan"
+   :delete "Ta bort uppdraget"
+   :do-you-want-to-cancel-enrollment "Är du säker på att du vill ta tillbaka dina anmälan till uppdraget?"
+   :do-you-want-to-delete "Är du säker på att du vill ta bort uppdraget?"
+   :moderation "Moderering"
+   :my-event "Mitt uppdrag"
+   :no-upcoming-quests "Du har inte ännu kommande uppdrag"
+   :past-quests "Dina tidigare frivilliguppdrag"
+   :pending-approval "Väntar på godkännande"
+   :published "Publicerats"
+   :rejected "Avvisats"
+   :title "Användare"
+   :upcoming-quests "Dina kommande frivilliguppdrag"
+  }
+  :quest
+  {
+   :browse
+   {
+    :filter
+    {
+     :category "Hur vill du hjälpa?"
+     :when "När"
+     :where "Var?"
+    }
+    :not-found "Inga uppdrag hittades med just de här sökkriterierna. Bredda sökkriterierna, så är du snart en volontär."
+    :title "Hiiop! Hitta ett frivilliguppdrag som passar dig"
+   }
+   :created
+   {
+    :private "Grattis! Du har upprättat ett privat frivilliguppdrag. Du kan nu se på ditt uppdrag på din profilsida. Alla frivilliguppdrag kontrolleras. Det här tar ungefär 1–2 dagar. Du kan bjuda in deltagare till ett privat frivilliguppdrag endast genom att sända dem en länk som du får till din e-post när uppdraget har offentliggjorts."
+    :public "Grattis! Du har upprättat ett offentligt frivilliguppdrag. Du kan nu se på ditt frivilliguppdrag på din profilsida. Alla frivilliguppdrag kontrolleras och efter det ser du ditt uppdrag också i listan över alla frivilliguppdrag. Det här tar ungefär 1–2 dagar."
+    :title "Ditt uppdrag har upprättats"
+   }
+   :edit
+   {
+    :address "Adress"
+    :button
+    {
+     :add-organisation "Vill du lägga till information om din sammanslutning eller organisation i uppdraget?"
+     :cancel "Avbryt"
+     :preview "Förhandsgranska och publicera"
+     :remove "Ta bort uppdraget"
+     :reveal-end-time "Lägg till sluttid"
+     :submit "Publicera"
+    }
+    :cancel
+    {
+     :confirmation "Är du säker på att du vill ta bort uppdraget? Om uppdraget redan är offentligt, får de volontärer som har anmält sig till det automatiskt ett meddelande om att uppdraget har ställts in."
+    }
+    :closed "Uppdraget är privat och man kan anmäla sig endast via en privat länk som fås av arrangören."
+    :description "Beskriv uppdragets innehåll"
+    :end-date "Lägg till slutdatum"
+    :end-date-and-time "Slutdatum och klockslag"
+    :end-time "Klockslag"
+    :hashtags "Hashtaggar"
+    :location
+    {
+     :label "Adress (välj adress i rullgardinsmenyn)"
+     :placeholder "Ange plats"
+    }
+    :max-participants
+    {
+     :amount-of-people "personer "
+     :can-join "Antal som kan delta i frivilliguppdraget"
+    }
+    :name "Frivilliguppdragets namn"
+    :open "Uppdraget är öppet för alla"
+    :organisation
+    {
+     :description "Berätta om er verksamhet"
+     :name "Arrangerande sammanslutning eller organisation"
+    }
+    :organiser-will-participate "Ja, jag deltar också själv i uppdraget som en frivilligt"
+    :party
+    {
+     :cancel-remove "Avbryt"
+     :confirm-remove "Ta bort anmälan?"
+     :empty "Dela dina erfarenheter och bjud in vänner #hiiop"
+     :mail-participants "Sänd e-post till deltagarna"
+     :title "Anmälda till ditt uppdrag"
+    }
+    :picture
+    {
+     :info "Du har väl rätt att använda din bild? Då du använder en bild måste du alltid ha fotografens namn, som du kan lägga till i slutet av beskrivningen av uppdraget. Bilden måste vara minst 1100 pixlar bred och 500 pixlar hög samt mindre än 3 mega."
+     :remove "Vill du säkert ta bort bilden?"
+     :title "Lägg till bild"
+     :upload-failed "Det gick inte att lägga till bilden."
+    }
+    :remove
+    {
+     :cancel "Avbryt"
+     :confirm "Ta bort uppdraget"
+     :title "Är du säker på att du vill ta bort uppdraget? Om uppdraget redan är offentligt får de volontärer som har anmält sig till det automatiskt ett meddelande om att uppdraget har ställts in."
+    }
+    :start-date "Datum"
+    :start-date-and-time "Datum och klockslag"
+    :start-time "Klockslag"
+    :subtitles
+    {
+     :content "1/4 Frivilliguppdragets innehåll"
+     :info
+     {
+      :content "Berätta vad du vill åstadkomma med gemensamma krafter. Var inspirerande! Vad kommer att hända under dagen? Hur kan volontärerna delta och hjälpa? Hurdana resurser och talanger behöver du?"
+      :participation "Berätta hur många som kan delta i verksamheten."
+      :related-to "Välj ett eller flera teman som bäst beskriver ditt frivilliguppdrag."
+     }
+     :participation "4/4 Deltagande"
+     :related-to "3/4 Till vad ansluter sig frivilliguppdraget?"
+     :time-place "2/4 Var och när ordnas frivilligverksamheten?"
+    }
+    :title "Lägg till frivilliguppdrag"
+    :town "Ort"
+   }
+   :edited
+   {
+    :content "Dina ändringar blir synliga inom 1–2 dagar."
+    :title "Ditt uppdrag har ändrats"
+   }
+   :list
+   {
+    :filter
+    {
+     :category "Hur vill du hjälpa?"
+     :clear "Töm"
+     :when "När?"
+     :where "Var?"
+    }
+    :not-found "Inga uppdrag hittades med just de här sökkriterierna. Bredda sökkriterierna, så är du snart en volontär."
+    :title "Hitta frivilliguppdrag åt dig"
+   }
+   :part
+   {
+    :confirm "Ta tillbaka anmälan"
+    :success "Anmälan togs tillbaka!"
+    :text "Är du säker på att du vill ta tillbaka din anmälan till uppdraget?"
+    :title "Ta tillbaka anmälan"
+    :to-quest "Tillbaka till uppdraget"
+   }
+   :preview
+   {
+    :buttons
+    {
+     :edit "Ändra"
+     :publish "Publicera uppdraget"
+    }
+    :check "Kontrollera uppgifterna om ditt uppdrag och att du har rätt att använda den bild som du har lagt till."
+    :title "Förhandsgranska uppdraget"
+   }
+   :title "Hitta uppdrag"
+   :view
+   {
+    :join
+    {
+     :fail "Hoppsan! Din anmälan misslyckades. Kontrollera din e-postadress eller om du redan tidigare har anmält dig till uppdraget."
+     :success "Fint att du deltar – tack för din anmälan! Du kommer att få mer information om uppdraget till din e-post."
+     :to-front-page "Stäng"
+    }
+    :participants "lediga platser"
+    :signup
+    {
+     :agree-to-terms-and-conditions "Jag har läst villkoren för tjänsten och godkänner dem. Anmälan är bindande. Vid förhinder kan du ta tillbaka din anmälan."
+     :days "Hur många dagar vill du delta?"
+     :email "E-post"
+     :name "Namn"
+     :phone "Telefonnummer"
+     :subtitle "Välkommen som volontär!"
+    }
+   }
+  }
+  :register
+  {
+   :check-your-email "Hiiop! Kontrollera din e-post"
+   :email "E-postadress"
+   :email-sent "Vi har sänt e-post till dig. I meddelandet finns en länk till tjänsten där du kan skapa ditt lösenord och logga in. Det här kan tar ett par minuter."
+   :name "Namn"
+   :phone "Telefonnummer"
+   :register-subtitle "Som inloggad användare kan du lägga till och ändra uppdrag samt administrera deltagare i uppdrag. Du ser också alla frivilliguppdrag som du har deltagit i via Hiiop100.fi."
+   :title "Hiiop! Välkommen – skapa kod"
+  }
+  :static
+  {
+   :stories-index-header "Berättelser om frivilligarbete"
+   :stories-index-subtitle "Idéer och inspiration, volontärer och berättelser om frivilligarbete."
+   :stories-title "Volontärer berättar"
+  }
+ }
+ :pikaday
+ {
+  :first-day "1"
+  :months ["I januari" "I februari" "I mars" "I april" "I maj" "I juni" "I juli" "I augusti" "I september" "I oktober" "I november" "I december"]
+  :next-month "Följande"
+  :previous-month "Föregående"
+  :weekdays ["söndag" "måndag" "tisdag" "onsdag" "torsdag" "fredag" "lördag"]
+  :weekdays-short ["sön." "mån." "tis." "ons." "tor." "fre." "lör."]
+ }
+ :title "Hiiop – %1"
+}
