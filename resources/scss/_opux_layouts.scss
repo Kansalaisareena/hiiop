@@ -260,6 +260,10 @@
     padding: .7rem;
     text-align: left;
     width: 100%;
+
+    @include modifier('blog') {
+        min-height: 4.7rem;
+    }
   }
 
   // opux-card__image-container
