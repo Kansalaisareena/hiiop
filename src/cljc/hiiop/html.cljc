@@ -60,23 +60,22 @@
         more-content (if content
                        (into [] content)
                        [])
-        content-vector (into [] (concat more-content also-content))
-        default-content [:label
-                         {:class
-                          (class-label-with-required
-                            required
-                            (if (and error (rum/react error))
-                              (class-label-with-error error class)
-                              class))
-                          :for for}
-                         text]]
+        content-vector (into [] (concat more-content also-content))]
     (when error
       (add-watch
         error
        ::label-error
        (fn [key _ _ new]
          (reset! local-error new))))
-    (into default-content content-vector)))
+    (into [:label
+           {:class
+            (class-label-with-required
+             required
+             (if (and error (rum/react local-error))
+               (class-label-with-error error class)
+               class))
+            :for for}
+           text] content-vector)))
 
 (defn value-from-event [e & with-transform]
   (let [transform (or (first with-transform) identity)]
@@ -314,13 +313,24 @@
        [:span {:class "error"} (rum/react error)])]))
 
 
-(rum/defc location-selector < address/autocomplete-mixin
-  [{:keys [location class placeholder]}]
-  [:input
-   {:type "text"
-    :class (str "autocomplete " class)
-    :placeholder placeholder
-    :default-value (mangling/readable-address @location)}])
+(rum/defcs location-selector < address/autocomplete-mixin
+                             < rum/reactive
+                             < (rum/local nil ::error)
+  [state {:keys [location class placeholder error schema show-error]}]
+  (let [local-error (::error state)]
+    (when show-error
+      (add-watch
+       error :location-error
+       (fn [_ _ _ new]
+         (reset! local-error new))))
+
+    [:input
+     {:type "text"
+      :class (str "autocomplete " class
+                  (when @local-error
+                    " opux-input--error"))
+      :placeholder placeholder
+      :default-value (mangling/readable-address @location)}]))
 
 (defn multi-choice [tr choice-text-fn selected choice]
   (let [id (str "multi-choice-" (name choice))
