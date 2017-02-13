@@ -173,9 +173,13 @@
   margin: 0.5rem;
   padding: 0 2rem;
 
+  &:hover {
+    color: $OP-orange;
+  }
+
   @include state('active') {
-    background: $OP-orange;
-    color: $OP-white;
+    border: 1px solid $OP-orange;
+    color: $OP-orange;
   }
 }
 
