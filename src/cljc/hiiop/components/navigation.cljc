@@ -68,14 +68,6 @@
   [:ul
    {:class "opux-menu opux-menu--main"}
    [:li
-    {:class "opux-menu__item opux-menu__item--main"}
-    [:a
-     {:class "opux-menu__item-link opux-menu__item-link--main"
-      :href (str hiiop-blog-base-url "/"
-                 (name current-locale)
-                 "/blog/index.html")}
-     (tr [:pages.ideas.title])]]
-   [:li
     {:class "opux-menu__item opux-menu__item--main-quest opux-menu__item--main--browse-quest"}
     [:a
      {:class (str "opux-menu__item-link opux-menu__item-link--main"
@@ -92,7 +84,16 @@
       :href (str site-base-url
                  (path-for hierarchy :create-quest)
                  lang-param)}
-     (tr [:actions.quest.create])]]])
+     (tr [:actions.quest.create])]]
+   [:li
+    {:class "opux-menu__item opux-menu__item--main"}
+    [:a
+     {:class "opux-menu__item-link opux-menu__item-link--main"
+      :href (str hiiop-blog-base-url "/"
+                 (name current-locale)
+                 "/blog/index.html")}
+     (tr [:pages.ideas.title])]]
+   ])
 
 (rum/defcs top-navigation < (rum/local false ::is-active)
   [state {:keys [hierarchy tr current-locale identity is-static-page path-key hiiop-blog-base-url]}]
