@@ -14,6 +14,8 @@
             [hiiop.components.core :as c]
             [hiiop.mangling :as mangling]
             [hiiop.html :as html]
+            #?(:clj [hiiop.config :refer [env]]
+               :cljs [hiiop.client-config :refer [env]])
             #?(:cljs [hiiop.client-api :as api])))
 
 (rum/defc signup-form < rum/reactive
@@ -94,6 +96,12 @@
         :required true
         :for (name :pages.quest.view.signup.agreement)
         :error (get-in cursors-and-schema [:agreement :error])})
+      [:a {:href (str (:hiiop-blog-base-url context) "/" (name (or (:current-locale context) :fi)) "/pages/"
+                      (tr [:footer.terms-of-service-page-key])
+                ".html")
+           }
+       (tr [:footer.terms-of-service])
+       ]
       ]]
     ))
 

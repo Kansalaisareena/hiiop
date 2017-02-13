@@ -131,16 +131,16 @@
  :footer
  {
   :contact "Ota yhteyttä"
-  :contact-page-key "Ota yhteyttä"
+  :contact-page-key "otayhteytta"
   :copyright "© OP Ryhmä"
   :faq "Usein kysyttyjä kysymyksiä"
-  :faq-page-key "Info"
+  :faq-page-key "faq"
   :follow-us "Hiiop! Seuraa meitä"
   :privacy "Henkilötietojen käsittely"
-  :privacy-page-key "Henkilötietojen käsittely"
+  :privacy-page-key "tietosuoja"
   :rules-and-guidelines "Info"
   :terms-of-service "Käyttöehdot"
-  :terms-of-service-page-key "Kayttöehdot"
+  :terms-of-service-page-key "kayttoehdot"
  }
  :header
  {
