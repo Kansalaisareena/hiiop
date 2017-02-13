@@ -66,27 +66,30 @@
                        :clj nil)
            place-changed
            (fn []
-             (let [js-place (.getPlace instance)
-                   cljs-place (js->clj js-place :keywordize-keys true)
-                   details (get-location-details cljs-place)]
-               (set-location-to! details)))
+             #?(:cljs
+                (let [js-place (.getPlace instance)
+                      cljs-place (js->clj js-place :keywordize-keys true)
+                      details (get-location-details cljs-place)]
+                  (set-location-to! details))))
            on-change
            (fn [e]
-             (when (= "" (.-value (.-target e)))
-               (set-location-to! nil)))
+             #?(:cljs             
+                (when (= "" (.-value (.-target e)))
+                  (set-location-to! nil))))
            on-blur
            (fn [e]
-             (js/setTimeout
-              (fn []
-                (let [js-place (.getPlace instance)
-                      cljs-place (js->clj js-place :keywordize-keys true)]
-                  (if (not-empty @location)
-                    (do
-                      (reset! error nil)
-                      (set! (.-value (.-target e))
-                            (readable-address @location)))
+             #?(:cljs             
+                (js/setTimeout
+                 (fn []
+                   (let [js-place (.getPlace instance)
+                         cljs-place (js->clj js-place :keywordize-keys true)]
+                     (if (not-empty @location)
+                       (do
+                         (reset! error nil)
+                         (set! (.-value (.-target e))
+                               (readable-address @location)))
                        (reset! error {:location "choose a location"}))))
-              100))]
+                 100)))]
        #?(:cljs (.addListener instance "place_changed" place-changed))
        #?(:cljs (.addEventListener dom-element "change" on-change))
        #?(:cljs (.addEventListener dom-element "blur" on-blur))
