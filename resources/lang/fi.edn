@@ -1,413 +1,448 @@
 {
- :missing ":fi teksti puuttuu"
- :name "Hiiop"
- :title "Hiiop – %1"
-
- :header
- {:title "Hiiop"}
-
- :footer
- {:rules-and-guidelines "Käyttöehdot"
-  :faq "Info"
-  :faq-page-key "faq"
-  :contact "Ota yhteyttä"
-  :contact-page-key "otayhteytta"
-  :terms-of-service "Käyttöehdot"
-  :terms-of-service-page-key "kayttoehdot"
-  :privacy "Henkilötietojen käsittely"
-  :privacy-page-key "tietosuoja"
-  :follow-us "Hiiop! Seuraa meitä"
-  :copyright "© OP Ryhmä"}
-
- :pages
- {
-  :moderate
-  {:title "Tehtävän hyväksyntä"
-   :unmoderated-quests "Käsittelemättömät tehtävät"
-   :reject-quest "Hylkää"
-   :reject-quest-message-title "Viesti hylättessä"
-   :cancel "Peruuta"
-   :moderate-quest "Hyväksy"
-   }
-
-  :password-reset
-  {:title "Unohditko salasanasi?"
-   :send "Lähetä linkki"
-   :text "Ei hätää! Kirjoita alle sähköpostiosoitteesi. Lähetämme sinulle linkin, jota klikkaamalla pääset muuttamaan salasanasi."
-
-   :check-email
-   {:title "Tarkista sähköpostisi"
-    :text "Lähetimme sinulle linkin, jota klikkaamalla pääset muuttamaan salasanasi."}
-
-   :done
-   {:title "Salanasi on vaihdettu!"
-    :text "Voit nyt kirjautua"}
-
-   :expired
-   {:text "Tilaa täältä uusi."
-    }
-   }
-
-  :index
-  {:title "Etusivu"
-   :banner
-   {:header "Vuoden tärkein päivä on päivä vapaaehtoisena"
-    :content "Hiiop on vapaaehtoistyön kohtaamispaikka. Täältä löydät sopivan tavan ja paikan tehdä vapaaehtoistyötä. Anna sinäkin itsenäisyyden juhlavuoden kunniaksi päivä vapaaehtoisena."}
-   
-   :counter
-   {:title "Tule mukaan! Vapaaehtoistyötä on tehty satavuotiaan Suomen kunniaksi yhteensä jo:"
-    :hundred-years "100 v"
-    :days "%1 p"
-    :months "%1 kk"
-    :years "%1 v"}
-
-   :category-selector
-   {:title "Valitse teema ja selaa vapaaehtoistehtäviä"
-    :search "Näytä tehtävät"}
-
-   :index-links
-   {:browse-quests-text "Löydä oma tapasi auttaa"
-    :browse-quests "Löydä tehtävä"
-    :create-quest-text "Kutsu apukäsiä vapaaehtoistyöhön"
-    :create-quest "Ilmoita tehtävä"
-    :read-stories-text "Tekijöiden tarinoita vapaaehtoistyöstä"
-    :read-stories "Tekijöiden tarinoita"}
-
-   :social-feed
-   {:title "Jaa kokemuksesi ja kutsu ystäväsi mukaan #hiiop"}
-   }
-
-
-  :login
-  {:title "Kirjaudu palveluun"
-   :email "Sähköpostiosoite"
-   :password "Salasana"
-   :login-subtitle "Kirjautuneena käyttäjänä voit ilmoittaa ja muokata tapahtumia. Näet myös kaikki vapaaehtoistehtävät, joihin olet osallistunut Hiiop100.fi -sivuston kautta."
-   :forget-password "Olen unohtanut salasanani"
-   :register "Luo tunnus"
-   :remember-me "Muista minut"}
-
-  :register
-  {:title "Tervetuloa mukaan - luo tunnus"
-   :register-subtitle "Kirjautuneena käyttäjänä voit ilmoittaa ja muokata tapahtumia. Näet myös kaikki vapaaehtoistehtävät, joihin olet osallistunut Hiiop100.fi -sivuston kautta."
-   :name "Nimi"
-   :email "Sähköpostiosoite"
-   :phone "Puhelinnumero"
-   :check-your-email "Hiiop - tarkista sähköpostisi"
-   :email-sent "Lähetimme sinulle sähköpostia. Viestissä on linkki, jota klikkaamalla pääset luomaan salasanasi ja kirjautumaan palveluun. Tähän saattaa mennä pari minuuttia."}
-
-  :static
-  {:stories-title "Tarina"
-   :stories-index-header "Tekijöiden tarinoita vapaaehtoistyöstä"
-   :stories-index-subtitle "Ideoita ja inspiraatiota, tarinoita ja tekijöitä vapaaehtoistyön arjesta."}
-
-  :profile
-  {:title "Käyttäjä"
-   :past-quests "Menneet vapaaehtoistehtäväsi"
-   :upcoming-quests "Tulevat vapaaehtoistehtäväsi"
-   :cancel "Peruuta"
-   :delete "Poista tapahtuma"
-   :moderation "Moderointi"
-   :do-you-want-to-delete "Oletko varma, että haluat poistaa tapahtuman?"
-   :no-upcoming-quests "Sinulla ei vielä ole tulevia tehtäviä"
-   :my-event "Oma tapahtuma"
-   :cancel-enrollment "Peru ilmoittautuminen"
-   :do-you-want-to-cancel-enrollment "Oletko varma, että haluat perua ilmoittautumisen tehtävään?"
-   :pending-approval "Odottaa hyväksymistä"
-   :rejected "Hylätty"
-   :published "Julkaistu"}
-
-  :edit-profile
-  {:phone "Puhelinnumero (ei pakollinen)"
-   :name "Nimi"}
-
-  :activate
-  {:title "Luo salasana"
-   :password "Salasana"
-   :confirm-password "Salasana uudestaan"
-   :done
-   {:title "Käyttäjä luotu!"
-    :text "Voit nyt kirjautua."}}
-
-  :quest
-  {:title "Löydä tehtävä"
-   :view
-   {:participants "vapaata paikkaa"
-    :signup
-    {:subtitle "Tervetuloa vapaaehtoiseksi!"
-     :name "Nimi"
-     :email "Sähköposti"
-     :phone "Puhelinnumero"
-     :days "Kuinka monena päivänä aiot osallistua"
-     :agree-to-terms-and-conditions "Olen lukenut palvelun ehdot ja hyväksyn ne. Ilmoittautuminen on sitova. Esteen sattuessa voit perua osallistumisen."}
-    :join
-    {:success "Loistavaa, että olet mukana - kiitos ilmottautumisestasi! Saat sähköpostiisi lisätietoa tapahtumasta."
-     :fail    "Hups, ilmottautumisesi epäonnistui. Tarkista sähköpostiosoitteesi tai oletko jo aiemmin ilmoittautunut tehtävään."
-     :to-front-page "Sulje"}
-    }
-
-   :created
-   {:title "Tehtäväsi on luotu"
-    :public
-     "Onneksi olkoon, olet luonut julkisen vapaaehtoistehtävän! Voit nyt tarkastella luomaasi vapaaehtoistehtävää omalla profiilisivullasi. Kaikki vapaaehtoistehtävät tarkastetaan ja tämän jälkeen löydät tehtäväsi myös kaikkien vapaaehtoistehtävien listauksesta. Tähän menee suunnilleen 1-2 päivää."
-    :private
-     "Onneksi olkoon, olet luonut yksityisen vapaaehtoistehtävän! Voit nyt tarkastella luomaasi tehtävää omalla profiilisivullasi. Kaikki vapaaehtoistehtävät tarkastetaan ja tämän jälkeen löydät tehtäväsi suljettuna myös kaikkien vapaaehtoistehtävien listauksesta.
-
-Tähän menee suunnilleen 1-2 päivää.Yksityiseen vapaaehtoistehtävään voit kutsua osallistujia ainoastaan lähettämällä heille linkin, jonka saat sähköpostiisi tapahtuman julkaisun jälkeen."
-    }
-
-   :edited
-   {:title "Tehtävääsi on muokattu"
-    :content "Tehtävä on edelleen julkinen. Tekemäsi muutokset tulevat näkyviin 1-2 päivän kuluessa."}
-
-   :list
-   {:title "Löydä itsellesi vapaaehtoistehtävä"
-    :not-found "Juuri näillä hakuehdoilla ei löytynyt tapahtumia. Koita valita useampia kiinnostuksen kohteita."
-
-    :filter
-    {:category "Miten haluat auttaa?"
-     :where "Missä?"
-     :when "Milloin?"
-     :clear "Tyhjennä"}}
-
-   :edit
-   {:title "Ilmoita vapaaehtoistehtävä"
-
-    :subtitles
-    {:content "1/4 Vapaaehtoistehtävän sisältö"
-     :time-place "2/4 Missä ja milloin vapaaehtoistoiminta järjestetään?"
-     :related-to "3/4 Mihin vapaaehtoistehtävä liittyy?"
-     :participation "4/4 Osallistuminen"
-
-     :info
-     {:content "Kerro, mitä haluat saada aikaan yhteisvoimin. Ole innostava! Mitä päivän aikana tapahtuu? Miten vapaaehtoiset voivat osallistua ja auttaa? Millaisia voimia ja kykyjä tarvitset mukaan?"
-      :related-to "Valitse yksi tai useampi aihealue, jotka kuvaavat parhaiten vapaaehtoistehtävääsi."
-      :participation "Kerro, kuinka moni voi osallistua toimintaan ja liittyykö osallistumiseen rajoituksia."
-     }
-    }
-
-    :name "Vapaaehtoistehtävän nimi"
-    :description "Kerro tehtävän sisällöstä"
-    :picture
-    {:title "Lisää kuva"
-     :info "Onhan sinulla oikeudet kuvasi käyttöön? Kuvan käyttöön tarvitset aina kuvaajan nimen, jonka  voit lisätä tapahtuman kuvauksen loppuun. Kuvan on oltava vähintään 1100 pikseliä leveä ja 500 korkea ja sen on oltava pienempi kuin 3 megaa."
-     :remove "Haluatko varmasti poistaa kuvan?"
-     :upload-failed "Kuvan lisääminen epäonnistui."
-     }
-
-    :hashtags "Aihetunnisteet eli hashtagit"
-
-    :organisation
-    {:name "Järjestävä yhteisö tai järjestö"
-     :description "Kerro yhteisösi toiminnasta"}
-    :start-date "Päivämäärä"
-    :end-date "Lisää päättymispäivämäärä"
-    :start-time "Kellonaika"
-    :end-time "Kellonaika"
-    :start-date-and-time "Päivämäärä ja kellonaika"
-    :end-date-and-time "Päättymispäivämäärä ja -kellonaika"
-
-    :location {:label "Osoite (valitse osoite alasvetovalikosta)"
-               :placeholder "Anna sijainti"}
-    :address "Osoite"
-    :town "Paikkakunta"
-
-    :max-participants
-    {:can-join "Vapaaehtoistehtävään voi osallistua"
-     :amount-of-people "henkilöä"}
-
-    :open "Tehtävä on avoin kaikille"
-    :closed "Tehtävä on yksityinen ja siihen voi osallistua ainoastaan järjestäjältä saadun yksityisen linkin kautta. Tehtävä ei näy hakutuloksessa."
-    :organiser-will-participate "Osallistun lisäksi itse tehtävään"
-
-    :button
-    {:add-organisation "Haluatko lisätä tehtävään tietoa yhteisöstäsi tai organisaatiostasi?"
-     :reveal-end-time "Lisää päättymisaika"
-     :preview "Esikatsele ja julkaise"
-     :submit "Julkaise"
-     :cancel "Peruuta"
-     :remove "Poista tehtävä"}
-
-    :remove
-    {:title "Oletko varma, että haluat poistaa tehtävän? Jos vapaaehtoistehtävä on jo julkinen, siihen ilmoittautuneet vapaaehtoiset saavat automaattisesti viestin peruutuksesta."
-     :confirm "Poista tehtävä"
-     :cancel "Peruuta"}
-
-    :cancel
-    {:confirmation "Oletko varma, että haluat poistaa tehtävän? Jos vapaaehtoistehtävä on jo julkinen, siihen ilmoittautuneet vapaaehtoiset saavat automaattisesti viestin peruutuksesta."}
-    :party
-    {:title "Tehtävääsi ilmoittautuneet"
-     :mail-participants "Lähetä sähköpostiviesti osallistujille"
-     :confirm-remove "Poista ilmoittautuminen?"
-     :cancel-remove "Peruuta"
-     :empty "Kerro muillekin tehtävästäsi!"}
-    }
-
-   :browse
-   {:title "Hiiop! Löydä sopiva vapaaehtoistehtävä"
-    :not-found "Emme juuri nyt löytäneet täysin hakuasi vastaavia tehtäviä. Voit laajentaa hakuehtoja tai ilmoittaa vapaaehtoistehtävän."
-
-    :filter
-    {:category "Miten haluat auttaa?"
-     :where "Missä?"
-     :when "Milloin?"}}
-
-   :part
-   {:title "Peru ilmoittautuminen"
-    :text "Oletko varma, että haluat perua ilmoittautumisen tehtävään %1?"
-    :confirm "Peru ilmoittautuminen"
-    :success "Peruminen onnistui!"
-    :to-quest "Takaisin tehtävään"}
-
-
-   :preview
-   {:title "Vapaaehtoistehtävän esikatselu"
-    :check "Tarkista kohteesi tiedot ja, että sinulla on oikeus käyttää lisäämääsi kuvaa."
-    :buttons {:edit "Muokkaa"
-              :publish "Julkaise tehtävä"}
-    }
-   }
-
-  :ideas
-  {:title "Kokemuksia vapaaehtoistyöstä"}
-  }
-
- :category
- {:kids-and-youngsters "Lapset ja nuoret"
-  :elderly "Ikäihmiset"
-  :disabilities "Vammais- ja mielenterveystyö"
-  :peer-support "Vertaistuki ja neuvonta"
-  :inequality "Syrjäytyminen ja köyhyys"
-  :foreign-aid "Kehitys- ja katastrofiapu"
-  :culture "Kulttuuri ja taide"
-  :equality "Monikulttuurisuus ja tasavertaisuus"
-  :well-being "Liikunta ja hyvinvointi"
-  :environment "Ympäristö ja eläimet"
-  }
-
  :actions
  {
-  :quest
-  {:create  "Ilmoita tehtävä"
-   :browse  "Löydä tehtävä"
-   :edit    "Muokkaa tehtävää"
-   :signup  "Ilmoittaudu mukaan"
-   :cancel  "Peruuta"}
-
-  :user
-  {:login    "Kirjaudu"
-   :register "Rekisteröidy"
-   :logout   "Kirjaudu ulos"
-   :save-password "Tallenna salasana"}
-
   :cancel "Peruuta"
-
-  :share "Kerro kavereille"
-
   :profile
-  {:sign-out "Kirjaudu ulos"
+  {
+   :cancel-editing "Peruuta"
    :edit "Muokkaa"
    :save-profile "Tallenna"
-   :cancel-editing "Peruuta"}
+   :sign-out "Kirjaudu ulos"
   }
-
- :pikaday
- {:previous-month "Edellinen"
-  :next-month     "Seuraava"
-  :months         ["Tammikuussa"
-                   "Helmikuussa"
-                   "Maaliskuussa"
-                   "Huhtikuussa"
-                   "Toukokuussa"
-                   "Kesäkuussa"
-                   "Heinäkuussa"
-                   "Elokuussa"
-                   "Syyskuussa"
-                   "Lokakuussa"
-                   "Marraskuussa"
-                   "Joulukuussa"],
-  :weekdays       ["sunnuntai"
-                   "maanantai"
-                   "tiistai"
-                   "keskiviikko"
-                   "torstai"
-                   "perjantai"
-                   "lauantai"],
-  :weekdays-short ["su" "ma" "ti" "ke" "to" "pe" "la"]
-  :first-day      1
+  :quest
+  {
+   :browse "Löydä tehtävä"
+   :cancel "Peruuta"
+   :create "Ilmoita tehtävä"
+   :edit "Muokkaa tehtävää"
+   :signup "Ilmoittaudu mukaan"
   }
-
- :dropzone
- {:dict-default-message            "Lisää kuva"
-  :dict-fallback-message           "Selaimesi ei ole tuettu"
-  :dict-invalid-file-type          "Kuvatyyppi ei ole tuettu"
-  :dict-file-too-big               "Kuva on liian iso"
-  :dict-response-error             "Kuvan lisäys ei onnistunut"
-  :dict-cancel-upload              "Peruuta kuvan lisäys"
-  :dict-cancel-upload-confirmation "Haluatko varmasti peruuttaa lisäyksen?"
-  :dict-remove-file                "Poista kuva"
-  :dict-max-files-exceeded         "Et voi lisätä enempää kuvia"
-  }
-
- :email
- {:quest
-  {:time "Aika"
-   :place "Paikka"}}
-
- :errors
- {
-  :general "Hupsis! Jotain hassua sattui."
-  :non-empty-string "Tyhjä arvo ei käy"
-  :hashtag "Hashtag alkaa risuaidalla, eikä voi sisältää viivoja."
-  :date-needs-to-be-before "Ajan pitää olla ennen %1"
-
-  :picture
-  {:type-not-supported "Kuvatyyppi %1 ei ole tuettu"}
-
+  :share "Hiiop! Jaa kaverille"
   :user
-  {:register
-   {:fail "Rekisteröinti epäonnistui."
-    :success "Rekisteröinti onnistui!"}
-
-   :token
-   {:invalid "Rekisteröintiavain ei ole enää voimassa."
-    :contact "Jos et saanut luotua tunnusta, ota yhteyttä hiiop@op.fi."}
-   }
-
-  :password
-  {:not-valid "Salasanan täytyy sisältää yksi iso kirjain, yksi numero ja yhteensä vähintään kuusi merkkiä."
-   :not-same  "Salanasanat eivät täsmää."}
-
-  :email
-  {:not-valid "Sähköposti, kuten erkki@esimerkki.fi"
-   :in-use    "Sähköposti on jo käytössä"}
-
-  :phone
-  {:not-valid "Puhelinnumero ei ole muotoa +358 40 1234567"}
-
-  :paticipate-days
-  {:not-valid "Voi olla numero nollasta ylöspäin"}
-
-  :date
-  {:needs-to-be-before "Tulee olla aiemmin, kuin %1"
-   :needs-to-be-after "Tulee olla myöhemmin, kuin %1"}
-
-  :number
-  {:greater-than-one "Tulee olla 1 suurempi"
-   :greater-than-zero "Tulee olla 0 suurempi"}
-
-  :agreement
-  {:please-agree "Please agree to the terms and conditions"}
-
-  :unauthorized
-  {:title "Muokkaaminen epäonnistui."
-   :content "Hups, muokkaaminen epäonnistui. Tapahtuma ei ole sinun."
-   }
-
-  :token
-  {:expired "Linkki vanhentunut!"}
-
-  :login
-  {:check "Tarkista sähköposti ja salasana"}
+  {
+   :login "Kirjaudu"
+   :logout "Kirjaudu ulos"
+   :register "Rekisteröidy"
+   :save-password "Tallenna salasana"
   }
  }
+ :category
+ {
+  :culture "Kulttuuri ja taide"
+  :disabilities "Vammais- ja mielenterveystyö"
+  :elderly "Ikäihmiset"
+  :environment "Ympäristö ja eläimet"
+  :equality "Monikulttuurisuus ja tasavertaisuus"
+  :foreign-aid "Kehitys- ja katastrofiapu"
+  :inequality "Syrjäytyminen ja köyhyys"
+  :kids-and-youngsters "Lapset ja nuoret"
+  :peer-support "Vertaistuki ja neuvonta"
+  :well-being "Liikunta ja hyvinvointi"
+ }
+ :dropzone
+ {
+  :dict-cancel-upload "Peruuta kuvan lisäys"
+  :dict-cancel-upload-confirmation "Haluatko varmasti peruuttaa lisäyksen?"
+  :dict-default-message "Lisää kuva"
+  :dict-fallback-message "Selaimesi ei ole tuettu"
+  :dict-file-too-big "Kuva on liian iso"
+  :dict-invalid-file-type "Kuvatyyppi ei ole tuettu"
+  :dict-max-files-exceeded "Et voi lisätä enempää kuvia"
+  :dict-remove-file "Poista kuva"
+  :dict-response-error "Hups! Kuvan lisäys ei onnistunut."
+ }
+ :email
+ {
+  :quest
+  {
+   :place "Paikka"
+   :time "Aika"
+  }
+ }
+ :errors
+ {
+  :agreement
+  {
+   :please-agree "Hyväksy käyttöehdot"
+  }
+  :date
+  {
+   :needs-to-be-after "Tulee olla myöhemmin kuin %1"
+   :needs-to-be-before "Tulee olla aiemmin kuin %1"
+  }
+  :date-needs-to-be-before "Ajan pitää olla ennen %1"
+  :email
+  {
+   :in-use "Sähköposti on jo käytössä"
+   :not-valid "Sähköposti kuten erkki@esimerkki.fi"
+  }
+  :general "Hups! Jotain hassua sattui. "
+  :hashtag "Hashtag alkaa risuaidalla, eikä voi sisältää viivoja."
+  :login
+  {
+   :check "Tarkista sähköposti ja salasana"
+  }
+  :non-empty-string "Tyhjä arvo ei käy"
+  :number
+  {
+   :greater-than-one "Tulee olla 1 suurempi"
+   :greater-than-zero "Tulee olla 0 suurempi"
+  }
+  :password
+  {
+   :not-same "Salasanat eivät täsmää."
+   :not-valid "Salasanan täytyy sisältää yksi iso kirjain, yksi numero ja yhteensä vähintään kuusi merkkiä."
+  }
+  :paticipate-days
+  {
+   :not-valid "Voi olla numero nollasta ylöspäin"
+  }
+  :phone
+  {
+   :not-valid "Tarkista puhelinnumero"
+  }
+  :picture
+  {
+   :type-not-supported "Kuvatyyppi %1 ei ole tuettu"
+  }
+  :token
+  {
+   :expired "Linkki vanhentunut!"
+  }
+  :unauthorized
+  {
+   :content "Hups! Muokkaaminen epäonnistui."
+   :title "Muokkaaminen epäonnistui."
+  }
+  :user
+  {
+   :register
+   {
+    :fail "Rekisteröinti epäonnistui."
+    :success "Rekisteröinti onnistui!"
+   }
+   :token
+   {
+    :contact "Jos et saanut luotua tunnusta, ota yhteyttä hiiop@op.fi."
+    :invalid "Rekisteröintiavain ei ole enää voimassa."
+   }
+  }
+ }
+ :footer
+ {
+  :contact "Ota yhteyttä"
+  :contact-page-key "Ota yhteyttä"
+  :copyright "© OP Ryhmä"
+  :faq "Usein kysyttyjä kysymyksiä"
+  :faq-page-key "Info"
+  :follow-us "Hiiop! Seuraa meitä"
+  :privacy "Henkilötietojen käsittely"
+  :privacy-page-key "Henkilötietojen käsittely"
+  :rules-and-guidelines "Info"
+  :terms-of-service "Käyttöehdot"
+  :terms-of-service-page-key "Kayttöehdot"
+ }
+ :header
+ {
+  :title "Hiiop"
+ }
+ :missing ":fi teksti puuttuu"
+ :name "Hiiop"
+ :pages
+ {
+  :activate
+  {
+   :confirm-password "Salasana uudestaan"
+   :done
+   {
+    :text "Voit nyt kirjautua."
+    :title "Käyttäjä luotu!"
+   }
+   :password "Salasana"
+   :title "Luo salasana"
+  }
+  :edit-profile
+  {
+   :name "Nimi"
+   :phone "Puhelinnumero (ei pakollinen)"
+  }
+  :ideas
+  {
+   :title "Kokemuksia vapaaehtoistyöstä"
+  }
+  :index
+  {
+   :banner
+   {
+    :content "Hiiop on vapaaehtoistyön kohtaamispaikka. Täältä löydät sopivan tavan ja paikan tehdä vapaaehtoistyötä. Anna sinäkin itsenäisyyden juhlavuoden kunniaksi päivä vapaaehtoisena. "
+    :header "Vuoden tärkein päivä on päivä vapaaehtoisena"
+   }
+   :category-selector
+   {
+    :search "Näytä tehtävät"
+    :subtitle "Valitse teema ja selaa vapaaehtoistehtäviä"
+    :title "Tule mukaan vapaaehtoistyöhön"
+   }
+   :counter
+   {
+    :days "%1 p"
+    :hundred-years "100 v"
+    :months "%1 kk"
+    :subtitle "Tule mukaan! Vapaaehtoistyötä on tehty satavuotiaan Suomen kunniaksi yhteensä jo:"
+    :title "Tule mukaan! Vapaaehtoistyötä on tehty satavuotiaan Suomen kunniaksi yhteensä jo:"
+    :years "%1 v"
+   }
+   :index-links
+   {
+    :browse-quests "Löydä tehtävä"
+    :browse-quests-text "Ryhdy vapaaehtoiseksi ja löydä oma tapasi auttaa"
+    :create-quest "Ilmoita tehtävä"
+    :create-quest-text "Järjestä vapaaehtoistehtävä ja kutsu kaverisi mukaan"
+    :read-stories "Lue tarinoita"
+    :read-stories-text "Tutustu kokemuksiin vapaaehtoistoiminnasta."
+   }
+   :social-feed
+   {
+    :title "Jaa kokemuksesi ja kutsu ystäväsi mukaan #hiiop"
+   }
+   :title "Etusivu"
+  }
+  :login
+  {
+   :email "Sähköpostiosoite"
+   :forget-password "Olen unohtanut salasanani"
+   :login-subtitle "Kirjautuneena käyttäjänä voit ilmoittaa ja muokata tapahtumia sekä hallinnoida tapahtuman osallistujia. Näet myös kaikki vapaaehtoistehtävät, joihin olet osallistunut Hiiop100.fi kautta."
+   :password "Salasana"
+   :register "Luo tunnus"
+   :remember-me "Muista minut"
+   :title "Kirjaudu palveluun"
+  }
+  :moderate
+  {
+   :cancel "Peruuta"
+   :moderate-quest "Hyväksy"
+   :reject-quest "Hylkää"
+   :reject-quest-message-title "Viesti hylättäessä tehtävää"
+   :title "Tehtävän hyväksyntä"
+   :unmoderated-quests "Käsittelemättömät tehtäväsi"
+  }
+  :password-reset
+  {
+   :check-email
+   {
+    :text "Hiiop! Lähetimme sinulle linkin, jota klikkaamalla pääset muuttamaan salasanasi."
+    :title "Tarkista sähköpostisi"
+   }
+   :done
+   {
+    :text "Voit nyt kirjautua"
+    :title "Salanasi on vaihdettu!"
+   }
+   :expired
+   {
+    :text "Tilaa täältä uusi salasana"
+   }
+   :send "Lähetä linkki"
+   :text "Ei hätää! Kirjoita alle sähköpostiosoitteesi. Lähetämme sinulle linkin, jota klikkaamalla pääset muuttamaan salasanasi."
+   :title "Unohditko salasanasi?"
+  }
+  :profile
+  {
+   :cancel "Peruuta"
+   :cancel-enrollment "Peru ilmoittautuminen"
+   :delete "Poista tapahtuma"
+   :do-you-want-to-cancel-enrollment "Oletko varma, että haluat perua ilmoittautumisen tehtävään?"
+   :do-you-want-to-delete "Oletko varma, että haluat poistaa tapahtuman?"
+   :moderation "Moderointi"
+   :my-event "Oma tapahtuma"
+   :no-upcoming-quests "Sinulla ei vielä ole tulevia tehtäviä"
+   :past-quests "Menneet vapaaehtoistehtäväsi"
+   :pending-approval "Odottaa hyväksymistä"
+   :published "Julkaistu"
+   :rejected "Hylätty"
+   :title "Käyttäjä"
+   :upcoming-quests "Tulevat vapaaehtoistehtäväsi"
+  }
+  :quest
+  {
+   :browse
+   {
+    :filter
+    {
+     :category "Miten haluat auttaa?"
+     :when "Milloin?"
+     :where "Missä?"
+    }
+    :not-found "Juuri näillä hakuehdoilla ei löytynyt tapahtumia. Laajenna hakuehtoja ja matka vapaaehtoiseksi voi alkaa."
+    :title "Hiiop! Löydä sinulle sopiva vapaaehtoistehtävä"
+   }
+   :created
+   {
+    :private "Onneksi olkoon, olet luonut yksityisen vapaaehtoistehtävän! Voit nyt tarkastella luomaasi tehtävää omalla profiilisivullasi. Kaikki vapaaehtoistehtävät tarkastetaan ja saat viestin, kun tehtäväsi on hyväksytty. Tähän menee suunnilleen 1-2 päivää. Yksityiseen vapaaehtoistehtävään voit kutsua osallistujia ainoastaan lähettämällä heille linkin, jonka saat sähköpostiisi tapahtuman julkaisun jälkeen."
+    :public "Onneksi olkoon, olet luonut julkisen vapaaehtoistehtävän! Voit nyt tarkastella luomaasi vapaaehtoistehtävää omalla profiilisivullasi. Kaikki vapaaehtoistehtävät tarkastetaan ja saat viestin, kun tehtäväsi on hyväksytty. Tämän jälkeen löydät tehtäväsi myös kaikkien vapaaehtoistehtävien listauksesta. Tähän menee suunnilleen 1-2 päivää."
+    :title "Tehtäväsi on luotu"
+   }
+   :edit
+   {
+    :address "Osoite"
+    :button
+    {
+     :add-organisation "Haluatko lisätä tehtävään tietoa yhteisöstäsi tai organisaatiostasi?"
+     :cancel "Peruuta"
+     :preview "Esikatsele ja julkaise"
+     :remove "Poista tehtävä"
+     :reveal-end-time "Lisää päättymisaika"
+     :submit "Julkaise"
+    }
+    :cancel
+    {
+     :confirmation "Oletko varma,että haluat poistaa tehtävän? Jos vapaaehtoistehtävä on jo julkinen, siihen ilmoittautuneet vapaaehtoiset saavat automaattisesti viestin peruutuksesta."
+    }
+    :closed "Tehtävä on yksityinen ja siihen voi osallistua ainoastaan järjestäjältä saadun yksityisen linkin kautta."
+    :description "Kerro tehtävän sisällöstä"
+    :end-date "Lisää päättymispäivämäärä"
+    :end-date-and-time "Päättymispäivämäärä ja -kellonaika"
+    :end-time "Kellonaika"
+    :hashtags "Aihetunnisteet eli hashtagit"
+    :location
+    {
+     :label "Osoite (valitse osoite alasvetovalikosta)"
+     :placeholder "Anna sijainti"
+    }
+    :max-participants
+    {
+     :amount-of-people "henkilöä"
+     :can-join "Vapaaehtoistehtävään voi osallistua"
+    }
+    :name "Vapaaehtoistehtävän nimi"
+    :open "Tehtävä on avoin kaikille"
+    :organisation
+    {
+     :description "Kerro yhteisösi toiminnasta"
+     :name "Järjestävä yhteisö tai järjestö"
+    }
+    :organiser-will-participate "Kyllä, osallistun myös itse tehtävään vapaaehtoisena"
+    :party
+    {
+     :cancel-remove "Peruuta"
+     :confirm-remove "Poista ilmoittautuminen?"
+     :empty "Jaa kokemuksesi ja kutsu ystäväsi mukaan #hiiop"
+     :mail-participants "Lähetä sähköpostiviesti osallistujille"
+     :title "Tehtävääsi ilmoittautuneet"
+    }
+    :picture
+    {
+     :info "Onhan sinulla on oikeudet kuvasi käyttöön? Kuvan käyttöön tarvitset aina kuvaajan nimen. Kuvan tulee olla vähintään 1100 pikseliä leveä, 500 pikseliä korkea ja maksimissaan 3 megaa."
+     :remove "Haluatko varmasti poistaa kuvan?"
+     :title "Lisää kuva"
+     :upload-failed "Kuvan lisääminen epäonnistui."
+    }
+    :remove
+    {
+     :cancel "Peruuta"
+     :confirm "Poista tehtävä"
+     :title "Oletko varma, että haluat poistaa tehtävän? Jos vapaaehtoistehtävä on jo julkinen, siihen ilmoittautuneet vapaaehtoiset saavat automaattisesti viestin peruutuksesta."
+    }
+    :start-date "Päivämäärä"
+    :start-date-and-time "Päivämäärä ja kellonaika"
+    :start-time "Kellonaika"
+    :subtitles
+    {
+     :content "1/4 Vapaaehtoistehtävän sisältö"
+     :info
+     {
+      :content "Kerro, mitä haluat saada aikaan yhteisvoimin. Ole innostava! Mitä päivän aikana tapahtuu? Miten vapaaehtoiset voivat osallistua ja auttaa? Millaisia voimia ja kykyjä tarvitset mukaan?"
+      :participation "Kerro kuinka moni voi osallistua toimintaan."
+      :related-to "Valitse yksi tai useampi teema, jotka kuvaavat parhaiten vapaaehtoistehtävääsi."
+     }
+     :participation "4/4 Osallistuminen"
+     :related-to "3/4 Mihin teemaan vapaaehtoistehtävä liittyy?"
+     :time-place "2/4 Missä ja milloin vapaaehtoistoiminta järjestetään?"
+    }
+    :title "Ilmoita vapaaehtoistehtävä"
+    :town "Paikkakunta"
+   }
+   :edited
+   {
+    :content "Tekemäsi muutokset tulevat näkyviin 1-2 päivän kuluessa."
+    :title "Tehtävääsi on muokattu"
+   }
+   :list
+   {
+    :filter
+    {
+     :category "Miten haluat auttaa?"
+     :clear "Tyhjennä"
+     :when "Milloin?"
+     :where "Missä?"
+    }
+    :not-found "Juuri näillä hakuehdoilla ei löytynyt tapahtumia. Laajenna hakuehtoja ja matka vapaaehtoiseksi voi alkaa."
+    :title "Löydä itsellesi vapaaehtoistehtävä"
+   }
+   :part
+   {
+    :confirm "Peru ilmoittautuminen"
+    :success "Peruminen onnistui!"
+    :text "Oletko varma, että haluat perua ilmoittautumisen tehtävään?"
+    :title "Peru ilmoittautuminen"
+    :to-quest "Takaisin tehtävään"
+   }
+   :preview
+   {
+    :buttons
+    {
+     :edit "Muokkaa"
+     :publish "Julkaise tehtävä"
+    }
+    :check "Tarkista kohteesi tiedot ja että sinulla on oikeus käyttää lisäämääsi kuvaa."
+    :title "Vapaaehtoistehtävän esikatselu"
+   }
+   :title "Löydä tehtävä"
+   :view
+   {
+    :join
+    {
+     :fail "Hups! ilmottautumisesi epäonnistui. Tarkista sähköpostiosoitteesi. Vai oletko jo aiemmin ilmoittautunut tehtävään?"
+     :success "Loistavaa, että olet mukana - kiitos ilmottautumisestasi! Saat sähköpostiisi lisätietoa tapahtumasta."
+     :to-front-page "Sulje"
+    }
+    :participants "vapaata paikkaa"
+    :signup
+    {
+     :agree-to-terms-and-conditions "Olen lukenut palvelun ehdot ja hyväksyn ne. Ilmoittautuminen on sitova. Esteen sattuessa voit perua osallistumisen."
+     :days "Kuinka monena päivänä aiot osallistua"
+     :email "Sähköposti"
+     :name "Nimi"
+     :phone "Puhelinnumero"
+     :subtitle "Tervetuloa vapaaehtoiseksi!"
+    }
+   }
+  }
+  :register
+  {
+   :check-your-email "Hiiop! Tarkista sähköpostisi"
+   :email "Sähköpostiosoite"
+   :email-sent "Lähetimme sinulle sähköpostia. Viestissä on linkki, jota klikkaamalla pääset luomaan salasanasi ja kirjautumaan palveluun. Tähän saattaa mennä pari minuuttia. Jos viestiä ei kuulu, kurkkaa roskapostisi."
+   :name "Nimi"
+   :phone "Puhelinnumero"
+   :register-subtitle "Kirjautuneena käyttäjänä voit ilmoittaa ja muokata tapahtumia sekä hallinnoida tapahtuman osallistujia. Näet myös kaikki vapaaehtoistehtävät, joihin olet osallistunut Hiiop100.fi kautta."
+   :title "Hiiop! Tervetuloa mukaan - luo tunnus"
+  }
+  :static
+  {
+   :stories-index-header "Tekijöiden tarinoita vapaaehtoistyöstä"
+   :stories-index-subtitle "Ideoita ja inspiraatiota, tekijöitä ja tarinoita vapaaehtoistyön arjesta."
+   :stories-title "Tekijöiden tarinoita"
+  }
+ }
+ :pikaday
+ {
+  :first-day "1"
+  :months ["Tammikuussa" "Helmikuussa" "Maaliskuussa" "Huhtikuussa" "Toukokuussa" "Kesäkuussa" "Heinäkuussa" "Elokuussa" "Syyskuussa" "Lokakuussa" "Marraskuussa" "Joulukuussa"]
+  :next-month "Seuraava"
+  :previous-month "Edellinen"
+  :weekdays ["sunnuntai" "maanantai" "tiistai" "keskiviikko" "torstai" "perjantai" "lauantai"]
+  :weekdays-short ["su" "ma" "ti" "ke" "to" "pe" "la"]
+ }
+ :title "Hiiop – %1"
+}
