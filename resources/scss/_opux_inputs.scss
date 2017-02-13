@@ -30,6 +30,11 @@
     margin: 0 5px;
   }
 
+  // opux-input--error
+  @include modifier('error') {
+    border: 1px solid $OP-red;
+  }
+
   // opux-input--text
   @include modifier('text') {
     box-sizing: border-box;

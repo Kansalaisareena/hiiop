@@ -1,7 +1,8 @@
 (ns hiiop.components.address-autocomplete
   (:require [rum.core :as rum]
             [taoensso.timbre :as log]
-            [hiiop.mangling :refer [parse-natural-number]]))
+            [hiiop.mangling :refer [parse-natural-number
+                                    readable-address]]))
 
 (def google-keys->readable
   {:street_number               {:key :street-number :transform parse-natural-number}
@@ -48,6 +49,9 @@
    (fn [state]
      (let [args (first (:rum/args state))
            location (:location args)
+           schema (:schema args)
+           show-error (:show-error args)
+           error (:error args)
            set-location-to! (partial set-location! location)
            search-type (or (:search-type args) "address")
            Autocomplete #?(:cljs
@@ -62,17 +66,29 @@
                        :clj nil)
            place-changed
            (fn []
-             #?(:cljs
-                (let [js-place (.getPlace instance)
-                      cljs-place (js->clj js-place :keywordize-keys true)
-                      details (get-location-details cljs-place)]
-                  (set-location-to! details))))
+             (let [js-place (.getPlace instance)
+                   cljs-place (js->clj js-place :keywordize-keys true)
+                   details (get-location-details cljs-place)]
+               (set-location-to! details)))
            on-change
            (fn [e]
-             #?(:cljs
-                (if (= "" (.-value (.-target e)))
-                    (set-location-to! nil))))]
+             (when (= "" (.-value (.-target e)))
+               (set-location-to! nil)))
+           on-blur
+           (fn [e]
+             (js/setTimeout
+              (fn []
+                (let [js-place (.getPlace instance)
+                      cljs-place (js->clj js-place :keywordize-keys true)]
+                  (if (not-empty @location)
+                    (do
+                      (reset! error nil)
+                      (set! (.-value (.-target e))
+                            (readable-address @location)))
+                       (reset! error {:location "choose a location"}))))
+              100))]
        #?(:cljs (.addListener instance "place_changed" place-changed))
        #?(:cljs (.addEventListener dom-element "change" on-change))
+       #?(:cljs (.addEventListener dom-element "blur" on-blur))
        (assoc state
               ::instance instance)))})
