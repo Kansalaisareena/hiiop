@@ -131,6 +131,12 @@
   }
 }
 
+@include block('opux-location') {
+  &:hover {
+    color: $OP-orange;
+  }
+}
+
 @include block('opux-card-list-container') {
   background: $OP-gray-light;
   margin: 3rem -1rem 0 -1rem;

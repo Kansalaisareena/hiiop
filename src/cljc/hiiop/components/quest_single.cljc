@@ -56,7 +56,8 @@
        (html/combine-text ", " usable-owner (:name organisation))]
       [:p
        [:a {:href google-maps-url
-            :target "_blank"}
+            :target "_blank"
+            :class "opux-location"}
         [:i {:class "opux-icon opux-icon-location"}]
         (html/combine-text
           ", "
