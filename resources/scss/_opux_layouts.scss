@@ -131,6 +131,12 @@
   }
 }
 
+@include block('opux-location') {
+  &:hover {
+    color: $OP-orange;
+  }
+}
+
 @include block('opux-card-list-container') {
   background: $OP-gray-light;
   margin: 3rem -1rem 0 -1rem;
@@ -173,9 +179,13 @@
   margin: 0.5rem;
   padding: 0 2rem;
 
+  &:hover {
+    color: $OP-orange;
+  }
+
   @include state('active') {
-    background: $OP-orange;
-    color: $OP-white;
+    border: 1px solid $OP-orange;
+    color: $OP-orange;
   }
 }
 
@@ -260,6 +270,10 @@
     padding: .7rem;
     text-align: left;
     width: 100%;
+
+    @include modifier('blog') {
+        min-height: 4.7rem;
+    }
   }
 
   // opux-card__image-container

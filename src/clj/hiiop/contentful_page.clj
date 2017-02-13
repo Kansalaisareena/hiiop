@@ -117,7 +117,7 @@
                          (str "url(" image-url ")")}}]]])
 
       [:div {:class "opux-card__content"}
-       [:a {:class "opux-card__title opux-sectino"
+       [:a {:class "opux-card__title opux-sectino opux-card__title--blog"
             :href url}
         title]
 
