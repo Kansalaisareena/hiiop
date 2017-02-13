@@ -180,15 +180,14 @@
    :category-selector
    {
     :search "Visa uppdrag"
-    :subtitle "Välj tema och delta i frivilligarbete"
-    :title "Delta i frivilligarbete"
+    :title "Välj tema och delta i frivilligarbete"
    }
    :counter
    {
     :days "%1 d"
     :hundred-years "100 år"
     :months "%1 mån."
-    :subtitle "Kom med! Frivilligarbete för att hedra det hundraåriga Finland har sammanlagt redan utförts:"
+    :subtitle "Frivilligarbete för att hedra det hundraåriga Finland har sammanlagt utförts:"
     :title "Kom med! Frivilligarbete för att hedra det hundraåriga Finland har sammanlagt redan utförts:"
     :years "%1 år"
    }
@@ -199,7 +198,7 @@
     :create-quest "Lägg till uppdrag"
     :create-quest-text "Arrangera frivilligarbete och bjud in vänner"
     :read-stories "Läs berättelser"
-    :read-stories-text "Läs om erfarenheter av frivilligarbete."
+    :read-stories-text "Läs om erfarenheter av frivilligarbete"
    }
    :social-feed
    {

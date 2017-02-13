@@ -180,16 +180,14 @@
    :category-selector
    {
     :search "Näytä tehtävät"
-    :subtitle "Valitse teema ja selaa vapaaehtoistehtäviä"
-    :title "Tule mukaan vapaaehtoistyöhön"
+    :title "Valitse teema ja selaa vapaaehtoistehtäviä"
    }
    :counter
    {
     :days "%1 p"
     :hundred-years "100 v"
     :months "%1 kk"
-    :subtitle "Tule mukaan! Vapaaehtoistyötä on tehty satavuotiaan Suomen kunniaksi yhteensä jo:"
-    :title "Tule mukaan! Vapaaehtoistyötä on tehty satavuotiaan Suomen kunniaksi yhteensä jo:"
+    :title "Vapaaehtoistyötä on tehty satavuotiaan Suomen kunniaksi yhteensä:"
     :years "%1 v"
    }
    :index-links
@@ -199,7 +197,7 @@
     :create-quest "Ilmoita tehtävä"
     :create-quest-text "Järjestä vapaaehtoistehtävä ja kutsu kaverisi mukaan"
     :read-stories "Lue tarinoita"
-    :read-stories-text "Tutustu kokemuksiin vapaaehtoistoiminnasta."
+    :read-stories-text "Tutustu kokemuksiin vapaaehtoistoiminnasta"
    }
    :social-feed
    {
