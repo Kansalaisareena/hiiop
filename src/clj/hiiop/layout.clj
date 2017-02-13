@@ -49,7 +49,8 @@
      (rum/render-static-markup
       (app-structure {:context {:tr tr
                                 :asset-path (asset-path env)
-                                :hierarchy hierarchy}
+                                :hierarchy hierarchy
+                                :current-locale :fi}
                       :scripts []
                       :no-script true
                       :title (:title error-details)

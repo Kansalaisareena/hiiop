@@ -50,6 +50,7 @@
         context {:tr tr
                  :conf conf
                  :hierarchy hiiop.routes.page-hierarchy/hierarchy
+                 :site-base-url (:site-base-url conf)
                  :hiiop-blog-base-url (:hiiop-blog-base-url conf)
                  :current-locale (keyword (:current-locale conf))
                  :identity (:identity conf)
