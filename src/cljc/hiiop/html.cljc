@@ -449,10 +449,10 @@
   (let [content-vector (into [] content)
         default-content [:fieldset
                          {:class "opux-fieldset opux-form-section__fieldset"}
-                         (cond (not-empty title)
-                               [:h3
-                                {:class "opux-form-section__title"}
-                                title])]]
+                         (if (not-empty title)
+                           [:h3
+                            {:class "opux-form-section__title"}
+                            title])]]
     [:div {:class "opux-form-section"}
      (into [] (concat default-content content-vector))]))
 
@@ -482,11 +482,11 @@
 (rum/defc head-content [{:keys [title asset-path metas locale]}]
   [:head
    [:title title]
-   
+
    (when locale
      [:meta {:http-equiv "Content-Language"
              :content (name locale)}])
-   
+
    [:meta {:charset "UTF-8"}]
    [:meta {:name "viewport"
            :content "width=device-width,initial-scale=1.0,minimum-scale=1.0"}]

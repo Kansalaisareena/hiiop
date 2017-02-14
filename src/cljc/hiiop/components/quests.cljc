@@ -86,6 +86,8 @@
   (let [organisation-enabled (::organisation-enabled state)]
     (html/form-section
      (tr [:pages.quest.edit.subtitles.content])
+     [:p {:class "opux-content opux-content--small opux-centered"}
+      (tr [:pages.quest.edit.subtitles.info.content])]
      [:div {:class "opux-fieldset__item"}
       (html/label
        (tr [:pages.quest.edit.name])
@@ -144,29 +146,29 @@
        (let [organisation-name-error (rum/cursor-in errors [:organisation :name])
              organisation-description-error (rum/cursor-in errors [:organisation :description])]
          [:div
-         [:div {:class "opux-fieldset__item"}
-          (html/label
-           (tr [:pages.quest.edit.organisation.name])
-           {:class "opux-input__label opux-input__label--organisation-name"})
-          (html/input
-           {:class "opux-input opux-input--text"
-            :type "text"
-            :value (rum/cursor-in quest [:organisation :name])
-            :error organisation-name-error
-            :schema hs/NonEmptyString
-            :context context}
-           )]
-         [:div {:class "opux-fieldset__item"}
-          (html/label
-           (tr [:pages.quest.edit.organisation.description])
-           {:class "opux-input__label opux-input__label--organisation-description"})
-          (html/text
-           {:class "opux-input opux-input--textarea testingshit"
-            :value (rum/cursor-in quest [:organisation :description])
-            :error organisation-description-error
-            :schema hs/NonEmptyString
-            :context context}
-           )]])))))
+          [:div {:class "opux-fieldset__item"}
+           (html/label
+            (tr [:pages.quest.edit.organisation.name])
+            {:class "opux-input__label opux-input__label--organisation-name"})
+           (html/input
+            {:class "opux-input opux-input--text"
+             :type "text"
+             :value (rum/cursor-in quest [:organisation :name])
+             :error organisation-name-error
+             :schema hs/NonEmptyString
+             :context context}
+            )]
+          [:div {:class "opux-fieldset__item"}
+           (html/label
+            (tr [:pages.quest.edit.organisation.description])
+            {:class "opux-input__label opux-input__label--organisation-description"})
+           (html/text
+            {:class "opux-input opux-input--textarea testingshit"
+             :value (rum/cursor-in quest [:organisation :description])
+             :error organisation-description-error
+             :schema hs/NonEmptyString
+             :context context}
+            )]])))))
 
 (defn reveal-end-time [end-time-revealed]
   (swap! end-time-revealed #(identity true)))
@@ -256,28 +258,16 @@
 
 (rum/defc edit-participation-settings < rum/reactive
   [{:keys [quest is-valid cursors-and-schema context tr]}]
-  [:div {:class "opux-section opux-form-section"}
-   [:fieldset
-    {:class "opux-fieldset opux-form-section__fieldset"}
-    [:h3 {:class "opux-form-section__title"}
-     (html/label
-       (tr [:pages.quest.edit.subtitles.related-to])
-       {:class "opux-input__label opux-input__label--categories"
-        :required true})]
-    (html/multi-selector-for-schema
-      {:schema (get-in cursors-and-schema [:categories :schema])
-       :value (get-in cursors-and-schema [:categories :value])
-       :error (get-in cursors-and-schema [:categories :error])
-       :choice-name-fn hs/category-choice
-       :context context})]]
   (html/form-section
-    (tr [:pages.quest.edit.subtitles.participation])
-    (html/max-participants
-      {:schema (get-in cursors-and-schema [:max-participants :schema])
-       :value (get-in cursors-and-schema [:max-participants :value])
-       :error (get-in cursors-and-schema [:max-participants :error])
-       :context context})
-    (html/radio-binary
+   (tr [:pages.quest.edit.subtitles.participation])
+   [:p {:class "opux-content opux-content--small opux-centered"}
+    (tr [:pages.quest.edit.subtitles.info.participation])]
+   (html/max-participants
+    {:schema (get-in cursors-and-schema [:max-participants :schema])
+     :value (get-in cursors-and-schema [:max-participants :value])
+     :error (get-in cursors-and-schema [:max-participants :error])
+     :context context})
+   (html/radio-binary
     {:class "is-open opux-fieldset__item"
      :schema (get-in cursors-and-schema [:is-open :schema])
      :value (get-in cursors-and-schema [:is-open :value])
@@ -524,6 +514,8 @@
           {:class "opux-input__label opux-input__label--categories"
            :required true
            :error (get-in cursors-and-schema [:categories :error])})]
+       [:p {:class "opux-content opux-content--small opux-centered"}
+        (tr [:pages.quest.edit.subtitles.info.related-to])]
        (html/multi-selector-for-schema
          {:schema (get-in cursors-and-schema [:categories :schema])
           :value (get-in cursors-and-schema [:categories :value])
