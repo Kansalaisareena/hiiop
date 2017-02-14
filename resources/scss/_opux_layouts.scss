@@ -348,9 +348,6 @@
   @include element('content') {
     @include align-content(center);
     @include align-items(center);
-    @include flex-direction(row);
-    @include flex-wrap(wrap);
-    @include flexbox;
     bottom: 0px;
     box-sizing: border-box;
     color: $OP-white;
