@@ -23,7 +23,7 @@
 
 (def cf-url "https://cdn.contentful.com/")
 (defstate entries-url :start (str cf-url "spaces/" (:space-id (:contentful env)) "/entries?access_token="
-                                  (:cd-api-key (:contentful env)) "&locale=*"))
+                                  (:cd-api-key (:contentful env)) "&order=-sys.createdAt&locale=*"))
 
 (def locales [:fi :sv])
 
