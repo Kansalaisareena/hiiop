@@ -14,6 +14,7 @@
             [taoensso.carmine :as car]
             [mount.core :refer [defstate]]
             [taoensso.timbre :as log]
+            [hiiop.time :as time]
             [hiiop.file-upload :refer [upload-story upload-page get-and-upload-asset]]
             [hiiop.html :as html]
             [taoensso.tempura :as tempura]
@@ -90,6 +91,8 @@
        :content (if (not-empty (:leipteksti fields))
                   (md-to-html (:leipteksti fields))
                   nil)
+       :created-at (time/from-string
+                    (get-in cfobject [:sys :createdAt]))
        :youtube-id youtube-id
        :image-url image-url})))
 
@@ -97,7 +100,8 @@
   (let [id (get-in cfobject [:sys :id])
         topic-fi (get-in cfobject [:fields :otsikko :fi])
         topic-sv (get-in cfobject [:fields :otsikko :sv])
-        image-id (get-in cfobject [:fields :kuva :fi :sys :id])]
+        image-id (get-in cfobject [:fields :kuva :fi :sys :id])
+        created-at (get-in cfobject [:sys :createdAt])]
     (log/info "processing story: " id)
     (try
       (doseq [locale locales]
@@ -152,7 +156,7 @@
        (concat prev-items new-items)
        (recur new-fetched-count (concat prev-items new-items))))))
 
-(defn- filter-stories [items]
+(defn filter-stories [items]
   (filter
     (fn [item]
       (let [type (if (= (get-in item [:sys :type]) "Entry")
@@ -161,7 +165,7 @@
         (= type "tarina")))
     items))
 
-(defn- story-list-item-data [cfobject locale]
+(defn story-list-item-data [cfobject locale]
   (let [fields (localize-fields (:fields cfobject) locale)
         id (get-in cfobject [:sys :id])
         image-id (get-in cfobject [:fields :kuva :fi :sys :id])
@@ -170,6 +174,8 @@
                     nil)
         youtube-id (get-in cfobject [:fields :youtubeUrl :fi])
         author (get-in cfobject [:fields :author :fi])
+        created-at (time/from-string
+                    (get-in cfobject [:sys :createdAt]))
         title (:otsikko fields)
         categories (:categories fields)
         excerpt (:excerpt fields)]
@@ -181,6 +187,7 @@
      :youtube-id youtube-id
      :excerpt excerpt
      :author author
+     :created-at created-at
      :categories categories
      :title title
      :locale locale}))

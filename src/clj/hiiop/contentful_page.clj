@@ -3,6 +3,7 @@
             [hiiop.html :as html]
             [hiiop.config :refer [env asset-path]]
             [hiiop.routes.page-hierarchy :refer [hierarchy]]
+            [hiiop.time :as time]
             [hiiop.translate :refer [tr-opts default-locale]]
             [taoensso.tempura :as tempura]
             [hiiop.components.social-buttons :refer [social-buttons]]
@@ -36,7 +37,7 @@
      :frameborder 0}]])
 
 (defn contentful-page-structure
-  [{:keys [locale title content image-url youtube-id author excerpt url show-social-metas]}]
+  [{:keys [locale title content image-url youtube-id author excerpt url show-social-metas created-at]}]
   (let [context (create-context locale)
         tr (:tr context)
         asset-path (:asset-path context)
@@ -76,6 +77,9 @@
             (if youtube-id (youtube-header youtube-id))
 
             [:div {:class "opux-content"}
+             [:h3 {:class "opux-contentful-date"}
+              (time/to-string created-at
+                              time/date-print-format)]
              [:h1 {:class "opux-contentful-title"} title]
              (when author
                [:h3 {:class "opux-contentful-author"}
@@ -102,6 +106,7 @@
                 excerpt
                 author
                 image-url
+                created-at
                 categories]} story
         categories-attr (url-encode
                          (clojure.string/join "," categories))]
@@ -117,7 +122,10 @@
                          (str "url(" image-url ")")}}]]])
 
       [:div {:class "opux-card__content"}
-       [:a {:class "opux-card__title opux-sectino opux-card__title--blog"
+       [:div {:class "opux-content"}
+        (time/to-string created-at
+                        time/date-print-format)]
+       [:a {:class "opux-card__title opux-card__title--blog"
             :href url}
         title]
 
