@@ -5,13 +5,20 @@
             [hiiop.routes.page-hierarchy :refer [hierarchy]]
             [hiiop.schema :as hs]
             [rum.core :as rum]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [hiiop.components.social-buttons :refer [social-buttons]]))
 
 (defn- banner [{:keys [tr]}]
   [:div {:class "opux-banner"}
    [:div {:class "opux-banner__content opux-centered"}
     [:div {:class "opux-banner__title"} (tr [:pages.index.banner.header])]
     [:div {:class "opux-banner__body-text"} (tr [:pages.index.banner.content])]]])
+
+(defn- share-buttons [{:keys [title url tr]}]
+  [:div {:class "opux-frontpage-share"}
+   [:div {:class "opux-centered opux-social-sharing-buttons"}
+    (social-buttons {:title title :url url :tr tr})]
+   [:div {:class "opux-line opux-content"}]])
 
 (defn- index-link-item
   [{:keys [class content button-text button-link]}]
@@ -134,11 +141,13 @@
             :data-per     12}]]]))
 
 (rum/defc index-page
-  [{:keys [context category-filter schema counter-days]}]
+  [{:keys [context category-filter schema counter-days url]}]
   (let [tr (:tr context)]
     [:div {:class "opux-section"}
      (banner {:tr tr})
      (counter {:tr tr :counter-days counter-days})
+     (share-buttons {:tr tr :title (tr [:pages.index.title])
+                     :url url})
      (category-selector {:context         context
                          :category-filter category-filter
                          :schema          schema})
