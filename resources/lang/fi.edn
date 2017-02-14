@@ -435,7 +435,7 @@
  }
  :pikaday
  {
-  :first-day "1"
+  :first-day 1
   :months ["Tammikuussa" "Helmikuussa" "Maaliskuussa" "Huhtikuussa" "Toukokuussa" "Kesäkuussa" "Heinäkuussa" "Elokuussa" "Syyskuussa" "Lokakuussa" "Marraskuussa" "Joulukuussa"]
   :next-month "Seuraava"
   :previous-month "Edellinen"

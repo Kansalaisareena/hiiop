@@ -436,7 +436,7 @@
  }
  :pikaday
  {
-  :first-day "1"
+  :first-day 1
   :months ["I januari" "I februari" "I mars" "I april" "I maj" "I juni" "I juli" "I augusti" "I september" "I oktober" "I november" "I december"]
   :next-month "Följande"
   :previous-month "Föregående"
