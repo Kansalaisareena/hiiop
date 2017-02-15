@@ -334,42 +334,44 @@
       {:class "opux-button opux-button--dull opux-form__button opux-fieldset__inline-item"
        :on-click
        (fn []
-         (reset! ask-remove true))})
-     (html/button
-      (tr [:pages.quest.edit.button.preview])
-      {:class "opux-button opux-form__button opux-fieldset__inline-item opux-button--highlight"
-       :type "submit"
-       :active is-valid})]))
+         (reset! ask-remove true))})]))
 
 (defn delete-or-buttons!
   [{:keys [ask-remove remove-confirmed quest is-valid context]}]
-  (cond
-    (and @ask-remove @remove-confirmed)
-    (do
-      #?(:cljs
-         (if (:id @quest)
-           (go
-             (let [deleted (<! (api/delete-quest (:id @quest)))]
-               (when deleted
-                 (redirect-to {:path-key :profile}))
-               ))
-           (redirect-to {:path-key :profile}))
-         )
-      []
-      )
+  (let [tr (:tr context)]
+    (cond
+      (and @ask-remove @remove-confirmed)
+      (do
+        #?(:cljs
+           (if (:id @quest)
+             (go
+               (let [deleted (<! (api/delete-quest (:id @quest)))]
+                 (when deleted
+                   (redirect-to {:path-key :profile}))
+                 ))
+             (redirect-to {:path-key :profile}))
+           )
+        []
+        )
 
-    @ask-remove
-    (confirm-remove
-     {:ask-confirm ask-remove
-      :remove-confirmed remove-confirmed
-      :context context})
+      @ask-remove
+      (confirm-remove
+       {:ask-confirm ask-remove
+        :remove-confirmed remove-confirmed
+        :context context})
 
-    :else
-    (edit-buttons
-     {:ask-remove ask-remove
-      :is-valid is-valid
-      :context context})
-    ))
+      :else
+      [:div {:class "opux-section"}
+       (edit-buttons
+        {:ask-remove ask-remove
+         :is-valid is-valid
+         :context context})
+       [:div {:class "opux-fieldset__item opux-fieldset__item--inline-container"}
+        (html/button
+         (tr [:pages.quest.edit.button.preview])
+         {:class "opux-button opux-form__button opux-button--highlight opux-fieldset__inline-item"
+          :type "submit"
+          :active is-valid})]])))
 
 (rum/defc party-member-confirm-remove
   [{:keys [party context processing confirm member-id quest-id]}]
