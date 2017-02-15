@@ -49,12 +49,12 @@
        [:dd {:class "place"}
         (mangling/readable-address (:location quest))]]
       (when button-text
-        [:p
+        [:div
          [:a {:href button-url
               :class "button-1"
               :id "button-1"} button-text]])
       (when button2-text
-        [:p
+        [:div
          [:a {:href button2-url
               :class "button-2"
               :id "button-2"} button2-text]])]]))
@@ -96,11 +96,12 @@
    [:div {:class "body-text" :dangerouslySetInnerHTML {:__html body-text}}]
    (when message
      [:p {:class "message" :dangerouslySetInnerHTML {:__html message}}])
-   [:a {:href button-url
-        :class "button-1"
-        :id "button-1"} button-text]
+
+   [:div [:a {:href button-url
+              :class "button-1"
+              :id "button-1"} button-text]]
    (when button2-text
-     [:p
+     [:div
       [:a {:href button-url
            :class "button-2"
            :id "button-2"} button2-text]])])
