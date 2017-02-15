@@ -142,7 +142,9 @@
 
 (rum/defc index-page
   [{:keys [context category-filter schema counter-days url]}]
-  (let [tr (:tr context)]
+  (let [tr (:tr context)
+        url (or (get-in context [:config :site-base-url])
+                (:site-base-url context))]
     [:div {:class "opux-section"}
      (banner {:tr tr})
      (counter {:tr tr :counter-days counter-days})

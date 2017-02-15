@@ -82,7 +82,6 @@
              (. js/document (getElementById "app"))))
 
 (defn index-page []
-  (mount/start env)
   (go
     (let [counter-days (:days (<! (get-the-counter-value)))]
     (rum/mount
