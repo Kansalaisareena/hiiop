@@ -11,7 +11,6 @@
                      color: #323232; font-weight: 200; }
                  h1 { font-size: 2.3rem; }
                  a { color: #ff6a10; text-decoration: none; }
-                 .button-2 { margin-left: 10px; }
                  #footer-image-1 { height: 70px; float: left; margin: 5px; }
                  #footer-image-2 { height: 70px; float: right; margin: 5px; }
                  </style>")
