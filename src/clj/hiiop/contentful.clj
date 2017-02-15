@@ -187,25 +187,23 @@
      :locale locale}))
 
 (defn render-stories-index [stories locale]
-  (story-index-page-structure
-    {:stories stories
-     :url (str (:hiiop-blog-base-url env)
-               (name locale)
-               "/blog/index.html")
-     :locale locale}))
+  (let [stories-data
+        (map
+         #(story-list-item-data % locale)
+         stories)]
+    (story-index-page-structure
+     {:stories stories-data
+      :locale locale})))
 
 (defn process-stories-indexes [all-items]
   (let [stories (filter-stories all-items)]
     (doseq [locale locales]
-      (let [stories-data
-            (map
-              #(story-list-item-data % locale)
-              stories)]
-        (->> (story-index-page-structure
-               {:stories stories-data
-                :locale locale})
-             (upload-page (str (name locale)
-                               "/blog/index.html")))))))
+      (let [index (render-stories-index stories locale)]
+        (upload-page (str (name locale)
+                          "/blog/index.html")
+                     index)
+        (if (= locale :fi)
+          (upload-page (str "index.html") index))))))
 
 (defn refresh-items [items]
   (doseq [i items]
