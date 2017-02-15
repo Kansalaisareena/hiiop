@@ -317,6 +317,7 @@ SELECT
   COALESCE(q.unmoderated_picture, q.picture) as picture,
   (SELECT url FROM pictures WHERE id = COALESCE(q.unmoderated_picture, q.picture)) as picture_url,
   q.is_open as is_open,
+  q.secret_party as secret_party,
   q.owner as owner
 FROM
   quests q
@@ -771,4 +772,4 @@ FROM
 WHERE
   q.id = p.quest_id AND
   q.end_time < NOW() AND
-  q.name IS NOT NULL  
+  q.name IS NOT NULL
