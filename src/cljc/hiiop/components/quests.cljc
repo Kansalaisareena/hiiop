@@ -38,7 +38,15 @@
   [state {:keys [cursors-and-schema context tr]}]
   (let [local-picture-url (::picture-url state)
         default-content [:div {:class "opux-fieldset__item"}]
-        picture-url (get-in cursors-and-schema [:picture-url :value])]
+        picture-url (get-in cursors-and-schema [:picture-url :value])
+        remove-image-handler
+        (fn [e]
+          #?(:cljs
+             (do
+               (.preventDefault e)
+               (if (js/confirm
+                    (tr [:pages.quest.edit.picture.remove]))
+                 (reset! picture-url nil)))))]
     (when picture-url
       (do
         (reset! local-picture-url @picture-url)
@@ -60,19 +68,12 @@
           :url picture-url
           :context context
           :tr (partial tr [:pages.quest.edit.picture.upload-failed])})
-        [:p {:class "opux-input__info opux-centered"} (tr [:pages.quest.edit.picture.info])]
-        ]
-       [[:img {:src @picture-url
-               :on-click
-               (fn []
-                 #?(:cljs
-                    (do
-                      (if (js/confirm (tr [:pages.quest.edit.picture.remove]))
-                        (reset! picture-url nil)
-                      ))))
-               }]])
-     )
-    ))
+        [:p {:class "opux-input__info opux-centered"}
+         (tr [:pages.quest.edit.picture.info])]]
+       [[:img {:src @picture-url}]
+        [:a {:href "#"
+             :on-click remove-image-handler}
+         (tr [:pages.quest.edit.picture.remove-link])]]))))
 
 (rum/defcs edit-content < rum/reactive
   (rum/local false ::organisation-enabled)
@@ -393,7 +394,7 @@
       (tr [:pages.quest.edit.party.confirm-remove])]]))
 
 (rum/defcs edit-party-member < rum/reactive
-                             < (rum/local false ::confirm)
+                               (rum/local false ::confirm)
   [state {:keys [quest party context processing]} {:keys [member-id name email phone days]}]
   (log/info quest @party)
   (let [tr (:tr context)

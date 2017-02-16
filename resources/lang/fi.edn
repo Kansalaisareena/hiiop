@@ -332,6 +332,7 @@
     {
      :info "Onhan sinulla on oikeudet kuvasi käyttöön? Kuvan käyttöön tarvitset aina kuvaajan nimen. Kuvan tulee olla vähintään 1100 pikseliä leveä, 500 pikseliä korkea ja maksimissaan 3 megaa."
      :remove "Haluatko varmasti poistaa kuvan?"
+     :remove-link "Vaihda kuva"
      :title "Lisää kuva"
      :upload-failed "Kuvan lisääminen epäonnistui."
     }
