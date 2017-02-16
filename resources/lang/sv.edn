@@ -333,6 +333,7 @@
     {
      :info "Du har väl rätt att använda din bild? Då du använder en bild måste du alltid ha fotografens namn, som du kan lägga till i slutet av beskrivningen av uppdraget. Bilden måste vara minst 1100 pixlar bred och 500 pixlar hög samt mindre än 3 mega."
      :remove "Vill du säkert ta bort bilden?"
+     :remove-link "Ändra bilden"
      :title "Lägg till bild"
      :upload-failed "Det gick inte att lägga till bilden."
     }
