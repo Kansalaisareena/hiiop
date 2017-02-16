@@ -501,6 +501,19 @@
   }
 }
 
+@include block("opux-contentful-title") {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+@include block("opux-contentful-author") {
+  padding-top: 0px;
+}
+
+@include block("opux-contentful-date") {
+  padding-bottom: 0px;
+}
+
 @include block('opux-copyright') {
   @include order(5);
   padding: 1.5rem 0;
@@ -522,14 +535,15 @@
   .j-stacker-wrapper {
     width: 100%;
     margin: 0px !important;
-    .j-stacker {
-      width: 100%;}} a.j-paginate.juicer-button {display: none;}} 
-@include block("opux-contentful-title") {
-  padding-bottom: 0;
-}
 
-@include block("opux-contentful-author") {
-  padding-top: 0px;
+    .j-stacker {
+      width: 100%;
+    }
+  }
+
+  a.j-paginate.juicer-button {
+    display: none;
+  }
 }
 
 @include block("opux-social-sharing-buttons") {
