@@ -11,7 +11,6 @@
                      color: #323232; font-weight: 200; }
                  h1 { font-size: 2.3rem; }
                  a { color: #ff6a10; text-decoration: none; }
-                 .button-2 { margin-left: 10px; }
                  #footer-image-1 { height: 70px; float: left; margin: 5px; }
                  #footer-image-2 { height: 70px; float: right; margin: 5px; }
                  </style>")
@@ -49,14 +48,15 @@
        [:dd {:class "place"}
         (mangling/readable-address (:location quest))]]
       (when button-text
-        [:a {:href button-url
-             :class "button-1"
-             :id "button-1"} button-text])
+        [:div
+         [:a {:href button-url
+              :class "button-1"
+              :id "button-1"} button-text]])
       (when button2-text
-        [:br]
-        [:a {:href button2-url
-             :class "button-2"
-             :id "button-2"} button2-text])]]))
+        [:div
+         [:a {:href button2-url
+              :class "button-2"
+              :id "button-2"} button2-text]])]]))
 
 (defn plaintext-quest-details-mail [{:keys [tr
                                             title
@@ -95,14 +95,15 @@
    [:div {:class "body-text" :dangerouslySetInnerHTML {:__html body-text}}]
    (when message
      [:p {:class "message" :dangerouslySetInnerHTML {:__html message}}])
-   [:a {:href button-url
-        :class "button-1"
-        :id "button-1"} button-text]
+
+   [:div [:a {:href button-url
+              :class "button-1"
+              :id "button-1"} button-text]]
    (when button2-text
-     [:br]
-     [:a {:href button-url
-          :class "button-2"
-          :id "button-2"} button2-text])])
+     [:div
+      [:a {:href button-url
+           :class "button-2"
+           :id "button-2"} button2-text]])])
 
 (defn plaintext-simple-mail [{:keys [title
                                      body-text-plaintext
