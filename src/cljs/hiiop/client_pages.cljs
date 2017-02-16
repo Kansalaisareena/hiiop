@@ -51,6 +51,8 @@
                                   new-empty-category-filter
                                   new-empty-activation-info
                                   ]]
+            [hiiop.client-config :refer [env]]
+            [mount.core :as mount]
             [clojure.string :as string]))
 
 (defn login-page [params]
@@ -87,7 +89,8 @@
                        :category-filter (atom
                                           (new-empty-category-filter))
                        :counter-days counter-days
-                       :schema QuestCategoryFilter})
+                       :schema QuestCategoryFilter
+                       :url (:site-base-url env)})
       (. js/document (getElementById "app"))))))
 
 (defn profile-page [params]

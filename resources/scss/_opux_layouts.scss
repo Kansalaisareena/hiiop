@@ -388,6 +388,11 @@
   }
 }
 
+@include block('opux-frontpage-share') {
+  margin-bottom: -3px;
+  padding-top: 56px;
+}
+
 @include block('opux-index-links') {
   @include flex-direction(row);
   @include flexbox;
@@ -554,6 +559,7 @@
   padding: 0px;
 
   @include block("opux-icon-social") {
+    margin-left: 16px;
     margin-bottom: -15px;
   }
 }
