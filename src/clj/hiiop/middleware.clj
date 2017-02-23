@@ -160,8 +160,6 @@
           proto (get-in request [:headers "x-forwarded-proto"])
           need-redirect? (and (:redirect-https env) (not= "https" proto))
           target-url (str "https://" host (:uri request))]
-      (log/info (str (:headers request)))
-      (log/info "needs redirection:" need-redirect? "x-forwarded-proto:" proto)
       (if need-redirect?
         (response/redirect target-url 301)
         (handler request)))))
