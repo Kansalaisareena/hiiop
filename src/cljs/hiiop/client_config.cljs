@@ -9,5 +9,5 @@
   (go
     (let [epoch (.getTime (new js/Date))
           response (<! (http/get
-                        (str "/api/v1/config?t=" epoch)))]
+                        "/api/v1/config"))]
       (merge (:body response) (args)))))

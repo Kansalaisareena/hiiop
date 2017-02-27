@@ -88,14 +88,20 @@
       (bidi/path-for hierarchy :login)
       (when going-to (str "?sitten=" (name going-to)))))))
 
+(defn wrap-private-cache-headers [handler]
+  (fn [request]
+    (assoc (handler request) :private 1)))
+
 (defn authenticated [handler]
-  (restrict handler {:handler authenticated?
-                     :on-error auth-error}))
+  (wrap-private-cache-headers
+   (restrict handler {:handler authenticated?
+                      :on-error auth-error})))
 
 (defn api-authenticated [handler]
-  (restrict handler {:handler authenticated?
-                     :on-error (fn [request resp]
-                                 (response/status resp 401))}))
+  (wrap-private-cache-headers
+   (restrict handler {:handler authenticated?
+                      :on-error (fn [request resp]
+                                  (response/status resp 401))})))
 
 (defn wrap-csrf [handler]
   (wrap-anti-forgery
@@ -152,7 +158,6 @@
             (assoc-in [:cookies "lang" :path]    "/")
             (assoc-in [:cookies "lang" :max-age] (* 3600 30)))
         (handler req)))))
-
 
 (defn redirect-to-https [handler]
   (fn [request]
