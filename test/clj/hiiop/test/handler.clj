@@ -129,7 +129,6 @@
 
 (defn edit-user [{:keys [login-cookie with new-user id]}]
   (let [url (str "/api/v1/users/" id)]
-    (log/info "--------------------------edit-user" new-user)
     (-> (generate-string new-user)
         (#(json-request url
            {:type :put
@@ -174,6 +173,33 @@
           set-cookie (last (get-in response [:headers "Set-Cookie"]))
           lang (if set-cookie (last (re-find #"lang=(sv)" set-cookie)))]
       (is (= "sv" lang))))
+
+  (testing "cache headers"
+    (testing "public page"
+      (let [response ((app) (request :get "/"))]
+        (is (= "public, max-age=60"
+               (get-in response [:headers "Cache-Control"])))))
+
+    (testing "private page"
+      (let [current-app (app)
+            user-created (create-test-user
+                          {:user-data test-user
+                           :save-id-to test-user-id
+                           :read-token-from activation-token})
+            login-cookie (login-and-get-cookie
+                          {:with current-app
+                           :user-data test-user})
+            response (current-app
+                      (-> (request :get "/luo-tehtava")
+                          (header "cookie" login-cookie)))]
+        (is (= "private, max-age=0, no-cache"
+               (get-in response [:headers "Cache-Control"])))
+        (db/delete-user! *db* {:id @test-user-id})))
+
+    (testing "api"
+      (let [response ((app) (request :get "/api/v1/config"))]
+        (is (= "private, max-age=0, no-cache"
+               (get-in response [:headers "Cache-Control"]))))))
 
   (testing "language override cookie send"
     (let [response ((app)

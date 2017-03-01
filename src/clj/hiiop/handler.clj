@@ -1,15 +1,17 @@
 (ns hiiop.handler
-  (:require [compojure.core :refer [routes wrap-routes]]
+  (:require [ring.util.response :as res]
+            [compojure.core :refer [routes wrap-routes]]
+            [compojure.route :as route]
+            [mount.core :as mount]
+            [mount.core :refer [defstate start]]
+            [taoensso.timbre :as log]
             [hiiop.layout :refer [error-page]]
             [hiiop.routes.pages :as pages]
             [hiiop.routes.services :refer [service-routes]]
-            [compojure.route :as route]
             [hiiop.env :refer [defaults]]
             [hiiop.config :refer [env]]
-            [mount.core :as mount]
-            [mount.core :refer [defstate start]]
             [hiiop.middleware :refer [wrap-base wrap-csrf wrap-formats wrap-simple-auth]]
-            [taoensso.timbre :as log]))
+))
 
 (mount/defstate init-app
   :start ((or (:init defaults) identity))
@@ -17,6 +19,7 @@
 
 (defstate wrap-dev-auth
   :start (partial wrap-simple-auth (:http-simple-credentials env)))
+
 (start #'env)
 (start #'wrap-dev-auth)
 
@@ -38,4 +41,21 @@
                  "</h2>"
                  "</p>")})))))
 
-(defn app [] (wrap-base #'app-routes))
+(defn wrap-cache-headers [handler]
+  (fn [request]
+    (let [{:keys [headers] :as response} (handler request)
+          headers-with-cache (cond
+                               (get headers "Cache-Control")
+                               headers
+
+                               (:private response)
+                               (assoc headers
+                                      "Cache-Control" "private, max-age=0, no-cache"
+                                      "Pragma" "no-cache")
+
+                               (not (:private response))
+                               (assoc headers
+                                      "Cache-Control" "public, max-age=60"))]
+      (assoc response :headers headers-with-cache))))
+
+(defn app [] (wrap-cache-headers (wrap-base #'app-routes)))
