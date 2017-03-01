@@ -321,7 +321,7 @@
      ))
 
 (rum/defc edit-buttons < rum/reactive
-  [{:keys [is-valid ask-remove context]}]
+  [{:keys [edit? is-valid ask-remove context]}]
   (let [tr (:tr context)]
     [:div {:class "opux-fieldset__item opux-fieldset__item--inline-container"}
      (html/button
@@ -330,12 +330,13 @@
        :on-click
        (fn []
          (redirect-to {:path-key :profile}))})
-     (html/button
-      (tr [:pages.quest.edit.button.remove])
-      {:class "opux-button opux-button--dull opux-form__button opux-fieldset__inline-item"
-       :on-click
-       (fn []
-         (reset! ask-remove true))})]))
+     (when edit?
+       (html/button
+        (tr [:pages.quest.edit.button.remove])
+        {:class "opux-button opux-button--dull opux-form__button opux-fieldset__inline-item"
+         :on-click
+         (fn []
+           (reset! ask-remove true))}))]))
 
 (defn delete-or-buttons!
   [{:keys [ask-remove remove-confirmed quest is-valid context]}]
@@ -364,7 +365,8 @@
       :else
       [:div {:class "opux-section"}
        (edit-buttons
-        {:ask-remove ask-remove
+        {:edit? (:id @quest)
+         :ask-remove ask-remove
          :is-valid is-valid
          :context context})
        [:div {:class "opux-fieldset__item opux-fieldset__item--inline-container"}
