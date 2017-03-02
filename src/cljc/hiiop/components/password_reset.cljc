@@ -30,32 +30,31 @@
                                  (rum/local {:password ""
                                              :confirm-password ""}
                                             ::passwords)
+                                 (rum/local nil ::error)
   [state {:keys [view token api-fn context]}]
+  (log/info "password-reset-form" (:password @(::passwords state)) (:confirm-password @(::passwords state)))
   (let [tr (:tr context)
         type (::type state)
         passwords (::passwords state)
         password (rum/cursor-in passwords [:password])
         confirm-password (rum/cursor-in passwords [:confirm-password])
         check-password (schema.core/checker schema/Password)
-        are-same (rum/derived-atom
-                   [password confirm-password]
-                   ::is-same
-                   (fn [p1 p2] (= p1 p2)))
-        error (atom (cond
-                      (and (not (nil? (check-password @password)))
-                           (not (nil? (check-password @confirm-password))))
-                      :errors.password.not-valid
+        are-same (= @password @confirm-password)
+        error-state (::error state)
+        error (cond
+                (and (not (nil? (check-password @password)))
+                     (not (nil? (check-password @confirm-password))))
+                :errors.password.not-valid
 
-                      (not (rum/react are-same))
-                      :errors.password.not-same))
-        is-valid (rum/derived-atom
-                   [are-same password confirm-password error]
-                   ::is-valid
-                   (fn [same p1 p2 e]
-                     (log/info "is valid password" same (nil? (check-password p1)) (nil? (check-password p2)) e)
-                     (and (= nil (check-password p1))
-                          (= nil (check-password p2))
-                          same)))]
+                (not are-same)
+                :errors.password.not-same
+
+                (or @error-state nil)
+                (or @error-state nil))
+        is-valid (atom
+                  (and (= nil (check-password @password))
+                       (= nil (check-password @confirm-password))
+                       are-same))]
 
     [:form
      {:class "opux-form"
@@ -64,12 +63,12 @@
         (.preventDefault e)
         #?(:cljs
            (go
-             (reset! error nil)
+             (reset! error-state nil)
              (let [response (<! (api-fn {:token (str token)
                                          :password @password}))]
                (if (:success response)
                  (reset! view "success")
-                 (reset! error :errors.token.expired))))
+                 (reset! error-state :errors.token.expired))))
            ))}
      [:div {:class "opux-form-section"}
       [:h2 (tr [:pages.activate.title])]
@@ -108,7 +107,7 @@
           :type "password"
           :id (name :pages.password-reset.confirm-password)
           :class "opux-input opux-input--text password"
-          :error error
+          :error (atom error)
           :context context})
         (html/input
          {:schema s/Str
