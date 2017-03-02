@@ -52,6 +52,7 @@
                    [are-same password confirm-password error]
                    ::is-valid
                    (fn [same p1 p2 e]
+                     (log/info "is valid password" same (nil? (check-password p1)) (nil? (check-password p2)) e)
                      (and (= nil (check-password p1))
                           (= nil (check-password p2))
                           same)))]

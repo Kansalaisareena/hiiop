@@ -155,7 +155,12 @@
 
   :profiles
   {:uberjar
-   {:omit-source true
+   {:aot :all
+    :uberjar-name "hiiop.jar"
+    :source-paths ["env/prod/clj"]
+    :resource-paths ["env/prod/resources"]
+
+    :omit-source true
     ;;:prep-tasks ["git-version" "compile" ["cljsbuild" "once" "min"] "resource" "minify-assets"]
     :prep-tasks ["git-version"
                  "compile"
@@ -188,24 +193,7 @@
         :verbose true
         :compiler-stats true
         :pretty-print false
-        :source-map false}}}}
-
-    ;; :minify-assets
-    ;; {:assets
-    ;;  {~(str "resources/public/"
-    ;;         (apply str (clojure.string/trim
-    ;;                      (:out (clojure.java.shell/sh
-    ;;                              "git" "rev-parse" "--verify" "HEAD"))))
-    ;;         "/js/app.js")
-    ;;   "resources/public/app.js"
-    ;;   }
-    ;;  :options {:optimizations :none}
-    ;;  }
-
-    :aot :all
-    :uberjar-name "hiiop.jar"
-    :source-paths ["env/prod/clj"]
-    :resource-paths ["env/prod/resources"]}
+        :source-map false}}}}}
 
    :dev           [:project/dev :profiles/dev]
    :test          [:project/dev :project/test :profiles/test]
