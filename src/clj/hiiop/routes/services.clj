@@ -38,7 +38,8 @@
                                 :git-ref
                                 :langs
                                 :hiiop-blog-base-url
-                                :site-base-url])
+                                :site-base-url
+                                :js-logs])
               {:accept-langs (:tempura/accept-langs req)
                :now (time/now-utc)
                :current-locale (keyword current-locale)
@@ -69,14 +70,15 @@
         :body [cfobject CfObject]
         :summary "Handles contentful webhook."
         :middleware  [wrap-private-cache-headers]
-        (wrap-simple-auth {:username (get-in env [:contentful :webhook-user])
-                           :password (get-in env [:contentful :webhook-password])}
-                          (fn [request]
-                            (try (do (cf/update-all-items)
-                                     (ok))
-                                 (catch Exception e
-                                   (log/info "Contentful hook failed: " e)
-                                   (internal-server-error))))))
+        (wrap-simple-auth
+         {:username (get-in env [:contentful :webhook-user])
+          :password (get-in env [:contentful :webhook-password])}
+         (fn [request]
+           (try (do (cf/update-all-items)
+                    (ok))
+                (catch Exception e
+                  (log/info "Contentful hook failed: " e)
+                  (internal-server-error))))))
 
       (context "/users" []
         :tags ["user"]

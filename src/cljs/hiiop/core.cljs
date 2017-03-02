@@ -32,7 +32,7 @@
           diff (time/diff-in-ms server-time client-time)]
 
       ;; Hide console logs in production
-      (when (not (:dev conf))
+      (when (not (:js-logs conf))
         (log/set-config! {:enabled? false}))
 
       (log/info conf)
