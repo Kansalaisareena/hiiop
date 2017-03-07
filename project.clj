@@ -20,7 +20,7 @@
                  [metosin/ring-http-response             "0.8.0"]
                  [mount                                  "0.1.10"]
                  [org.clojure/clojure                    "1.8.0"]
-                 [org.clojure/clojurescript              "1.9.495" :scope "provided"]
+                 [org.clojure/clojurescript              "1.9.293" :scope "provided"]
                  [org.clojure/tools.cli                  "0.3.5"]
                  [org.clojure/tools.logging              "0.3.1"]
                  [org.clojure/math.numeric-tower         "0.0.4"]
@@ -212,7 +212,7 @@
                   [[com.jakemccrary/lein-test-refresh  "0.18.0"]
                    [lein-doo                           "0.1.7"]
                    [lein-figwheel                      "0.5.8"]
-                   [org.clojure/clojurescript          "1.9.495"]
+                   [org.clojure/clojurescript          "1.9.293"]
                    [lein-autoreload                    "0.1.1"]]
 
                   :prep-tasks ["git-version"]
