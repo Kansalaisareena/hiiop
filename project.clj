@@ -32,7 +32,7 @@
                  [ring-middleware-format                 "0.7.0"]
                  [ring-webjars                           "0.1.1"]
                  [ring/ring-defaults                     "0.2.1"]
-                 [rum                                    "0.10.8"]
+                 [rum                                    "0.10.7"]
                  [selmer                                 "1.10.0"]
                  [clj-time                               "0.12.2"]
                  [buddy/buddy-auth                       "1.2.0"]
@@ -176,7 +176,7 @@
        :compiler
        {:output-to "target/cljsbuild/public/js/app.js"
         :externs ["externs/google_maps_api_v3.js"]
-        :optimizations :advanced
+        :optimizations :simple
         :parallel-build true
         :compiler-stats true
         :pretty-print false
@@ -188,7 +188,7 @@
        :compiler
        {:output-to "target/cljsbuild/public/js/static.js"
         :externs ["externs/google_maps_api_v3.js"]
-        :optimizations :advanced
+        :optimizations :simple
         :parallel-build true
         :verbose true
         :compiler-stats true
