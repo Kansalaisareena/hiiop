@@ -27,23 +27,20 @@
                              :schema schema
                              :errors errors})
         checker (partial hs/select-schema-either schema)
-        set-valid! (fn [validity] (reset! is-valid validity))]
+        value-or-error (checker @value)]
 
-    (add-watch
-     value
-     ::quest-signup-validator
-     (fn [key _ old new]
-       (log/info "signup-form" new)
-       (let [value-or-error (checker new)]
-         (cond
-           (:--value value-or-error)
-           (do
-             (set-valid! true)
-             (reset! error nil))
-           (:--error value-or-error)
-           (do
-             (set-valid! false)
-             (reset! error true))))))
+    (cond
+      (and (not @is-valid) (:--value value-or-error))
+      (do
+        (log/info "signup-form valid" (:--value value-or-error))
+        (reset! is-valid true)
+        (reset! error nil))
+
+      (and @is-valid (:--error value-or-error))
+      (do
+        (log/info "signup-form not valid" (:--error value-or-error))
+        (reset! is-valid false)
+        (reset! error true)))
 
     [:div {:class "opux-fieldset__item"}
      (html/label
@@ -114,6 +111,7 @@
                                                :schema schema
                                                :errors errors})
         ]
+    (log/info "join-quest-form - signup-valid:" @signup-valid "is-valid" @is-valid)
     [:form
      {:class "opux-form opux-content opux-content--small"
       :on-submit
@@ -188,22 +186,16 @@
         signup-valid (::signup-valid state)
         checker (partial hs/select-schema-either schema)
         is-valid (::is-valid state)
-        set-valid! (fn [validity] (reset! is-valid validity))
         check-and-set-valid!
         (fn [new]
           (let [value-or-error (checker new)]
+            (log/info "join-quest - check-and-set-valid!" value-or-error "signup-valid" @signup-valid)
             (cond
+              (and (not @is-valid) (:--value value-or-error))
+              (reset! is-valid true)
 
-              (and (:--value value-or-error) (not use-signup))
-              (do
-                (set-valid! true))
-
-              (and (:--value value-or-error) use-signup @signup-valid)
-              (do
-                (set-valid! true))
-
-              (:--error value-or-error) (set-valid! false)
-              :else (set-valid! false))))]
+              (and @is-valid (:--error value-or-error))
+              (reset! is-valid false))))]
 
     (when secret-party
       (do
@@ -225,7 +217,7 @@
      party-member
      ::quest-signup-form-validator
      (fn [key _ old new]
-       (log/info "party-member" new)
+       (log/info "join-quest - party-member watch -" new)
        (check-and-set-valid! new)))
 
     (cond
