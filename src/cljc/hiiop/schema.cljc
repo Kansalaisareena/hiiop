@@ -298,7 +298,7 @@
               schema-error (message-from-constrained (:schema data))
               type-error (:type data)
               found-error (or schema-error type-error :unknown-error)]
-          (log/error "select-schema-either" e)
+          (log/error "select-schema-either" (:error data))
           {:--error found-error}))))
 
 (def CfObject
