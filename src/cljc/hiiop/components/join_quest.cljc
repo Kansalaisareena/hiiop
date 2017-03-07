@@ -33,6 +33,7 @@
      value
      ::quest-signup-validator
      (fn [key _ old new]
+       (log/info "signup-form" new)
        (let [value-or-error (checker new)]
          (cond
            (:--value value-or-error)
@@ -224,6 +225,7 @@
      party-member
      ::quest-signup-form-validator
      (fn [key _ old new]
+       (log/info "party-member" new)
        (check-and-set-valid! new)))
 
     (cond
