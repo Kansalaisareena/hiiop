@@ -83,9 +83,9 @@
                                                      :counter-days (:days (get-the-counter-value))})
                     :title (tr [:pages.index.title])
                     :metas [{:property "og:title"
-                             :content (tr [:pages.index.title])}
-                            {:property "og:content"
-                             :content (tr [:pages.index.banner.content])}
+                             :content (str (tr [:pages.index.social-title-prefix]) " " (tr [:pages.index.title]))}
+                            {:property "og:description"
+                             :content (tr [:pages.index.description])}
                             {:property "og:type"
                              :content "article"}
                             {:property "og:url"
@@ -97,7 +97,9 @@
                             {:name "twitter:creator"
                              :content (get-in env [:social :twitter-account])}
                             {:name "twitter:card"
-                             :content (tr [:pages.index.banner.content])}]
+                             :content (str (tr [:pages.index.social-title-prefix]) " " (tr [:pages.index.title]))}
+                            {:name "twitter:description"
+                             :content (tr [:pages.index.description])}]
                     :scripts ["//assets.juicer.io/embed.js"]})))
 
 (defn login [req]
