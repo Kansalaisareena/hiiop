@@ -4,8 +4,7 @@
   :url "http://example.com/FIXME"
   :repositories {"project" "file:maven_repository"}
 
-  :dependencies [[bouncer                                "1.0.0"]
-                 [cider/cider-nrepl                      "0.14.0"]
+  :dependencies [[cider/cider-nrepl                      "0.14.0"]
                  [cljs-http                              "0.1.42"]
                  [compojure                              "1.5.1"]
                  [conman                                 "0.6.2"]
