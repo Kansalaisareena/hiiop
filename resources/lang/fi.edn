@@ -202,9 +202,11 @@
    :social-feed
    {
     :title "Jaa kokemuksesi ja kutsu ystäväsi mukaan #hiiop"
+    }
+   :social-title-prefix "Hiiop!"
+   :title "100 vuotta vapaaehtoistyötä"
+   :description "Millainen on sinun päiväsi vapaaehtoisena? hiiop100.fi"
    }
-   :title "Etusivu"
-  }
   :login
   {
    :email "Sähköpostiosoite"

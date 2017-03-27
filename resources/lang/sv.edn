@@ -203,8 +203,10 @@
    :social-feed
    {
     :title "Dela dina erfarenheter och bjud in vänner #hiiop"
-   }
-   :title "Ingångssida"
+    }
+   :social-title-prefix "Hiiop!"
+   :title "100 år av frivilligt arbete"
+   :description "Hurdan är din dag som volontär? hiiop100.fi"
   }
   :login
   {
