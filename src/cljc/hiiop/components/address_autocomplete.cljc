@@ -73,12 +73,12 @@
                   (set-location-to! details))))
            on-change
            (fn [e]
-             #?(:cljs             
+             #?(:cljs
                 (when (= "" (.-value (.-target e)))
                   (set-location-to! nil))))
            on-blur
            (fn [e]
-             #?(:cljs             
+             #?(:cljs
                 (js/setTimeout
                  (fn []
                    (let [js-place (.getPlace instance)

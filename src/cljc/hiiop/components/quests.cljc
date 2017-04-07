@@ -173,8 +173,8 @@
              :context context}
             )]])))))
 
-(defn reveal-end-time [end-time-revealed]
-  (swap! end-time-revealed #(identity true)))
+(defn reveal-end-time! [end-time-revealed]
+  (reset! end-time-revealed true))
 
 (rum/defcs edit-time-place < rum/reactive
                             (rum/local false ::end-time-revealed)
@@ -225,7 +225,7 @@
              :href "#"
              :on-click (fn [e]
                          (.preventDefault e)
-                         (reveal-end-time end-time-revealed))}
+                         (reveal-end-time! end-time-revealed))}
          (str "+ " (tr [:pages.quest.edit.button.reveal-end-time]))]]
        [:div {:class "opux-fieldset__item"}
         (html/label
@@ -531,6 +531,20 @@
       (fn [e]
         (.preventDefault e)
         (reset! view "preview"))
+      :onKeyPress
+      (fn [e]
+        #?(:cljs
+           (let [keycode (or (.-charCode e)
+                             (.-which e)
+                             (.-keyCode e))]
+             (if (or (-> e
+                         (.-target)
+                         (.-tagName)
+                         (clojure.string/lower-case)
+                         (= "textarea"))
+                     (not= keycode 13))
+               true
+               (.preventDefault e)))))
       }
      [:h1 {:class "opux-centered"} (tr [:actions.quest.create])]
      (edit-content
