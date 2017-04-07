@@ -19,7 +19,6 @@ dependencies:
     - ~/leiningen
     - bin
   pre:
-    - mvn deploy:deploy-file -DgroupId=cljsjs -DartifactId=moment-timezone   -Dversion=0.5.10-0 -Dpackaging=jar -Dfile=moment-timezone-0.5.10-0.jar -Durl=file:maven_repository
     - bash ./scripts/ci-install-sassc.sh
     - bash ./scripts/ci-install-lein-latest.sh
 
