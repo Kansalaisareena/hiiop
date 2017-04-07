@@ -7,7 +7,8 @@
             [hiiop.translate :refer [tr-opts default-locale]]
             [taoensso.tempura :as tempura]
             [hiiop.components.social-buttons :refer [social-buttons]]
-            [cemerick.url :refer [url-encode]]))
+            [cemerick.url :refer [url-encode]]
+            [taoensso.timbre :as log]))
 
 (defn- create-context [locale]
   {:tr (partial tempura/tr (tr-opts) [locale])
@@ -99,6 +100,12 @@
            [:script {:src (str asset-path "/js/static.js")
                      :type "text/javascript"}]])))))
 
+(defn- youtube-image-url [youtube-id]
+  (str
+   "https://img.youtube.com/vi/"
+   youtube-id
+   "/mqdefault.jpg"))
+
 (defn- story-card [{:keys [context story]}]
   (let [{:keys [title
                 url
@@ -106,20 +113,22 @@
                 excerpt
                 author
                 image-url
+                youtube-id
                 created-at
                 categories]} story
         categories-attr (url-encode
-                         (clojure.string/join "," categories))]
-
+                         (clojure.string/join "," categories))
+        thumbnail-url (or image-url
+                          (youtube-image-url youtube-id))]
     [:div {:class "opux-card-container"
            :categories categories-attr}
      [:div {:class "opux-card"}
-      (when image-url
+      (when thumbnail-url
         [:div {:class "opux-card__image-container"}
          [:a {:href url}
           [:div {:class "opux-card__image"
                  :style {:background-image
-                         (str "url(" image-url ")")}}]]])
+                         (str "url(" thumbnail-url ")")}}]]])
 
       [:div {:class "opux-card__content"}
        [:div {:class "opux-content"}
@@ -206,4 +215,4 @@
           [:div {:class "script-tags"}
            [:script {:src (str asset-path "/js/static.js")
                      :type "text/javascript"}]]))))))
-  
+

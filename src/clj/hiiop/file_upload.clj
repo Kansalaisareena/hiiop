@@ -22,10 +22,16 @@
     bucket))
 
 (defstate blog-bucket
-  :start (:hiiop-blog-bucket env))
+  :start
+  (let [blog-bucket (:hiiop-blog-bucket env)]
+    (log/info "Starting with blog bucket" blog-bucket)
+    blog-bucket))
 
 (defstate hiiop-bucket
-  :start (:hiiop-bucket env))
+  :start
+  (let [hiiop-bucket (:hiiop-bucket env)]
+    (log/info "Starting with hiiop bucket" hiiop-bucket)
+    hiiop-bucket))
 
 (defstate bucket-base-url
   :start
