@@ -76,7 +76,7 @@
          (tr [:pages.quest.edit.picture.remove-link])]]))))
 
 (rum/defcs edit-content < rum/reactive
-  (rum/local false ::organisation-enabled)
+                          (rum/local false ::organisation-enabled)
   [state {:keys [context
                  quest
                  schema
@@ -84,7 +84,9 @@
                  is-valid
                  cursors-and-schema
                  tr] :as args}]
-  (let [organisation-enabled (::organisation-enabled state)]
+  (let [organisation-enabled (if (not (nil? (get-in @quest [:organisation :name])))
+                              (atom true)
+                              (::organisation-enabled state))]
     (html/form-section
      (tr [:pages.quest.edit.subtitles.content])
      [:p {:class "opux-content opux-content--small opux-centered"}
