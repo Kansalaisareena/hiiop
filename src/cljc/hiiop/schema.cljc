@@ -13,7 +13,7 @@
 
 (def Email
   (s/constrained
-   #"(^[a-zA-Z0-9._+-]+@[^@.]+\.[^@.]+)$"
+   #"(^[a-zA-Z0-9._+-]+@[^@]+\.[^@.]+)$"
    #(= % %) :errors.email.not-valid))
 
 (def Password
