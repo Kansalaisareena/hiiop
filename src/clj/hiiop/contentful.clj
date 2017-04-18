@@ -88,6 +88,7 @@
     (contentful-page-structure
       {:locale locale
        :url (str (:hiiop-blog-base-url env)
+                 "/"
                  (name locale) "/blog/"
                  (get-in cfobject [:sys :id]) ".html")
        :title (:otsikko fields)
