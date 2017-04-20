@@ -305,3 +305,6 @@
   "Contentful object"
   {:sys s/Any
    :fields s/Any})
+
+(defn change-test []
+  "change-test")
