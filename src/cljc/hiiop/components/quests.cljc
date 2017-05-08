@@ -438,7 +438,8 @@
         edit-member (partial edit-party-member {:context context
                                                 :quest quest
                                                 :party party
-                                                :processing processing})]
+                                                :processing processing})
+        member-emails (clojure.string/join "," (map :email @party))]
     [:div {:class "opux-form-section opux-form-section--no-border"}
      [:h2 {:class "opux-centered"
            :id "edit-party-members"}
@@ -449,12 +450,13 @@
          {:class "opux-table opux-centered opux-content"}
          (into [:tbody {:class "opux-table__body"}] (map edit-member @party))]
         [:div {:class "opux-content"}
-         [:h3
-          [:span {:class "opux-icon opux-icon-mail"}]
-          (tr [:pages.quest.edit.party.mail-participants])]
-         [:textarea
+         [:a {:href (str "mailto:?bcc=" member-emails)}
+          [:h3
+           [:span {:class "opux-icon opux-icon-mail"}]
+           (tr [:pages.quest.edit.party.mail-participants])]]
+          [:textarea
           {:class "opux-input opux-input--textarea opux-input--textarea"
-           :value (clojure.string/join "," (map :email @party))
+           :value member-emails
            :on-focus
            (fn [e]
              (let [target (.-target e)]
