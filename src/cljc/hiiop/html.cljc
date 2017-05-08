@@ -196,15 +196,19 @@
 (rum/defcs datepicker < pikaday-mixin
   [state {:keys [date min-date max-date format schema error class transform-value context error-key use-value]}]
   (let [default-options {:type "text"
-                        :class "opux-input opux-input--date-picker"
-                        :default-value (time/to-string @date format)}
-       options (if use-value
-                 (assoc default-options
-                        :value (time/to-string @date format))
-                 default-options)]
-    [:div {:class (str
-                    "opux-input__container opux-input__container--date-picker opux-icon "
-                    class)}
+                         :class "opux-input opux-input--date-picker"
+                         :default-value (time/to-string @date format)}
+        options (if use-value
+                  (assoc default-options
+                         :value (time/to-string @date format))
+                  default-options)]
+    [:div {:class
+           (clojure.string/join
+            " "
+            ["opux-input__container"
+             "opux-input__container--date-picker"
+             "opux-icon"
+             class])}
      [:input options]
      [:div {:class "opux-date-picker-trigger"}]]))
 
@@ -254,8 +258,8 @@
                          (or (not max-date)
                              (time/after? (max-date-object) new-date)))
         date-object (time/from-string @date value-format)
-        date-atom (atom date-object)
-        time-atom (atom (time/datetime->time date-object))
+        date-atom   (atom date-object)
+        time-atom   (atom (time/datetime->time date-object))
         print-date-time-format (str date-print-format " " time-print-format)
         set-date! (fn [new-datetime]
                     (reset! date
@@ -301,11 +305,12 @@
     [:div
      {:class class}
      (datepicker
-      {:date date-atom
-       :format date-print-format
-       :position "top right"
-       :context context
-       :class "opux-fieldset__inline-item date"})
+      {:date      date-atom
+       :format    date-print-format
+       :use-value true
+       :position  "top right"
+       :context   context
+       :class     "opux-fieldset__inline-item date"})
      (timepicker
       {:time time-atom
        :class "opux-fieldset__inline-item opux-input opux-input--select opux-input--select--time time"})

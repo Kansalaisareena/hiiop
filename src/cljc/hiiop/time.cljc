@@ -191,7 +191,7 @@
                        (.setMonthOfYear to))))
       :cljs
       (-> (js/moment date)
-          (.month to)))))
+          (.month (- to 1))))))
 
 (defn day
   ([from]

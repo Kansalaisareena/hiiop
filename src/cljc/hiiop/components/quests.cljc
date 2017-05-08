@@ -188,17 +188,13 @@
      (fn [_ _ _ new-start]
        (let [start-time-o (time/from-string new-start)
              end-time-o (time/from-string @end-time)]
-         (when (and (not @end-time-revealed)
-                    (time/after?
-                     start-time-o
-                     end-time-o))
-           (reset!
-            end-time
-            (time/to-string
-             (time/use-same-date
-              start-time-o
-              end-time-o))))
-         )))
+         (reset!
+          end-time
+          (time/to-string
+           (time/use-same-date
+            start-time-o
+            end-time-o))))
+         ))
     (html/form-section
      (tr [:pages.quest.edit.subtitles.time-place])
      [:div {:class "opux-fieldset__item"}
@@ -221,8 +217,8 @@
 
      (if (not (rum/react end-time-revealed))
        [:div {:class "opux-fieldset__item"}
-        [:a {:class "end-time-reveal"
-             :href "#"
+        [:a {:class    "end-time-reveal"
+             :href     "#"
              :on-click (fn [e]
                          (.preventDefault e)
                          (reveal-end-time! end-time-revealed))}
@@ -233,15 +229,15 @@
          {:class "opux-input__label end-time-label"
           :error (get-in cursors-and-schema [:end-time :error])})
         (html/datetime-picker
-         {:date end-time
-          :error (get-in cursors-and-schema [:end-time :error])
-          :schema (get-in cursors-and-schema [:end-time :schema])
-          :min-date (get-in cursors-and-schema [:start-time :value])
-          :class "opux-fieldset__item opux-fieldset__item--inline-container end-time"
-          :value-format time/transit-format
+         {:date              end-time
+          :error             (get-in cursors-and-schema [:end-time :error])
+          :schema            (get-in cursors-and-schema [:end-time :schema])
+          :min-date          (get-in cursors-and-schema [:start-time :value])
+          :class             "opux-fieldset__item opux-fieldset__item--inline-container end-time"
+          :value-format      time/transit-format
           :date-print-format time/date-print-format
           :time-print-format time/time-print-format
-          :context context})])
+          :context           context})])
      [:div {:class "opux-fieldset__item"}
       (html/label
        (tr [:pages.quest.edit.location.label])
