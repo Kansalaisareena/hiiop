@@ -453,10 +453,14 @@
          {:class "opux-table opux-centered opux-content"}
          (into [:tbody {:class "opux-table__body"}] (map edit-member @party))]
         [:div {:class "opux-content"}
-         [:a {:href (str "mailto:?bcc=" (clojure.string/join "," (map :email @party)))}
+         [:h3
           [:span {:class "opux-icon opux-icon-mail"}]
-          (tr [:pages.quest.edit.party.mail-participants])]]]
-       [:p {:class "opux-content opux-centered"} (tr [:pages.quest.edit.party.empty])])]))
+          (tr [:pages.quest.edit.party.mail-participants])]
+         [:textarea
+          {:class "opux-input opux-input--textarea opux-input--textarea"
+           :value (clojure.string/join "," (map :email @party))}]
+         ]])
+     [:p {:class "opux-content opux-centered"} (tr [:pages.quest.edit.party.empty])]]))
 
 (rum/defc show-secret-link < rum/reactive
   [{:keys [quest-id secret-party context]}]
