@@ -458,7 +458,14 @@
           (tr [:pages.quest.edit.party.mail-participants])]
          [:textarea
           {:class "opux-input opux-input--textarea opux-input--textarea"
-           :value (clojure.string/join "," (map :email @party))}]
+           :value (clojure.string/join "," (map :email @party))
+           :on-focus
+           (fn [e]
+             (let [target (.-target e)]
+               (.setSelectionRange
+                target
+                0 (.. target -value -length)))
+             )}]
          ]])
      [:p {:class "opux-content opux-centered"} (tr [:pages.quest.edit.party.empty])]]))
 
