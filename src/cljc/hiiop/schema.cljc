@@ -227,7 +227,7 @@
    :max-participants 10
    :categories []
    :is-open true
-   :organiser-participates true})
+   :organiser-participates false})
 
 (def QuestSignup
   "Quest signup information"
