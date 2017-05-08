@@ -328,7 +328,7 @@
      :cancel-remove "Avbryt"
      :confirm-remove "Ta bort anmälan?"
      :empty "Dela dina erfarenheter och bjud in vänner #hiiop"
-     :mail-participants "Sänd e-post till deltagarna"
+     :mail-participants "Sänd e-post till deltagarna som en hemlig kopia"
      :title "Anmälda till ditt uppdrag"
     }
     :picture

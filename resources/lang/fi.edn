@@ -327,7 +327,7 @@
      :cancel-remove "Peruuta"
      :confirm-remove "Poista ilmoittautuminen?"
      :empty "Jaa kokemuksesi ja kutsu ystäväsi mukaan #hiiop"
-     :mail-participants "Lähetä sähköpostiviesti osallistujille"
+     :mail-participants "Lähetä sähköpostiviesti piilokopiona osallistujille"
      :title "Tehtävääsi ilmoittautuneet"
     }
     :picture
