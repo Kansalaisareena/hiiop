@@ -219,7 +219,7 @@
                 (time/tomorrow-at-noon)
                 time/transit-format)
    :end-time (time/to-string
-              (time/time-to (time/tomorrow) 23 45)
+              (time/time-to (time/tomorrow) 22 00)
               time/transit-format)
    :picture-id nil
    :picture-url nil
