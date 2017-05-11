@@ -39,9 +39,11 @@
 
 (defn supported-lang [accept-langs]
   (if-not (empty? accept-langs)
-    (let [keyword-accepted-langs (into []
-                                       (map #(keyword (subs % 0 2))
-                                            accept-langs))
+    (let [accepted-empty-removed (filter #(>= (count %1) 2) accept-langs)
+          keyword-accepted-langs (vec
+                                  (map
+                                   #(keyword (subs % 0 2))
+                                   accepted-empty-removed))
           accept-langs-set (into #{} keyword-accepted-langs)
           langs-set (into #{} (keys langs))
           lang-intersection (intersection langs-set accept-langs-set)
