@@ -305,3 +305,5 @@
   "Contentful object"
   {:sys s/Any
    :fields s/Any})
+
+(defn boo! [])
