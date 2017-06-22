@@ -639,6 +639,7 @@
           :active submitted-active
           :on-click
           (fn []
+            (reset! submitted true)
             (when @is-valid
               #?(:cljs
                  (go
@@ -649,7 +650,6 @@
                                        (assoc :picture-id (str (:picture-id @quest)))
                                        (dissoc :participant-count))
                          from-api (<! (api-call api-quest))]
-                     (reset! submitted true)
                      (if (:success from-api)
                        (reset! view "success"))
                      )))))
