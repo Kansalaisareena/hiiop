@@ -616,9 +616,11 @@
       buttons
       )]))
 
-(rum/defc preview
-  [{:keys [context quest user schema errors view is-valid]}]
-  (let [tr (:tr context)]
+(rum/defcs preview < (rum/local false ::submitted)
+  [state {:keys [context quest user schema errors view is-valid]}]
+  (let [tr (:tr context)
+        submitted (::submitted state)
+        submitted-active (atom (and @is-valid (not @submitted)))]
     [:div {:class "opux-content"}
      [:div {:class "opux-section opux-centered"}
       [:h1  (tr [:pages.quest.preview.title])]
@@ -634,7 +636,7 @@
          (tr [:pages.quest.preview.buttons.publish])
          {:class "opux-button opux-button--highlight opux-button--spacing"
           :type "submit"
-          :active is-valid
+          :active submitted-active
           :on-click
           (fn []
             (when @is-valid
@@ -647,9 +649,11 @@
                                        (assoc :picture-id (str (:picture-id @quest)))
                                        (dissoc :participant-count))
                          from-api (<! (api-call api-quest))]
+                     (reset! submitted true)
                      (if (:success from-api)
                        (reset! view "success"))
-                     )))))})]]
+                     )))))
+          })]]
      (qs/quest {:quest quest :context context :user user})]))
 
 (rum/defc edit-success < rum/reactive
