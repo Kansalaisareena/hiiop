@@ -57,6 +57,7 @@
   {
    :place "Ort"
    :time "Tid"
+   :organizer "Samma på svenska"
   }
  }
  :errors

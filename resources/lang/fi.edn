@@ -57,6 +57,7 @@
   {
    :place "Paikka"
    :time "Aika"
+   :organizer "Järjestäjä"
   }
  }
  :errors

@@ -82,6 +82,46 @@
                 button2-text ": " button2-url))
          )))
 
+(defn join-quest-mail [{:keys [tr
+                               title
+                               quest
+                               body-text
+                               button-text
+                               button-url
+                               message
+                               button2-text
+                               button2-url
+                               organizer-name
+                               organizer-email]}]
+  (let [start-time (time/from-string (:start-time quest))
+        end-time (time/from-string (:end-time quest))]
+    [:html
+     [:head {:dangerouslySetInnerHTML {:__html mail-style }}]
+     [:body
+      [:h1 title]
+      [:dl
+       [:div {:class "body-text" :dangerouslySetInnerHTML {:__html body-text}}]
+        (when message
+         [:p {:class "message"} message])
+       [:dt (tr [:email.quest.time])]
+       [:dd {:class "time"}
+        (time/duration-to-print-str start-time end-time)]
+       [:dt (tr [:email.quest.place])]
+       [:dd {:class "place"}
+        (mangling/readable-address (:location quest))]
+       [:dt (tr [:email.quest.organizer])]
+       [:dd {:class "organizer"} (str organizer-name ", " organizer-email)]]
+      (when button-text
+        [:div
+         [:a {:href button-url
+              :class "button-1"
+              :id "button-1"} button-text]])
+      (when button2-text
+        [:div
+         [:a {:href button2-url
+              :class "button-2"
+              :id "button-2"} button2-text]])]]))
+
 (defn simple-mail [{:keys [title
                            body-text
                            button-text

@@ -11,7 +11,8 @@
             [hiiop.emails :as emails]
             [hiiop.url :refer [url-to]]
             [hiiop.redis :refer [wcar*]]
-            [hiiop.config :refer [env]]))
+            [hiiop.config :refer [env]]
+            [hiiop.db.core :as db]))
 
 (defstate url-to' :start (partial url-to (:site-base-url env)))
 
@@ -97,11 +98,12 @@
   (let [tr (ht/tr-with [locale])
         quest-id (:id quest)
         content (mail-content "join-quest" locale)
-        title (quest-email-title (content :otsikko) (quest :name))]
+        title (quest-email-title (content :otsikko) (quest :name))
+        owner (db/get-quest-owner {:id quest-id})]
     (send-mail
      (make-mail {:to email
                  :subject title
-                 :template emails/quest-details-mail
+                 :template emails/join-quest-mail
                  :plaintext-template emails/plaintext-quest-details-mail
                  :template-params
                  {:tr tr
@@ -114,7 +116,9 @@
                   :button2-text (content :tokanappiteksti)
                   :button2-url (url-to' :part-quest-party
                                         :quest-id quest-id
-                                        :member-id member-id)}}))))
+                                        :member-id member-id)
+                  :organizer-name (:name owner)
+                  :organizer-email (:email owner)}}))))
 
 (defn- send-new-quest-participant [{:keys [email quest locale]}]
   (log/info "send-quest-new-participant" email quest)
