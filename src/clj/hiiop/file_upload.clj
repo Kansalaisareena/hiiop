@@ -6,7 +6,11 @@
             [hiiop.config :refer [env]]
             [schema.core :as s]
             [clojure.java.io :refer [copy]]
-            [clj-http.client :as http]))
+            [clj-http.client :as http]
+            [image-resizer.core :refer [resize-to-width]]
+            [image-resizer.format :refer [as-file]]
+            [clojure.java.io :as io]
+))
 
 (defstate aws-credentials
   :start
@@ -45,25 +49,32 @@
     (try
       (f temp-file)
       (catch Exception e
-        (.delete temp-file)
-        (throw e)))))
-
+        (throw e))
+      (finally (.delete temp-file)))))
 
 (defn upload-picture-to-s3 [id picture-file]
-  (-> (pm/extension-for-name (:content-type picture-file))
-      (#(str "images/" id %1))
-      ((fn [key]
-         (s3/put-object aws-credentials
-                        :bucket-name picture-bucket
-                        :key key
-                        :file (:tempfile picture-file)
-                        :metadata
-                        {:content-type (:content-type picture-file)})
-         key
-         ))
-      (#(str bucket-base-url "/" %1))
-      )
-  )
+  (let [extension (pm/extension-for-name (:content-type picture-file))
+        tempfile-name (:absolutePath (bean (:tempfile picture-file)))
+        image-name (str id extension)
+        original-key (str "images/" image-name)
+        small-key (str "images/small/" image-name)]
+    (s3/put-object aws-credentials
+                            :bucket-name picture-bucket
+                            :key original-key
+                            :file (:tempfile picture-file)
+                            :metadata
+                            {:content-type (:content-type picture-file)})
+    (let [small-image (as-file
+                       (resize-to-width (io/file tempfile-name) 450)
+                       (str tempfile-name ".small" extension) :verbatim)         ]
+      (try
+        (s3/put-object aws-credentials
+                            :bucket-name picture-bucket
+                            :key small-key
+                            :file small-image
+                            :metadata
+                            {:content-type (:content-type picture-file)})
+        (finally (io/delete-file small-image))))))
 
 (defn get-and-upload-asset-to-s3 [from to]
   (with-temp-file
