@@ -74,7 +74,8 @@
                             :file small-image
                             :metadata
                             {:content-type (:content-type picture-file)})
-        (finally (io/delete-file small-image))))))
+        (finally (io/delete-file small-image))))
+    (str bucket-base-url "/" original-key)))
 
 (defn get-and-upload-asset-to-s3 [from to]
   (with-temp-file
