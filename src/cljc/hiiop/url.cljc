@@ -3,7 +3,8 @@
             [taoensso.timbre :as log]
             #?(:clj [ring.util.response :refer [redirect]])
             [bidi.bidi :refer [path-for]]
-            [hiiop.routes.page-hierarchy :refer [hierarchy]]))
+            [hiiop.routes.page-hierarchy :refer [hierarchy]]
+            [clojure.string :as str]))
 
 (defn vector-to-map [to-map the-map]
   (if (empty? (take 2 to-map))
@@ -12,6 +13,12 @@
           [key value] (take 2 to-map)]
       (vector-to-map rest (conj the-map {(keyword key) value})))
     ))
+
+(defn image-url-to-small-url [url]
+  (let
+      [split (str/split url #"/")
+       [begin end] (split-at (- (count split) 1) split)]
+    (str/join "/" (flatten [begin "small" end]))))
 
 (defn query-params [url]
   (-> (cs/split url #"\?")

@@ -6,6 +6,7 @@
             [bidi.bidi :refer [path-for]]
             [hiiop.routes.page-hierarchy :refer [hierarchy]]
             [hiiop.time :as time]
+            [hiiop.url :refer [image-url-to-small-url]]
             #?(:cljs [cljs.core.async :refer [<!]])
             #?(:cljs [hiiop.client-api :as api])))
 
@@ -16,13 +17,6 @@
           (name (first categories))
           ".jpg")
       picture-url)))
-
-(defn image-url-to-small-url [url]
-  (let
-      [split (str/split url #"/")
-       [begin end] (split-at (- (count split) 1) split)]
-    (str/join "/" (flatten [begin "small" end]))))
-
 
 (defn get-small-quest-image [quest]
   (let [{:keys [picture-url categories]} quest]
