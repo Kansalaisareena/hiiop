@@ -439,7 +439,7 @@
                                                 :quest quest
                                                 :party party
                                                 :processing processing})
-        member-emails (clojure.string/join "," (map :email @party))]
+        member-emails (clojure.string/join ";" (map :email @party))]
     [:div {:class "opux-form-section opux-form-section--no-border"}
      [:h2 {:class "opux-centered"
            :id "edit-party-members"}
