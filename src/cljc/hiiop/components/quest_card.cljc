@@ -6,6 +6,7 @@
             [bidi.bidi :refer [path-for]]
             [hiiop.routes.page-hierarchy :refer [hierarchy]]
             [hiiop.time :as time]
+            [hiiop.url :refer [image-url-to-small-url]]
             #?(:cljs [cljs.core.async :refer [<!]])
             #?(:cljs [hiiop.client-api :as api])))
 
@@ -16,6 +17,15 @@
           (name (first categories))
           ".jpg")
       picture-url)))
+
+(defn get-small-quest-image [quest]
+  (let [{:keys [picture-url categories]} quest]
+    (if (nil? picture-url)
+      (str "/img/category/"
+          (name (first categories))
+          ".jpg")
+      picture-url)))
+
 
 (rum/defcs quest-card-action-delete < rum/reactive
   (rum/local false ::processing)
@@ -91,7 +101,7 @@
         (tr [:pages.profile.cancel])]])))
 
 (defn- quest-card-image [{:keys [quest is-own-quest]}]
-  (let [quest-image (get-quest-image quest)
+  (let [quest-image (image-url-to-small-url (get-quest-image quest))
         quest-id (:id quest)
         page-key (if is-own-quest
                    :edit-quest
@@ -231,7 +241,7 @@
       [:div {:class "opux-card__image-container"}
        [:a {:href quest-link}
         [:div {:class "opux-card__image"
-               :style {:background-image (str "url('" (get-quest-image quest) "')")}}]]]
+               :style {:background-image (str "url('" (image-url-to-small-url (get-quest-image quest)) "')")}}]]]
 
       [:div {:class "opux-card__content"}
 
@@ -273,10 +283,10 @@
        (if is-moderated
          [:a {:href quest-link}
           [:div {:class "opux-card__image"
-                 :style {:background-image (str "url('" (get-quest-image quest) "')")}}]]
+                 :style {:background-image (str "url('" (image-url-to-small-url (get-quest-image quest)) "')")}}]]
 
          [:div {:class "opux-card__image"
-                :style {:background-image (str "url('" (get-quest-image quest) "')")}
+                :style {:background-image (str "url('" (image-url-to-small-url (get-quest-image quest)) "')")}
                 :on-click on-click-fn}])]
 
       [:div {:class "opux-card__content"}

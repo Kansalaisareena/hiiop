@@ -8,7 +8,8 @@
             [taoensso.tempura :as tempura]
             [hiiop.components.social-buttons :refer [social-buttons]]
             [cemerick.url :refer [url-encode]]
-            [taoensso.timbre :as log]))
+            [taoensso.timbre :as log]
+            [hiiop.url :refer [image-url-to-small-url]]))
 
 (defn- create-context [locale]
   {:tr (partial tempura/tr (tr-opts) [locale])
@@ -118,8 +119,9 @@
                 categories]} story
         categories-attr (url-encode
                          (clojure.string/join "," categories))
-        thumbnail-url (or image-url
-                          (youtube-image-url youtube-id))]
+        thumbnail-url (if image-url
+                        (image-url-to-small-url image-url)
+                        (youtube-image-url youtube-id))]
     [:div {:class "opux-card-container"
            :categories categories-attr}
      [:div {:class "opux-card"}

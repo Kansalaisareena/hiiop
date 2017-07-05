@@ -6,7 +6,12 @@
             [hiiop.config :refer [env]]
             [schema.core :as s]
             [clojure.java.io :refer [copy]]
-            [clj-http.client :as http]))
+            [clj-http.client :as http]
+            [image-resizer.core :refer [resize-to-width]]
+            [image-resizer.format :refer [as-file]]
+            [clojure.java.io :as io]
+            [hiiop.url :refer [image-url-to-small-url]]
+            [hiiop.util :refer [is-image]]))
 
 (defstate aws-credentials
   :start
@@ -45,25 +50,42 @@
     (try
       (f temp-file)
       (catch Exception e
-        (.delete temp-file)
-        (throw e)))))
+        (throw e))
+      (finally (.delete temp-file)))))
 
+;; run function that takes a resized image, delete it afterward
+(defn with-resized-image [picture-file extension width f]
+  (let [small-image (as-file (resize-to-width (io/file picture-file) width)
+                             (str picture-file ".small" extension))]
+    (try
+      (f small-image)
+      (finally (io/delete-file small-image)))))
+
+(defn- resize-and-upload-picture [picture-file content-type width bucket key]
+  (let [extension (pm/extension-for-name content-type)
+        small-key (image-url-to-small-url key)]
+    (s3/put-object aws-credentials
+                            :bucket-name bucket
+                            :key key
+                            :file picture-file
+                            :metadata
+                            {:content-type content-type})
+    (with-resized-image picture-file (pm/extension-for-name content-type) width
+      (fn [small-picture]
+        (s3/put-object aws-credentials
+                            :bucket-name bucket
+                            :key small-key
+                            :file small-picture
+                            :metadata
+                            {:content-type content-type})))))
 
 (defn upload-picture-to-s3 [id picture-file]
-  (-> (pm/extension-for-name (:content-type picture-file))
-      (#(str "images/" id %1))
-      ((fn [key]
-         (s3/put-object aws-credentials
-                        :bucket-name picture-bucket
-                        :key key
-                        :file (:tempfile picture-file)
-                        :metadata
-                        {:content-type (:content-type picture-file)})
-         key
-         ))
-      (#(str bucket-base-url "/" %1))
-      )
-  )
+  (let [extension (pm/extension-for-name (:content-type picture-file))
+        tempfile-name (:absolutePath (bean (:tempfile picture-file)))
+        image-name (str id extension)
+        original-key (str "images/" image-name)]
+    (resize-and-upload-picture tempfile-name (:content-type picture-file) 312 picture-bucket original-key)
+    (str bucket-base-url "/" original-key)))
 
 (defn get-and-upload-asset-to-s3 [from to]
   (with-temp-file
@@ -72,11 +94,13 @@
             content-type (get-in response [:headers "Content-Type"])
             data-stream (:body response)]
         (copy data-stream temp)
-        (s3/put-object aws-credentials
-                       :bucket-name blog-bucket
-                       :key to
-                       :file temp
-                       :metadata {:content-type content-type})))))
+        (if (is-image from)
+          (resize-and-upload-picture temp content-type 312 blog-bucket to)
+          (s3/put-object aws-credentials
+                         :bucket-name blog-bucket
+                         :key to
+                         :file temp
+                         :metadata {:content-type content-type}))))))
 
 (defn upload-story-to-s3 [key story-html]
   (with-temp-file

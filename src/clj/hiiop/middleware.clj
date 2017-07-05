@@ -186,3 +186,4 @@
            (assoc-in [:session :store] session-store)))
       wrap-context
       wrap-internal-error))
+(defn test [] '())

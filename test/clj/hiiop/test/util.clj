@@ -2,6 +2,8 @@
   (:require [buddy.hashers :as hashers]
             [ring.mock.request :refer :all]))
 
+(defn- is-image [filename] (not  (empty?(re-find #"(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$" filename))))
+
 (defn hash-password [password]
   (hashers/derive password {:alg :bcrypt+blake2b-512}))
 
