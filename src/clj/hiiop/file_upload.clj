@@ -10,8 +10,7 @@
             [image-resizer.core :refer [resize-to-width]]
             [image-resizer.format :refer [as-file]]
             [clojure.java.io :as io]
-            [hiiop.url :refer [image-url-to-small-url]]
-            [hiiop.util :refer [is-image]]))
+            [hiiop.url :refer [image-url-to-small-url]]))
 
 (defstate aws-credentials
   :start
@@ -86,6 +85,8 @@
         original-key (str "images/" image-name)]
     (resize-and-upload-picture tempfile-name (:content-type picture-file) 312 picture-bucket original-key)
     (str bucket-base-url "/" original-key)))
+
+(defn- is-image [filename] (not  (empty?(re-find #"(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$" filename))))
 
 (defn get-and-upload-asset-to-s3 [from to]
   (with-temp-file
