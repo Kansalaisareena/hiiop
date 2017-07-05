@@ -219,8 +219,7 @@
           (upload-page (str "index.html") index))))))
 
 (defn refresh-items [items]
-  (doseq [i items]
-    (process-item i))
+  (pmap process-item items)
   (process-stories-indexes items))
 
 (defn update-all-items []
