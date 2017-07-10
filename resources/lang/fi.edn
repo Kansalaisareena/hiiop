@@ -170,13 +170,17 @@
   :ideas
   {
    :title "Tekijöiden tarinoita"
-  }
+   }
+  :faq
+  {
+   :title "Mikä on Hiiop?"
+   }
   :index
   {
    :banner
    {
-    :content "Hiiop on vapaaehtoistyön kohtaamispaikka. Täältä löydät sopivan tavan ja paikan tehdä vapaaehtoistyötä. Anna sinäkin itsenäisyyden juhlavuoden kunniaksi päivä vapaaehtoisena. "
-    :header "Vuoden tärkein päivä on päivä vapaaehtoisena"
+    :content "Täältä löydät sopivan tavan tehdä vapaaehtoistyötä ja paikan kutsua apukäsiä vapaaehtoistehtävääsi. Lähde mukaan vapaaehtoistyöhön itsenäisyyden juhlavuoden kunniaksi!"
+    :header "Hiiop! Ota koppi vapaaehtoistyöstä"
    }
    :category-selector
    {
@@ -189,6 +193,7 @@
     :hundred-years "100 v"
     :months "%1 kk"
     :title "Vapaaehtoistyötä on tehty satavuotiaan Suomen kunniaksi yhteensä:"
+    :content "Tavoitteena on 100 vuotta vapaaehtoistyötä. Siihen tarvitaan meitä kaikkia. Laskuri huomioi sivuston kautta tehdyn vapaaehtoistyön:"
     :years "%1 v"
    }
    :index-links
@@ -270,7 +275,7 @@
    {
     :filter
     {
-     :category "Miten haluat auttaa?"
+     :category "Miten haluaisit tehdä?"
      :when "Milloin?"
      :where "Missä?"
     }
@@ -377,13 +382,13 @@
    {
     :filter
     {
-     :category "Miten haluat auttaa?"
+     :category "Mitä haluaisit tehdä?"
      :clear "Tyhjennä"
      :when "Milloin?"
      :where "Missä?"
     }
     :not-found "Juuri näillä hakuehdoilla ei löytynyt tapahtumia. Laajenna hakuehtoja ja matka vapaaehtoiseksi voi alkaa."
-    :title "Löydä itsellesi vapaaehtoistehtävä"
+    :title "Löydä oma vapaaehtoistyö"
    }
    :part
    {
@@ -412,7 +417,7 @@
      :success "Loistavaa, että olet mukana - kiitos ilmottautumisestasi! Saat sähköpostiisi lisätietoa tapahtumasta."
      :to-front-page "Sulje"
     }
-    :participants "vapaata paikkaa"
+    :participants "paikkaa vielä avoinna"
     :signup
     {
      :agree-to-terms-and-conditions "Olen lukenut palvelun ehdot ja hyväksyn ne. Ilmoittautuminen on sitova. Esteen sattuessa voit perua osallistumisen."

@@ -170,13 +170,17 @@
   :ideas
   {
    :title "Volontärer berättar"
-  }
+   }
+  :faq
+  {
+   :title "Vad är Hiiop?"
+   }
   :index
   {
    :banner
    {
-    :content "Hiiop är en träffpunkt för frivilligarbete. Här hittar du lätt de sätt och platser för frivilligarbete som passar just dig. Ge också du en dag av ditt år som gåva till självständighetens jubileumsår och Finland. "
-    :header "Årets viktigaste dag är dagen som frivillig"
+    :content "Här hittar du ett lämpligt sätt att utföra frivilligarbete och ett ställe där du kan be om hjälp i ditt frivilliguppdrag. Delta i frivilligarbete för att hedra självständighetens jubileumsår!"
+    :header "Hiiop! Delta i frivilligarbete"
    }
    :category-selector
    {
@@ -191,6 +195,7 @@
     :subtitle "Frivilligarbete för att hedra det hundraåriga Finland har sammanlagt utförts:"
     :title "Kom med! Frivilligarbete för att hedra det hundraåriga Finland har sammanlagt redan utförts:"
     :years "%1 år"
+    :content "Målet är 100 år av frivilligarbete. Därför behövs vi alla. Räknaren beaktar frivilligarbete som har utförts via sidan:"
    }
    :index-links
    {
@@ -271,12 +276,12 @@
    {
     :filter
     {
-     :category "Hur vill du hjälpa?"
+     :category "Vad skulle du vilja göra?"
      :when "När"
      :where "Var?"
     }
     :not-found "Inga uppdrag hittades med just de här sökkriterierna. Bredda sökkriterierna, så är du snart en volontär."
-    :title "Hiiop! Hitta ett frivilliguppdrag som passar dig"
+    :title "Hitta ditt eget frivilliguppdrag"
    }
    :created
    {
@@ -409,7 +414,7 @@
      :success "Fint att du deltar – tack för din anmälan! Du kommer att få mer information om uppdraget till din e-post."
      :to-front-page "Stäng"
     }
-    :participants "lediga platser"
+    :participants "lediga platser kvar"
     :signup
     {
      :agree-to-terms-and-conditions "Jag har läst villkoren för tjänsten och godkänner dem. Anmälan är bindande. Vid förhinder kan du ta tillbaka din anmälan."

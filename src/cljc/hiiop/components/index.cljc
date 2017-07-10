@@ -85,6 +85,7 @@
    [:div {:class "opux-section"}
     [:div {:class "opux-content opux-centered"}
      [:h1 (tr [:pages.index.counter.title])]
+     [:div {:class "opux-banner__body-text"} (tr [:pages.index.counter.content])]
      [:div {:class "opux-counter-wrapper" }
        [:div {:class "opux-counter"}
         [:div {:class "opux-counter__goal-pin"}

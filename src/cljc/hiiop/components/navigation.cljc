@@ -93,6 +93,14 @@
                  (name current-locale)
                  "/blog/index.html")}
      (tr [:pages.ideas.title])]]
+      [:li
+    {:class "opux-menu__item opux-menu__item--main"}
+    [:a
+     {:class "opux-menu__item-link opux-menu__item-link--main"
+      :href (str hiiop-blog-base-url "/"
+                 (name current-locale)
+                 "/pages/faq.html")}
+     (tr [:pages.faq.title])]]
    ])
 
 (rum/defcs top-navigation < (rum/local false ::is-active)
