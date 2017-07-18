@@ -54,8 +54,10 @@
 
 ;; run function that takes a resized image, delete it afterward
 (defn with-resized-image [picture-file extension width f]
-  (let [small-image (as-file (resize-to-width (io/file picture-file) width)
-                             (str picture-file ".small" extension))]
+  (let [small-image (try (as-file (resize-to-width (io/file picture-file) width)
+                                  (str picture-file ".small" extension))
+                         (catch Exception e
+                           picture-file))]
     (try
       (f small-image)
       (finally (io/delete-file small-image)))))
