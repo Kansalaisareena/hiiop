@@ -137,12 +137,15 @@
    "Asset" process-asset})
 
 (defn process-item [item]
-  (let [type (if (= (get-in item [:sys :type]) "Entry")
-               (get-in item [:sys :contentType :sys :id])
-               (get-in item [:sys :type]))
-        handler (handlers type)]
-    (when handler
-      (handler item))))
+  (try 
+    (let [type (if (= (get-in item [:sys :type]) "Entry")
+                 (get-in item [:sys :contentType :sys :id])
+                 (get-in item [:sys :type]))
+          handler (handlers type)]
+      (when handler
+        (handler item)))
+    (catch Exception e
+      (log/info "Failed processing item. got error" e))))
 
 (defn get-items [skip]
   (let [response (http/get (str entries-url "&skip=" skip))]
@@ -151,7 +154,7 @@
 
 (defn get-all-items
   "Fetch all items from contentful space."
-  ([] (get-all-items 0 {}))
+  ([] (get-all-items 0 []))
   ([fetched-count prev-items]
    (let [items-response (get-items fetched-count)
          total (:total items-response)
@@ -219,7 +222,8 @@
           (upload-page (str "index.html") index))))))
 
 (defn refresh-items [items]
-  (pmap process-item items)
+  (log/info "processing items")
+  (doall (pmap process-item items))
   (process-stories-indexes items))
 
 (defn update-all-items []

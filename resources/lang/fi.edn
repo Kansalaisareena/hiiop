@@ -192,7 +192,6 @@
     :days "%1 p"
     :hundred-years "100 v"
     :months "%1 kk"
-    :title "Vapaaehtoistyötä on tehty satavuotiaan Suomen kunniaksi yhteensä:"
     :content "Tavoitteena on 100 vuotta vapaaehtoistyötä. Siihen tarvitaan meitä kaikkia. Laskuri huomioi sivuston kautta tehdyn vapaaehtoistyön:"
     :years "%1 v"
    }

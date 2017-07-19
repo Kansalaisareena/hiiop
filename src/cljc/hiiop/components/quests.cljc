@@ -439,7 +439,8 @@
                                                 :quest quest
                                                 :party party
                                                 :processing processing})
-        member-emails (clojure.string/join ";" (map :email @party))]
+        member-emails (clojure.string/join ";" (map :email @party))
+        member-emails-with-spaces (clojure.string/join "; " (map :email @party))]
     [:div {:class "opux-form-section opux-form-section--no-border"}
      [:h2 {:class "opux-centered"
            :id "edit-party-members"}
@@ -456,7 +457,7 @@
            (tr [:pages.quest.edit.party.mail-participants])]]
           [:textarea
           {:class "opux-input opux-input--textarea opux-input--textarea"
-           :value member-emails
+           :value member-emails-with-spaces
            :on-focus
            (fn [e]
              (let [target (.-target e)]
