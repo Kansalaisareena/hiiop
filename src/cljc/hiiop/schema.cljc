@@ -306,5 +306,3 @@
   {:sys s/Any
    :fields s/Any})
 
-(defn boo! [])
-(defn bleh! [])
