@@ -404,7 +404,6 @@
 (rum/defcs edit-party-member < rum/reactive
                                (rum/local false ::confirm)
   [state {:keys [quest party context processing]} {:keys [member-id name email phone days]}]
-  (log/info quest @party)
   (let [tr (:tr context)
         confirm (::confirm state)]
     [:tr {:class "opux-table__row"}

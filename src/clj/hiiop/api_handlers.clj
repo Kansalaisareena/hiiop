@@ -188,6 +188,7 @@
       {:errors {:users "Failed to update user"}})))
 
 (defn add-quest [{:keys [quest user]}]
+  (log/info "Adding quest" quest)
   (try
     (let [organiser-participates (:organiser-participates quest)
           max-days (+ (time/days-between
