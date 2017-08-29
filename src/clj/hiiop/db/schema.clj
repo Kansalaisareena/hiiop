@@ -18,10 +18,10 @@
    :unmoderated_name hs/NonEmptyString
    :description hs/NonEmptyString
    :unmoderated_description hs/NonEmptyString
-   :organisation (s/maybe hs/NonEmptyString)
+   :organisation (s/maybe s/Str)
    :unmoderated_organisation (s/maybe s/Str)
    :organisation_description (s/maybe s/Str)
-   :unmoderated_organisation_description (s/maybe hs/NonEmptyString)
+   :unmoderated_organisation_description (s/maybe s/Str)
    :start_time (s/constrained s/Any time/time? :error.not-valid-date)
    :end_time (s/constrained s/Any time/time? :error.not-valid-date)
    :street_number (s/maybe s/Int)
