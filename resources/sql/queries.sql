@@ -749,6 +749,8 @@ WHERE
   p.user_id = u.id AND
   ((q.owner = :user_id) OR
     (u.id = :user_id AND u.moderator = true))
+ORDER BY
+  u.name ASC
 
 -- :name remove-member-from-party! :! :*
 -- :doc Remove member from party
