@@ -122,6 +122,12 @@
         unmoderated (get-unmoderated-quests-by-owner {:owner owner})]
     (concat moderated unmoderated)))
 
+(defn delete-quest-and-save-days! [{:keys [id]}]
+  "Delete quest by given id and add days worked to deleted_quest_days."
+  (conman/with-transaction [*db*]
+    (add-quest-days-worked! {:id id})
+    (delete-quest-by-id! {:id id})))
+
 (redef-refresh-cache add-unmoderated-quest!    get-all-moderated-quests :all-moderated-quests)
 (redef-refresh-cache update-quest!             get-all-moderated-quests :all-moderated-quests)
 (redef-refresh-cache delete-quest-by-id!       get-all-moderated-quests :all-moderated-quests)

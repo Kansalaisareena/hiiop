@@ -767,7 +767,8 @@ WHERE id = :id
 
 -- :name get-counter-days :? :1
 -- :doc Get total days worked
-SELECT COALESCE(sum(days), 0) as days
+SELECT COALESCE(sum(days), 0)
+       + (SELECT COALESCE(sum(day_sum), 0) from deleted_quest_days) as days
 FROM
   parties p,
   quests q
@@ -775,3 +776,16 @@ WHERE
   q.id = p.quest_id AND
   q.end_time < NOW() AND
   q.name IS NOT NULL
+
+-- :name add-quest-days-worked! :! :*
+-- :doc Get days worked for quest (0 if still in the future)
+INSERT INTO deleted_quest_days
+VALUES ((
+       SELECT sum(p.days)
+       FROM parties p,
+            quests q
+       WHERE q.id = p.quest_id AND
+             q.id = :id AND
+             q.name IS NOT NULL AND
+             q.end_time < NOW()
+       ))

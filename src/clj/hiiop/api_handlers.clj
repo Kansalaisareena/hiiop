@@ -222,7 +222,7 @@
                   {:id id :user_id user-id})
           owner (:owner quest)]
       (if (= (str owner) (str user-id))
-        (do (db/delete-quest-by-id! {:id id})
+        (do (db/delete-quest-and-save-days! {:id id})
             (send-quest-deleted-emails id user-id))
         {:errors {:quest :errors.quest.not-authorised-to-delete-quest}}))
     (catch Exception e
