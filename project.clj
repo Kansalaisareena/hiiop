@@ -176,8 +176,8 @@
        :compiler
        {:output-to "target/cljsbuild/public/js/app.js"
         :externs ["externs/google_maps_api_v3.js"]
-        :optimizations :simple
-        :parallel-build true
+        :optimizations :advanced
+        :parallel-build false
         :compiler-stats true
         :pretty-print false
         :verbose true
@@ -189,7 +189,7 @@
        {:output-to "target/cljsbuild/public/js/static.js"
         :externs ["externs/google_maps_api_v3.js"]
         :optimizations :advanced
-        :parallel-build true
+        :parallel-build false
         :verbose true
         :compiler-stats true
         :pretty-print false
