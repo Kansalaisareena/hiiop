@@ -64,7 +64,7 @@
                  [clj-http                               "2.3.0"]
                  [com.atlassian.commonmark/commonmark    "0.8.0"]
                  [com.cemerick/url                       "0.1.1"]
-                 [image-resizer                          "0.1.9"]]
+                 [me.raynes/conch                        "0.8.0"]]
 
   :min-lein-version "2.5.3"
   :jvm-opts ["-server" "-Dconf=.lein-env" "-Duser.timezone=Europe/Helsinki"]

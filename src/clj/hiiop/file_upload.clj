@@ -7,10 +7,10 @@
             [schema.core :as s]
             [clojure.java.io :refer [copy]]
             [clj-http.client :as http]
-            [image-resizer.core :refer [resize-to-width]]
-            [image-resizer.format :refer [as-file]]
             [clojure.java.io :as io]
-            [hiiop.url :refer [image-url-to-small-url]]))
+            [hiiop.resize :refer [resize-to-width]]
+            [hiiop.url :refer [image-url-to-small-url]]
+            [hiiop.files :refer [with-temp-file]]))
 
 (defstate aws-credentials
   :start
@@ -43,22 +43,11 @@
     (log/info "Starting with picture base url" base-url)
     base-url))
 
-
-(defn with-temp-file [f]
-  (let [temp-file (java.io.File/createTempFile "pre" ".suff")]
-    (try
-      (f temp-file)
-      (catch Exception e
-        (throw e))
-      (finally (.delete temp-file)))))
-
 (defn try-to-resize [filename extension width]
   (try
-    (as-file
-     (resize-to-width (io/file filename) width)
-     (str filename extension))
+    (resize-to-width filename width)
     (catch Exception e
-      (log/info "resizinig" filename "failed! using unresized image instead.")
+      (log/info "resizing" filename "failed! using unresized image instead.")
       (let [file (io/file filename)
             basename (:name (bean file))
             dir (:parent (bean file))
@@ -77,19 +66,19 @@
   (let [extension (pm/extension-for-name content-type)
         small-key (image-url-to-small-url key)]
     (s3/put-object aws-credentials
-                            :bucket-name bucket
-                            :key key
-                            :file picture-file
-                            :metadata
-                            {:content-type content-type})
-    (with-resized-image picture-file (pm/extension-for-name content-type) width
+                   :bucket-name bucket
+                   :key key
+                   :file picture-file
+                   :metadata
+                   {:content-type content-type})
+    (with-resized-image picture-file extension width
       (fn [small-picture]
         (s3/put-object aws-credentials
-                            :bucket-name bucket
-                            :key small-key
-                            :file small-picture
-                            :metadata
-                            {:content-type content-type})))))
+                       :bucket-name bucket
+                       :key small-key
+                       :file small-picture
+                       :metadata
+                       {:content-type content-type})))))
 
 (defn upload-picture-to-s3 [id picture-file]
   (let [extension (pm/extension-for-name (:content-type picture-file))
