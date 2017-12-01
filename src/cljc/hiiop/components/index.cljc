@@ -50,7 +50,7 @@
                 :content     (tr [:pages.index.index-links.read-stories-text])
                 :button-text (tr [:pages.index.index-links.read-stories])
                 :button-link static-page-url}]]
-    
+
     [:div {:class "opux-section opux-index-links opux-centered"}
      (map #(index-link-item %) items)]))
 
@@ -92,8 +92,9 @@
         [:div {:class "opux-counter__progress-wrapper"}
          [:div {:class (str "opux-counter__progress" (if goal-achieved " is-full"))
                 :style {:width (if goal-achieved "100%" (str percentage-string "%"))}}
-          [:div {:class "opux-counter__progress__current-pin"}
-           [:div {:class "opux-counter__progress__current-pin-label"} label]]]]]]]]))
+          [:div {:class (str "opux-counter__progress__current-pin")}
+           [:div {:class (str "opux-counter__progress__current-pin-label"
+                              (if goal-achieved " is-achieved"))} label]]]]]]]]))
 
 (rum/defcs category-selector < rum/reactive
   (rum/local (path-for hierarchy :browse-quests) ::search-link)
