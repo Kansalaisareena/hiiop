@@ -62,10 +62,6 @@
       top: -46px;
       right: -23px;
       position: absolute;
-
-      @include state('hidden') {
-        display: none;
-      }
     }
     @include element('current-pin-label') {
       position: absolute;
@@ -74,6 +70,11 @@
       font-size: 1.5rem;
       top: -35px;
       left: -35px;
+
+      @include state('achieved') {
+        left: auto;
+        right: 0;
+      }
     }
   }
 }
