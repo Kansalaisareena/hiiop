@@ -125,8 +125,10 @@
                             @party-member)
                    from-api (<! (api/join-quest quest-id to-api))]
                (if (:success from-api)
-                 (reset! view-state {:view "success"
-                                     :message (tr [:pages.quest.view.join.success])})
+                 (do
+                   (reset! view-state {:view "success"
+                                       :message (tr [:pages.quest.view.join.success])})
+                   (.fbq js/window "track" "Purchase" {:value quest-id}))
                  (reset! view-state {:view "fail"
                                      :message (tr [:pages.quest.view.join.fail])})
                ))))
