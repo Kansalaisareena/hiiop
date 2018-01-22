@@ -74,6 +74,7 @@
 
 (defn apply-filters
   [{:keys [quests quest-filter]}]
+  #?(:cljs (.fbq js/window "track" "Search" {:search_string (str (:categories quest-filter)) }))
   (:quests
    ((comp filter-by-end-time
           filter-by-location
@@ -81,8 +82,7 @@
     {:quests (if (= "" (:end-time quest-filter))
                (filter-past-events quests)
                quests)
-     :quest-filter quest-filter}))
-  #?(:cljs (.fbq js/window "track" "Search" {:search_string (str (:categories quest-filter)) })))
+     :quest-filter quest-filter})))
 
 (rum/defc quest-category-icon < rum/reactive
   [{:keys [category categories]}]
