@@ -175,7 +175,7 @@
                       "env/prod/cljs/hiiop"]
        :compiler
        {:output-to "target/cljsbuild/public/js/app.js"
-        :externs ["externs/google_maps_api_v3.js"]
+        :externs ["externs/google_maps_api_v3.js", "externs/fb_pixel.js"]
         :optimizations :advanced
         :parallel-build false
         :compiler-stats true
@@ -187,7 +187,7 @@
       {:source-paths ["src/cljs/hiiop_static"]
        :compiler
        {:output-to "target/cljsbuild/public/js/static.js"
-        :externs ["externs/google_maps_api_v3.js"]
+        :externs ["externs/google_maps_api_v3.js", "externs/fb_pixel.js"]
         :optimizations :advanced
         :parallel-build false
         :verbose true
