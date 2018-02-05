@@ -45,15 +45,6 @@
                :current-locale (keyword current-locale)
                :identity (:identity req)})))))
 
-      (GET "/counter" []
-        :summary "Days quests"
-        :middleware  [wrap-private-cache-headers]
-        (fn [req]
-          (let [counter-value (api-handlers/get-the-counter-value)]
-            (if (:errors counter-value)
-              (internal-server-error counter-value)
-              (ok counter-value)))))
-
       (POST "/logout" []
         :summary "Logs the user out."
         :middleware  [wrap-private-cache-headers]

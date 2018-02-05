@@ -530,8 +530,6 @@
 (rum/defc footer [{:keys [hierarchy tr asset-path] :as context}]
   [:footer {:class "opux-footer-container opux-section"}
    [:div {:class "opux-footer opux-content"}
-    [:div {:class "opux-footer__column opux-footer__column--left"}
-     [:a {:href "http://suomifinland100.fi/" :target "_blank"} [:span {:class "opux-suomi-100"}]]]
 
     [:div {:class "opux-footer__column opux-footer__column--right"}
      [:a {:href "http://www.op.fi/" :target "_blank"} [:span {:class "opux-op-logo"}]]]

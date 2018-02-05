@@ -31,8 +31,7 @@
                                       get-unmoderated-quests
                                       get-party-member
                                       activate-user
-                                      change-password
-                                      get-the-counter-value]]
+                                      change-password]]
             [hiiop.context :refer [context]]
             [hiiop.mangling :refer [parse-natural-number same-keys-with-nils]]
             [hiiop.schema :refer [NewQuest
@@ -83,15 +82,13 @@
 
 (defn index-page []
   (go
-    (let [counter-days (:days (<! (get-the-counter-value)))]
     (rum/mount
-      (p-i/index-page {:context @context
-                       :category-filter (atom
-                                          (new-empty-category-filter))
-                       :counter-days counter-days
-                       :schema QuestCategoryFilter
-                       :url (:site-base-url env)})
-      (. js/document (getElementById "app"))))))
+     (p-i/index-page {:context @context
+                      :category-filter (atom
+                                        (new-empty-category-filter))
+                      :schema QuestCategoryFilter
+                      :url (:site-base-url env)})
+     (. js/document (getElementById "app")))))
 
 (defn profile-page [params]
   (go

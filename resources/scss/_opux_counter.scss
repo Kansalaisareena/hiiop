@@ -1,8 +1,3 @@
-@include block('opux-counter-wrapper') {
-  padding-top: 100px;
-  padding-bottom: 40px;
-}
-
 @include block('opux-counter') {
   width: 100%;
   height: 24px;

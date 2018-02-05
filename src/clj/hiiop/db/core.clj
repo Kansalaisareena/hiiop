@@ -136,4 +136,3 @@
 (redef-refresh-cache remove-member-from-party! get-all-moderated-quests :all-moderated-quests)
 (redef-with-cache get-all-moderated-quests :all-moderated-quests false)
 
-(redef-with-cache get-counter-days :counter (* 60 60)) ;update counter every hour

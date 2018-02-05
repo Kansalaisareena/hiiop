@@ -63,39 +63,6 @@
         "#?categories[]="
         (clojure.string/join "&categories[]=" (map name categories))))))
 
-(defn- counter [{:keys [tr counter-days]}]
-  (let [workdays-in-month 18.5
-        months-in-year 12
-        goal-years 100
-        percentage (float (* 100 (/ counter-days
-                                    (* workdays-in-month months-in-year goal-years))))
-        percentage-string (clojure.string/replace-first (str percentage) #"," ".")
-        goal-achieved (>= percentage 100)
-        years (int (/ counter-days
-                      (* workdays-in-month months-in-year)))
-        months (int (/ (- counter-days (* workdays-in-month months-in-year years))
-                       workdays-in-month))
-        days (int (- counter-days
-                    (* workdays-in-month months)
-                    (* workdays-in-month months-in-year years)))
-        label (str
-                (if (> years 0) (tr [:pages.index.counter.years] [years])) " "
-                (if (> months 0) (tr [:pages.index.counter.months] [months])) " "
-                (if (> days 0) (tr [:pages.index.counter.days] [days])))]
-   [:div {:class "opux-section"}
-    [:div {:class "opux-content opux-centered"}
-     [:div {:class "opux-banner__body-text"} (tr [:pages.index.counter.content])]
-     [:div {:class "opux-counter-wrapper" }
-       [:div {:class "opux-counter"}
-        [:div {:class "opux-counter__goal-pin"}
-         [:div {:class "opux-counter__goal-pin-label"} (tr [:pages.index.counter.hundred-years])]]
-        [:div {:class "opux-counter__progress-wrapper"}
-         [:div {:class (str "opux-counter__progress" (if goal-achieved " is-full"))
-                :style {:width (if goal-achieved "100%" (str percentage-string "%"))}}
-          [:div {:class (str "opux-counter__progress__current-pin")}
-           [:div {:class (str "opux-counter__progress__current-pin-label"
-                              (if goal-achieved " is-achieved"))} label]]]]]]]]))
-
 (rum/defcs category-selector < rum/reactive
   (rum/local (path-for hierarchy :browse-quests) ::search-link)
   [state {:keys [context category-filter schema]}]
@@ -143,13 +110,12 @@
             :data-per     12}]]]))
 
 (rum/defc index-page
-  [{:keys [context category-filter schema counter-days url]}]
+  [{:keys [context category-filter schema url]}]
   (let [tr (:tr context)
         url (or (get-in context [:config :site-base-url])
                 (:site-base-url context))]
     [:div {:class "opux-section"}
      (banner {:tr tr})
-     (counter {:tr tr :counter-days counter-days})
      (share-buttons {:tr tr :title (tr [:pages.index.title])
                      :url url})
      (category-selector {:context         context
