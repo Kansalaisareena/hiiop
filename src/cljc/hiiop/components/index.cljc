@@ -99,6 +99,11 @@
            :href (rum/react search-link)}
        (tr [:pages.index.category-selector.search])]]]))
 
+(defn- main-text [{:keys [tr]}]
+  [:div {:class "opux-section"}
+   [:div {:class "opux-content opux-centered"}
+    [:div {:class "opux-banner__body-text"} (tr [:pages.index.main-text])]]])
+
 (defn- social-feed
   [{:keys [context]}]
   (let [tr (:tr context)]
@@ -116,6 +121,7 @@
                 (:site-base-url context))]
     [:div {:class "opux-section"}
      (banner {:tr tr})
+     (main-text {:tr tr})
      (share-buttons {:tr tr :title (tr [:pages.index.title])
                      :url url})
      (category-selector {:context         context
