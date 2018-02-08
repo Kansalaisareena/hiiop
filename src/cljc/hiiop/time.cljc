@@ -33,12 +33,16 @@
      :cljs "YYYY-MM-DDTHH:mm:ssZ"))
 
 (def with-weekday-format
-  #?(:clj "EE dd.M."
-     :cljs "dd DD.M."))
+  #?(:clj "EE dd.M.YY"
+     :cljs "dd DD.M.YY"))
 
 (def short-date-format
   #?(:clj "dd.M."
      :cljs "DD.M."))
+
+(def medium-date-format
+  #?(:clj "dd.M.YY"
+     :cljs "DD.M.YY"))
 
 (def hour-minute-format
   #?(:clj "HH.mm"
@@ -369,9 +373,9 @@
         (> (days-between
              (time-to end-time 0 0)
              (time-to start-time 0 0)) 0))
-    (str (to-string start-time short-date-format)
+    (str (to-string start-time medium-date-format)
          "-"
-         (to-string end-time short-date-format))
+         (to-string end-time medium-date-format))
     (str (to-string start-time with-weekday-format))))
 
 (defn duration-to-print-str-time [start-time end-time]

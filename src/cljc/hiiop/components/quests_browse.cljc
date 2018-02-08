@@ -199,9 +199,12 @@
   (let [tr (:tr context)
         start-time (time/from-string (:start-time (first quests)))
         month-name (nth (tr [:pikaday.months])
-                        (time/month start-time))]
+                        (time/month start-time))
+        year-now (time/year (time/now))
+        start-year (time/year start-time)
+        year-str (if (= start-year year-now) "" (str " " start-year))]
     [:div
-     [:h2 {:class "opux-centered"} month-name]
+     [:h2 {:class "opux-centered"} (str month-name year-str)]
      (quest-card-list {:quests quests
                        :context context})]))
 
