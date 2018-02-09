@@ -17,13 +17,6 @@
            time/before?
            quests))
 
-(defn- split-quests-by-months [quests]
-  (let [result (group-by #(keyword
-                            (time/to-string
-                              (time/from-string (:start-time %)) time/year-month-format))
-                         quests)]
-    result))
-
 (defn- filter-by-categories
   [{:keys [quests
            quest-filter]}]
@@ -194,27 +187,12 @@
                                :quest %})
           (sort-quests-by-latest-date quests))]))
 
-(defn- monthly-quest-list
-  [{:keys [quests context]}]
-  (let [tr (:tr context)
-        start-time (time/from-string (:start-time (first quests)))
-        month-name (nth (tr [:pikaday.months])
-                        (time/month start-time))
-        year-now (time/year (time/now))
-        start-year (time/year start-time)
-        year-str (if (= start-year year-now) "" (str " " start-year))]
-    [:div
-     [:h2 {:class "opux-centered"} (str month-name year-str)]
-     (quest-card-list {:quests quests
-                       :context context})]))
-
 (rum/defc list-quests < rum/reactive
   [{:keys [context quests quest-filter schema errors]}]
   (let [tr (:tr context)
         filtered-quests (atom (apply-filters
                                 {:quests quests
                                  :quest-filter @quest-filter}))
-        quests-by-months (split-quests-by-months (rum/react filtered-quests))
         cursors-and-schema
         (c/value-and-error-cursors-and-schema {:for quest-filter
                                                :schema schema
@@ -255,14 +233,5 @@
          [:h1 {:class "opux-content opux-centered"}
           (tr [:pages.quest.list.not-found])]
 
-         (if (empty? (:end-time @quest-filter))
-           ;; Monthly view without end-date filter
-           (map #(monthly-quest-list
-                   {:quests (quests-by-months %)
-                    :context context})
-                (sort
-                  (keys quests-by-months)))
-
-           ;; Continuous list with end-date filter
-           (quest-card-list {:quests (rum/react filtered-quests)
-                             :context context})))]]]))
+         (quest-card-list {:quests (rum/react filtered-quests)
+                           :context context}))]]]))
