@@ -2,30 +2,122 @@
 
 ** TODO Overview
 
-** Running tests
-   You can run all the tests from the command line with the =lein
-   test= but it's horribly slow. A faster way to run tests is to run
-   them from the repl in the following way:
-
-   #+BEGIN_EXAMPLE
-   (require '[clojure.test :refer [run-tests]])
-   (require 'hiiop.test.specific.test)
-   (run-tests 'hiiop.test.specific.test)
-   #+END_EXAMPLE
-
 ** Dependencies
    - PostgreSQL
    - Redis
    - sassc
    - leiningen
 
-** Setup
+** Development setup
+
+   Create a postgres dabase called `hiiop_dev`, and make your postgres user have
+   ownership over the database.
+
+   Remember to update `YOUR_DB_USER` in `:database-url` to reflect your database
+   user name in the next step.
+
+   Make sure you have redis installed and redis-server is running in
+   `127.0.0.1:6379`.
+
+** Secrets
+
+   Create profiles.clj under your git root to place the secrets.
+   #+BEGIN_SRC clojure
+   {:profiles/dev
+    {:env
+     {:database-url "postgresql://localhost/hiiop_dev?user=YOUR_DB_USER"
+      :timezone "Europe/Helsinki"
+      :site-base-url ""
+
+      :sender-address  ""
+      :smtp-server     ""
+      :smtp-port       ""
+      :smtp-user       ""
+      :smtp-password   ""
+
+      :redis
+      {:uri ""}
+      :hiiop-pictures-bucket
+      "hiiop-dev-pictures"
+      :hiiop-pictures-bucket-base-url
+      "http://hiiop-dev-pictures.s3-website-eu-west-1.amazonaws.com"
+      :aws-access-key-id
+      ""
+      :aws-secret-access-key
+      ""
+      :contentful
+      {:cd-api-key ""
+       :space-id ""
+       :webhook-user ""
+       :webhook-password ""
+       }
+      }
+      :hiiop-blog-bucket "hiiop-dev-blog"
+      :hiiop-bucket "hiiop-dev"
+      :hiiop-blog-base-url "http://hiiop-dev-blog.s3-website.eu-central-1.amazonaws.com"
+
+      :analytics-script "script src"
+
+      ;; these are used for testing static site generator in
+      ;; local development
+      ;; :asset-base-url "http://localhost:3000"
+      ;; :hiiop-blog-base-url "http://hiiop-local-dev-blog.s3-website-eu-west-1.amazonaws.com"
+      ;; :hiiop-blog-bucket "hiiop-local-dev-blog"
+
+      :social
+      {:facebook-app-id "180814445730558"
+       :twitter-account "hiiop100"
+       :twitter-site "https://www.hiiop100.fi"}
+      }}
+    :profiles/test
+    {:env
+     {:database-url "postgresql://localhost/hiiop_test?user=youruser"
+      :timezone "Europe/Helsinki"}}}}
+   #+END_SRC
+
+*** Dev environment authentication
+    To add http basic auth for dev environment, add the following to
+    the env:
+
+    #+BEGIN_SRC clojure
+      :http-simple-credentials {:username "dev-username" :password "dev-password"}
+    #+END_SRC
+
+** Migrations
+   Manage migrations with the following commands:
+
+   #+BEGIN_EXAMPLE
+   # apply migration
+   lein migratus migrate
+
+   # run down for previous migration
+   lein migratus rollback
+
+   # create new migration
+   lein migratus create <migration_name>
+   #+END_EXAMPLE
+
+   [[https://github.com/yogthos/migratus][more about migratus]]
+
+** Compile Sass:
+
+** Development
    To get an interactive development environment run:
 
    #+BEGIN_EXAMPLE
    lein run
    lein figwheel
    #+END_EXAMPLE
+
+   Make sure you have sassc installed. Sass can be compiled using one of these 2
+   commands:
+
+   #+BEGIN_EXAMPLE
+   lein sassc once
+   # OR
+   sassc resources/scss/screen.scss > resources/public/css/screen.css
+   #+END_EXAMPLE
+
 
    and open your browser at [[http://localhost:3000/][localhost:3000]].
    This will auto compile and send all changes to the browser without the
@@ -52,83 +144,18 @@
    #+END_EXAMPLE
 
    And open your browser in `resources/public/index.html`. You will not
-   get live reloading, nor a REPL. 
+   get live reloading, nor a REPL.
 
-** Secrets
+** Running tests
+   You can run all the tests from the command line with the =lein
+   test= but it's horribly slow. A faster way to run tests is to run
+   them from the repl in the following way:
 
-Create profiles.clj under your git root to place the secrets.
-   #+BEGIN_SRC clojure
-     {:profiles/dev
-      {:env
-       {:database-url "postgresql://localhost/hiiop_dev?user=youruser"
-        :timezone "Europe/Helsinki"
-        :site-base-url ""
-
-        :sender-address  ""
-        :smtp-server     ""
-        :smtp-port       ""
-        :smtp-user       ""
-        :smtp-password   ""
-
-        :redis
-        {:uri ""}
-        :hiiop-pictures-bucket
-        "hiiop-dev-pictures"
-        :hiiop-pictures-bucket-base-url
-        "http://hiiop-dev-pictures.s3-website-eu-west-1.amazonaws.com"
-        :aws-access-key-id
-        ""
-        :aws-secret-access-key
-        ""
-        :contentful
-        {:cd-api-key ""
-         :space-id ""
-         :webhook-user ""
-         :webhook-password ""
-         }
-        }
-        :hiiop-blog-bucket "hiiop-dev-blog"
-        :hiiop-bucket "hiiop-dev"
-        :hiiop-blog-base-url 
-        "http://hiiop-dev-blog.s3-website.eu-central-1.amazonaws.com"
-
-        :analytics-script "script src"
-
-        ;; these are used for testing static site generator in
-        ;; local development
-        :asset-base-url "http://localhost:3000"
-        :hiiop-blog-base-url "http://hiiop-local-dev-blog.s3-website-eu-west-1.amazonaws.com"
-        :hiiop-blog-bucket "hiiop-local-dev-blog"
-
-        :social
-        {:facebook-app-id "180814445730558"
-         :twitter-account "hiiop100"
-         :twitter-site "https://www.hiiop100.fi"}
-        }}
-      :profiles/test
-      {:env
-       {:database-url "postgresql://localhost/hiiop_test?user=youruser"
-        :timezone "Europe/Helsinki"}}}
-   #+END_SRC
-
-*** Dev environment authentication
-    To add http basic auth for dev environment, add the following to
-    the env:
-
-    #+BEGIN_SRC clojure
-      :http-simple-credentials {:username "dev-username" :password "dev-password"}
-    #+END_SRC
-    
-** Migrations
-   Manage migrations with the following commands (prepend =lein
-   migratus=):
-   | Command       | Description                       |
-   |---------------+-----------------------------------|
-   | migrate       | apply migrations                  |
-   | rollback      | run "down" for previous migration |
-   | create <name> | create new migration              |
-
-   [[https://github.com/yogthos/migratus][more about migratus]]
+   #+BEGIN_EXAMPLE
+   (require '[clojure.test :refer [run-tests]])
+   (require 'hiiop.test.specific.test)
+   (run-tests 'hiiop.test.specific.test)
+   #+END_EXAMPLE
 
 ** Notice
 
@@ -159,4 +186,3 @@ Create profiles.clj under your git root to place the secrets.
      + Git revision is used to version the assets
 
 ** TODO License
-
