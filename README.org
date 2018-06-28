@@ -99,25 +99,17 @@
 
    [[https://github.com/yogthos/migratus][more about migratus]]
 
-** Compile Sass:
-
 ** Development
    To get an interactive development environment run:
 
    #+BEGIN_EXAMPLE
+   sassc resources/scss/screen.scss > resources/public/css/screen.css
+   # OR
+   # lein sassc once
+
    lein run
    lein figwheel
    #+END_EXAMPLE
-
-   Make sure you have sassc installed. Sass can be compiled using one of these 2
-   commands:
-
-   #+BEGIN_EXAMPLE
-   lein sassc once
-   # OR
-   sassc resources/scss/screen.scss > resources/public/css/screen.css
-   #+END_EXAMPLE
-
 
    and open your browser at [[http://localhost:3000/][localhost:3000]].
    This will auto compile and send all changes to the browser without the
