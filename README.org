@@ -36,7 +36,7 @@
       :smtp-password   ""
 
       :redis
-      {:uri ""}
+      {:uri "redis://localhost:6379"}
       :hiiop-pictures-bucket
       "hiiop-dev-pictures"
       :hiiop-pictures-bucket-base-url
