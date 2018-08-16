@@ -14,6 +14,7 @@
             [hiiop.components.navigation :as navigation]
             [hiiop.components.pikaday :refer [pikaday pikaday-mixin]]
             [hiiop.components.address-autocomplete :as address]
+            [hiiop.components.cookies-banner :refer [cookies-banner]]
             [hiiop.time :as time]
             [hiiop.schema :as hs]
             [hiiop.mangling :as mangling])
@@ -480,8 +481,8 @@
 (rum/defc body-content [header content footer scripts]
   [:body
    [:div {:class "opux-wrapper"}
-    header content footer scripts
-    ]
+    header content footer scripts]
+   (cookies-banner)
    (if (:analytics-script env) [:script {:type "text/javascript"} "_satellite.pageBottom();"])])
 
 

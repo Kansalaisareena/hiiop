@@ -146,7 +146,15 @@
  :header
  {
   :title "Hiiop"
- }
+  }
+
+ :cookies-banner
+ {
+  :text  "Käytämme sivustollamme verkkoanalytiikkaa ja evästeitä palveluiden tuotantoon ja kehittämiseen sekä markkinoinnin kohdentamiseen. Jatkamalla sivun käyttöä hyväksyt käytäntömme."
+  :link "https://op.media/gdpr"
+  :link-text "Lue lisää ja hallitse evästeitä ›"
+  }
+
  :missing ":fi teksti puuttuu"
  :name "Hiiop"
  :pages
