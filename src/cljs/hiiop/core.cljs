@@ -23,9 +23,9 @@
    (navigation/top-navigation context)
    (. js/document (getElementById "top-navigation"))))
 
-(defn mount-cookies-banner []
+(defn mount-cookies-banner [context]
   (rum/mount
-    (cookies/cookies-banner)
+    (cookies/cookies-banner context)
     (. js/document (getElementById "cookies-banner"))))
 
 (defn get-config-and-call [this]
@@ -64,7 +64,7 @@
                  :path-key handler-key}]
     (set-context! context)
     (mount-top-navigation context)
-    (mount-cookies-banner)
+    (mount-cookies-banner context)
     (log/info handler-route-key handler-key)
     (when (and
            handler-route-key

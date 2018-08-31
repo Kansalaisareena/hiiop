@@ -478,11 +478,11 @@
      [:div {:id "top-navigation"}
       (navigation/top-navigation context)]]))
 
-(rum/defc body-content [header content footer scripts]
+(rum/defc body-content [context header content footer scripts]
   [:body
    [:div {:class "opux-wrapper"}
     header content footer scripts]
-    [:div {:id "cookies-banner" :class "cookies-consent"} (cookies-banner)]
+    [:div {:id "cookies-banner" :class "cookies-consent"} (cookies-banner context)]
    (if (:analytics-script env) [:script {:type "text/javascript"} "_satellite.pageBottom();"])])
 
 
@@ -566,6 +566,7 @@
                      :metas metas
                      :locale (:current-locale context)})
      (body-content
+      context
       (header context)
       [:div {:id "app" :class "opux-page-section" :dangerouslySetInnerHTML {:__html content}}]
       (footer context)
