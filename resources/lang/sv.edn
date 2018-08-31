@@ -150,9 +150,10 @@
 
  :cookies-banner
  {
-  :text  "Käytämme sivustollamme verkkoanalytiikkaa ja evästeitä palveluiden tuotantoon ja kehittämiseen sekä markkinoinnin kohdentamiseen. Jatkamalla sivun käyttöä hyväksyt käytäntömme."
-  :link "https://op.media/gdpr"
+  :text  "Hiiop! Vi använder webbanalys och cookies på vår webbplats. Läs mer och administrera cookies här. "
+  :link "http://tarinat.hiiop100.fi/fi/pages/kayttoehdot.html"
   :link-text "Lue lisää ja hallitse evästeitä ›"
+  :button-text "HYVÄKSYN"
   }
 
  :missing ":fi text saknas"

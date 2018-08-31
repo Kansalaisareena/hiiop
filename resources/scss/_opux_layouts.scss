@@ -579,8 +579,8 @@
 }
 
 @include block("cookie-consent-bar") {
-  height: 32px;
-  line-height: 32px;
+  height: 48px;
+  line-height: 48px;
   width: 100%;
   position: fixed;
   bottom: 0;
@@ -589,7 +589,7 @@
     display: inline-block;
     width: 90%;
     text-align: center;
-    font-size: 11px;
+    font-size: 14px;
   }
   .button {
       float: right;
