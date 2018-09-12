@@ -9,10 +9,11 @@
 (rum/defc cookies-banner [context]
     #?(:cljs
       (if-let [show-cookies-banner (not (.get goog.net.cookies "hiiop-cookie"))]
-          [:div {:class "cookie-consent-bar"} 
-            [:p ((:tr context) [:cookies-banner.text]) 
+          [:div {:class "cookie-consent-bar"}
+            [:p ((:tr context) [:cookies-banner.text])
             [:a {:href ((:tr context) [:cookies-banner.link])} ((:tr context) [:cookies-banner.link-text])]]
             [:button {
+                   :class "button"
                    :on-click (fn []
                                (.set goog.net.cookies
                                      "hiiop-cookie"
