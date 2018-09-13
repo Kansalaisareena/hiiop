@@ -14,6 +14,7 @@
             [hiiop.components.navigation :as navigation]
             [hiiop.components.pikaday :refer [pikaday pikaday-mixin]]
             [hiiop.components.address-autocomplete :as address]
+            [hiiop.components.cookies-banner :refer [cookies-banner]]
             [hiiop.time :as time]
             [hiiop.schema :as hs]
             [hiiop.mangling :as mangling])
@@ -477,11 +478,11 @@
      [:div {:id "top-navigation"}
       (navigation/top-navigation context)]]))
 
-(rum/defc body-content [header content footer scripts]
+(rum/defc body-content [context header content footer scripts]
   [:body
    [:div {:class "opux-wrapper"}
-    header content footer scripts
-    ]
+    header content footer scripts]
+    [:div {:id "cookies-banner"} (cookies-banner context)]
    (if (:analytics-script env) [:script {:type "text/javascript"} "_satellite.pageBottom();"])])
 
 
@@ -565,6 +566,7 @@
                      :metas metas
                      :locale (:current-locale context)})
      (body-content
+      context
       (header context)
       [:div {:id "app" :class "opux-page-section" :dangerouslySetInnerHTML {:__html content}}]
       (footer context)

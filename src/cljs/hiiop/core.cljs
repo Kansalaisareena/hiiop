@@ -12,6 +12,8 @@
             [hiiop.context               :refer [set-context! context]]
             [hiiop.routes.page-hierarchy :as page-routes]
             [hiiop.components.navigation :as navigation]
+            [hiiop.components.cookies-banner :as cookies]
+            [goog.net.cookies            :as gcookies]
             [hiiop.client-pages          :as client-pages]))
 
 (enable-console-print!)
@@ -20,6 +22,11 @@
   (rum/mount
    (navigation/top-navigation context)
    (. js/document (getElementById "top-navigation"))))
+
+(defn mount-cookies-banner [context]
+  (rum/mount
+    (cookies/cookies-banner context)
+    (. js/document (getElementById "cookies-banner"))))
 
 (defn get-config-and-call [this]
   (go
@@ -57,6 +64,7 @@
                  :path-key handler-key}]
     (set-context! context)
     (mount-top-navigation context)
+    (mount-cookies-banner context)
     (log/info handler-route-key handler-key)
     (when (and
            handler-route-key
