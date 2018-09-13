@@ -566,45 +566,61 @@
 }
 
 //cookies
-@include block("cookies-consent") {
-  box-sizing: content-box;
-  display: block;
-  height: 40px;
-  line-height: 40px;
-  padding: 0px;
-  @include block("opux-icon-social") {
-    margin-left: 16px;
-    margin-bottom: -15px;
-  }
-}
 
 @include block("cookie-consent-bar") {
-  height: 60px;
-  line-height: 60px;
   width: 100%;
   position: fixed;
   bottom: 0;
+  padding: 10px;
   background-color: #4a4a4a;
   color: white;
-  font-size: 16px;
-  p {
-    display: inline-block;
-    width: 90%;
-    text-align: center;
+
+  button {
+    display: block;
+    margin: 0 auto;
+    height: 30px;
+    width: 110px;
+    line-height: 24px;
+    -moz-border-radius: 24px;
+    border-radius: 24px;
+    font-size: 14px;
   }
-  .button {
-      float: right;
-      width: 100px;
-      top: 50%;
-      height: 30px;
-      margin-top: 15px;
-      margin-right: 10px;
-      line-height: 24px;
-      -moz-border-radius: 24px;
-      border-radius: 24px;
-      border: 0;
-      background-color: white;
+}
+
+@media (max-width: 768px) {
+  @include block("cookie-consent-bar") {
+    font-size: 14px;
+    span {
+      display: inline-block;
+      margin-right: 16px;
       text-align: center;
-      font-size: 14px;
+    }
+    .button-container {
+      margin-top: 12px;
+      display: inline-block;
+      width: 100%;
+    }
+  }
+}
+
+@media (min-width: 768px) {
+  @include block("cookie-consent-bar") {
+    font-size: 18px;
+    line-height: 24px;
+    span {
+      display: inline-block;
+      width: 80%;
+      vertical-align: middle;
+      text-align: center;
+    }
+    .button-container {
+      height: 50%;
+      width: 20%;
+    }
+    button {
+      display: inline;
+      float: right;
+      margin-right: 24px;
+    }
   }
 }

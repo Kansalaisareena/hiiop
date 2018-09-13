@@ -482,7 +482,7 @@
   [:body
    [:div {:class "opux-wrapper"}
     header content footer scripts]
-    [:div {:id "cookies-banner" :class "cookies-consent"} (cookies-banner context)]
+    [:div {:id "cookies-banner"} (cookies-banner context)]
    (if (:analytics-script env) [:script {:type "text/javascript"} "_satellite.pageBottom();"])])
 
 
