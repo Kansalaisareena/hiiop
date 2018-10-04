@@ -1,27 +1,27 @@
 version: '3'
 services:
-  web:
-    build: .
-    ports:
-     - "3000:3000"
   redis:
     image: "redis:alpine"
-  db:
+  postgres:
     image: postgres:9.6-alpine
     restart: always
     ports:
       - "5432:5432"
-    environment:
-      - DEBUG=true
+    volumes:
+      - ./postgres-initdb.sh:/docker-entrypoint-initdb.d/init.sh
 
-      - DB_USER=
-      - DB_PASS=
-      - DB_NAME="hiiop_dev"
-      - DB_TEMPLATE=
-
-      - DB_EXTENSION=
-
-      - REPLICATION_MODE=
-      - REPLICATION_USER=
-      - REPLICATION_PASS=
-      - REPLICATION_SSLMODE=
+  web:
+    links: 
+      - redis
+      - postgres
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+     - .:/hiiop
+    command: >
+        bash -c "lein run
+        && lein figwheel"
+    depends_on:
+      - redis
+      - postgres
