@@ -25,7 +25,7 @@
   ```clojure
    {:profiles/dev
     {:env
-     {:database-url "postgresql://localhost/hiiop_dev?user=postgres"
+     {:database-url "postgresql://postgres/hiiop_dev?user=postgres"
       :timezone "Europe/Helsinki"
       :site-base-url ""
 
