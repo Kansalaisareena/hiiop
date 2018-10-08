@@ -70,6 +70,7 @@
                             :metas metas
                             :locale (:current-locale context)})
         (html/body-content
+          context
           (html/header context)
           [:div {:id "app"
                  :class "opux-page-section opux-page-section--contentful"}
@@ -217,4 +218,3 @@
           [:div {:class "script-tags"}
            [:script {:src (str asset-path "/js/static.js")
                      :type "text/javascript"}]]))))))
-
