@@ -14,7 +14,7 @@
 
 - Install docker
 - Set up `profiles.clj` file mention in [Secrets section](#Secrets)
-- Run `docker build -t hiiop .` and then `docker-compose up`
+- Run `docker-compose up`
 - Open [localhost:3000](http://localhost:3000) in your browser to check if the development environement is ready
 
 ## Secrets
@@ -79,7 +79,7 @@
 To add http basic auth for dev environment, add the following to
 the env:
 
-```clojure 
+```clojure
 :http-simple-credentials {:username "dev-username" :password dev-password"}
 ```
 
@@ -120,27 +120,29 @@ them from the repl in the following way:
 When dealing with translations you have reload the files manually
 in your clj repl to see the changes:
 
-```    
+```clojure
   (use 'hiiop.translate :reload)
   (restart)
-```    
+```
 
 ## Deployments
 
-   - Done using Circle CI
-     + https://circleci.com/gh/futurice/hiiop
-     + See [circle.yml](https://github.com/futurice/hiiop/blob/master/circle.yml)
+- Done in Docker container
+  - After running `docker-compose up`, we can go into the web container:
+  `docker exec -it hiiop_web_1 bash`
+  - Login to heroku using `heroku login`
+  - Set `AWS_ACCESS_KEY_ID` and  `AWS_SECRET_ACCESS_KEY` for aws and deploy using deploy files to deploy to equivalance servers. E.g. one liner `AWS_ACCESS_KEY_ID=YOUR_KEY_ID AWS_SECRET_ACCESS_KEY=YOUR_SECRET ./scripts/deploy-scratch` to deploy to scratch server.
 
-   - App itself is hosted in Heroku
-     + =HEROKU_APP= environment variable used to define where to deploy
-     + =DATABASE_URL= is used to determine the database and user to use
-     + =ASSET_BASE_URL= is used to determine which URL to use before the assets
-     + =HIIOP_PICTURES_BUCKET= is used as S3 file upload target
-     + =HIIOP_PICTURES_BUCKET_BASE_URL= is used to refer to the uploaded pictures
+- App itself is hosted in Heroku
+  - =HEROKU_APP= environment variable used to define where to deploy
+  - =DATABASE_URL= is used to determine the database and user to use
+  - =ASSET_BASE_URL= is used to determine which URL to use before the assets
+  - =HIIOP_PICTURES_BUCKET= is used as S3 file upload target
+  - =HIIOP_PICTURES_BUCKET_BASE_URL= is used to refer to the uploaded pictures
 
-   - ASSETS are hosted in S3
-     + =HIIOP_ASSET_BUCKET= environment variable is used to determine
-       which bucket to use
-     + =AWS_ACCESS_KEY_ID= and =AWS_SECRET_ACCESS_KEY= environment
-       variables can be used to define the user used to authenticate to AWS
-     + Git revision is used to version the assets
+- ASSETS are hosted in S3
+  - =HIIOP_ASSET_BUCKET= environment variable is used to determine
+    which bucket to use
+  - =AWS_ACCESS_KEY_ID= and =AWS_SECRET_ACCESS_KEY= environment
+    variables can be used to define the user used to authenticate to AWS
+  - Git revision is used to version the assets
