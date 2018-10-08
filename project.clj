@@ -95,8 +95,7 @@
    [lein-heroku "0.5.3"
     :exclusions
     [commons-codec
-     org.apache.commons/commons-compress
-     com.fasterxml.jackson.core/jackson-core]]]
+     org.apache.commons/commons-compress]]]
 
   :sassc
   [{:src "resources/scss/screen.scss"

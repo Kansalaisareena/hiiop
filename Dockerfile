@@ -1,8 +1,10 @@
-FROM java:8-alpine
-MAINTAINER Your Name <you@example.com>
+FROM clojure:lein-2.8.1-alpine
 
-ADD target/uberjar/hiiop.jar /hiiop/app.jar
+RUN apk update && \
+    apk upgrade && \
+    apk add git && \
+    apk add sassc
 
-EXPOSE 3000
+ADD . /hiiop/
 
-CMD ["java", "-jar", "/hiiop/app.jar"]
+WORKDIR /hiiop

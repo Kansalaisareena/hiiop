@@ -1,0 +1,25 @@
+version: '3'
+services:
+  redis:
+    image: "redis:alpine"
+  postgres:
+    image: postgres:9.6-alpine
+    restart: always
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./postgres-initdb.sh:/docker-entrypoint-initdb.d/init.sh
+
+  web:
+    links: 
+      - redis
+      - postgres
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+     - .:/hiiop
+    command: bash -c "lein sassc clean && lein sassc once && lein run"
+    depends_on:
+      - redis
+      - postgres
