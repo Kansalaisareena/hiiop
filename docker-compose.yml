@@ -19,9 +19,7 @@ services:
       - "3000:3000"
     volumes:
      - .:/hiiop
-    command: >
-        bash -c "lein run
-        && lein figwheel"
+    command: bash -c "lein sassc clean && lein sassc once && lein run"
     depends_on:
       - redis
       - postgres

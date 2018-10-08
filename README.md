@@ -14,7 +14,6 @@
 
 - Install docker
 - Set up `profiles.clj` file mention in [Secrets section](#Secrets)
-- Run `lein sassc once` or `sassc resources/scss/screen.scss > resources/public/css/screen.css`
 - Run `docker build -t hiiop .` and then `docker-compose up`
 - Open [localhost:3000](http://localhost:3000) in your browser to check if the development environement is ready
 
