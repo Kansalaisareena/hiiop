@@ -131,7 +131,7 @@ in your clj repl to see the changes:
   - After running `docker-compose up`, we can go into the web container:
   `docker exec -it hiiop_web_1 bash`
   - Login to heroku using `heroku login`
-  - Set `AWS_ACCESS_KEY_ID` and  `AWS_SECRET_ACCESS_KEY` for aws and deploy using deploy files to deploy to equivalance servers. E.g. one liner `AWS_ACCESS_KEY_ID=YOUR_KEY_ID AWS_SECRET_ACCESS_KEY=YOUR_SECRET ./scripts/deploy-scratch` to deploy to scratch server.
+  - Set `AWS_ACCESS_KEY_ID` and  `AWS_SECRET_ACCESS_KEY` for aws and deploy using deploy files to deploy to equivalance servers. E.g. one liner `AWS_ACCESS_KEY_ID=YOUR_KEY_ID AWS_SECRET_ACCESS_KEY=YOUR_SECRET ./scripts/deploy-scratch.sh` to deploy to scratch server.
 
 - App itself is hosted in Heroku
   - =HEROKU_APP= environment variable used to define where to deploy

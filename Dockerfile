@@ -8,6 +8,7 @@ RUN apk update && \
     apk add nodejs && \
     apk add py-pip && \
     pip install awscli --upgrade --user && \
+    ln -s ~/.local/bin/aws /usr/local/bin/ && \
     curl https://cli-assets.heroku.com/install.sh | sh
 
 ADD . /hiiop/
