@@ -18,7 +18,7 @@ SELECT * FROM organization
 INSERT INTO
   users (email)
 VALUES
-  (:email)
+  (lower(:email))
 RETURNING id
 
 -- :name update-user! :! :n
@@ -27,7 +27,7 @@ UPDATE
   users
 SET
   name = :name,
-  email = :email,
+  email = lower(:email),
   phone = :phone,
   locale = :locale
 WHERE id = :id
@@ -87,14 +87,14 @@ SELECT
   last_login,
   is_active
 FROM users
-WHERE email = :email
+WHERE lower(email) = lower(:email)
 
 -- :name get-password-hash :? :1
 -- doc retrieve a password hash by email
 SELECT
   pass
 FROM users
-WHERE email = :email
+WHERE lower(email) = lower(:email)
 
 -- :name delete-user! :! :n
 -- :doc delete a user given the uuid
@@ -104,7 +104,7 @@ WHERE id = :id
 -- :name delete-user-by-email! :! :n
 -- :doc delete user by email
 DELETE FROM users
-WHERE email = :email
+WHERE lower(email) = lower(:email)
 
 -- :name get-users :? :*
 -- :doc get all users
@@ -114,7 +114,7 @@ SELECT * FROM users
 -- :doc get user id by email
 SELECT id, name
 FROM users
-WHERE email = :email
+WHERE lower(email) = lower(:email)
 
 -- :name add-unmoderated-quest! :? :1
 -- :doc add a quest
@@ -587,7 +587,7 @@ WHERE
 INSERT INTO password_tokens (user_id, expires)
 SELECT u.id, :expires
 FROM users u
-WHERE u.email = :email
+WHERE lower(u.email) = lower(:email)
 ON CONFLICT (user_id) DO
   UPDATE
     SET expires = :expires,
@@ -627,7 +627,7 @@ WHERE
 UPDATE users
   SET pass = :pass,
       is_active = true
-  WHERE email = :email AND
+  WHERE lower(email) = lower(:email) AND
         is_active = false
     AND EXISTS (
       SELECT 1
@@ -642,7 +642,7 @@ UPDATE users
   SET
     pass = :pass,
     is_active = true
-  WHERE email = :email AND
+  WHERE lower(email) = lower(:email) AND
     EXISTS (
       SELECT 1
       FROM password_tokens
