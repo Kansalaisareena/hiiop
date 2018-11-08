@@ -4,7 +4,7 @@
   :url "http://example.com/FIXME"
   :repositories {"project" "file:maven_repository"}
 
-  :dependencies [[cider/cider-nrepl                      "0.14.0"]
+  :dependencies [[cider/cider-nrepl                      "0.18.0"]
                  [cljs-http                              "0.1.42"]
                  [compojure                              "1.5.1"]
                  [conman                                 "0.6.2"]
@@ -113,10 +113,7 @@
   {:http-server-root "public"
    :nrepl-port 7002
    :server-port 3450
-   :css-dirs ["resources/public/css"]
-   :nrepl-middleware [cider.nrepl/cider-middleware
-                      refactor-nrepl.middleware/wrap-refactor
-                      cemerick.piggieback/wrap-cljs-repl]}
+   :css-dirs ["resources/public/css"]}
 
   :heroku {:app-name      ~(get (System/getenv) "HEROKU_APP")
            :jdk-version   "1.8"
@@ -203,15 +200,16 @@
                    [ring/ring-devel              "1.5.0"]
                    [pjstadig/humane-test-output  "0.8.1"]
                    [binaryage/devtools           "0.8.2"]
-                   [com.cemerick/piggieback      "0.2.2-SNAPSHOT"]
+                   [cider/piggieback             "0.3.10"]
                    [doo                          "0.1.7"]
-                   [figwheel-sidecar             "0.5.8"]
+                   [figwheel-sidecar             "0.5.17"]
                    [criterium                    "0.4.4"]]
                   :plugins
                   [[com.jakemccrary/lein-test-refresh  "0.18.0"]
                    [lein-doo                           "0.1.7"]
-                   [lein-figwheel                      "0.5.8"]
+                   [lein-figwheel                      "0.5.17"]
                    [org.clojure/clojurescript          "1.9.293"]
+                   [cider/cider-nrepl                  "0.18.0"]
                    [lein-autoreload                    "0.1.1"]]
 
                   :prep-tasks ["git-version"]
@@ -239,7 +237,14 @@
                   :doo {:build "test"}
                   :source-paths ["env/dev/clj" "test/clj"]
                   :resource-paths ["env/dev/resources"]
-                  :repl-options {:init-ns user :timeout 1200000}
+                  :repl-options {:init-ns user
+                                 :timeout 1200000
+                                 :nrepl-middleware [cider.piggieback/wrap-cljs-repl
+                                                    cider.nrepl/wrap-format
+                                                    cider.nrepl/wrap-ns
+                                                    cider.nrepl/wrap-profile
+                                                    cider.nrepl/wrap-refresh
+                                                    cider.nrepl/wrap-resource]}
                   :injections [(require 'pjstadig.humane-test-output)
                                (pjstadig.humane-test-output/activate!)]}
    :project/test {:resource-paths ["env/test/resources"]
