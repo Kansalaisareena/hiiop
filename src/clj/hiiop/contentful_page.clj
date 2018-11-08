@@ -197,6 +197,7 @@
                             :metas metas
                             :locale (:current-locale context)})
         (html/body-content
+          context
           (html/header context)
           [:div {:id "app"
                  :class "opux-page-section"}
