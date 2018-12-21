@@ -532,7 +532,7 @@
    [:div {:class "opux-footer opux-content"}
 
     [:div {:class "opux-footer__column opux-footer__column--right"}
-     [:a {:href "http://www.op.fi/" :target "_blank"} [:span {:class "opux-op-logo"}]]]
+     [:span {:class "opux-op-logo"}]]
 
     [:div {:class "opux-footer__column"}
      (navigation/footer-navigation context)]
