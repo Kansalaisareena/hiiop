@@ -483,21 +483,13 @@
    [:div {:class "opux-wrapper"}
     header content footer scripts]
     [:div {:id "cookies-banner"} (cookies-banner context)]
-   (if (:analytics-script env) [:script {:type "text/javascript"} "_satellite.pageBottom();"])])
 
+   (if-let [ga-id (:analytics-ga-id env)] [:script
+                                           {:type "text/javascript"
+                                            :dangerouslySetInnerHTML
+                                            {:__html (str "window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', '" ga-id "'); ")}
+                                            }])])
 
-(defn- fb-pixel [id]
-  (str "!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?"
-       "n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;"
-       "n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;"
-       "t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,"
-       "document,'script','https://connect.facebook.net/en_US/fbevents.js');"
-       "fbq('init', '" id "');fbq('track', 'PageView');"))
-
-(defn- fb-noscript-pixel [id]
-  (str  "<img height=\"1\" width=\"1\" style=\"display:none\""
-        "src=\"https://www.facebook.com/tr?id=" id "&ev=PageView&noscript=1\"/>"
-))
 
 (rum/defc head-content [{:keys [title asset-path metas locale]}]
   [:head
@@ -518,8 +510,6 @@
    [:link {:href "img/favicons/favicon-32x32.png" :rel "icon" :type "image/png"}]
    [:link {:href "img/favicons/favicon-16x16.png" :rel "icon" :type "image/png"}]
    [:link {:href "img/favicons/favicon.ico" :rel "icon" :type "image/x-icon"}]
-   [:script {:dangerouslySetInnerHTML {:__html (fb-pixel (:fb-pixel-id env))}}]
-   [:noscript {:dangerouslySetInnerHTML {:__html (fb-noscript-pixel (:fb-pixel-id env))}}]
    (if-let [url (:analytics-script env)] [:script {:src url}])])
 
 
