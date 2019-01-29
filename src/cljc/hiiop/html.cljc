@@ -505,6 +505,7 @@
    (when metas
      (map (fn [meta] [:meta meta]) metas))
    [:link {:href "//assets.juicer.io/embed.css" :rel "stylesheet" :type "text/css"}]
+   [:link {:href "https://fonts.googleapis.com/css?family=Roboto:300,300i,400,700" :rel "stylesheet" :type "text/css"}]
    [:link {:href (str asset-path "/css/screen.css") :rel "stylesheet" :type "text/css"}]
    [:link {:href "img/favicons/favicon-87x87.png" :rel "icon" :type "image/png"}]
    [:link {:href "img/favicons/favicon-32x32.png" :rel "icon" :type "image/png"}]
