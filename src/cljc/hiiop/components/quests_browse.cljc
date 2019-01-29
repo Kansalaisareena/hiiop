@@ -67,7 +67,7 @@
 
 (defn apply-filters
   [{:keys [quests quest-filter]}]
-  #?(:cljs (.gtag js/window "track" "Search" {:search_string (str (:categories quest-filter)) }))
+  #?(:cljs (.gtag js/window "track" "Search" (js-obj :search_string (str (:categories quest-filter)))))
   (:quests
    ((comp filter-by-end-time
           filter-by-location

@@ -213,7 +213,7 @@
             user-info (<! (get-public-user-info (str (:owner quest))))
             joinable (<! (joinable-open-quest? (:id quest)))
             owner-name (:name user-info)]
-        (.gtag js/window "track" "ViewContent" {:value id})
+        (.gtag js/window "track" "ViewContent" (js-obj :value id))
         (-> quest
             (#(assoc %1
                      :categories
