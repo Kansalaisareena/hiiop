@@ -128,7 +128,7 @@
                  (do
                    (reset! view-state {:view "success"
                                        :message (tr [:pages.quest.view.join.success])})
-                   (.fbq js/window "track" "Purchase" {:value quest-id}))
+                   (.gtag js/window "track" "Purchase" {:value quest-id}))
                  (reset! view-state {:view "fail"
                                      :message (tr [:pages.quest.view.join.fail])})
                ))))

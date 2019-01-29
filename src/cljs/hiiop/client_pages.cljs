@@ -174,7 +174,7 @@
                       :errors errors
                       :schema NewQuest})
         (. js/document (getElementById "app")))
-      (.fbq js/window "track" "Lead"))))
+      (.gtag js/window "track" "Lead"))))
 
 (defn edit-quest-page [params]
   (go
@@ -213,7 +213,7 @@
             user-info (<! (get-public-user-info (str (:owner quest))))
             joinable (<! (joinable-open-quest? (:id quest)))
             owner-name (:name user-info)]
-        (.fbq js/window "track" "ViewContent" {:value id})
+        (.gtag js/window "track" "ViewContent" {:value id})
         (-> quest
             (#(assoc %1
                      :categories

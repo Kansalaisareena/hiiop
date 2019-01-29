@@ -1,2 +1,2 @@
 // Facebook pixel event call
-window.fbq = function(){};
+window.gtag = function(){};
