@@ -533,13 +533,13 @@
      [:div {:class "opux-section"}
       [:a {:class "opux-footer__social-link opux-icon-social opux-icon-social--fb"
            :target "_blank"
-           :href "https://www.facebook.com/Hiiop/"}]
+           :href "https://www.facebook.com/Hiiop100.fi/"}]
       [:a {:class "opux-footer__social-link opux-icon-social opux-icon-social--twitter"
            :target "_blank"
            :href "https://twitter.com/Hiiop100"}]
       [:a {:class "opux-footer__social-link opux-icon-social opux-icon-social--instagram"
            :target "_blank"
-           :href "https://www.instagram.com/hiiop100/"}]]]]
+           :href "https://www.instagram.com/hiiop100.fi/"}]]]]
 
    [:div {:class "opux-copyright opux-centered"}
     (tr [:footer.copyright])]])
