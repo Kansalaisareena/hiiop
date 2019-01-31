@@ -548,10 +548,7 @@
            :href "https://twitter.com/Hiiop100"}]
       [:a {:class "opux-footer__social-link opux-icon-social opux-icon-social--instagram"
            :target "_blank"
-           :href "https://www.instagram.com/hiiop100/"}]]]]
-
-   [:div {:class "opux-copyright opux-centered"}
-    (tr [:footer.copyright])]])
+           :href "https://www.instagram.com/hiiop100/"}]]]]])
 
 (defn app-structure
   [{:keys [context title content csrf-token servlet-context scripts no-script metas]}]
