@@ -20,7 +20,7 @@
               (when (= current-locale :fi)
                 " is-active"))}
      "fi"]]
-   
+
    [:li
     {:class "opux-menu__item opux-menu__item--languages"}
     [:a
@@ -62,7 +62,7 @@
                        (active? :login)))
          :href (str site-base-url
                     (path-for hierarchy (if identity :profile :login)))}
-     [:i {:class "opux-icon-circled opux-icon-person"}]]]])
+     [:i {:class "opux-icon-circled hiiop-icon--user"}]]]])
 
 (defn- main-menu [{:keys [tr is-active active? hierarchy lang-param site-base-url hiiop-blog-base-url current-locale]}]
   [:ul
@@ -134,13 +134,13 @@
                   :hiiop-blog-base-url hiiop-blog-base-url
                   :site-base-url site-base-url
                   :tr tr})
-      
+
       [:div {:class "opux-menu--right"}
-       
+
        (lang-switcher {:is-static-page is-static-page
                        :hiiop-blog-base-url hiiop-blog-base-url
                        :current-locale current-locale})
-       
+
        (login-menu {:identity identity
                     :site-base-url site-base-url
                     :is-static-page is-static-page

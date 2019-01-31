@@ -60,7 +60,7 @@
         [:h1 name]]
 
        [:div {:class "opux-content opux-content--medium opux-content--quest-header"}
-        [:p [:i {:class "opux-icon opux-icon-person"}]
+        [:p [:i {:class "opux-icon hiiop-icon--user"}]
          (html/combine-text ", " (rum/react usable-owner) (:name organisation))]
         [:p [:i {:class "opux-icon opux-icon-location"}]
          (html/combine-text

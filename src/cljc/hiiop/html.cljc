@@ -363,7 +363,7 @@
                    selected
                    (into [] (operation selected-set choice)))))}]]
            [(label
-             [:i {:class (str "opux-icon--multi-select opux-icon-circled opux-icon--multi-select--" (name choice))}]
+             [:i {:class (str "opux-icon--multi-select opux-icon-circled hiiop-icon--" (name choice))}]
              {:class "opux-input__label--multi-select"
               :for id}
              (tr [(choice-text-fn choice)]))]))))
