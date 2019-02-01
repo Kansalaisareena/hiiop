@@ -52,7 +52,7 @@
 
      [:div {:class "opux-content opux-content--medium opux-content--quest-header"}
       [:p
-       [:i {:class "opux-icon opux-icon-person"}]
+       [:i {:class "opux-icon hiiop-icon--user"}]
        (html/combine-text ", " usable-owner (:name organisation))]
       [:p
        [:a {:href google-maps-url

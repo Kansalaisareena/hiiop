@@ -37,6 +37,22 @@ $opux-icon-cross-name-collection: (eyeglasses, law, sound, globe, handicap, chil
       font-size: 3rem;
     }
   }
+
+  // opux-icon--multi-select-custom
+  @include modifier('multi-select-custom') {
+      // $opux-icon-custom-multi-select-name-collection: (culture, disability, elderly, environment, equality, foreign-aid, inequality, kids-and-youngsters, peer-support, well-being, end);
+    // opux-icon--multi-select-custom--eldery
+    // @include modifier('elderly') {
+    //   padding-bottom: .5rem;
+    //   &:before {
+    //     display: inline-block;
+    //     width: 2rem;
+    //     height: 2rem;
+    //     content: ""
+    //     background: url('/img/custom_icons/eldery.svg');
+    //   }
+    // }
+  }
 }
 
 @include block('opux-logo') {
