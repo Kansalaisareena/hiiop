@@ -7,7 +7,7 @@
   box-sizing: border-box;
   color: $basic-text-colour;
   font-size: 1rem;
-  font-weight: 200;
+  font-weight: 300;
   outline: none;
   padding: .75rem .5rem;
   width: 100%;
@@ -52,7 +52,7 @@
     -webkit-appearance: none;
     font-family: $font-family;
     font-size: 1rem;
-    font-weight: 200;
+    font-weight: 300;
     padding-right: 0px;
     padding-top: 0px;
     padding-bottom: 0px;
@@ -214,7 +214,7 @@
     // opux-input__label--categories
     @include modifier('categories') {
       font-size: 1.5rem;
-      font-weight: 200;
+      font-weight: 300;
     }
 
     // opux-input__label--radio
