@@ -484,11 +484,17 @@
     header content footer scripts]
     [:div {:id "cookies-banner"} (cookies-banner context)]
 
-   (if-let [ga-id (:analytics-ga-id env)] [:script
-                                           {:type "text/javascript"
-                                            :dangerouslySetInnerHTML
-                                            {:__html (str "window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', '" ga-id "'); ")}
-                                            }])])
+   (if-let [ga-id (:analytics-ga-id env)]
+     [:script
+      {:type "text/javascript"
+       :dangerouslySetInnerHTML
+       {:__html (str "window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', '" ga-id "'); ")}
+       }]
+     [:script
+      {:type "text/javascript"}
+      "function gtag(){}"
+      ]
+     )])
 
 
 (rum/defc head-content [{:keys [title asset-path metas locale]}]
