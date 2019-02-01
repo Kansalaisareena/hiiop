@@ -483,21 +483,13 @@
    [:div {:class "opux-wrapper"}
     header content footer scripts]
     [:div {:id "cookies-banner"} (cookies-banner context)]
-   (if (:analytics-script env) [:script {:type "text/javascript"} "_satellite.pageBottom();"])])
 
+   (if-let [ga-id (:analytics-ga-id env)] [:script
+                                           {:type "text/javascript"
+                                            :dangerouslySetInnerHTML
+                                            {:__html (str "window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', '" ga-id "'); ")}
+                                            }])])
 
-(defn- fb-pixel [id]
-  (str "!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?"
-       "n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;"
-       "n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;"
-       "t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,"
-       "document,'script','https://connect.facebook.net/en_US/fbevents.js');"
-       "fbq('init', '" id "');fbq('track', 'PageView');"))
-
-(defn- fb-noscript-pixel [id]
-  (str  "<img height=\"1\" width=\"1\" style=\"display:none\""
-        "src=\"https://www.facebook.com/tr?id=" id "&ev=PageView&noscript=1\"/>"
-))
 
 (rum/defc head-content [{:keys [title asset-path metas locale]}]
   [:head
@@ -513,13 +505,12 @@
    (when metas
      (map (fn [meta] [:meta meta]) metas))
    [:link {:href "//assets.juicer.io/embed.css" :rel "stylesheet" :type "text/css"}]
+   [:link {:href "https://fonts.googleapis.com/css?family=Roboto:300,300i,400,700" :rel "stylesheet" :type "text/css"}]
    [:link {:href (str asset-path "/css/screen.css") :rel "stylesheet" :type "text/css"}]
    [:link {:href "img/favicons/favicon-87x87.png" :rel "icon" :type "image/png"}]
    [:link {:href "img/favicons/favicon-32x32.png" :rel "icon" :type "image/png"}]
    [:link {:href "img/favicons/favicon-16x16.png" :rel "icon" :type "image/png"}]
    [:link {:href "img/favicons/favicon.ico" :rel "icon" :type "image/x-icon"}]
-   [:script {:dangerouslySetInnerHTML {:__html (fb-pixel (:fb-pixel-id env))}}]
-   [:noscript {:dangerouslySetInnerHTML {:__html (fb-noscript-pixel (:fb-pixel-id env))}}]
    (if-let [url (:analytics-script env)] [:script {:src url}])])
 
 
@@ -542,13 +533,16 @@
      [:div {:class "opux-section"}
       [:a {:class "opux-footer__social-link opux-icon-social opux-icon-social--fb"
            :target "_blank"
-           :href "https://www.facebook.com/Hiiop/"}]
+           :href "https://www.facebook.com/Hiiop100.fi/"}]
       [:a {:class "opux-footer__social-link opux-icon-social opux-icon-social--twitter"
            :target "_blank"
            :href "https://twitter.com/Hiiop100"}]
       [:a {:class "opux-footer__social-link opux-icon-social opux-icon-social--instagram"
            :target "_blank"
-           :href "https://www.instagram.com/hiiop100/"}]]]]])
+           :href "https://www.instagram.com/hiiop100.fi/"}]]]]
+
+   [:div {:class "opux-copyright opux-centered"}
+    (tr [:footer.copyright])]])
 
 (defn app-structure
   [{:keys [context title content csrf-token servlet-context scripts no-script metas]}]
