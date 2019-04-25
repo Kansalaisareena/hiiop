@@ -97,6 +97,7 @@ $opux-icon-cross-name-collection: (eyeglasses, law, sound, globe, handicap, chil
   &:before {
     font-size: 1.3rem;
     left: .5rem;
+    top: .3rem;
     position: absolute;
   }
 
@@ -123,7 +124,7 @@ $opux-icon-cross-name-collection: (eyeglasses, law, sound, globe, handicap, chil
     border: 2px dashed $OP-gray;
     box-sizing: border-box;
     height: 54px;
-    line-height: 52px;
+    line-height: 49px;
     text-align: center;
     width: 54px;
   }
@@ -152,7 +153,7 @@ $opux-icon-cross-name-collection: (eyeglasses, law, sound, globe, handicap, chil
       font-size: 1.5rem;
     }
     margin-right: .5rem;
-    margin-top: -.2rem;
+    margin-top: -.8rem;
   }
 }
 

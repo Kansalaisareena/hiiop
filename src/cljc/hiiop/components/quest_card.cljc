@@ -168,18 +168,18 @@
       [:div {:class "opux-card__content"}
 
        [:span
-        {:class "opux-card__location opux-inline-icon opux-inline-icon-location"}
+        {:class "opux-card__location opux-inline-icon hiiop-uncircled--placeholder"}
         town]
        [:span
-        {:class "opux-card__attendance opux-inline-icon opux-inline-icon-personnel opux-inline-icon--right"}
+        {:class "opux-card__attendance opux-inline-icon hiiop-uncircled--users opux-inline-icon--right"}
         available-slots]
 
        (quest-card-title {:quest quest})
 
-       [:span {:class "opux-card__date opux-inline-icon opux-inline-icon-calendar"}
+       [:span {:class "opux-card__date opux-inline-icon hiiop-uncircled--calendar"}
         (time/duration-to-print-str-date-short (time/from-string start-time)
                                                (time/from-string end-time))]
-       [:span {:class "opux-card__time opux-inline-icon opux-inline-icon-clock"}
+       [:span {:class "opux-card__time opux-inline-icon hiiop-uncircled--time"}
         (time/duration-to-print-str-time (time/from-string start-time)
                                          (time/from-string end-time))]
 
@@ -246,19 +246,19 @@
       [:div {:class "opux-card__content"}
 
        [:span
-        {:class "opux-card__location opux-inline-icon opux-inline-icon-location"}
+        {:class "opux-card__location opux-inline-icon hiiop-uncircled--placeholder"}
         town]
        [:span
-        {:class "opux-card__attendance opux-inline-icon opux-inline-icon-personnel opux-inline-icon--right"}
+        {:class "opux-card__attendance opux-inline-icon hiiop-uncircled--users opux-inline-icon--right"}
         available-slots]
 
        [:a {:class "opux-card__title" :href quest-link}
         name]
 
-       [:span {:class "opux-card__date opux-inline-icon opux-inline-icon-calendar"}
+       [:span {:class "opux-card__date opux-inline-icon hiiop-uncircled--calendar"}
         (time/duration-to-print-str-date-short (time/from-string start-time)
                                                (time/from-string end-time))]
-       [:span {:class "opux-card__time opux-inline-icon opux-inline-icon-clock"}
+       [:span {:class "opux-card__time opux-inline-icon hiiop-uncircled--time"}
         (time/duration-to-print-str-time (time/from-string start-time)
                                          (time/from-string end-time))]]]]))
 
@@ -292,10 +292,10 @@
       [:div {:class "opux-card__content"}
 
        [:span
-        {:class "opux-card__location opux-inline-icon opux-inline-icon-location"}
+        {:class "opux-card__location opux-inline-icon hiiop-uncircled--placeholder"}
         town]
        [:span
-        {:class "opux-card__attendance opux-inline-icon opux-inline-icon-personnel opux-inline-icon--right"}
+        {:class "opux-card__attendance opux-inline-icon hiiop-uncircled--users opux-inline-icon--right"}
         available-slots]
 
        (if is-moderated
@@ -304,13 +304,13 @@
                 :on-click on-click-fn}
           name])
 
-       [:span {:class "opux-card__date opux-inline-icon opux-inline-icon-calendar"}
+       [:span {:class "opux-card__date opux-inline-icon hiiop-uncircled--calendar"}
         (time/duration-to-print-str-date-short
           (time/from-string start-time)
           (time/from-string end-time))]
 
        (if (not (nil? end-time))
-         [:span {:class "opux-card__time opux-inline-icon opux-inline-icon-clock"}
+         [:span {:class "opux-card__time opux-inline-icon hiiop-uncircled--time"}
           (time/duration-to-print-str-time
             (time/from-string start-time)
             (time/from-string end-time))])]]]))
