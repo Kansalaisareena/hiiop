@@ -80,7 +80,7 @@
 (rum/defc quest-category-icon < rum/reactive
   [{:keys [category categories]}]
   [:span
-   {:class (str "opux-icon-circled opux-icon--filter opux-icon--filter--" (name category))
+   {:class (str "opux-icon-circled opux-icon--filter hiiop-icon--" (name category))
     :on-click (fn [_]
                 (reset! categories
                         (into []
