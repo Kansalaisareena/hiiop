@@ -327,10 +327,14 @@
     margin: 0px;
     * {
       &:before {
-        @extend %opux-icon-base;
-        content: "";
-        margin-bottom: 7px;
+        background: url(/img/camera.png);
+        background-size: cover;
         margin-right: 4px;
+        vertical-align: middle;
+        height: 25px;
+        width: 30px;
+        display: inline-block;
+        content: "";
       }
     }
   }
