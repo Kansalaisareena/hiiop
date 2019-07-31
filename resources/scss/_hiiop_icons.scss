@@ -91,3 +91,46 @@
   @include modifier('multi-select') {
   }
 }
+
+
+@font-face {
+  font-family: 'hiiop-uncircled';
+  src:  url('/fonts/hiiop-uncircled.eot?7vfwjk');
+  src:  url('/fonts/hiiop-uncircled.eot?7vfwjk#iefix') format('embedded-opentype'),
+        url('/fonts/hiiop-uncircled.ttf?7vfwjk') format('truetype'),
+        url('/fonts/hiiop-uncircled.woff?7vfwjk') format('woff'),
+        url('/fonts/hiiop-uncircled.svg?7vfwjk#hiiop-uncircled') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+[class^="hiiop-uncircled--"], [class*=" hiiop-uncircled--"] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'hiiop-uncircled' !important;
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.hiiop-uncircled--user:before {
+  content: "\e900";
+}
+.hiiop-uncircled--placeholder:before {
+  content: "\e901";
+}
+.hiiop-uncircled--calendar:before {
+  content: "\e902";
+}
+.hiiop-uncircled--users:before {
+  content: "\e903";
+}
+.hiiop-uncircled--time:before {
+  content: "\e904";
+}

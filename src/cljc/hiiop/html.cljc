@@ -208,6 +208,7 @@
             " "
             ["opux-input__container"
              "opux-input__container--date-picker"
+             "hiiop-uncircled--calendar"
              "opux-icon"
              class])}
      [:input options]

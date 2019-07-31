@@ -52,13 +52,13 @@
 
      [:div {:class "opux-content opux-content--medium opux-content--quest-header"}
       [:p
-       [:i {:class "opux-icon opux-icon-person"}]
+       [:i {:class "opux-icon hiiop-uncircled--user"}]
        (html/combine-text ", " usable-owner (:name organisation))]
       [:p
        [:a {:href google-maps-url
             :target "_blank"
             :class "opux-location"}
-        [:i {:class "opux-icon opux-icon-location"}]
+        [:i {:class "opux-icon hiiop-uncircled--placeholder"}]
         (html/combine-text
           ", "
           (str street
@@ -66,12 +66,12 @@
                  (str " " street-number)))
           town postal-code)]]
       [:p
-       [:i {:class "opux-icon opux-icon-calendar"}]
+       [:i {:class "opux-icon hiiop-uncircled--calendar"}]
        (time/duration-to-print-str-date
          (time/from-string start-time)
          (time/from-string end-time))]
       [:p
-       [:i {:class "opux-icon opux-icon-clock"}]
+       [:i {:class "opux-icon hiiop-uncircled--time"}]
        (time/duration-to-print-str-time
          (time/from-string start-time)
          (time/from-string end-time))]]
@@ -90,7 +90,7 @@
       (if (not-empty hashtags)
         [:p (string/join " " hashtags)])
       [:p
-       [:i {:class "opux-icon opux-icon-personnel"}]
+       [:i {:class "opux-icon hiiop-uncircled--users"}]
        (str available-slots " / " max-participants
             " " (tr [:pages.quest.view.participants]))]]
 
