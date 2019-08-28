@@ -1,6 +1,8 @@
-# hiiop
+# Hiiop
 
-## TODO Overview
+## Overview
+
+Hiiop is a social platform for connecting volunteer workers to volunteer tasks. It is run by Kansalaisareena and was originally developed by Futurice for OP Bank who donated it to Kansalaiseraana.
 
 ## Dependencies
 
@@ -146,3 +148,20 @@ in your clj repl to see the changes:
   - =AWS_ACCESS_KEY_ID= and =AWS_SECRET_ACCESS_KEY= environment
     variables can be used to define the user used to authenticate to AWS
   - Git revision is used to version the assets
+
+## License
+
+Copyright (C) 2017-2019  Kansalaisareena and others, see AUTHORS
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
