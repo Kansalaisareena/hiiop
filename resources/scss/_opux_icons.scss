@@ -229,4 +229,14 @@ $opux-icon-cross-name-collection: (eyeglasses, law, sound, globe, handicap, chil
       background-position: -90px -90px !important;
     }
   }
+
+  // opux-icon-social--github
+  @include modifier('github') {
+    background-image: url(/img/share/share_github_disabled.svg);
+
+    // opux-icon-social--github.is-disabled
+    @incude state('disabled') {
+      background-position: -90px -90px !important;
+    }
+  }
 }

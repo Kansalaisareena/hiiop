@@ -546,7 +546,10 @@
            :href "https://twitter.com/Hiiop100"}]
       [:a {:class "opux-footer__social-link opux-icon-social opux-icon-social--instagram"
            :target "_blank"
-           :href "https://www.instagram.com/hiiop100.fi/"}]]]]
+           :href "https://www.instagram.com/hiiop100.fi/"}]
+      [:a {:class "opux-footer__social-link opux-icon-social opux-icon-social--github"
+           :target "_blank"
+           :href "https://github.com/Kansalaisareena/hiiop/"}]]]]
 
    [:div {:class "opux-copyright opux-centered"}
     (tr [:footer.copyright])]])
