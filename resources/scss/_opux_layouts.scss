@@ -275,6 +275,9 @@
         min-height: 4.7rem;
     }
   }
+  @include element('date') {
+    min-width: 100%;
+  }
 
   // opux-card__image-container
   @include element('image-container') {
