@@ -202,16 +202,16 @@
          ;; own quest
          [:div {:class "opux-card__actions"}
           [:span
-           {:class "opux-card-action opux-icon-circled opux-icon-trashcan"
+           {:class "opux-card-action opux-icon-circled hiiop-icon--png hiiop-icon-trashcan"
             :on-click #(if (not (= @card-state "delete"))
                          (reset! card-state "delete"))}]
 
           (when moderated
-            [:a {:class "opux-card-action opux-icon-circled opux-icon-personnel"
+            [:a {:class "opux-card-action opux-icon-circled hiiop-icon--png hiiop-icon-personnel"
                  :href (str (path-for hierarchy :edit-quest :quest-id (:id quest))
                             "#edit-party-members")}])
 
-          [:a {:class "opux-card-action opux-icon-circled opux-icon-edit"
+          [:a {:class "opux-card-action opux-icon-circled hiiop-icon--png hiiop-icon-edit"
                :href (path-for hierarchy :edit-quest :quest-id (:id quest))}]]
 
          ;; participating quest

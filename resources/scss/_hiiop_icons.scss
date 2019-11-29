@@ -134,3 +134,24 @@
 .hiiop-uncircled--time:before {
   content: "\e904";
 }
+
+.hiiop-icon {
+  &--png {
+    width: 20px;
+    height: 20px;
+    background-size: contain;
+    background-repeat: no-repeat;
+  }
+
+  &-trashcan {
+    background-image: url('/img/trashcan.png');
+  }
+
+  &-personnel {
+    background-image: url('/img/personnel.png');
+  }
+
+  &-edit {
+    background-image: url('/img/edit.png');
+  }
+}

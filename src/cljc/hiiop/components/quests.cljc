@@ -421,7 +421,7 @@
           :member-id member-id
           :processing processing})
         [:button
-         {:class "opux-button opux-button--icon opux-icon opux-icon-trashcan opux-button--icon--height-auto"
+         {:class "opux-button opux-button--icon opux-icon hiiop-icon--png hiiop-icon-trashcan opux-button--icon--height-auto"
           :type "button"
           :on-click
           (fn [e]
