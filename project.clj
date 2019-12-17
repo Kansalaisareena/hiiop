@@ -209,7 +209,7 @@
                    [lein-doo                           "0.1.7"]
                    [lein-figwheel                      "0.5.17"]
                    [org.clojure/clojurescript          "1.9.293"]
-                   [cider/cider-nrepl                  "0.18.0"]
+                   [cider/cider-nrepl                  "0.22.4"]
                    [lein-autoreload                    "0.1.1"]]
 
                   :prep-tasks ["git-version"]
