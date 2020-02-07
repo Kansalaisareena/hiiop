@@ -2,6 +2,8 @@ version: '3'
 services:
   redis:
     image: "redis:alpine"
+    ports:
+      - "6379:6379"
   postgres:
     image: postgres:9.6-alpine
     restart: always
@@ -17,6 +19,8 @@ services:
     build: .
     ports:
       - "3000:3000"
+      - "3450:3450"
+      - "7000:7000"
     volumes:
      - .:/hiiop
     command: bash -c "lein sassc clean && lein sassc once && lein run"
