@@ -648,6 +648,7 @@
                                     api/add-quest)
                          api-quest (-> @quest
                                        (assoc :picture-id (str (:picture-id @quest)))
+                                       (assoc :is-edit true) ;; pass in any value here to pass schema coercion at backend
                                        (dissoc :participant-count))
                          from-api (<! (api-call api-quest))]
                      (if (:success from-api)

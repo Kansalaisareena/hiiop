@@ -422,6 +422,7 @@ q.unmoderated_hashtags as hashtags,
 (SELECT COUNT(user_id) FROM parties WHERE quest_id = q.id) as participant_count,
 q.is_open as is_open,
 q.is_rejected as is_rejected,
+CASE WHEN q.name IS NULL THEN FALSE ELSE TRUE END as is_edit,
 q.owner as owner
 FROM
   quests q

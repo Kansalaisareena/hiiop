@@ -182,6 +182,7 @@
    (s/optional-key :organisation) (s/maybe Organisation)
    (s/optional-key :participant-count) (s/maybe NaturalNumber)
    (s/optional-key :is-rejected) (s/maybe s/Bool)
+   (s/optional-key :is-edit) (s/maybe s/Bool)
    (s/optional-key :moderated) (s/maybe s/Bool)
    (s/optional-key :secret-party) (s/maybe s/Uuid)})
 

@@ -266,6 +266,7 @@
   (let [{:keys [name
                 location
                 id
+                is-edit
                 start-time
                 end-time
                 picture-url
@@ -280,14 +281,16 @@
      [:div {:class "opux-card"}
 
       [:div {:class "opux-card__image-container"}
-       (if is-moderated
-         [:a {:href quest-link}
-          [:div {:class "opux-card__image"
-                 :style {:background-image (str "url('" (image-url-to-small-url (get-quest-image quest)) "')")}}]]
-
+       (if is-edit
          [:div {:class "opux-card__image"
                 :style {:background-image (str "url('" (image-url-to-small-url (get-quest-image quest)) "')")}
-                :on-click on-click-fn}])]
+                :on-click on-click-fn}
+          [:span {:class "hiiop__moderation-info hiiop__moderation-info--edit"} (tr [:pages.moderate.is-edit])]]
+         ;; else is new
+         [:div {:class "opux-card__image bazqux"
+                :style {:background-image (str "url('" (image-url-to-small-url (get-quest-image quest)) "')")}
+                :on-click on-click-fn}
+          [:span {:class "hiiop__moderation-info hiiop__moderation-info--new"} (tr [:pages.moderate.is-new])]])]
 
       [:div {:class "opux-card__content"}
 

@@ -231,6 +231,8 @@
    :reject-quest-message-title "Viesti hylättäessä tehtävää"
    :title "Tehtävän hyväksyntä"
    :unmoderated-quests "Käsittelemättömät tehtäväsi"
+   :is-edit "Muokattu"
+   :is-new "Uusi"
   }
   :password-reset
   {

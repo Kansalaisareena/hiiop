@@ -231,6 +231,8 @@
    :reject-quest-message-title "Meddelande då uppdrag avvisas"
    :title "Godkänn uppdrag"
    :unmoderated-quests "Dina obehandlade uppdrag"
+   :is-edit "Modifierad"
+   :is-new "Ny"
   }
   :password-reset
   {

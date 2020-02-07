@@ -1,0 +1,14 @@
+.hiiop__moderation-info {
+  font-weight: bold;
+  $top: 4px;
+  padding: $top 8px;
+  position: relative;
+  top: $top;
+  background-color: rgba(10,10,10,0.2);
+  &--edit {
+    color: yellow;
+  }
+  &--new {
+    color: white;
+  }
+}

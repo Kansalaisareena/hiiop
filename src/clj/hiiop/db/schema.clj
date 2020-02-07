@@ -40,6 +40,7 @@
    :picture (s/maybe s/Uuid)
    :unmoderated_picture (s/maybe s/Uuid)
    :owner s/Uuid
+   :is_edit (s/maybe s/Bool)
    :is_open s/Bool})
 
 (def DBQuestSansUnmoderatedKeys
