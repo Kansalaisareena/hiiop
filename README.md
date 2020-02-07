@@ -2,7 +2,7 @@
 
 ## Overview
 
-Hiiop is a social platform for connecting volunteer workers to volunteer tasks. It is run by Kansalaisareena and was originally developed by Futurice for OP Bank who donated it to Kansalaiseraana.
+Hiiop is a social platform for connecting volunteer workers to volunteer tasks. It is run by Kansalaisareena and was originally developed by Futurice for OP Bank who donated it to Kansalaisareena.
 
 ## Dependencies
 
