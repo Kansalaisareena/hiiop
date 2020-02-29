@@ -27,4 +27,6 @@
                                      (.-innerHTML target)))
                         (set! (. (aget auto-link-targets index) -innerHTML)
                               (.link auto-linker
-                                     (.-innerHTML target)))))))))})
+                                     (.-innerHTML target))))))
+          state
+          )))})

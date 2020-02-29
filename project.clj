@@ -31,7 +31,7 @@
                  [ring-middleware-format                 "0.7.0"]
                  [ring-webjars                           "0.1.1"]
                  [ring/ring-defaults                     "0.2.1"]
-                 [rum                                    "0.10.8"]
+                 [rum                                    "0.11.4"]
                  [selmer                                 "1.10.0"]
                  [clj-time                               "0.12.2"]
                  [buddy/buddy-auth                       "1.2.0"]
