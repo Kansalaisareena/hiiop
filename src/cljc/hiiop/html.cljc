@@ -90,14 +90,22 @@
 
 (rum/defc button < rum/reactive
   [text {:keys [class active type on-click]}]
-  (let [click (or on-click identity)]
+  (let [click (or on-click identity)
+        disabled (if (nil? active) false (not (rum/react active)))]
     [:button
-     {:class class
-      :type (or type "button")
-      :disabled (when active (not (rum/react active)))
-      :on-click
-      (fn [e]
-        (click e))}
+     #?(:cljs
+        {:class class
+         :type (or type "button")
+         :disabled  disabled
+         :on-click
+         (fn [e]
+           (click e))}
+        :clj
+        {:class class
+         :type (or type "button")
+         :on-click
+         (fn [e]
+           (click e))})
      text]))
 
 (rum/defc input < rum/reactive
