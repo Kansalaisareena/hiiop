@@ -17,10 +17,12 @@
 
 (rum/defcs quest-overlay < rum/reactive
                            (rum/local nil ::usable-owner)
+                           (rum/local nil ::usable-email)
                            (rum/local false ::processing)
                            autolink-mixin
   [state {:keys [context quest on-close-fn quests]}]
   (let [usable-owner (::usable-owner state)
+        usable-email (::usable-email state)
         processing (::processing state)
         message (atom "")
         {:keys [name
@@ -42,10 +44,12 @@
         tr (:tr context)]
 
     #?(:cljs
-       (if (and (nil? @usable-owner) (nil? owner-name))
+       (if (and (nil? @usable-owner) (nil? @usable-email))
          (go
            (let [user (<! (get-private-user-info (:owner quest)))]
-             (reset! usable-owner (:name user))))))
+             (go
+               (reset! usable-owner (:name user))
+               (reset! usable-email (:email user)))))))
 
     (if @processing
       [:div {:class "opux-section"}
@@ -61,7 +65,7 @@
 
        [:div {:class "opux-content opux-content--medium opux-content--quest-header"}
         [:p [:i {:class "opux-icon hiiop-uncircled--user"}]
-         (html/combine-text ", " (rum/react usable-owner) (:name organisation))]
+         (html/combine-text ", " (rum/react usable-owner) (:name organisation)) (str " (" (rum/react usable-email) ")")]
         [:p [:i {:class "opux-icon hiiop-uncircled--placeholder"}]
          (html/combine-text
            ", "
